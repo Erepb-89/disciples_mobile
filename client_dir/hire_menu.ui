@@ -1,0 +1,554 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>HireMenu</class>
+ <widget class="QMainWindow" name="HireMenu">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>788</width>
+    <height>828</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>HireMenu</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <widget class="QLabel" name="slot2">
+    <property name="geometry">
+     <rect>
+      <x>78</x>
+      <y>202</y>
+      <width>105</width>
+      <height>127</height>
+     </rect>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::Panel</enum>
+    </property>
+    <property name="frameShadow">
+     <enum>QFrame::Raised</enum>
+    </property>
+    <property name="lineWidth">
+     <number>1</number>
+    </property>
+    <property name="midLineWidth">
+     <number>0</number>
+    </property>
+    <property name="text">
+     <string>slot_2</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButtonSlot1">
+    <property name="geometry">
+     <rect>
+      <x>78</x>
+      <y>65</y>
+      <width>105</width>
+      <height>127</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="flat">
+     <bool>true</bool>
+    </property>
+   </widget>
+   <widget class="QLabel" name="slot5">
+    <property name="geometry">
+     <rect>
+      <x>78</x>
+      <y>616</y>
+      <width>105</width>
+      <height>127</height>
+     </rect>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::Panel</enum>
+    </property>
+    <property name="frameShadow">
+     <enum>QFrame::Raised</enum>
+    </property>
+    <property name="lineWidth">
+     <number>1</number>
+    </property>
+    <property name="midLineWidth">
+     <number>0</number>
+    </property>
+    <property name="text">
+     <string>slot_5</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="slot3">
+    <property name="geometry">
+     <rect>
+      <x>78</x>
+      <y>340</y>
+      <width>105</width>
+      <height>127</height>
+     </rect>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::Panel</enum>
+    </property>
+    <property name="frameShadow">
+     <enum>QFrame::Raised</enum>
+    </property>
+    <property name="lineWidth">
+     <number>1</number>
+    </property>
+    <property name="midLineWidth">
+     <number>0</number>
+    </property>
+    <property name="text">
+     <string>slot_3</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="slot4">
+    <property name="geometry">
+     <rect>
+      <x>78</x>
+      <y>478</y>
+      <width>105</width>
+      <height>127</height>
+     </rect>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::Panel</enum>
+    </property>
+    <property name="frameShadow">
+     <enum>QFrame::Raised</enum>
+    </property>
+    <property name="lineWidth">
+     <number>1</number>
+    </property>
+    <property name="midLineWidth">
+     <number>0</number>
+    </property>
+    <property name="text">
+     <string>slot_4</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButtonSlot3">
+    <property name="geometry">
+     <rect>
+      <x>78</x>
+      <y>340</y>
+      <width>105</width>
+      <height>127</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="flat">
+     <bool>true</bool>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButtonSlot5">
+    <property name="geometry">
+     <rect>
+      <x>78</x>
+      <y>616</y>
+      <width>105</width>
+      <height>127</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="flat">
+     <bool>true</bool>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButtonSlot4">
+    <property name="geometry">
+     <rect>
+      <x>78</x>
+      <y>478</y>
+      <width>105</width>
+      <height>127</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="flat">
+     <bool>true</bool>
+    </property>
+   </widget>
+   <widget class="QLabel" name="slot1">
+    <property name="geometry">
+     <rect>
+      <x>78</x>
+      <y>65</y>
+      <width>105</width>
+      <height>127</height>
+     </rect>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::Panel</enum>
+    </property>
+    <property name="frameShadow">
+     <enum>QFrame::Raised</enum>
+    </property>
+    <property name="lineWidth">
+     <number>1</number>
+    </property>
+    <property name="midLineWidth">
+     <number>0</number>
+    </property>
+    <property name="text">
+     <string>slot_1</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButtonSlot2">
+    <property name="geometry">
+     <rect>
+      <x>78</x>
+      <y>202</y>
+      <width>105</width>
+      <height>127</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="flat">
+     <bool>true</bool>
+    </property>
+   </widget>
+   <widget class="QLabel" name="gifLabel1">
+    <property name="geometry">
+     <rect>
+      <x>520</x>
+      <y>65</y>
+      <width>127</width>
+      <height>127</height>
+     </rect>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::Panel</enum>
+    </property>
+    <property name="frameShadow">
+     <enum>QFrame::Sunken</enum>
+    </property>
+    <property name="lineWidth">
+     <number>0</number>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="scaledContents">
+     <bool>false</bool>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="gifLabel2">
+    <property name="geometry">
+     <rect>
+      <x>520</x>
+      <y>202</y>
+      <width>127</width>
+      <height>127</height>
+     </rect>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::Panel</enum>
+    </property>
+    <property name="frameShadow">
+     <enum>QFrame::Sunken</enum>
+    </property>
+    <property name="lineWidth">
+     <number>0</number>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="scaledContents">
+     <bool>false</bool>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="gifLabel3">
+    <property name="geometry">
+     <rect>
+      <x>520</x>
+      <y>340</y>
+      <width>127</width>
+      <height>127</height>
+     </rect>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::Panel</enum>
+    </property>
+    <property name="frameShadow">
+     <enum>QFrame::Sunken</enum>
+    </property>
+    <property name="lineWidth">
+     <number>0</number>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="scaledContents">
+     <bool>false</bool>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="gifLabel4">
+    <property name="geometry">
+     <rect>
+      <x>520</x>
+      <y>478</y>
+      <width>127</width>
+      <height>127</height>
+     </rect>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::Panel</enum>
+    </property>
+    <property name="frameShadow">
+     <enum>QFrame::Sunken</enum>
+    </property>
+    <property name="lineWidth">
+     <number>0</number>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="scaledContents">
+     <bool>false</bool>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="gifLabel5">
+    <property name="geometry">
+     <rect>
+      <x>520</x>
+      <y>616</y>
+      <width>127</width>
+      <height>127</height>
+     </rect>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::Panel</enum>
+    </property>
+    <property name="frameShadow">
+     <enum>QFrame::Sunken</enum>
+    </property>
+    <property name="lineWidth">
+     <number>0</number>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="scaledContents">
+     <bool>false</bool>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButtonBack">
+    <property name="geometry">
+     <rect>
+      <x>700</x>
+      <y>766</y>
+      <width>60</width>
+      <height>60</height>
+     </rect>
+    </property>
+    <property name="toolTip">
+     <string>Закрыть</string>
+    </property>
+    <property name="autoFillBackground">
+     <bool>false</bool>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="flat">
+     <bool>true</bool>
+    </property>
+   </widget>
+   <widget class="QLabel" name="hireMenuBG">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>0</y>
+      <width>41</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="maximumSize">
+     <size>
+      <width>788</width>
+      <height>828</height>
+     </size>
+    </property>
+    <property name="text">
+     <string>bg</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="slotFrame1">
+    <property name="geometry">
+     <rect>
+      <x>67</x>
+      <y>54</y>
+      <width>125</width>
+      <height>149</height>
+     </rect>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::Panel</enum>
+    </property>
+    <property name="frameShadow">
+     <enum>QFrame::Raised</enum>
+    </property>
+    <property name="lineWidth">
+     <number>0</number>
+    </property>
+    <property name="midLineWidth">
+     <number>0</number>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QLabel" name="slotFrame2">
+    <property name="geometry">
+     <rect>
+      <x>67</x>
+      <y>191</y>
+      <width>125</width>
+      <height>150</height>
+     </rect>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::Panel</enum>
+    </property>
+    <property name="frameShadow">
+     <enum>QFrame::Raised</enum>
+    </property>
+    <property name="lineWidth">
+     <number>0</number>
+    </property>
+    <property name="midLineWidth">
+     <number>0</number>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QLabel" name="slotFrame3">
+    <property name="geometry">
+     <rect>
+      <x>67</x>
+      <y>329</y>
+      <width>125</width>
+      <height>150</height>
+     </rect>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::Panel</enum>
+    </property>
+    <property name="frameShadow">
+     <enum>QFrame::Raised</enum>
+    </property>
+    <property name="lineWidth">
+     <number>0</number>
+    </property>
+    <property name="midLineWidth">
+     <number>0</number>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QLabel" name="slotFrame4">
+    <property name="geometry">
+     <rect>
+      <x>67</x>
+      <y>467</y>
+      <width>125</width>
+      <height>150</height>
+     </rect>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::Panel</enum>
+    </property>
+    <property name="frameShadow">
+     <enum>QFrame::Raised</enum>
+    </property>
+    <property name="lineWidth">
+     <number>0</number>
+    </property>
+    <property name="midLineWidth">
+     <number>0</number>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QLabel" name="slotFrame5">
+    <property name="geometry">
+     <rect>
+      <x>67</x>
+      <y>605</y>
+      <width>125</width>
+      <height>150</height>
+     </rect>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::Panel</enum>
+    </property>
+    <property name="frameShadow">
+     <enum>QFrame::Raised</enum>
+    </property>
+    <property name="lineWidth">
+     <number>0</number>
+    </property>
+    <property name="midLineWidth">
+     <number>0</number>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <zorder>hireMenuBG</zorder>
+   <zorder>slotFrame5</zorder>
+   <zorder>slotFrame4</zorder>
+   <zorder>slotFrame3</zorder>
+   <zorder>slotFrame2</zorder>
+   <zorder>slotFrame1</zorder>
+   <zorder>slot1</zorder>
+   <zorder>slot2</zorder>
+   <zorder>slot3</zorder>
+   <zorder>gifLabel1</zorder>
+   <zorder>gifLabel2</zorder>
+   <zorder>slot4</zorder>
+   <zorder>pushButtonSlot2</zorder>
+   <zorder>pushButtonSlot1</zorder>
+   <zorder>slot5</zorder>
+   <zorder>pushButtonBack</zorder>
+   <zorder>pushButtonSlot4</zorder>
+   <zorder>pushButtonSlot5</zorder>
+   <zorder>gifLabel4</zorder>
+   <zorder>gifLabel3</zorder>
+   <zorder>gifLabel5</zorder>
+   <zorder>pushButtonSlot3</zorder>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
