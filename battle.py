@@ -2,6 +2,7 @@
 import operator
 import random
 
+
 class Battle:
     """Класс битвы"""
 
