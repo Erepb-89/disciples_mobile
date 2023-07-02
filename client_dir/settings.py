@@ -4,6 +4,8 @@ import os
 
 from PyQt5.QtCore import QRect
 
+BATTLE_LOG = '../battle_log.txt'
+
 UNIT_ICONS = '../images/icons/'
 UNIT_FACES = '../images/faces/'
 TOWN_IMG = '../images/towns/'
@@ -70,3 +72,4 @@ X_COORD_3 = 880
 X_COORD_4 = 1000
 
 SCREEN_RECT = QRect(0, 0, 1600, 900)
+PANEL_RECT = QRect(0, 500, 0, 0)

@@ -92,7 +92,7 @@
      </rect>
     </property>
     <property name="toolTip">
-     <string>Отпустить воина (D)</string>
+     <string>Уволить воина (D)</string>
     </property>
     <property name="toolTipDuration">
      <number>3000</number>
@@ -133,6 +133,9 @@
     </property>
    </widget>
    <widget class="QListView" name="listPlayerUnits">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
     <property name="geometry">
      <rect>
       <x>357</x>

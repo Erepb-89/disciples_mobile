@@ -4,7 +4,7 @@ import os.path
 import random
 
 from PyQt5.QtCore import QThread, pyqtSignal
-from PyQt5.QtGui import QPixmap, QMovie
+from PyQt5.QtGui import QPixmap, QMovie, QStandardItem, QStandardItemModel
 from PyQt5.QtWidgets import QMainWindow, QHBoxLayout
 
 from battle import Battle
@@ -13,7 +13,7 @@ from client_dir.settings import UNIT_STAND, UNIT_ATTACK, \
     UNIT_ATTACKED, UNIT_EFFECTS_ATTACK, BATTLE_GROUND, FRONT, REAR, \
     COMMON, BATTLE_GROUNDS, UNIT_SHADOW_ATTACK, UNIT_SHADOW_STAND, \
     UNIT_SHADOW_ATTACKED, UNIT_EFFECTS_AREA, UNIT_EFFECTS_TARGET, \
-    RIGHT_ICONS, LEFT_ICONS, SCREEN_RECT
+    RIGHT_ICONS, LEFT_ICONS, SCREEN_RECT, PANEL_RECT, BATTLE_LOG
 from client_dir.ui_functions import get_unit_image
 from client_dir.unit_dialog import UnitDialog
 
@@ -101,6 +101,9 @@ class FightWindow(QMainWindow):
 
         self.InitUI()
 
+        with open(BATTLE_LOG, 'w', encoding='utf-8') as log:
+            log.write("Новая битва\n")
+
     def InitUI(self):
         """Загружаем конфигурацию окна из дизайнера"""
 
@@ -109,6 +112,7 @@ class FightWindow(QMainWindow):
 
         self.hbox = QHBoxLayout(self)
         self.update_bg()
+        self.update_bp()
 
         self.ui.leftIcons.setPixmap(
             QPixmap(LEFT_ICONS))
@@ -170,6 +174,8 @@ class FightWindow(QMainWindow):
         self.unit_icons_update()
         self._update_all_unit_health()
 
+        self.ui.battleLog.setStyleSheet("background-color: rgb(65, 3, 2)")
+
         self.show()
 
     def update_bg(self):
@@ -183,6 +189,30 @@ class FightWindow(QMainWindow):
         fight_bg.setGeometry(SCREEN_RECT)
         self.hbox.addWidget(fight_bg)
         self.setLayout(self.hbox)
+
+    def update_bp(self):
+        """Обновление панели битвы"""
+        fight_bp = self.ui.batPanel
+        fight_bp.setPixmap(
+            QPixmap(
+                os.path.join(
+                    COMMON, 'battle_panel.png')))
+        fight_bp.setGeometry(PANEL_RECT)
+        self.hbox.addWidget(fight_bp)
+        self.setLayout(self.hbox)
+
+    def update_log(self):
+        """Обновление лога"""
+        self.log_model = QStandardItemModel()
+
+        with open(BATTLE_LOG, 'r', encoding='utf-8') as log:
+            text_lines = log.readlines()
+            for line in text_lines:
+                item = QStandardItem(line.strip('\n'))
+                item.setEditable(False)
+                self.log_model.appendRow(item)
+            self.ui.battleLog.setModel(self.log_model)
+        self.ui.battleLog.setStyleSheet("background-color: rgb(65, 3, 2); color: white")
 
     def back(self):
         """Кнопка возврата"""
@@ -499,6 +529,8 @@ class FightWindow(QMainWindow):
     def autofight(self):
         """Автобой"""
         self.new_battle.auto_fight()
+        self.update_log()
+
         if self.new_battle.units_in_round:
             self.who_attack()
 

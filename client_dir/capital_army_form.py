@@ -51,6 +51,7 @@ class Ui_CapitalArmyWindow(object):
         self.pushButtonStop.setFlat(True)
         self.pushButtonStop.setObjectName("pushButtonStop")
         self.listPlayerUnits = QtWidgets.QListView(self.centralwidget)
+        self.listPlayerUnits.setEnabled(False)
         self.listPlayerUnits.setGeometry(QtCore.QRect(357, 750, 171, 141))
         self.listPlayerUnits.setObjectName("listPlayerUnits")
         self.listPlayerSlots = QtWidgets.QListView(self.centralwidget)
@@ -233,7 +234,7 @@ class Ui_CapitalArmyWindow(object):
         _translate = QtCore.QCoreApplication.translate
         self.capitalArmyBG.setText(_translate("CapitalArmyWindow", "bg"))
         self.pushButtonBack.setToolTip(_translate("CapitalArmyWindow", "Выход"))
-        self.pushButtonDelete.setToolTip(_translate("CapitalArmyWindow", "Отпустить воина (D)"))
+        self.pushButtonDelete.setToolTip(_translate("CapitalArmyWindow", "Уволить воина (D)"))
         self.pushButtonStop.setToolTip(_translate("CapitalArmyWindow", "Заблокировать тип воина (L)"))
         self.slot2.setText(_translate("CapitalArmyWindow", "slot_2"))
         self.slot5.setText(_translate("CapitalArmyWindow", "slot_5"))
