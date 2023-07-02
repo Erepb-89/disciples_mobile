@@ -1,23 +1,59 @@
-# paths
+"""Настройки"""
+
 import os
 
+from PyQt5.QtCore import QRect
+
 UNIT_ICONS = '../images/icons/'
+UNIT_FACES = '../images/faces/'
 TOWN_IMG = '../images/towns/'
 PORTRAITS = '../images/portraits/'
 GIF_ANIMATIONS = '../images/gif/full_size/'
-UNIT_FRAME = '../images/frame_details6.png'
+UNIT_FRAME = '../images/frames/frame_details.png'
 FACTIONS = '../images/factions/'
 TOWNS = '../images/towns/'
 TOWN_ARMY = '../images/towns/army/'
 CAPITAL_BUILDING = '../images/towns/capital_building/'
 HIRE_SCREEN = '../images/towns/hire_screen/'
-UNIT_STAND = '../images/gif/battle_stand/'
-UNIT_ATTACK = '../images/gif/battle_attack/'
-UNIT_ATTACKED = '../images/gif/battle_attacked/'
-UNIT_EFFECTS = '../images/gif/battle_effects/'
+
+UNIT_STAND = '../images/gif/unit_stand/'
+UNIT_ATTACK = '../images/gif/unit_attack/'
+UNIT_ATTACKED = '../images/gif/unit_attacked/'
+UNIT_EFFECTS_ATTACK = '../images/gif/unit_effects_attack/'
+UNIT_EFFECTS_ATTACKED = '../images/gif/unit_effects_attacked/'
+UNIT_EFFECTS_STAND = '../images/gif/unit_effects_stand/'
+UNIT_EFFECTS_TARGET = '../images/gif/unit_effects_target/'
+UNIT_EFFECTS_AREA = '../images/gif/unit_effects_area/'
+UNIT_SHADOW_ATTACK = '../images/gif/unit_shadow_attack/'
+UNIT_SHADOW_ATTACKED = '../images/gif/unit_shadow_attacked/'
+UNIT_SHADOW_STAND = '../images/gif/unit_shadow_stand/'
+
+TESTING_UNIT_STAND = '../images/testing/unit_stand/'
+TESTING_UNIT_ATTACK = '../images/testing/unit_attack/'
+TESTING_UNIT_ATTACKED = '../images/testing/unit_attacked/'
+TESTING_UNIT_EFFECTS_ATTACK = '../images/testing/unit_effects_attack/'
+TESTING_UNIT_EFFECTS_ATTACKED = '../images/testing/unit_effects_attacked/'
+TESTING_UNIT_EFFECTS_STAND = '../images/testing/unit_effects_stand/'
+TESTING_UNIT_EFFECTS_TARGET = '../images/testing/unit_effects_target/'
+TESTING_UNIT_EFFECTS_AREA = '../images/testing/unit_effects_area/'
+TESTING_UNIT_SHADOW_ATTACK = '../images/testing/unit_shadow_attack/'
+TESTING_UNIT_SHADOW_ATTACKED = '../images/testing/unit_shadow_attacked/'
+TESTING_UNIT_SHADOW_STAND = '../images/testing/unit_shadow_stand/'
+
 BATTLE_GROUND = '../images/grounds/'
 BATTLE_GROUNDS = os.listdir(BATTLE_GROUND)
 COMMON = '../images/common/'
+ORIGINAL_GIFS = '../images/gif/original/'
+TOWN_ICONS = '../images/towns/capital_building/town_icons/'
+ORIGINAL_PNGS = '../images/towns/capital_building/town_icons_original/'
+RIGHT_ICONS = os.path.join(COMMON, "right_icons.png")
+LEFT_ICONS = os.path.join(COMMON, "left_icons.png")
+PLUG = "Заглушка (Disciples II)-иконка.jpg"
+ICON = "(Disciples II)-иконка.jpg"
+ELVEN_PLUG = "Elven Alliance.png"
+ANY_UNIT = 'Любой юнит'
+CLOSEST_UNIT = 'Ближайший юнит'
+
 FRONT = 'front/'
 REAR = 'rear/'
 
@@ -26,3 +62,11 @@ EM = 'Empire'
 UH = 'Undead Hordes'
 LD = 'Legions of the Damned'
 MC = 'Mountain Clans'
+
+# coordinates
+X_COORD_1 = 40
+X_COORD_2 = 160
+X_COORD_3 = 880
+X_COORD_4 = 1000
+
+SCREEN_RECT = QRect(0, 0, 1600, 900)

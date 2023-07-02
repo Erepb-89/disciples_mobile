@@ -470,24 +470,174 @@
      <bool>true</bool>
     </property>
    </widget>
+   <widget class="QLabel" name="hpSlot2">
+    <property name="geometry">
+     <rect>
+      <x>608</x>
+      <y>234</y>
+      <width>101</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Arial</family>
+      <pointsize>11</pointsize>
+      <weight>75</weight>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="text">
+     <string>hpSlot2</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="hpSlot6">
+    <property name="geometry">
+     <rect>
+      <x>608</x>
+      <y>552</y>
+      <width>101</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Arial</family>
+      <pointsize>11</pointsize>
+      <weight>75</weight>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="text">
+     <string>hpSlot6</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="hpSlot5">
+    <property name="geometry">
+     <rect>
+      <x>486</x>
+      <y>552</y>
+      <width>101</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Arial</family>
+      <pointsize>11</pointsize>
+      <weight>75</weight>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="text">
+     <string>hpSlot5</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="hpSlot4">
+    <property name="geometry">
+     <rect>
+      <x>608</x>
+      <y>393</y>
+      <width>101</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Arial</family>
+      <pointsize>11</pointsize>
+      <weight>75</weight>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="text">
+     <string>hpSlot4</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="hpSlot1">
+    <property name="geometry">
+     <rect>
+      <x>486</x>
+      <y>234</y>
+      <width>101</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Arial</family>
+      <pointsize>11</pointsize>
+      <weight>75</weight>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="text">
+     <string>hpSlot1</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="hpSlot3">
+    <property name="geometry">
+     <rect>
+      <x>486</x>
+      <y>393</y>
+      <width>101</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Arial</family>
+      <pointsize>11</pointsize>
+      <weight>75</weight>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="text">
+     <string>hpSlot3</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
+    </property>
+   </widget>
    <zorder>capitalArmyBG</zorder>
    <zorder>pushButtonBack</zorder>
    <zorder>pushButtonDelete</zorder>
    <zorder>pushButtonStop</zorder>
    <zorder>listPlayerUnits</zorder>
    <zorder>listPlayerSlots</zorder>
-   <zorder>slot2</zorder>
-   <zorder>slot6</zorder>
-   <zorder>slot4</zorder>
-   <zorder>pushButtonSlot4</zorder>
-   <zorder>pushButtonSlot2</zorder>
-   <zorder>pushButtonSlot6</zorder>
+   <zorder>hpSlot2</zorder>
+   <zorder>hpSlot6</zorder>
+   <zorder>hpSlot5</zorder>
+   <zorder>hpSlot4</zorder>
+   <zorder>hpSlot1</zorder>
+   <zorder>hpSlot3</zorder>
    <zorder>slot1</zorder>
    <zorder>slot5</zorder>
    <zorder>slot3</zorder>
+   <zorder>slot6</zorder>
+   <zorder>slot4</zorder>
+   <zorder>slot2</zorder>
    <zorder>pushButtonSlot5</zorder>
-   <zorder>pushButtonSlot1</zorder>
    <zorder>pushButtonSlot3</zorder>
+   <zorder>pushButtonSlot1</zorder>
+   <zorder>pushButtonSlot4</zorder>
+   <zorder>pushButtonSlot6</zorder>
+   <zorder>pushButtonSlot2</zorder>
   </widget>
  </widget>
  <resources/>

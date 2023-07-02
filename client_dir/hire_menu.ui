@@ -24,7 +24,7 @@
      </rect>
     </property>
     <property name="frameShape">
-     <enum>QFrame::Panel</enum>
+     <enum>QFrame::NoFrame</enum>
     </property>
     <property name="frameShadow">
      <enum>QFrame::Raised</enum>
@@ -65,7 +65,7 @@
      </rect>
     </property>
     <property name="frameShape">
-     <enum>QFrame::Panel</enum>
+     <enum>QFrame::NoFrame</enum>
     </property>
     <property name="frameShadow">
      <enum>QFrame::Raised</enum>
@@ -90,7 +90,7 @@
      </rect>
     </property>
     <property name="frameShape">
-     <enum>QFrame::Panel</enum>
+     <enum>QFrame::NoFrame</enum>
     </property>
     <property name="frameShadow">
      <enum>QFrame::Raised</enum>
@@ -115,7 +115,7 @@
      </rect>
     </property>
     <property name="frameShape">
-     <enum>QFrame::Panel</enum>
+     <enum>QFrame::NoFrame</enum>
     </property>
     <property name="frameShadow">
      <enum>QFrame::Raised</enum>
@@ -188,7 +188,7 @@
      </rect>
     </property>
     <property name="frameShape">
-     <enum>QFrame::Panel</enum>
+     <enum>QFrame::NoFrame</enum>
     </property>
     <property name="frameShadow">
      <enum>QFrame::Raised</enum>
@@ -222,9 +222,9 @@
    <widget class="QLabel" name="gifLabel1">
     <property name="geometry">
      <rect>
-      <x>520</x>
+      <x>486</x>
       <y>65</y>
-      <width>127</width>
+      <width>201</width>
       <height>127</height>
      </rect>
     </property>
@@ -250,9 +250,9 @@
    <widget class="QLabel" name="gifLabel2">
     <property name="geometry">
      <rect>
-      <x>520</x>
+      <x>486</x>
       <y>202</y>
-      <width>127</width>
+      <width>201</width>
       <height>127</height>
      </rect>
     </property>
@@ -278,9 +278,9 @@
    <widget class="QLabel" name="gifLabel3">
     <property name="geometry">
      <rect>
-      <x>520</x>
+      <x>486</x>
       <y>340</y>
-      <width>127</width>
+      <width>201</width>
       <height>127</height>
      </rect>
     </property>
@@ -306,9 +306,9 @@
    <widget class="QLabel" name="gifLabel4">
     <property name="geometry">
      <rect>
-      <x>520</x>
+      <x>486</x>
       <y>478</y>
-      <width>127</width>
+      <width>201</width>
       <height>127</height>
      </rect>
     </property>
@@ -334,9 +334,9 @@
    <widget class="QLabel" name="gifLabel5">
     <property name="geometry">
      <rect>
-      <x>520</x>
+      <x>486</x>
       <y>616</y>
-      <width>127</width>
+      <width>201</width>
       <height>127</height>
      </rect>
     </property>
@@ -525,7 +525,342 @@
      <string/>
     </property>
    </widget>
+   <widget class="QLabel" name="costUnit1">
+    <property name="geometry">
+     <rect>
+      <x>390</x>
+      <y>128</y>
+      <width>71</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Arial</family>
+      <pointsize>11</pointsize>
+      <weight>50</weight>
+      <bold>false</bold>
+     </font>
+    </property>
+    <property name="text">
+     <string>cost</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="costUnit2">
+    <property name="geometry">
+     <rect>
+      <x>390</x>
+      <y>267</y>
+      <width>71</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Arial</family>
+      <pointsize>11</pointsize>
+      <weight>50</weight>
+      <bold>false</bold>
+     </font>
+    </property>
+    <property name="text">
+     <string>cost</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="costUnit3">
+    <property name="geometry">
+     <rect>
+      <x>390</x>
+      <y>403</y>
+      <width>71</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Arial</family>
+      <pointsize>11</pointsize>
+      <weight>50</weight>
+      <bold>false</bold>
+     </font>
+    </property>
+    <property name="text">
+     <string>cost</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="costUnit4">
+    <property name="geometry">
+     <rect>
+      <x>390</x>
+      <y>542</y>
+      <width>71</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Arial</family>
+      <pointsize>11</pointsize>
+      <weight>50</weight>
+      <bold>false</bold>
+     </font>
+    </property>
+    <property name="text">
+     <string>cost</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="costUnit5">
+    <property name="geometry">
+     <rect>
+      <x>390</x>
+      <y>681</y>
+      <width>71</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Arial</family>
+      <pointsize>11</pointsize>
+      <weight>50</weight>
+      <bold>false</bold>
+     </font>
+    </property>
+    <property name="text">
+     <string>cost</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButtonBuy">
+    <property name="geometry">
+     <rect>
+      <x>630</x>
+      <y>766</y>
+      <width>60</width>
+      <height>60</height>
+     </rect>
+    </property>
+    <property name="toolTip">
+     <string>Нанять</string>
+    </property>
+    <property name="autoFillBackground">
+     <bool>false</bool>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="flat">
+     <bool>true</bool>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButtonSelect1">
+    <property name="geometry">
+     <rect>
+      <x>60</x>
+      <y>54</y>
+      <width>670</width>
+      <height>149</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="checkable">
+     <bool>false</bool>
+    </property>
+    <property name="flat">
+     <bool>true</bool>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButtonSelect2">
+    <property name="geometry">
+     <rect>
+      <x>60</x>
+      <y>191</y>
+      <width>670</width>
+      <height>150</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="flat">
+     <bool>true</bool>
+    </property>
+   </widget>
+   <widget class="QLabel" name="labelSelected1">
+    <property name="enabled">
+     <bool>true</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>60</x>
+      <y>54</y>
+      <width>661</width>
+      <height>149</height>
+     </rect>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::Box</enum>
+    </property>
+    <property name="lineWidth">
+     <number>0</number>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QLabel" name="labelSelected2">
+    <property name="enabled">
+     <bool>true</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>60</x>
+      <y>191</y>
+      <width>670</width>
+      <height>150</height>
+     </rect>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::Box</enum>
+    </property>
+    <property name="lineWidth">
+     <number>0</number>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QLabel" name="labelSelected3">
+    <property name="enabled">
+     <bool>true</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>60</x>
+      <y>329</y>
+      <width>670</width>
+      <height>150</height>
+     </rect>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::Box</enum>
+    </property>
+    <property name="lineWidth">
+     <number>0</number>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QLabel" name="labelSelected4">
+    <property name="enabled">
+     <bool>true</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>60</x>
+      <y>467</y>
+      <width>670</width>
+      <height>150</height>
+     </rect>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::Box</enum>
+    </property>
+    <property name="lineWidth">
+     <number>0</number>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QLabel" name="labelSelected5">
+    <property name="enabled">
+     <bool>true</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>60</x>
+      <y>605</y>
+      <width>670</width>
+      <height>150</height>
+     </rect>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::Box</enum>
+    </property>
+    <property name="lineWidth">
+     <number>0</number>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButtonSelect3">
+    <property name="geometry">
+     <rect>
+      <x>60</x>
+      <y>329</y>
+      <width>670</width>
+      <height>150</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="flat">
+     <bool>true</bool>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButtonSelect4">
+    <property name="geometry">
+     <rect>
+      <x>60</x>
+      <y>467</y>
+      <width>670</width>
+      <height>150</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="flat">
+     <bool>true</bool>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButtonSelect5">
+    <property name="geometry">
+     <rect>
+      <x>60</x>
+      <y>605</y>
+      <width>670</width>
+      <height>150</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="flat">
+     <bool>true</bool>
+    </property>
+   </widget>
    <zorder>hireMenuBG</zorder>
+   <zorder>labelSelected5</zorder>
+   <zorder>labelSelected3</zorder>
+   <zorder>labelSelected2</zorder>
+   <zorder>labelSelected1</zorder>
+   <zorder>labelSelected4</zorder>
+   <zorder>costUnit3</zorder>
+   <zorder>costUnit5</zorder>
+   <zorder>costUnit2</zorder>
+   <zorder>costUnit4</zorder>
+   <zorder>costUnit1</zorder>
+   <zorder>pushButtonSelect3</zorder>
+   <zorder>pushButtonSelect2</zorder>
+   <zorder>pushButtonSelect5</zorder>
+   <zorder>pushButtonSelect4</zorder>
+   <zorder>pushButtonSelect1</zorder>
    <zorder>slotFrame5</zorder>
    <zorder>slotFrame4</zorder>
    <zorder>slotFrame3</zorder>
@@ -537,8 +872,6 @@
    <zorder>gifLabel1</zorder>
    <zorder>gifLabel2</zorder>
    <zorder>slot4</zorder>
-   <zorder>pushButtonSlot2</zorder>
-   <zorder>pushButtonSlot1</zorder>
    <zorder>slot5</zorder>
    <zorder>pushButtonBack</zorder>
    <zorder>pushButtonSlot4</zorder>
@@ -547,6 +880,9 @@
    <zorder>gifLabel3</zorder>
    <zorder>gifLabel5</zorder>
    <zorder>pushButtonSlot3</zorder>
+   <zorder>pushButtonSlot1</zorder>
+   <zorder>pushButtonSlot2</zorder>
+   <zorder>pushButtonBuy</zorder>
   </widget>
  </widget>
  <resources/>

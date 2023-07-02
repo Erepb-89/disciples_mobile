@@ -7,7 +7,7 @@ from PyQt5.QtWidgets import QMainWindow, QHBoxLayout
 from client_dir.capital_army_window import CapitalArmyWindow
 from client_dir.capital_building_window import CapitalBuildingWindow
 from client_dir.capital_main_form import Ui_CapitalWindow
-from client_dir.settings import TOWNS
+from client_dir.settings import TOWNS, ELVEN_PLUG, SCREEN_RECT
 
 
 class CapitalWindow(QMainWindow):
@@ -22,7 +22,7 @@ class CapitalWindow(QMainWindow):
         super().__init__()
         # основные переменные
         self.database = database
-        self.current_faction = self.database.current_game_faction()
+        self.faction = self.database.current_game_faction
 
         self.InitUI()
 
@@ -51,17 +51,18 @@ class CapitalWindow(QMainWindow):
     def update_capital(self):
         """Обновление лейбла, заполнение картинкой замка"""
         capital_bg = self.ui.capitalBG
-        capital_bg.setPixmap(QPixmap(self.get_image(self.current_faction)))
-        capital_bg.setGeometry(QtCore.QRect(0, 0, 1600, 900))
+        capital_bg.setPixmap(
+            QPixmap(self.get_image(self.faction)))
+        capital_bg.setGeometry(SCREEN_RECT)
         self.hbox.addWidget(capital_bg)
         self.setLayout(self.hbox)
 
-    def get_image(self, current_faction):
+    def get_image(self, faction):
         """Достаем картинку фракции"""
         try:
-            return os.path.join(TOWNS, f"{current_faction}.png")
+            return os.path.join(TOWNS, f"{faction}.png")
         except:
-            return os.path.join(TOWNS, "Elven Alliance.png")
+            return os.path.join(TOWNS, ELVEN_PLUG)
 
     def show_army(self):
         """Метод создающий окно армии."""
