@@ -1,4 +1,4 @@
-# units ranking
+"""Ранги существ"""
 
 empire_fighter_lvls = {
     1: 'Сквайр',

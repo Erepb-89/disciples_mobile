@@ -1,5 +1,7 @@
-"""Units factory"""
+"""Фабрика юнитов"""
+
 import abc
+import random
 
 from client_dir.settings import EM, UH, LD, MC
 from units_dir.units import main_db
@@ -20,11 +22,18 @@ class EmpireFighter:
 
     @property
     def name(self):
+        """Имя"""
         return 'Сквайр'
 
     @property
     def size(self):
+        """Размер"""
         return 'Обычный'
+
+    @property
+    def cost(self):
+        """Стоимость"""
+        return '50'
 
     @staticmethod
     def add_to_band(slot):
@@ -40,7 +49,7 @@ class EmpireFighter:
     # @level_up(empire_fighter_lvls)
     def lvl_up(slot):
         """Боец Империи. Повышение уровня"""
-        unit = main_db.get_unit_by_slot(slot)
+        unit = main_db.get_unit_by_slot(slot, main_db.PlayerUnits)
         new_unit = empire_fighter_lvls[unit.level + 1]
         print(unit.name, 'повысил уровень до', new_unit)
         main_db.replace_unit(slot, new_unit)
@@ -56,11 +65,18 @@ class EmpireMage:
 
     @property
     def name(self):
+        """Имя"""
         return 'Ученик'
 
     @property
     def size(self):
+        """Размер"""
         return 'Обычный'
+
+    @property
+    def cost(self):
+        """Стоимость"""
+        return '60'
 
     @staticmethod
     def add_to_band(slot):
@@ -70,7 +86,7 @@ class EmpireMage:
     @staticmethod
     def lvl_up(slot):
         """Маг Империи. Повышение уровня"""
-        unit = main_db.get_unit_by_slot(slot)
+        unit = main_db.get_unit_by_slot(slot, main_db.PlayerUnits)
         new_unit = empire_mage_lvls[unit.level + 1]
         print(unit.name, 'повысил уровень до', new_unit)
         main_db.replace_unit(slot, new_unit)
@@ -86,11 +102,18 @@ class EmpireArcher:
 
     @property
     def name(self):
+        """Имя"""
         return 'Лучник'
 
     @property
     def size(self):
+        """Размер"""
         return 'Обычный'
+
+    @property
+    def cost(self):
+        """Стоимость"""
+        return '40'
 
     @staticmethod
     def add_to_band(slot):
@@ -100,12 +123,13 @@ class EmpireArcher:
     @staticmethod
     def lvl_up(slot):
         """Стрелок Империи. Повышение уровня"""
-        unit = main_db.get_unit_by_slot(slot)
+        unit = main_db.get_unit_by_slot(slot, main_db.PlayerUnits)
         new_unit = empire_archer_lvls[unit.level + 1]
         print(unit.name, 'повысил уровень до', new_unit)
         main_db.replace_unit(slot, new_unit)
 
-    def say(self):
+    @staticmethod
+    def say():
         """Боевой клич"""
         print('bow')
 
@@ -115,11 +139,18 @@ class EmpireSupport:
 
     @property
     def name(self):
+        """Имя"""
         return 'Послушник'
 
     @property
     def size(self):
+        """Размер"""
         return 'Обычный'
+
+    @property
+    def cost(self):
+        """Стоимость"""
+        return '50'
 
     @staticmethod
     def add_to_band(slot):
@@ -129,12 +160,13 @@ class EmpireSupport:
     @staticmethod
     def lvl_up(slot):
         """Поддержка Империи. Повышение уровня"""
-        unit = main_db.get_unit_by_slot(slot)
+        unit = main_db.get_unit_by_slot(slot, main_db.PlayerUnits)
         new_unit = empire_support_lvls[unit.level + 1]
         print(unit.name, 'повысил уровень до', new_unit)
         main_db.replace_unit(slot, new_unit)
 
-    def say(self):
+    @staticmethod
+    def say():
         """Боевой клич"""
         print('help')
 
@@ -144,11 +176,18 @@ class EmpireSpecial:
 
     @property
     def name(self):
+        """Имя"""
         return 'Титан'
 
     @property
     def size(self):
+        """Размер"""
         return 'Большой'
+
+    @property
+    def cost(self):
+        """Стоимость"""
+        return '300'
 
     @staticmethod
     def add_to_band(slot):
@@ -158,7 +197,6 @@ class EmpireSpecial:
     @staticmethod
     def lvl_up(slot):
         """Особый юнит Империи. Повышение уровня"""
-        pass
 
 
 # Hordes classes
@@ -168,11 +206,18 @@ class HordesFighter:
 
     @property
     def name(self):
+        """Имя"""
         return 'Боец'
 
     @property
     def size(self):
+        """Размер"""
         return 'Обычный'
+
+    @property
+    def cost(self):
+        """Стоимость"""
+        return '50'
 
     @staticmethod
     def add_to_band(slot):
@@ -182,7 +227,7 @@ class HordesFighter:
     @staticmethod
     def lvl_up(slot):
         """Боец Орд нежити. Повышение уровня"""
-        unit = main_db.get_unit_by_slot(slot)
+        unit = main_db.get_unit_by_slot(slot, main_db.PlayerUnits)
         new_unit = hordes_fighter_lvls[unit.level + 1]
         print(unit.name, 'повысил уровень до', new_unit)
         main_db.replace_unit(slot, new_unit)
@@ -198,11 +243,18 @@ class HordesMage:
 
     @property
     def name(self):
+        """Имя"""
         return 'Посвящённый'
 
     @property
     def size(self):
+        """Размер"""
         return 'Обычный'
+
+    @property
+    def cost(self):
+        """Стоимость"""
+        return '60'
 
     @staticmethod
     def add_to_band(slot):
@@ -212,7 +264,7 @@ class HordesMage:
     @staticmethod
     def lvl_up(slot):
         """Маг Орд нежити. Повышение уровня"""
-        unit = main_db.get_unit_by_slot(slot)
+        unit = main_db.get_unit_by_slot(slot, main_db.PlayerUnits)
         new_unit = hordes_mage_lvls[unit.level + 1]
         print(unit.name, 'повысил уровень до', new_unit)
         main_db.replace_unit(slot, new_unit)
@@ -228,11 +280,18 @@ class HordesArcher:
 
     @property
     def name(self):
+        """Имя"""
         return 'Привидение'
 
     @property
     def size(self):
+        """Размер"""
         return 'Обычный'
+
+    @property
+    def cost(self):
+        """Стоимость"""
+        return '50'
 
     @staticmethod
     def add_to_band(slot):
@@ -242,12 +301,13 @@ class HordesArcher:
     @staticmethod
     def lvl_up(slot):
         """Стрелок Орд нежити. Повышение уровня"""
-        unit = main_db.get_unit_by_slot(slot)
+        unit = main_db.get_unit_by_slot(slot, main_db.PlayerUnits)
         new_unit = hordes_archer_lvls[unit.level + 1]
         print(unit.name, 'повысил уровень до', new_unit)
         main_db.replace_unit(slot, new_unit)
 
-    def say(self):
+    @staticmethod
+    def say():
         """Боевой клич"""
         print('bow')
 
@@ -257,11 +317,18 @@ class HordesSupport:
 
     @property
     def name(self):
+        """Имя"""
         return 'Виверна'
 
     @property
     def size(self):
+        """Размер"""
         return 'Большой'
+
+    @property
+    def cost(self):
+        """Стоимость"""
+        return '100'
 
     @staticmethod
     def add_to_band(slot):
@@ -271,12 +338,13 @@ class HordesSupport:
     @staticmethod
     def lvl_up(slot):
         """Поддержка Орд нежити. Повышение уровня"""
-        unit = main_db.get_unit_by_slot(slot)
+        unit = main_db.get_unit_by_slot(slot, main_db.PlayerUnits)
         new_unit = hordes_support_lvls[unit.level + 1]
         print(unit.name, 'повысил уровень до', new_unit)
         main_db.replace_unit(slot, new_unit)
 
-    def say(self):
+    @staticmethod
+    def say():
         """Боевой клич"""
         print('help')
 
@@ -286,11 +354,18 @@ class HordesSpecial:
 
     @property
     def name(self):
+        """Имя"""
         return 'Оборотень'
 
     @property
     def size(self):
+        """Размер"""
         return 'Обычный'
+
+    @property
+    def cost(self):
+        """Стоимость"""
+        return '1000'
 
     @staticmethod
     def add_to_band(slot):
@@ -300,7 +375,6 @@ class HordesSpecial:
     @staticmethod
     def lvl_up(slot):
         """Особый юнит Орд нежити. Повышение уровня"""
-        pass
 
 
 # Legions classes
@@ -310,11 +384,18 @@ class LegionsFighter:
 
     @property
     def name(self):
+        """Имя"""
         return 'Одержимый'
 
     @property
     def size(self):
+        """Размер"""
         return 'Обычный'
+
+    @property
+    def cost(self):
+        """Стоимость"""
+        return '50'
 
     @staticmethod
     def add_to_band(slot):
@@ -324,7 +405,7 @@ class LegionsFighter:
     @staticmethod
     def lvl_up(slot):
         """Боец Легионов проклятых. Повышение уровня"""
-        unit = main_db.get_unit_by_slot(slot)
+        unit = main_db.get_unit_by_slot(slot, main_db.PlayerUnits)
         new_unit = legions_fighter_lvls[unit.level + 1]
         print(unit.name, 'повысил уровень до', new_unit)
         main_db.replace_unit(slot, new_unit)
@@ -340,11 +421,18 @@ class LegionsMage:
 
     @property
     def name(self):
+        """Имя"""
         return 'Сектант'
 
     @property
     def size(self):
+        """Размер"""
         return 'Обычный'
+
+    @property
+    def cost(self):
+        """Стоимость"""
+        return '60'
 
     @staticmethod
     def add_to_band(slot):
@@ -354,7 +442,7 @@ class LegionsMage:
     @staticmethod
     def lvl_up(slot):
         """Маг Легионов проклятых. Повышение уровня"""
-        unit = main_db.get_unit_by_slot(slot)
+        unit = main_db.get_unit_by_slot(slot, main_db.PlayerUnits)
         new_unit = legions_mage_lvls[unit.level + 1]
         print(unit.name, 'повысил уровень до', new_unit)
         main_db.replace_unit(slot, new_unit)
@@ -370,11 +458,18 @@ class LegionsArcher:
 
     @property
     def name(self):
+        """Имя"""
         return 'Гаргулья'
 
     @property
     def size(self):
+        """Размер"""
         return 'Большой'
+
+    @property
+    def cost(self):
+        """Стоимость"""
+        return '80'
 
     @staticmethod
     def add_to_band(slot):
@@ -384,12 +479,13 @@ class LegionsArcher:
     @staticmethod
     def lvl_up(slot):
         """Стрелок Легионов проклятых. Повышение уровня"""
-        unit = main_db.get_unit_by_slot(slot)
+        unit = main_db.get_unit_by_slot(slot, main_db.PlayerUnits)
         new_unit = legions_archer_lvls[unit.level + 1]
         print(unit.name, 'повысил уровень до', new_unit)
         main_db.replace_unit(slot, new_unit)
 
-    def say(self):
+    @staticmethod
+    def say():
         """Боевой клич"""
         print('bow')
 
@@ -399,11 +495,18 @@ class LegionsSupport:
 
     @property
     def name(self):
+        """Имя"""
         return 'Чёрт'
 
     @property
     def size(self):
+        """Размер"""
         return 'Большой'
+
+    @property
+    def cost(self):
+        """Стоимость"""
+        return '100'
 
     @staticmethod
     def add_to_band(slot):
@@ -413,12 +516,13 @@ class LegionsSupport:
     @staticmethod
     def lvl_up(slot):
         """Поддержка Легионов проклятых. Повышение уровня"""
-        unit = main_db.get_unit_by_slot(slot)
+        unit = main_db.get_unit_by_slot(slot, main_db.PlayerUnits)
         new_unit = legions_support_lvls[unit.level + 1]
         print(unit.name, 'повысил уровень до', new_unit)
         main_db.replace_unit(slot, new_unit)
 
-    def say(self):
+    @staticmethod
+    def say():
         """Боевой клич"""
         print('help')
 
@@ -428,11 +532,18 @@ class LegionsSpecial:
 
     @property
     def name(self):
+        """Имя"""
         return 'Изверг'
 
     @property
     def size(self):
+        """Размер"""
         return 'Большой'
+
+    @property
+    def cost(self):
+        """Стоимость"""
+        return '300'
 
     @staticmethod
     def add_to_band(slot):
@@ -442,7 +553,6 @@ class LegionsSpecial:
     @staticmethod
     def lvl_up(slot):
         """Особый юнит Легионов проклятых. Повышение уровня"""
-        pass
 
 
 # Clans classes
@@ -452,11 +562,18 @@ class ClansFighter:
 
     @property
     def name(self):
+        """Имя"""
         return 'Гном'
 
     @property
     def size(self):
+        """Размер"""
         return 'Обычный'
+
+    @property
+    def cost(self):
+        """Стоимость"""
+        return '50'
 
     @staticmethod
     def add_to_band(slot):
@@ -466,7 +583,7 @@ class ClansFighter:
     @staticmethod
     def lvl_up(slot):
         """Боец Горных кланов. Повышение уровня"""
-        unit = main_db.get_unit_by_slot(slot)
+        unit = main_db.get_unit_by_slot(slot, main_db.PlayerUnits)
         new_unit = clans_fighter_lvls[unit.level + 1]
         print(unit.name, 'повысил уровень до', new_unit)
         main_db.replace_unit(slot, new_unit)
@@ -482,11 +599,18 @@ class ClansMage:
 
     @property
     def name(self):
+        """Имя"""
         return 'Желторотик'
 
     @property
     def size(self):
+        """Размер"""
         return 'Обычный'
+
+    @property
+    def cost(self):
+        """Стоимость"""
+        return '60'
 
     @staticmethod
     def add_to_band(slot):
@@ -496,7 +620,7 @@ class ClansMage:
     @staticmethod
     def lvl_up(slot):
         """Маг Горных кланов. Повышение уровня"""
-        unit = main_db.get_unit_by_slot(slot)
+        unit = main_db.get_unit_by_slot(slot, main_db.PlayerUnits)
         new_unit = clans_mage_lvls[unit.level + 1]
         print(unit.name, 'повысил уровень до', new_unit)
         main_db.replace_unit(slot, new_unit)
@@ -512,11 +636,18 @@ class ClansArcher:
 
     @property
     def name(self):
+        """Имя"""
         return 'Метатель топоров'
 
     @property
     def size(self):
+        """Размер"""
         return 'Обычный'
+
+    @property
+    def cost(self):
+        """Стоимость"""
+        return '40'
 
     @staticmethod
     def add_to_band(slot):
@@ -526,12 +657,13 @@ class ClansArcher:
     @staticmethod
     def lvl_up(slot):
         """Стрелок Горных кланов. Повышение уровня"""
-        unit = main_db.get_unit_by_slot(slot)
+        unit = main_db.get_unit_by_slot(slot, main_db.PlayerUnits)
         new_unit = clans_archer_lvls[unit.level + 1]
         print(unit.name, 'повысил уровень до', new_unit)
         main_db.replace_unit(slot, new_unit)
 
-    def say(self):
+    @staticmethod
+    def say():
         """Боевой клич"""
         print('bow')
 
@@ -541,11 +673,18 @@ class ClansSupport:
 
     @property
     def name(self):
+        """Имя"""
         return 'Холмовой гигант'
 
     @property
     def size(self):
+        """Размер"""
         return 'Большой'
+
+    @property
+    def cost(self):
+        """Стоимость"""
+        return '100'
 
     @staticmethod
     def add_to_band(slot):
@@ -555,12 +694,13 @@ class ClansSupport:
     @staticmethod
     def lvl_up(slot):
         """Поддержка Горных кланов. Повышение уровня"""
-        unit = main_db.get_unit_by_slot(slot)
+        unit = main_db.get_unit_by_slot(slot, main_db.PlayerUnits)
         new_unit = clans_support_lvls[unit.level + 1]
         print(unit.name, 'повысил уровень до', new_unit)
         main_db.replace_unit(slot, new_unit)
 
-    def say(self):
+    @staticmethod
+    def say():
         """Боевой клич"""
         print('help')
 
@@ -570,11 +710,18 @@ class ClansSpecial:
 
     @property
     def name(self):
+        """Имя"""
         return 'Йети'
 
     @property
     def size(self):
+        """Размер"""
         return 'Большой'
+
+    @property
+    def cost(self):
+        """Стоимость"""
+        return '400'
 
     @staticmethod
     def add_to_band(slot):
@@ -584,7 +731,6 @@ class ClansSpecial:
     @staticmethod
     def lvl_up(slot):
         """Особый юнит Горных кланов. Повышение уровня"""
-        pass
 
 
 class AbstractFactory(abc.ABC):
@@ -604,41 +750,46 @@ class AbstractFactory(abc.ABC):
 
     @abc.abstractmethod
     def create_fighter(self):
-        pass
+        """Создать бойца"""
 
     @abc.abstractmethod
     def create_mage(self):
-        pass
+        """Создать мага"""
 
     @abc.abstractmethod
     def create_archer(self):
-        pass
+        """Создать стрелка"""
 
     @abc.abstractmethod
     def create_support(self):
-        pass
+        """Создать юнита поддержки"""
 
     @abc.abstractmethod
     def create_special(self):
-        pass
+        """Создать спец-юнита"""
 
 
 class EmpireFactory(AbstractFactory):
     """Фабрика Империи"""
 
     def create_fighter(self):
+        """Создать бойца"""
         return EmpireFighter()
 
     def create_archer(self):
+        """Создать стрелка"""
         return EmpireArcher()
 
     def create_mage(self):
+        """Создать мага"""
         return EmpireMage()
 
     def create_support(self):
+        """Создать юнита поддержки"""
         return EmpireSupport()
 
     def create_special(self):
+        """Создать спец-юнита"""
         return EmpireSpecial()
 
 
@@ -646,18 +797,23 @@ class HordesFactory(AbstractFactory):
     """Фабрика Орд нежити"""
 
     def create_fighter(self):
+        """Создать бойца"""
         return HordesFighter()
 
     def create_archer(self):
+        """Создать стрелка"""
         return HordesArcher()
 
     def create_mage(self):
+        """Создать мага"""
         return HordesMage()
 
     def create_support(self):
+        """Создать юнита поддержки"""
         return HordesSupport()
 
     def create_special(self):
+        """Создать спец-юнита"""
         return HordesSpecial()
 
 
@@ -665,18 +821,23 @@ class LegionsFactory(AbstractFactory):
     """Фабрика Легионов Проклятых"""
 
     def create_fighter(self):
+        """Создать бойца"""
         return LegionsFighter()
 
     def create_archer(self):
+        """Создать стрелка"""
         return LegionsArcher()
 
     def create_mage(self):
+        """Создать мага"""
         return LegionsMage()
 
     def create_support(self):
+        """Создать юнита поддержки"""
         return LegionsSupport()
 
     def create_special(self):
+        """Создать спец-юнита"""
         return LegionsSpecial()
 
 
@@ -684,26 +845,177 @@ class ClansFactory(AbstractFactory):
     """Фабрика Горных кланов"""
 
     def create_fighter(self):
+        """Создать бойца"""
         return ClansFighter()
 
     def create_archer(self):
+        """Создать стрелка"""
         return ClansArcher()
 
     def create_mage(self):
+        """Создать мага"""
         return ClansMage()
 
     def create_support(self):
+        """Создать юнита поддержки"""
         return ClansSupport()
 
     def create_special(self):
+        """Создать спец-юнита"""
         return ClansSpecial()
 
 
+# класс Unit
+
+class Unit:
+    """Юнит"""
+
+    def __init__(self, unit: tuple):
+        self.unit = unit
+
+        self.id = unit[0]
+        self.name = unit[1]
+        self.level = unit[2]
+        self.size = unit[3]
+        self.price = unit[4]
+        self.exp = unit[5]
+        self.curr_exp = unit[6]
+        self.health = unit[7]
+        self.curr_health = unit[8]
+        self.armor = unit[9]
+        self.immune = unit[10]
+        self.ward = unit[11]
+        self.attack_type = unit[12]
+        self.attack_chance = unit[13]
+        self.attack_dmg = unit[14]
+        self.attack_source = unit[15]
+        self.attack_ini = unit[16]
+        self.attack_radius = unit[17]
+        self.attack_purpose = unit[18]
+        self.desc = unit[19]
+        self.photo = unit[20]
+        self.gif = unit[21]
+        self.slot = unit[22]
+
+    @property
+    def is_dead(self):
+        """Проверка на живость"""
+        return False
+
+    @property
+    def is_double(self):
+        """Проверка на двухслотовость"""
+        return True if self.size == "Большой" else False
+
+    @staticmethod
+    def skip_turn(self):
+        """Пропуск хода юнита в битве"""
+        print(self.name, 'пропускает ход')
+
+    @staticmethod
+    def defence(self):
+        """Пропуск хода и защита в битве"""
+        print(self.name, 'защищается')
+
+
+    def add_to_band(self, slot):
+        """Найм в отряд игрока"""
+        main_db.hire_unit(self.name, slot)
+
+    @staticmethod
+    def lvl_up(slot):
+        """Повышение уровня"""
+        unit = main_db.get_unit_by_slot(slot, main_db.PlayerUnits)
+        new_unit = hordes_fighter_lvls[unit.level + 1]
+        print(unit.name, 'повысил уровень до', new_unit)
+        main_db.replace_unit(slot, new_unit)
+
+    @staticmethod
+    def say():
+        """Боевой клич"""
+        print('fight')
+
+    def attack(self, target):
+        """Атака"""
+        print('ходит:', self.name)
+
+        # если есть лечение/исцеление у атакующего:
+        # if massive.unit.attack_type in ['Лечение', 'Лечение/Исцеление', 'Лечение/Воскрешение']:
+        #     self.skip_turn(massive.unit)
+
+        # self.units_in_round.remove(massive.unit.id)
+
+        # else:
+        # Вычисление вероятности попадания
+        accuracy = 0.0
+        try:
+            accuracy = self.attack_chance.split(
+                '/')[0].split('%')[0] / 100
+            poison = self.attack_chance.split(
+                '/')[1].split('%')[0] / 100
+        except BaseException:
+            accuracy = int(self.attack_chance.split('%')[0]) / 100
+
+        # attack_successful = random.choices([0, 1], weights=[accuracy], k=1)
+        # if attack_successful:
+        #     print(f"{unit}: Атака успешна", attack_successful)
+        # else:
+        #     print(f"{unit}: Промах", attack_successful)
+        # print(accuracy)
+
+        # Вычисление урона с учетом брони
+        try:
+            damage = int(int(self.attack_dmg.split(
+                '/')[0]) * (1 - target.armor * 0.01)) + random.randrange(5)
+        except BaseException:
+            damage = int(self.attack_dmg *
+                         (1 - target.armor * 0.01)) + random.randrange(5)
+        # self.current_target = self.database.get_dungeon_unit_by_slot(self.target_slot)
+        # target.id = massive.target_func(
+        #     target.slot).id
+
+        # если урон больше, чем здоровье врага, приравниваем урон к
+        # здоровью
+        damage = min(damage, target.curr_health)
+
+        # вычисление текущего здоровья цели после получения урона
+        target.curr_health -= damage
+
+        # если есть вампиризм у атакующего:
+        if self.attack_type in ['Высасывание жизни', 'Избыточное высасывание жизни']:
+            self.curr_health += int(damage / 2)
+            if self.curr_health > self.health:
+                self.curr_health = self.health
+
+            # main_db.update_unit_hp(
+            #     self.slot, self.curr_health, main_db.attacker_db)
+
+        # Если текущий юнит - лекарь
+        if self.attack_type \
+                in ['Лечение', 'Лечение/Исцеление', 'Лечение/Воскрешение']:
+            self.skip_turn()
+
+        print(
+            f"{self.name} наносит урон {damage} воину "
+            f"{target.name}. Осталось ХП: {target.curr_health}")
+
+    def heal(self, target):
+        """Атака"""
+        print('ходит:', self.name)
+
+        hp = int(self.attack_dmg)
+        # если размер лечения больше, чем здоровье цели,
+        # приравниваем урон к здоровью
+        hp = min(hp, target.curr_health)
+
+        # вычисление текущего здоровья цели после получения лечения
+        target.curr_health = hp
+
 # Отладка
 if __name__ == '__main__':
-    empire_factory = AbstractFactory.create_factory('Em')
+    # empire_factory = AbstractFactory.create_factory('Em')
 
-    fighter = empire_factory.create_fighter()
+    # fighter = empire_factory.create_fighter()
     # archer = empire_factory.create_archer()
     # mage = empire_factory.create_mage()
     #
@@ -711,6 +1023,22 @@ if __name__ == '__main__':
     # archer.add_to_band(6)
     # mage.add_to_band(5)
 
-    fighter.lvl_up(3)
+    # fighter.lvl_up(3)
     # fighter.say()
     # archer.say()
+
+    new_unit = Unit(main_db.get_unit_by_name('Адский рыцарь'))
+    new_unit2 = Unit(main_db.get_unit_by_name('Мраморная гаргулья'))
+
+    # new_unit.attack(new_unit2)
+    # new_unit2.attack(new_unit)
+
+    # new_unit.attack(new_unit2)
+    # new_unit2.attack(new_unit)
+    #
+    # new_unit.attack(new_unit2)
+    # new_unit2.attack(new_unit)
+    #
+    # new_unit.attack(new_unit2)
+    # new_unit2.attack(new_unit)
+

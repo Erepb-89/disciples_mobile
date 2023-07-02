@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>828</width>
-    <height>675</height>
+    <width>1380</width>
+    <height>718</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -20,16 +20,16 @@
       <x>560</x>
       <y>40</y>
       <width>256</width>
-      <height>555</height>
+      <height>641</height>
      </rect>
     </property>
    </widget>
    <widget class="QListView" name="listPlayerUnits">
     <property name="geometry">
      <rect>
-      <x>10</x>
+      <x>40</x>
       <y>40</y>
-      <width>171</width>
+      <width>161</width>
       <height>141</height>
      </rect>
     </property>
@@ -72,7 +72,7 @@
     <property name="geometry">
      <rect>
       <x>40</x>
-      <y>230</y>
+      <y>260</y>
       <width>104</width>
       <height>127</height>
      </rect>
@@ -96,9 +96,9 @@
    <widget class="QLabel" name="slot2">
     <property name="geometry">
      <rect>
-      <x>40</x>
-      <y>230</y>
-      <width>224</width>
+      <x>163</x>
+      <y>260</y>
+      <width>101</width>
       <height>127</height>
      </rect>
     </property>
@@ -121,14 +121,14 @@
      <string>slot_2</string>
     </property>
     <property name="alignment">
-     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+     <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
     </property>
    </widget>
    <widget class="QLabel" name="slot3">
     <property name="geometry">
      <rect>
       <x>40</x>
-      <y>370</y>
+      <y>420</y>
       <width>104</width>
       <height>127</height>
      </rect>
@@ -153,7 +153,7 @@
     <property name="geometry">
      <rect>
       <x>160</x>
-      <y>370</y>
+      <y>420</y>
       <width>104</width>
       <height>127</height>
      </rect>
@@ -178,7 +178,7 @@
     <property name="geometry">
      <rect>
       <x>40</x>
-      <y>510</y>
+      <y>560</y>
       <width>104</width>
       <height>127</height>
      </rect>
@@ -215,7 +215,7 @@
     <property name="geometry">
      <rect>
       <x>160</x>
-      <y>510</y>
+      <y>560</y>
       <width>104</width>
       <height>127</height>
      </rect>
@@ -239,7 +239,7 @@
    <widget class="QListView" name="listPlayerSlots">
     <property name="geometry">
      <rect>
-      <x>190</x>
+      <x>210</x>
       <y>40</y>
       <width>51</width>
       <height>141</height>
@@ -250,7 +250,7 @@
     <property name="geometry">
      <rect>
       <x>40</x>
-      <y>230</y>
+      <y>260</y>
       <width>104</width>
       <height>127</height>
      </rect>
@@ -266,7 +266,7 @@
     <property name="geometry">
      <rect>
       <x>40</x>
-      <y>370</y>
+      <y>420</y>
       <width>104</width>
       <height>127</height>
      </rect>
@@ -282,7 +282,7 @@
     <property name="geometry">
      <rect>
       <x>40</x>
-      <y>510</y>
+      <y>560</y>
       <width>104</width>
       <height>127</height>
      </rect>
@@ -309,9 +309,9 @@
    <widget class="QPushButton" name="pushButtonSlot2">
     <property name="geometry">
      <rect>
-      <x>40</x>
+      <x>160</x>
       <y>260</y>
-      <width>224</width>
+      <width>104</width>
       <height>127</height>
      </rect>
     </property>
@@ -329,7 +329,7 @@
     <property name="geometry">
      <rect>
       <x>160</x>
-      <y>370</y>
+      <y>420</y>
       <width>104</width>
       <height>127</height>
      </rect>
@@ -345,7 +345,7 @@
     <property name="geometry">
      <rect>
       <x>160</x>
-      <y>510</y>
+      <y>560</y>
       <width>104</width>
       <height>127</height>
      </rect>
@@ -360,7 +360,7 @@
    <widget class="QPushButton" name="pushButtonCapital">
     <property name="geometry">
      <rect>
-      <x>520</x>
+      <x>390</x>
       <y>0</y>
       <width>90</width>
       <height>28</height>
@@ -398,8 +398,8 @@
    <widget class="QSplitter" name="splitter">
     <property name="geometry">
      <rect>
-      <x>330</x>
-      <y>0</y>
+      <x>60</x>
+      <y>190</y>
       <width>186</width>
       <height>28</height>
      </rect>
@@ -455,8 +455,8 @@
     </property>
     <property name="maximumSize">
      <size>
-      <width>800</width>
-      <height>600</height>
+      <width>1600</width>
+      <height>900</height>
      </size>
     </property>
     <property name="autoFillBackground">
@@ -465,14 +465,622 @@
     <property name="text">
      <string>capital</string>
     </property>
+    <property name="scaledContents">
+     <bool>true</bool>
+    </property>
    </widget>
    <widget class="QPushButton" name="swap12">
     <property name="geometry">
      <rect>
       <x>120</x>
-      <y>200</y>
+      <y>227</y>
       <width>71</width>
       <height>28</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>&lt;&gt;</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButtonCampaign">
+    <property name="geometry">
+     <rect>
+      <x>860</x>
+      <y>0</y>
+      <width>90</width>
+      <height>28</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Кампания</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="EnemySlot2">
+    <property name="geometry">
+     <rect>
+      <x>880</x>
+      <y>260</y>
+      <width>104</width>
+      <height>127</height>
+     </rect>
+    </property>
+    <property name="layoutDirection">
+     <enum>Qt::LeftToRight</enum>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::Panel</enum>
+    </property>
+    <property name="frameShadow">
+     <enum>QFrame::Raised</enum>
+    </property>
+    <property name="lineWidth">
+     <number>3</number>
+    </property>
+    <property name="midLineWidth">
+     <number>0</number>
+    </property>
+    <property name="text">
+     <string>slot_2</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="EnemySlot6">
+    <property name="geometry">
+     <rect>
+      <x>880</x>
+      <y>560</y>
+      <width>104</width>
+      <height>127</height>
+     </rect>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::Panel</enum>
+    </property>
+    <property name="frameShadow">
+     <enum>QFrame::Raised</enum>
+    </property>
+    <property name="lineWidth">
+     <number>3</number>
+    </property>
+    <property name="midLineWidth">
+     <number>0</number>
+    </property>
+    <property name="text">
+     <string>slot_6</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="EnemySlot5">
+    <property name="geometry">
+     <rect>
+      <x>1000</x>
+      <y>560</y>
+      <width>104</width>
+      <height>127</height>
+     </rect>
+    </property>
+    <property name="minimumSize">
+     <size>
+      <width>104</width>
+      <height>127</height>
+     </size>
+    </property>
+    <property name="maximumSize">
+     <size>
+      <width>224</width>
+      <height>127</height>
+     </size>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::Panel</enum>
+    </property>
+    <property name="frameShadow">
+     <enum>QFrame::Raised</enum>
+    </property>
+    <property name="lineWidth">
+     <number>3</number>
+    </property>
+    <property name="midLineWidth">
+     <number>0</number>
+    </property>
+    <property name="text">
+     <string>slot_5</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="EnemySlot1">
+    <property name="geometry">
+     <rect>
+      <x>1000</x>
+      <y>260</y>
+      <width>104</width>
+      <height>127</height>
+     </rect>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::Panel</enum>
+    </property>
+    <property name="frameShadow">
+     <enum>QFrame::Raised</enum>
+    </property>
+    <property name="lineWidth">
+     <number>3</number>
+    </property>
+    <property name="midLineWidth">
+     <number>0</number>
+    </property>
+    <property name="text">
+     <string>slot_1</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="EnemySlot3">
+    <property name="geometry">
+     <rect>
+      <x>1000</x>
+      <y>420</y>
+      <width>104</width>
+      <height>127</height>
+     </rect>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::Panel</enum>
+    </property>
+    <property name="frameShadow">
+     <enum>QFrame::Raised</enum>
+    </property>
+    <property name="lineWidth">
+     <number>3</number>
+    </property>
+    <property name="midLineWidth">
+     <number>0</number>
+    </property>
+    <property name="text">
+     <string>slot_3</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButtonEnSlot4">
+    <property name="geometry">
+     <rect>
+      <x>880</x>
+      <y>420</y>
+      <width>104</width>
+      <height>127</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="flat">
+     <bool>true</bool>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButtonEnSlot3">
+    <property name="geometry">
+     <rect>
+      <x>1000</x>
+      <y>420</y>
+      <width>104</width>
+      <height>127</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="flat">
+     <bool>true</bool>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButtonEnSlot5">
+    <property name="geometry">
+     <rect>
+      <x>1000</x>
+      <y>560</y>
+      <width>104</width>
+      <height>127</height>
+     </rect>
+    </property>
+    <property name="minimumSize">
+     <size>
+      <width>104</width>
+      <height>127</height>
+     </size>
+    </property>
+    <property name="maximumSize">
+     <size>
+      <width>224</width>
+      <height>127</height>
+     </size>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="flat">
+     <bool>true</bool>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButtonEnSlot1">
+    <property name="geometry">
+     <rect>
+      <x>1000</x>
+      <y>260</y>
+      <width>104</width>
+      <height>127</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="flat">
+     <bool>true</bool>
+    </property>
+   </widget>
+   <widget class="QLabel" name="EnemySlot4">
+    <property name="geometry">
+     <rect>
+      <x>880</x>
+      <y>420</y>
+      <width>104</width>
+      <height>127</height>
+     </rect>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::Panel</enum>
+    </property>
+    <property name="frameShadow">
+     <enum>QFrame::Raised</enum>
+    </property>
+    <property name="lineWidth">
+     <number>3</number>
+    </property>
+    <property name="midLineWidth">
+     <number>0</number>
+    </property>
+    <property name="text">
+     <string>slot_4</string>
+    </property>
+   </widget>
+   <widget class="QListView" name="listEnemyUnits">
+    <property name="geometry">
+     <rect>
+      <x>880</x>
+      <y>40</y>
+      <width>161</width>
+      <height>141</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QListView" name="listEnemySlots">
+    <property name="geometry">
+     <rect>
+      <x>1050</x>
+      <y>40</y>
+      <width>51</width>
+      <height>141</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButtonEnSlot2">
+    <property name="geometry">
+     <rect>
+      <x>880</x>
+      <y>260</y>
+      <width>104</width>
+      <height>127</height>
+     </rect>
+    </property>
+    <property name="layoutDirection">
+     <enum>Qt::LeftToRight</enum>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="flat">
+     <bool>true</bool>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButtonEnSlot6">
+    <property name="geometry">
+     <rect>
+      <x>880</x>
+      <y>560</y>
+      <width>104</width>
+      <height>127</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="flat">
+     <bool>true</bool>
+    </property>
+   </widget>
+   <widget class="QSplitter" name="splitter_2">
+    <property name="geometry">
+     <rect>
+      <x>900</x>
+      <y>190</y>
+      <width>186</width>
+      <height>28</height>
+     </rect>
+    </property>
+    <property name="orientation">
+     <enum>Qt::Horizontal</enum>
+    </property>
+    <widget class="QPushButton" name="pushButtonHireEn">
+     <property name="text">
+      <string>Нанять</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="pushButtonDeleteEn">
+     <property name="text">
+      <string>Уволить</string>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QPushButton" name="pushButtonVersus">
+    <property name="geometry">
+     <rect>
+      <x>560</x>
+      <y>0</y>
+      <width>141</width>
+      <height>28</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Сравнить две армии</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButtonAddPlayer">
+    <property name="geometry">
+     <rect>
+      <x>1150</x>
+      <y>0</y>
+      <width>121</width>
+      <height>28</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Добавить игрока</string>
+    </property>
+   </widget>
+   <widget class="QListView" name="PlayersList">
+    <property name="geometry">
+     <rect>
+      <x>1150</x>
+      <y>120</y>
+      <width>221</width>
+      <height>141</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QTextEdit" name="PlayerName">
+    <property name="geometry">
+     <rect>
+      <x>1200</x>
+      <y>40</y>
+      <width>171</width>
+      <height>31</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QTextEdit" name="Email">
+    <property name="geometry">
+     <rect>
+      <x>1200</x>
+      <y>80</y>
+      <width>171</width>
+      <height>31</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLabel" name="PlayerNameTxt">
+    <property name="geometry">
+     <rect>
+      <x>1150</x>
+      <y>50</y>
+      <width>51</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Имя</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="EmailTxt">
+    <property name="geometry">
+     <rect>
+      <x>1150</x>
+      <y>90</y>
+      <width>50</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>e-mail</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="copyUnit">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>340</x>
+      <y>430</y>
+      <width>71</width>
+      <height>28</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Copy</string>
+    </property>
+    <property name="flat">
+     <bool>false</bool>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="swap56">
+    <property name="geometry">
+     <rect>
+      <x>120</x>
+      <y>690</y>
+      <width>71</width>
+      <height>28</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>&lt;&gt;</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="swap34">
+    <property name="geometry">
+     <rect>
+      <x>120</x>
+      <y>390</y>
+      <width>71</width>
+      <height>28</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>&lt;&gt;</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="swap13">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>370</y>
+      <width>31</width>
+      <height>61</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>&lt;&gt;</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="swap24">
+    <property name="geometry">
+     <rect>
+      <x>275</x>
+      <y>370</y>
+      <width>31</width>
+      <height>61</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>&lt;&gt;</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="swap35">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>520</y>
+      <width>31</width>
+      <height>61</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>&lt;&gt;</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="swap46">
+    <property name="geometry">
+     <rect>
+      <x>275</x>
+      <y>520</y>
+      <width>31</width>
+      <height>61</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>&lt;&gt;</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="enSwap35">
+    <property name="geometry">
+     <rect>
+      <x>1114</x>
+      <y>520</y>
+      <width>31</width>
+      <height>61</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>&lt;&gt;</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="enSwap12">
+    <property name="geometry">
+     <rect>
+      <x>959</x>
+      <y>227</y>
+      <width>71</width>
+      <height>28</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>&lt;&gt;</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="enSwap13">
+    <property name="geometry">
+     <rect>
+      <x>1114</x>
+      <y>370</y>
+      <width>31</width>
+      <height>61</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>&lt;&gt;</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="enSwap34">
+    <property name="geometry">
+     <rect>
+      <x>959</x>
+      <y>390</y>
+      <width>71</width>
+      <height>28</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>&lt;&gt;</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="enSwap56">
+    <property name="geometry">
+     <rect>
+      <x>959</x>
+      <y>690</y>
+      <width>71</width>
+      <height>28</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>&lt;&gt;</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="enSwap24">
+    <property name="geometry">
+     <rect>
+      <x>840</x>
+      <y>370</y>
+      <width>31</width>
+      <height>61</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>&lt;&gt;</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="enSwap46">
+    <property name="geometry">
+     <rect>
+      <x>840</x>
+      <y>520</y>
+      <width>31</width>
+      <height>61</height>
      </rect>
     </property>
     <property name="text">
@@ -482,14 +1090,40 @@
    <widget class="QPushButton" name="pushButtonFight">
     <property name="geometry">
      <rect>
-      <x>730</x>
+      <x>740</x>
       <y>0</y>
       <width>90</width>
       <height>28</height>
      </rect>
     </property>
     <property name="text">
-     <string>Битва</string>
+     <string>Darkest</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButtonDelPlayer">
+    <property name="geometry">
+     <rect>
+      <x>1279</x>
+      <y>0</y>
+      <width>91</width>
+      <height>28</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Удалить</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButtonChoosePlayer">
+    <property name="geometry">
+     <rect>
+      <x>1150</x>
+      <y>270</y>
+      <width>121</width>
+      <height>28</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Выбрать игрока</string>
     </property>
    </widget>
    <zorder>gifLabel</zorder>
@@ -500,8 +1134,6 @@
    <zorder>slot4</zorder>
    <zorder>slot6</zorder>
    <zorder>listPlayerSlots</zorder>
-   <zorder>pushButtonSlot4</zorder>
-   <zorder>pushButtonSlot6</zorder>
    <zorder>pushButtonCapital</zorder>
    <zorder>splitter</zorder>
    <zorder>pushButtonChooseRace</zorder>
@@ -509,13 +1141,54 @@
    <zorder>slot5</zorder>
    <zorder>slot3</zorder>
    <zorder>slot1</zorder>
-   <zorder>pushButtonSlot5</zorder>
-   <zorder>pushButtonSlot3</zorder>
-   <zorder>pushButtonSlot1</zorder>
    <zorder>swap12</zorder>
-   <zorder>pushButtonFight</zorder>
+   <zorder>pushButtonCampaign</zorder>
    <zorder>slot2</zorder>
+   <zorder>EnemySlot5</zorder>
+   <zorder>EnemySlot1</zorder>
+   <zorder>EnemySlot3</zorder>
+   <zorder>listEnemyUnits</zorder>
+   <zorder>listEnemySlots</zorder>
+   <zorder>splitter_2</zorder>
+   <zorder>pushButtonVersus</zorder>
+   <zorder>pushButtonSlot6</zorder>
+   <zorder>pushButtonSlot5</zorder>
+   <zorder>pushButtonSlot4</zorder>
+   <zorder>pushButtonSlot3</zorder>
    <zorder>pushButtonSlot2</zorder>
+   <zorder>pushButtonSlot1</zorder>
+   <zorder>pushButtonAddPlayer</zorder>
+   <zorder>PlayersList</zorder>
+   <zorder>PlayerName</zorder>
+   <zorder>Email</zorder>
+   <zorder>PlayerNameTxt</zorder>
+   <zorder>EmailTxt</zorder>
+   <zorder>copyUnit</zorder>
+   <zorder>swap56</zorder>
+   <zorder>swap34</zorder>
+   <zorder>swap13</zorder>
+   <zorder>swap24</zorder>
+   <zorder>swap35</zorder>
+   <zorder>swap46</zorder>
+   <zorder>enSwap35</zorder>
+   <zorder>enSwap12</zorder>
+   <zorder>enSwap13</zorder>
+   <zorder>enSwap34</zorder>
+   <zorder>enSwap56</zorder>
+   <zorder>enSwap24</zorder>
+   <zorder>enSwap46</zorder>
+   <zorder>pushButtonFight</zorder>
+   <zorder>pushButtonDelPlayer</zorder>
+   <zorder>EnemySlot2</zorder>
+   <zorder>EnemySlot4</zorder>
+   <zorder>EnemySlot6</zorder>
+   <zorder>pushButtonEnSlot5</zorder>
+   <zorder>pushButtonEnSlot3</zorder>
+   <zorder>pushButtonEnSlot1</zorder>
+   <zorder>pushButtonEnSlot4</zorder>
+   <zorder>pushButtonEnSlot2</zorder>
+   <zorder>pushButtonEnSlot6</zorder>
+   <zorder>pushButtonChoosePlayer</zorder>
   </widget>
  </widget>
  <resources/>
