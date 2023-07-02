@@ -3,6 +3,7 @@ import random
 from collections import deque
 
 from client_dir.settings import ANY_UNIT, CLOSEST_UNIT
+from battle_logging import logging
 from units_dir.units_factory import Unit
 
 player1_name = 'Erepb-89'
@@ -207,7 +208,9 @@ class Battle:
                     player.units)
                 self.current_unit.attack(target)
         elif self.target_slots == [None]:
-            print(self.current_unit.name, 'пропускает ход')
+            line = f'{self.current_unit.name}, пропускает ход'
+            logging(line)
+            # print(self.current_unit.name, 'пропускает ход')
         else:
             self.current_unit.attack(
                 self.get_unit_by_slot(
@@ -359,20 +362,24 @@ class Battle:
 
     def auto_choose_target(self, unit):
         """Авто определение следующей цели для атаки"""
-        print('enemy_slots', self.enemy_slots)
-        print('player_slots', self.player_slots)
+        # print('enemy_slots', self.enemy_slots)
+        # print('player_slots', self.player_slots)
         self.player_slots = self.get_player_slots(self.player1)
         self.enemy_slots = self.get_player_slots(self.player2)
 
         if unit.attack_type \
                 not in ['Лечение', 'Лечение/Исцеление', 'Лечение/Воскрешение']:
             if unit in self.player1.units:
-                print(f'Ходит {player1_name}')
+                # print(f'Ходит {player1_name}')
+                # line = f'Ходит {player1_name}\n'
+                # logging(line)
                 return self.choose_target(
                     unit, self.player_slots, self.enemy_slots)
 
             if unit in self.player2.units:
-                print(f'Ходит {player2_name}')
+                # print(f'Ходит {player2_name}')
+                # line = f'Ходит {player2_name}\n'
+                # logging(line)
                 return self.choose_target(
                     unit, self.enemy_slots, self.player_slots)
         return None

@@ -2,8 +2,9 @@
 
 import abc
 import random
+from battle_logging import logging
 
-from client_dir.settings import EM, UH, LD, MC
+from client_dir.settings import EM, UH, LD, MC, BATTLE_LOG
 from units_dir.units import main_db
 from units_dir.ranking import empire_fighter_lvls, empire_mage_lvls, \
     empire_archer_lvls, empire_support_lvls, \
@@ -937,7 +938,7 @@ class Unit:
 
     def attack(self, target):
         """Атака"""
-        print('ходит:', self.name)
+        # print('ходит:', self.name)
 
         # если есть лечение/исцеление у атакующего:
         # if massive.unit.attack_type in ['Лечение', 'Лечение/Исцеление', 'Лечение/Воскрешение']:
@@ -990,18 +991,22 @@ class Unit:
             # main_db.update_unit_hp(
             #     self.slot, self.curr_health, main_db.attacker_db)
 
+        line = f"{self.name} наносит урон {damage} воину {target.name}. " \
+               f"Осталось ХП: {target.curr_health}\n"
+        logging(line)
+
+        # print(
+        #     f"{self.name} наносит урон {damage} воину "
+        #     f"{target.name}. Осталось ХП: {target.curr_health}")
+
         # Если текущий юнит - лекарь
         if self.attack_type \
                 in ['Лечение', 'Лечение/Исцеление', 'Лечение/Воскрешение']:
             self.skip_turn()
 
-        print(
-            f"{self.name} наносит урон {damage} воину "
-            f"{target.name}. Осталось ХП: {target.curr_health}")
-
     def heal(self, target):
         """Атака"""
-        print('ходит:', self.name)
+        # print('ходит:', self.name)
 
         hp = int(self.attack_dmg)
         # если размер лечения больше, чем здоровье цели,
