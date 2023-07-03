@@ -2,5 +2,3 @@
 __pycache__/
 db.sqlite3
 .env
-images
-disc2.db
