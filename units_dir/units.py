@@ -1320,11 +1320,11 @@ class ServerStorage:
     def build_default(self, faction):
         """Базовая постройка зданий 1 уровня в выбранной столице"""
         building_levels = [
-            FACTIONS[faction]['fighter'][1].bname,
-            FACTIONS[faction]['mage'][1].bname,
-            FACTIONS[faction]['archer'][1].bname,
-            FACTIONS[faction]['support'][1].bname,
-            FACTIONS[faction]['special'][1].bname,
+            FACTIONS[faction]['fighter'][0].bname,
+            FACTIONS[faction]['mage'][0].bname,
+            FACTIONS[faction]['archer'][0].bname,
+            FACTIONS[faction]['support'][0].bname,
+            FACTIONS[faction]['special'][0].bname,
             0,
             0,
             0
@@ -1388,6 +1388,7 @@ if __name__ == '__main__':
     # ]
 
     all_buildings = main_db.get_buildings('Erepb-89', 'Empire')
+    print(all_buildings._asdict())
 
     #
     # changed_buildings = list(all_buildings)

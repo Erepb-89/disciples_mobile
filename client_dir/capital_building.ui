@@ -810,8 +810,14 @@
     <property name="text">
      <string>Описание</string>
     </property>
+    <property name="scaledContents">
+     <bool>false</bool>
+    </property>
     <property name="alignment">
      <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+    </property>
+    <property name="wordWrap">
+     <bool>true</bool>
     </property>
    </widget>
    <widget class="QLabel" name="buildPosib">
