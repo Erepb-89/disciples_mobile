@@ -5,11 +5,11 @@ import os.path
 import pymorphy2
 from PyQt5 import QtCore
 from PyQt5.QtGui import QPixmap
-from PyQt5.QtWidgets import QMainWindow, QHBoxLayout
+from PyQt5.QtWidgets import QMainWindow, QHBoxLayout, QMessageBox
 
 from client_dir.capital_building_form import Ui_CapitalBuildingWindow
 from client_dir.settings import CAPITAL_BUILDING, UNIT_ICONS, \
-    TOWN_ICONS, UNIT_FACES, PLUG, ELVEN_PLUG, SCREEN_RECT, DECLINATIONS
+    TOWN_ICONS, UNIT_FACES, PLUG, ELVEN_PLUG, SCREEN_RECT, DECLINATIONS, INTERF
 from client_dir.ui_functions import set_size_by_unit, get_unit_image, slot_frame_update
 from client_dir.unit_dialog import UnitDialog
 from units_dir.buildings import FACTIONS, BRANCHES
@@ -33,6 +33,12 @@ class CapitalBuildingWindow(QMainWindow):
         self.building_cost = 0
         self.unit = self.get_unit_by_b_slot(1)
         self.graph = []
+        self.fighter_graph = []
+        self.mage_graph = []
+        self.archer_graph = []
+        self.support_graph = []
+        self.special_graph = []
+        self.others_graph = []
         self.morph = pymorphy2.MorphAnalyzer()
 
         self.InitUI()
@@ -109,6 +115,18 @@ class CapitalBuildingWindow(QMainWindow):
             7: self.ui.pushButtonSlot_7,
             8: self.ui.pushButtonSlot_8,
             9: self.ui.pushButtonSlot_9,
+        }
+
+        self.builded_dict = {
+            1: self.ui.slotBuilded_1,
+            2: self.ui.slotBuilded_2,
+            3: self.ui.slotBuilded_3,
+            4: self.ui.slotBuilded_4,
+            5: self.ui.slotBuilded_5,
+            6: self.ui.slotBuilded_6,
+            7: self.ui.slotBuilded_7,
+            8: self.ui.slotBuilded_8,
+            9: self.ui.slotBuilded_9,
         }
 
         self.highlight_selected_building(1, self.ui.labelSelected1)
@@ -199,6 +217,10 @@ class CapitalBuildingWindow(QMainWindow):
         for num, icon_slot in self.town_icons_dict.items():
             self.get_icon_by_slot(num, icon_slot)
 
+        # получаем координаты для отметок о постройке зданий
+        for num, icon_slot in self.builded_dict.items():
+            icon_slot.setGeometry(*self.get_coords(num))
+
         self.get_building_params(1)
         self.highlight_selected_building(1, self.ui.labelSelected1)
 
@@ -263,6 +285,7 @@ class CapitalBuildingWindow(QMainWindow):
             self.ui.nextLevelText.setText('След. уровень:')
             self.ui.prevLevelText.setText('Пред. уровень:')
 
+            # просклонять имя юнита
             declined_name = self.decline(unit_name)
 
             self.ui.desc.setText(
@@ -274,63 +297,123 @@ class CapitalBuildingWindow(QMainWindow):
             self.ui.nextLevelText.setText('')
             self.ui.prevLevelText.setText('')
             self.ui.slot.setFixedSize(0, 0)
-            self.ui.desc.setText('')
+            self.ui.desc.setText(self.branch_settings[b_slot].desc)
 
-        buildings = list(
-            self.database.get_buildings(
-                self.database.current_user,
-                self.faction))
+        # Рекурсивное создание графа до выбранного здания
+        self.get_building_graph(self.building_name, self.graph)
 
-        self.get_building_graph(self.building_name)
-        print(self.graph)
+        # Метод определения возможности постройки
+        self.building_possibility()
 
-        if self.building_name in buildings:
-            self.ui.buildPosib.setText('Это здание уже построено')
-        else:
-            self.ui.buildPosib.setText('')
+    def set_text_and_buy_slot(self, text, possibility):
+        """
+        Задание текста о возможности постройки.
+        Вывод рисунка кнопки.
+        """
+        color = 'black'
+        if 'можно' in text:
+            color = 'black'
+            self.ui.slotBuy.setFixedSize(0, 0)
 
-    # def get_unit_press(self, num):
-    #     try:
-    #         self.unit = self.get_unit_by_b_slot(num)
-    #         self.slot_update(self.unit, self.ui.slot)
-    #     except Exception as err:
-    #         print(err)
+        elif 'уже' in text:
+            color = 'darkgreen'
+            self.ui.slotBuy.setFixedSize(59, 60)
+
+        elif 'нельзя' in text or 'нужно' in text:
+            color = 'darkred'
+            self.ui.slotBuy.setFixedSize(59, 60)
+
+        self.ui.slotBuy.setPixmap(QPixmap(
+            os.path.join(INTERF, "b_icon_off.png")).scaled(
+            self.ui.slotBuy.width(), self.ui.slotBuy.height()))
+
+        self.ui.buildPossib.setText(text)
+        self.ui.buildPossib.setStyleSheet(f'color: {color}')
+        self.ui.pushButtonBuy.setEnabled(possibility)
+        self.hbox.addWidget(self.ui.slotBuy)
+        self.setLayout(self.hbox)
+
+    def building_possibility(self):
+        """Метод определения возможности постройки"""
+        temp_graph = []
+
+        # получение всех построенных зданий игрока
+        buildings = self.database.get_buildings(
+            self.database.current_user,
+            self.faction)._asdict()
+
+        if self.branch != 'others':
+            # Рекурсивное создание графа уже построенных зданий
+            self.get_building_graph(buildings[self.branch], temp_graph)
+            # если здание входит в граф построенных
+            if self.building_name in temp_graph:
+                text = 'Это здание уже построено'
+                self.set_text_and_buy_slot(text, False)
+                self.ui.slotBuilded_1.setPixmap(QPixmap(
+                    os.path.join(INTERF, "ok.png")).scaled(
+                    self.ui.slotBuy.width(), self.ui.slotBuy.height()))
+
+            # если граф построенных входит в текущий граф и длина текущего
+            # графа отличается от граф построенных более, чем на 1
+            elif len(self.graph) - len(temp_graph) > 1 \
+                    and set(temp_graph).issubset(self.graph):
+                text = 'Сначала нужно построить здание, ' \
+                       'предшествующее этому'
+                self.set_text_and_buy_slot(text, False)
+
+            # если граф построенных не входит в текущий граф
+            elif not set(temp_graph).issubset(self.graph):
+                text = 'Это здание нельзя построить, поскольку ' \
+                       'была выбрана другая ветвь развития'
+                self.set_text_and_buy_slot(text, False)
+
+            else:
+                text = 'Это здание можно построить'
+                self.set_text_and_buy_slot(text, True)
+
+        elif self.branch == 'others':
+            # если текущее здание уже в построенных
+            if self.building_name in buildings.values():
+                text = 'Это здание уже построено'
+                self.set_text_and_buy_slot(text, False)
+
+            else:
+                text = 'Это здание можно построить'
+                self.set_text_and_buy_slot(text, True)
 
     def decline(self, unit_name):
         """Склонение имен юнитов по падежам"""
         if unit_name in DECLINATIONS.keys():
-            ablt = DECLINATIONS[unit_name]
+            declined = DECLINATIONS[unit_name]
+
         elif 3 > len(unit_name.split(' ')) > 1:
             part_1 = self.morph.parse(unit_name.split()[0])[0]
             part_2 = self.morph.parse(unit_name.split()[1])[0]
             name_1 = part_1.inflect({'ablt'}).word
-            print(part_2.tag.gender)
 
             if part_2.word != 'огня':
                 if part_2.tag.gender == 'masc':
                     name_2 = part_2.inflect({'ablt'}).word
                 else:
                     name_2 = part_2.inflect({'gent'}).word
-                ablt = f'{name_1.capitalize()} {name_2}'
-                print(ablt)
+                declined = f'{name_1.capitalize()} {name_2}'
             else:
-                ablt = f'{name_1.capitalize()} {part_2.word}'
+                declined = f'{name_1.capitalize()} {part_2.word}'
 
         else:
             name = self.morph.parse(unit_name)[0]
-            ablt = name.inflect({'ablt'}).word.capitalize()
-        return ablt
+            declined = name.inflect({'ablt'}).word.capitalize()
+        return declined
 
-    def get_building_graph(self, bname):
-        """Рекурсивное создание графа уже построенных зданий"""
-        for key, val in self.branch_settings.items():
+    def get_building_graph(self, bname, graph):
+        """Рекурсивное создание графа зданий/построек"""
+        for val in self.branch_settings.values():
             if val.bname == bname:
-                self.graph.append(bname)
-                if val.prev == '' or val.prev == 0:
-                    return
+                graph.append(bname)
+                if val.prev not in ('', 0):
+                    self.get_building_graph(val.prev, graph)
                 else:
-                    self.get_building_graph(val.prev)
-
+                    return
 
     def unlight_all_buildings(self):
         """Снятие подсветки зданий"""
@@ -356,6 +439,7 @@ class CapitalBuildingWindow(QMainWindow):
         for val in branch.values():
             if b_name == val.bname:
                 return val.unit_name
+        return ''
 
     def update_unit_by_b_slot(self, b_slot):
         """Обновление юнита согласно выбранному зданию"""
@@ -440,27 +524,38 @@ class CapitalBuildingWindow(QMainWindow):
 
     def buy_building(self):
         """Метод постройки зданий в столице"""
-        changed_buildings = list(
-            self.database.get_buildings(
+        if self.player_gold < self.building_cost:
+
+            msg = QMessageBox()
+            msg.setWindowTitle("Предупреждение")
+            msg.setText("Недостаточно золота")
+            msg.setIcon(QMessageBox.Warning)
+
+            msg.exec_()
+        else:
+            changed_buildings = list(
+                self.database.get_buildings(
+                    self.database.current_user,
+                    self.faction))
+
+            # обновление построек в текущей сессии
+            changed_buildings[BRANCHES[self.branch]] = self.building_name
+            self.database.update_buildings(
                 self.database.current_user,
-                self.faction))
+                self.faction,
+                changed_buildings)
+            print(self.building_name, self.building_cost)
 
-        # обновление построек в текущей сессии
-        changed_buildings[BRANCHES[self.branch]] = self.building_name
-        self.database.update_buildings(
-            self.database.current_user,
-            self.faction,
-            changed_buildings)
-        print(self.building_name, self.building_cost)
+            self.player_gold = self.database.get_gold(
+                self.database.current_user, self.faction)
+            changed_gold = self.player_gold - self.building_cost
 
-        changed_gold = self.player_gold - self.building_cost
-
-        # обновление золота в базе
-        self.database.update_gold(
-            self.database.current_user,
-            self.faction,
-            changed_gold)
-        self.ui.gold.setText(str(changed_gold))
+            # обновление золота в базе
+            self.database.update_gold(
+                self.database.current_user,
+                self.faction,
+                changed_gold)
+            self.ui.gold.setText(str(changed_gold))
 
     def slot_detailed(self):
         """Метод создающий окно юнита (слот)."""
