@@ -189,26 +189,26 @@ class ServerStorage:
                 name: str,
                 faction: str,
                 gold: int,
-                fighter_lvls: str,
-                mage_lvls: str,
-                archer_lvls: str,
-                support_lvls: str,
-                special_lvls: str,
-                thieves_guild_lvls: str,
-                temple_lvls: str,
-                magic_guild_lvls: str):
+                fighter: str,
+                mage: str,
+                archer: str,
+                support: str,
+                special: str,
+                thieves_guild: str,
+                temple: str,
+                magic_guild: str):
             self.id = None
             self.name = name
             self.faction = faction
             self.gold = gold
-            self.fighter_lvls = fighter_lvls
-            self.mage_lvls = mage_lvls
-            self.archer_lvls = archer_lvls
-            self.support_lvls = support_lvls
-            self.special_lvls = special_lvls
-            self.thieves_guild_lvls = thieves_guild_lvls
-            self.temple_lvls = temple_lvls
-            self.magic_guild_lvls = magic_guild_lvls
+            self.fighter = fighter
+            self.mage = mage
+            self.archer = archer
+            self.support = support
+            self.special = special
+            self.thieves_guild = thieves_guild
+            self.temple = temple
+            self.magic_guild = magic_guild
 
     class GameSessions:
         """Класс - игровые сессии."""
@@ -391,14 +391,14 @@ class ServerStorage:
                                        Column('name', String),
                                        Column('faction', String),
                                        Column('gold', Integer),
-                                       Column('fighter_lvls', String),
-                                       Column('mage_lvls', String),
-                                       Column('archer_lvls', String),
-                                       Column('support_lvls', String),
-                                       Column('special_lvls', String),
-                                       Column('thieves_guild_lvls', String),
-                                       Column('temple_lvls', String),
-                                       Column('magic_guild_lvls', String)
+                                       Column('fighter', String),
+                                       Column('mage', String),
+                                       Column('archer', String),
+                                       Column('support', String),
+                                       Column('special', String),
+                                       Column('thieves_guild', String),
+                                       Column('temple', String),
+                                       Column('magic_guild', String)
                                        )
 
         # Создаём таблицу игровых сессий
@@ -867,14 +867,14 @@ class ServerStorage:
         """
 
         query = self.session.query(
-            self.PlayerBuildings.fighter_lvls,
-            self.PlayerBuildings.mage_lvls,
-            self.PlayerBuildings.archer_lvls,
-            self.PlayerBuildings.support_lvls,
-            self.PlayerBuildings.special_lvls,
-            self.PlayerBuildings.thieves_guild_lvls,
-            self.PlayerBuildings.temple_lvls,
-            self.PlayerBuildings.magic_guild_lvls
+            self.PlayerBuildings.fighter,
+            self.PlayerBuildings.mage,
+            self.PlayerBuildings.archer,
+            self.PlayerBuildings.support,
+            self.PlayerBuildings.special,
+            self.PlayerBuildings.thieves_guild,
+            self.PlayerBuildings.temple,
+            self.PlayerBuildings.magic_guild
         ).filter_by(name=player_name, faction=faction)
         # Возвращаем кортеж
         return query.order_by(self.PlayerBuildings.id.desc()).first()
@@ -900,7 +900,7 @@ class ServerStorage:
         """
 
         query = self.session.query(
-            self.PlayerBuildings.fighter_lvls
+            self.PlayerBuildings.fighter
         ).filter_by(name=player_name, faction=faction)
         # Возвращаем кортеж
         return query.all()
@@ -940,14 +940,14 @@ class ServerStorage:
         """
         changes = update(
             self.PlayerBuildings).values(
-            fighter_lvls=buildings[0],
-            mage_lvls=buildings[1],
-            archer_lvls=buildings[2],
-            support_lvls=buildings[3],
-            special_lvls=buildings[4],
-            thieves_guild_lvls=buildings[5],
-            temple_lvls=buildings[6],
-            magic_guild_lvls=buildings[7]).execution_options(
+            fighter=buildings[0],
+            mage=buildings[1],
+            archer=buildings[2],
+            support=buildings[3],
+            special=buildings[4],
+            thieves_guild=buildings[5],
+            temple=buildings[6],
+            magic_guild=buildings[7]).execution_options(
             synchronize_session="fetch") \
             .filter_by(name=player_name, faction=faction)
 
@@ -1357,7 +1357,7 @@ if __name__ == '__main__':
     #     0,
     #     0
     # ]
-
+    #
     # main_db.create_buildings('Erepb-89', 'Empire', 5000, building_levels)
 
     # базовая постройка зданий 0 уровня Mountain Clans

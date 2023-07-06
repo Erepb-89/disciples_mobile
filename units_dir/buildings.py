@@ -11,8 +11,8 @@ temple = Building('Храм', '', 150, '', [480, 555, 118, 114], TWMPLE_DESC)
 
 BRANCHES = {
     'fighter': 0,
-    'archer': 1,
-    'mage': 2,
+    'mage': 1,
+    'archer': 2,
     'support': 3,
     'special': 4,
     'others': 5
