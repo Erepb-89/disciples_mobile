@@ -16,6 +16,7 @@ from client_dir.settings import UNIT_STAND, UNIT_ATTACK, \
     RIGHT_ICONS, LEFT_ICONS, SCREEN_RECT, PANEL_RECT, BATTLE_LOG
 from client_dir.ui_functions import get_unit_image
 from client_dir.unit_dialog import UnitDialog
+from units_dir.buildings import FACTIONS
 
 
 class Thread(QThread):
@@ -212,7 +213,8 @@ class FightWindow(QMainWindow):
                 item.setEditable(False)
                 self.log_model.appendRow(item)
             self.ui.battleLog.setModel(self.log_model)
-        self.ui.battleLog.setStyleSheet("background-color: rgb(65, 3, 2); color: white")
+        self.ui.battleLog.setStyleSheet(
+            "background-color: rgb(65, 3, 2); color: white")
 
     def back(self):
         """Кнопка возврата"""
@@ -490,10 +492,13 @@ class FightWindow(QMainWindow):
                     f"{side}/empty.gif"))
 
         elif unit.curr_health == 0:
+            unit_faction = self.give_unit_faction(unit)
             gif = QMovie(
                 os.path.join(
                     action,
-                    f"{side}/is_dead.gif"))
+                    f"{side}/{unit_faction}.gif"))
+            # unit_faction = self.give_unit_faction(unit)
+            # print(unit_faction)
         # if unit.curr_health == 0:
         #     gif = QMovie(os.path.join(COMMON, "skull.png"))
         else:
@@ -505,6 +510,21 @@ class FightWindow(QMainWindow):
         gif_slot.setMovie(gif)
         self._update_all_unit_health()
         gif.start()
+
+    @staticmethod
+    def show_no_frame(gif_slot):
+        """Обновление зеленой рамки в слоте"""
+        gif_slot.setStyleSheet("border: 0px;")
+
+    @staticmethod
+    def show_green_frame(gif_slot):
+        """Обновление зеленой рамки в слоте"""
+        gif_slot.setStyleSheet("border: 4px solid green;")
+
+    @staticmethod
+    def show_red_frame(gif_slot):
+        """Обновление красной рамки в слоте"""
+        gif_slot.setStyleSheet("border: 4px solid darkred;")
 
     def show_splash_area(self, unit, action):
         """Атака по площади"""
@@ -526,6 +546,18 @@ class FightWindow(QMainWindow):
         gif_slot.setMovie(gif)
         gif.start()
 
+    def give_unit_faction(self, unit):
+        """Получение фракции юнита"""
+        try:
+            for faction, f_building in FACTIONS.items():
+                for branch in f_building.values():
+                    for building in branch.values():
+                        if unit.name == building.unit_name:
+                            return faction
+            return 'is_dead'
+        except:
+            pass
+
     def autofight(self):
         """Автобой"""
         self.new_battle.auto_fight()
@@ -533,6 +565,8 @@ class FightWindow(QMainWindow):
 
         if self.new_battle.units_in_round:
             self.who_attack()
+            self.show_frame_attacker()
+            self.show_frame_attacked()
 
             self.worker = Thread(False)
             self.worker.dataThread.connect(self.show_all_attacked)
@@ -546,6 +580,9 @@ class FightWindow(QMainWindow):
             self.who_attacked(
                 target_slot,
                 self.new_battle.current_unit)
+
+        self.show_no_frame_attacker()
+        self.show_no_frame_attacked()
 
         # if text == "Finished":
         #     self.unit_gifs_update()
@@ -570,22 +607,27 @@ class FightWindow(QMainWindow):
             slots_dict = slots_dict1
             # self.target_is_enemy = True
 
-            self.show_gif_side(
-                unit,
-                slots_dict[unit.slot],
-                action,
-                side)
-
         elif unit in self.new_battle.player2.units:
             side = self.enemy_side
             slots_dict = slots_dict2
             # self.target_is_enemy = False
 
-            self.show_gif_side(
-                unit,
-                slots_dict[unit.slot],
-                action,
-                side)
+        self.show_gif_side(
+            unit,
+            slots_dict[unit.slot],
+            action,
+            side)
+
+    def show_frames_by_side(self, unit, slots_dict1, slots_dict2, func):
+        """Отображает рамку в зависимости от стороны и действия"""
+        if unit is None:
+            pass
+        elif unit in self.new_battle.player1.units:
+            slots_dict = slots_dict1
+        elif unit in self.new_battle.player2.units:
+            slots_dict = slots_dict2
+
+        func(slots_dict[unit.slot])
 
     def show_attacker(self, unit):
         """Прорисовка модели атакующего юнита"""
@@ -593,6 +635,20 @@ class FightWindow(QMainWindow):
                               UNIT_ATTACK,
                               self.pl_slots_dict,
                               self.en_slots_dict)
+
+    def show_frame_attacker(self):
+        """Прорисовка рамки вокруг иконки атакующего юнита"""
+        self.show_frames_by_side(self.new_battle.current_unit,
+                                 self.unit_icons_dict,
+                                 self.dung_icons_dict,
+                                 self.show_green_frame)
+
+    def show_no_frame_attacker(self):
+        """Прорисовка рамки вокруг иконки атакующего юнита"""
+        self.show_frames_by_side(self.new_battle.current_unit,
+                                 self.unit_icons_dict,
+                                 self.dung_icons_dict,
+                                 self.show_no_frame)
 
     def show_attacker_eff(self, unit):
         """Прорисовка эффектов атакующего юнита"""
@@ -615,12 +671,42 @@ class FightWindow(QMainWindow):
                               self.pl_slots_dict,
                               self.en_slots_dict)
 
+    def show_frame_attacked(self):
+        """Прорисовка рамки вокруг иконки атакованного юнита"""
+        for target_slot in self.new_battle.target_slots:
+            curr_target = self.get_curr_target(target_slot)
+
+            self.show_frames_by_side(curr_target,
+                                     self.unit_icons_dict,
+                                     self.dung_icons_dict,
+                                     self.show_red_frame)
+
+    def show_no_frame_attacked(self):
+        """Прорисовка рамки вокруг иконки атакованного юнита"""
+        for target_slot in self.new_battle.target_slots:
+            curr_target = self.get_curr_target(target_slot)
+
+            self.show_frames_by_side(curr_target,
+                                     self.unit_icons_dict,
+                                     self.dung_icons_dict,
+                                     self.show_no_frame)
+
     def show_shadow_attacked(self, target):
         """Прорисовка тени атакованного юнита"""
         self.show_gif_by_side(target,
                               UNIT_SHADOW_ATTACKED,
                               self.pl_slots_shad_dict,
                               self.en_slots_shad_dict)
+
+    def get_curr_target(self, target_slot):
+        """Получение текущей цели"""
+        if self.target_is_enemy:
+            curr_target = self._unit_by_slot_and_side(
+                target_slot, self.enemy_side)
+        else:
+            curr_target = self._unit_by_slot_and_side(
+                target_slot, self.player_side)
+        return curr_target
 
     def who_attack(self):
         """Метод обновляющий анимацию атакующего юнита"""
@@ -655,23 +741,17 @@ class FightWindow(QMainWindow):
             return
 
         # получение текущей цели
-        if self.target_is_enemy:
-            # curr_target = self._enemy_unit_by_slot(target_slot)
-            curr_target = self._unit_by_slot_and_side(
-                target_slot, self.enemy_side)
-        else:
-            # curr_target = self._player_unit_by_slot(target_slot)
-            curr_target = self._unit_by_slot_and_side(
-                target_slot, self.player_side)
+        curr_target = self.get_curr_target(target_slot)
 
         if self.new_battle.autofight:
-            # if curr_target is None:
-            #     pass
             if curr_target is None:
                 pass
             else:
                 # прорисовка модели атакованного юнита
                 self.show_attacked(curr_target)
+
+                # прорисовка рамки вокруг слота атакованного юнита
+                # self.show_frame_attacked(curr_target)
 
                 # прорисовка тени атакованного юнита
                 self.show_shadow_attacked(curr_target)

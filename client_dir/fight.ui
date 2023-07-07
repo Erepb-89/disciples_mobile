@@ -280,6 +280,9 @@
     <property name="text">
      <string>slot_1</string>
     </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
+    </property>
    </widget>
    <widget class="QLabel" name="slot2">
     <property name="geometry">
@@ -316,6 +319,9 @@
     </property>
     <property name="text">
      <string>slot_2</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
     </property>
    </widget>
    <widget class="QPushButton" name="pushButtonSlot4">
@@ -370,6 +376,9 @@
     <property name="text">
      <string>slot_4</string>
     </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
+    </property>
    </widget>
    <widget class="QLabel" name="slot6">
     <property name="geometry">
@@ -406,6 +415,9 @@
     </property>
     <property name="text">
      <string>slot_6</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
     </property>
    </widget>
    <widget class="QPushButton" name="pushButtonSlot1">
@@ -476,6 +488,9 @@
     <property name="text">
      <string>slot_5</string>
     </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
+    </property>
    </widget>
    <widget class="QPushButton" name="pushButtonSlot5">
     <property name="geometry">
@@ -545,6 +560,9 @@
     <property name="text">
      <string>slot_3</string>
     </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
+    </property>
    </widget>
    <widget class="QPushButton" name="pushButtonBack">
     <property name="geometry">
@@ -607,6 +625,9 @@
     <property name="text">
      <string>slot_4</string>
     </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
+    </property>
    </widget>
    <widget class="QPushButton" name="pushButtonEnemySlot6">
     <property name="geometry">
@@ -660,6 +681,9 @@
     <property name="text">
      <string>slot_2</string>
     </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
+    </property>
    </widget>
    <widget class="QLabel" name="enemySlot3">
     <property name="geometry">
@@ -696,6 +720,9 @@
     </property>
     <property name="text">
      <string>slot_3</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
     </property>
    </widget>
    <widget class="QPushButton" name="pushButtonEnemySlot4">
@@ -749,6 +776,9 @@
     </property>
     <property name="text">
      <string>slot_5</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
     </property>
    </widget>
    <widget class="QPushButton" name="pushButtonEnemySlot2">
@@ -819,6 +849,9 @@
     <property name="text">
      <string>slot_6</string>
     </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
+    </property>
    </widget>
    <widget class="QPushButton" name="pushButtonEnemySlot3">
     <property name="geometry">
@@ -871,6 +904,9 @@
     </property>
     <property name="text">
      <string>slot_1</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
     </property>
    </widget>
    <widget class="QPushButton" name="pushButtonEnemySlot1">
