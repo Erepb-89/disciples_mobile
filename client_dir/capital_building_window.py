@@ -218,8 +218,8 @@ class CapitalBuildingWindow(QMainWindow):
             self.get_icon_by_slot(num, icon_slot)
 
         # получаем координаты для отметок о постройке зданий
-        for num, icon_slot in self.builded_dict.items():
-            icon_slot.setGeometry(*self.get_coords(num))
+        # for num, icon_slot in self.builded_dict.items():
+        #     icon_slot.setGeometry(*self.get_coords(num))
 
         self.get_building_params(1)
         self.highlight_selected_building(1, self.ui.labelSelected1)
@@ -349,9 +349,9 @@ class CapitalBuildingWindow(QMainWindow):
             if self.building_name in temp_graph:
                 text = 'Это здание уже построено'
                 self.set_text_and_buy_slot(text, False)
-                self.ui.slotBuilded_1.setPixmap(QPixmap(
-                    os.path.join(INTERF, "ok.png")).scaled(
-                    self.ui.slotBuy.width(), self.ui.slotBuy.height()))
+                # self.ui.slotBuilded_1.setPixmap(QPixmap(
+                #     os.path.join(INTERF, "ok.png")).scaled(
+                #     self.ui.slotBuy.width(), self.ui.slotBuy.height()))
 
             # если граф построенных входит в текущий граф и длина текущего
             # графа отличается от граф построенных более, чем на 1
@@ -417,13 +417,11 @@ class CapitalBuildingWindow(QMainWindow):
 
     def unlight_all_buildings(self):
         """Снятие подсветки зданий"""
-        self.ui.labelSelected1.setLineWidth(0)
         self.ui.labelSelected1.setStyleSheet("border: 0px;")
 
     def highlight_selected_building(self, num, ui_slot):
         """Подсветка выбранной постройки"""
         ui_slot.setGeometry(*self.get_coords(num))
-        ui_slot.setLineWidth(5)
         ui_slot.setStyleSheet("border: 5px solid yellow;")
 
     def get_unit_by_b_slot(self, b_slot):
