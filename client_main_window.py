@@ -14,7 +14,7 @@ from client_dir.fight_window import FightWindow
 from client_dir.campaign_window import CampaignWindow
 from client_dir.client_main_form import Ui_MainWindow
 from client_dir.hire_menu_window import HireMenuWindow
-from client_dir.settings import UNIT_ICONS, GIF_ANIMATIONS, TOWN_IMG, PLUG, ICON, COMMON
+from client_dir.settings import UNIT_ICONS, GIF_ANIMATIONS, TOWN_IMG, PLUG, ICON, COMMON, UNIT_ATTACK, FRONT
 from client_dir.ui_functions import get_unit_image
 from client_dir.unit_dialog import UnitDialog
 from units_dir.units import main_db
@@ -141,6 +141,7 @@ class ClientMainWindow(QMainWindow):
     def on_listView_clicked(self):
         """Показывает gif'ку выбранного из списка юнита"""
         selected = self.ui.listAllUnits.currentIndex().data()
+        self.define_hire_active(selected)
         lbl = self.ui.iconLabel
         lbl.setPixmap(QPixmap(
             os.path.join(UNIT_ICONS, f"{selected} {ICON}")))
@@ -422,6 +423,17 @@ class ClientMainWindow(QMainWindow):
             self.enemy_list_update()
         except TypeError:
             print('Выберите слот, который хотите освободить')
+
+    def define_hire_active(self, selected):
+        """Определение активности кнопок 'Нанять'"""
+        active_units = os.listdir(f'{UNIT_ATTACK}{FRONT}')
+
+        if f'{selected}.gif' not in active_units:
+            self.ui.pushButtonHire.setEnabled(False)
+            self.ui.pushButtonHireEn.setEnabled(False)
+        else:
+            self.ui.pushButtonHire.setEnabled(True)
+            self.ui.pushButtonHireEn.setEnabled(True)
 
     def hire_unit_action(self):
         """Метод обработчик нажатия кнопки 'Нанять' для игрока"""

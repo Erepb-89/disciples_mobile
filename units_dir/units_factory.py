@@ -881,22 +881,24 @@ class Unit:
         self.price = unit[4]
         self.exp = unit[5]
         self.curr_exp = unit[6]
-        self.health = unit[7]
-        self.curr_health = unit[8]
-        self.armor = unit[9]
-        self.immune = unit[10]
-        self.ward = unit[11]
-        self.attack_type = unit[12]
-        self.attack_chance = unit[13]
-        self.attack_dmg = unit[14]
-        self.attack_source = unit[15]
-        self.attack_ini = unit[16]
-        self.attack_radius = unit[17]
-        self.attack_purpose = unit[18]
-        self.desc = unit[19]
-        self.photo = unit[20]
-        self.gif = unit[21]
-        self.slot = unit[22]
+        self.exp_per_kill = unit[7]
+        self.health = unit[8]
+        self.curr_health = unit[9]
+        self.armor = unit[10]
+        self.immune = unit[11]
+        self.ward = unit[12]
+        self.attack_type = unit[13]
+        self.attack_chance = unit[14]
+        self.attack_dmg = unit[15]
+        self.attack_source = unit[16]
+        self.attack_ini = unit[17]
+        self.attack_radius = unit[18]
+        self.attack_purpose = unit[19]
+        self.prev_level = unit[20]
+        self.desc = unit[21]
+        self.photo = unit[22]
+        self.gif = unit[23]
+        self.slot = unit[24]
 
     @property
     def is_dead(self):
@@ -938,17 +940,7 @@ class Unit:
 
     def attack(self, target):
         """Атака"""
-        # print('ходит:', self.name)
-
-        # если есть лечение/исцеление у атакующего:
-        # if massive.unit.attack_type in ['Лечение', 'Лечение/Исцеление', 'Лечение/Воскрешение']:
-        #     self.skip_turn(massive.unit)
-
-        # self.units_in_round.remove(massive.unit.id)
-
-        # else:
         # Вычисление вероятности попадания
-        accuracy = 0.0
         try:
             accuracy = self.attack_chance.split(
                 '/')[0].split('%')[0] / 100
@@ -957,47 +949,49 @@ class Unit:
         except BaseException:
             accuracy = int(self.attack_chance.split('%')[0]) / 100
 
-        # attack_successful = random.choices([0, 1], weights=[accuracy], k=1)
-        # if attack_successful:
-        #     print(f"{unit}: Атака успешна", attack_successful)
-        # else:
-        #     print(f"{unit}: Промах", attack_successful)
-        # print(accuracy)
+        attack_successful = True if random.random() <= accuracy else False
+        # print(attack_successful)
 
-        # Вычисление урона с учетом брони
-        try:
-            damage = int(int(self.attack_dmg.split(
-                '/')[0]) * (1 - target.armor * 0.01)) + random.randrange(5)
-        except BaseException:
-            damage = int(self.attack_dmg *
-                         (1 - target.armor * 0.01)) + random.randrange(5)
-        # self.current_target = self.database.get_dungeon_unit_by_slot(self.target_slot)
-        # target.id = massive.target_func(
-        #     target.slot).id
+        if attack_successful:
+            print(f"{self.name}: Атака успешна")
+        else:
+            print(f"{self.name}: Промах")
 
-        # если урон больше, чем здоровье врага, приравниваем урон к
-        # здоровью
-        damage = min(damage, target.curr_health)
+        # Если атака успешна
+        if attack_successful:
+            # Вычисление урона с учетом брони
+            try:
+                damage = int(int(self.attack_dmg.split(
+                    '/')[0]) * (1 - target.armor * 0.01)) + random.randrange(5)
+            except BaseException:
+                damage = int(self.attack_dmg *
+                             (1 - target.armor * 0.01)) + random.randrange(5)
 
-        # вычисление текущего здоровья цели после получения урона
-        target.curr_health -= damage
+            # если урон больше, чем здоровье врага, приравниваем урон к
+            # здоровью
+            damage = min(damage, target.curr_health)
 
-        # если есть вампиризм у атакующего:
-        if self.attack_type in ['Высасывание жизни', 'Избыточное высасывание жизни']:
-            self.curr_health += int(damage / 2)
-            if self.curr_health > self.health:
-                self.curr_health = self.health
+            # вычисление текущего здоровья цели после получения урона
+            target.curr_health -= damage
 
-            # main_db.update_unit_hp(
-            #     self.slot, self.curr_health, main_db.attacker_db)
+            # если есть вампиризм у атакующего:
+            if self.attack_type in ['Высасывание жизни', 'Избыточное высасывание жизни']:
+                self.curr_health += int(damage / 2)
+                if self.curr_health > self.health:
+                    self.curr_health = self.health
 
-        line = f"{self.name} наносит урон {damage} воину {target.name}. " \
-               f"Осталось ХП: {target.curr_health}\n"
-        logging(line)
+                # main_db.update_unit_hp(
+                #     self.slot, self.curr_health, main_db.attacker_db)
 
-        # print(
-        #     f"{self.name} наносит урон {damage} воину "
-        #     f"{target.name}. Осталось ХП: {target.curr_health}")
+            line = f"{self.name} наносит урон {damage} воину {target.name}. " \
+                   f"Осталось ХП: {target.curr_health}\n"
+            logging(line)
+
+            # print(
+            #     f"{self.name} наносит урон {damage} воину "
+            #     f"{target.name}. Осталось ХП: {target.curr_health}")
+        else:
+            logging(f"{self.name} промахивается по {target.name}\n")
 
         # Если текущий юнит - лекарь
         if self.attack_type \

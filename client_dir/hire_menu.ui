@@ -858,6 +858,11 @@
     </property>
    </widget>
    <zorder>hireMenuBG</zorder>
+   <zorder>gifLabel5</zorder>
+   <zorder>gifLabel4</zorder>
+   <zorder>gifLabel3</zorder>
+   <zorder>gifLabel2</zorder>
+   <zorder>gifLabel1</zorder>
    <zorder>labelSelected5</zorder>
    <zorder>labelSelected3</zorder>
    <zorder>labelSelected2</zorder>
@@ -881,16 +886,11 @@
    <zorder>slot1</zorder>
    <zorder>slot2</zorder>
    <zorder>slot3</zorder>
-   <zorder>gifLabel1</zorder>
-   <zorder>gifLabel2</zorder>
    <zorder>slot4</zorder>
    <zorder>slot5</zorder>
    <zorder>pushButtonBack</zorder>
    <zorder>pushButtonSlot4</zorder>
    <zorder>pushButtonSlot5</zorder>
-   <zorder>gifLabel4</zorder>
-   <zorder>gifLabel3</zorder>
-   <zorder>gifLabel5</zorder>
    <zorder>pushButtonSlot3</zorder>
    <zorder>pushButtonSlot1</zorder>
    <zorder>pushButtonSlot2</zorder>

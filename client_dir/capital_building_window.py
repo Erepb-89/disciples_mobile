@@ -133,6 +133,7 @@ class CapitalBuildingWindow(QMainWindow):
         # Обновление рамки слота юнита
         slot_frame_update(self.unit, self.ui.slotFrame1)
         self.get_building_params(1)
+        self.show_already_built()
         self.show()
 
     def update_capital(self):
@@ -182,6 +183,7 @@ class CapitalBuildingWindow(QMainWindow):
 
         # Подсветка выбранной постройки
         self.highlight_selected_building(1, self.ui.labelSelected1)
+        self.show_already_built()
 
     def change_branch_fighters(self):
         """Смена ветви на fighter"""
@@ -223,6 +225,7 @@ class CapitalBuildingWindow(QMainWindow):
 
         self.get_building_params(1)
         self.highlight_selected_building(1, self.ui.labelSelected1)
+        self.show_already_built()
 
     @property
     def branch_settings(self):
@@ -333,6 +336,47 @@ class CapitalBuildingWindow(QMainWindow):
         self.hbox.addWidget(self.ui.slotBuy)
         self.setLayout(self.hbox)
 
+    def get_building_slot_by_name(self, b_name):
+        """Получение слота постройки по имени"""
+        branch = FACTIONS.get(self.faction)[self.branch]
+
+        for num, val in branch.items():
+            if b_name == val.bname:
+                return num
+        return 0
+
+    def show_already_built(self):
+        """Отметить уже построенные здания"""
+        self.no_built()
+        temp_graph = []
+
+        # получение всех построенных зданий игрока
+        buildings = self.database.get_buildings(
+            self.database.current_user,
+            self.faction)._asdict()
+
+        if self.branch != 'others':
+            # Рекурсивное создание графа уже построенных зданий
+            self.get_building_graph(buildings[self.branch], temp_graph)
+
+            for building in temp_graph:
+                if building != '':
+                    b_slot = self.get_building_slot_by_name(building)
+
+                    self.builded_dict[b_slot].setPixmap(QPixmap(
+                        os.path.join(INTERF, "ok.png")))
+                    self.builded_dict[b_slot].setGeometry(*self.get_coords(b_slot))
+
+        elif self.branch == 'others':
+            branch = FACTIONS.get(self.faction)[self.branch]
+
+            for val in branch.values():
+                if val.bname in buildings.values():
+                    b_slot = self.get_building_slot_by_name(val.bname)
+                    self.builded_dict[b_slot].setPixmap(QPixmap(
+                        os.path.join(INTERF, "ok.png")))
+                    self.builded_dict[b_slot].setGeometry(*self.get_coords(b_slot))
+
     def building_possibility(self):
         """Метод определения возможности постройки"""
         temp_graph = []
@@ -345,24 +389,32 @@ class CapitalBuildingWindow(QMainWindow):
         if self.branch != 'others':
             # Рекурсивное создание графа уже построенных зданий
             self.get_building_graph(buildings[self.branch], temp_graph)
+
             # если здание входит в граф построенных
             if self.building_name in temp_graph:
                 text = 'Это здание уже построено'
                 self.set_text_and_buy_slot(text, False)
-                # self.ui.slotBuilded_1.setPixmap(QPixmap(
-                #     os.path.join(INTERF, "ok.png")).scaled(
-                #     self.ui.slotBuy.width(), self.ui.slotBuy.height()))
 
             # если граф построенных входит в текущий граф и длина текущего
             # графа отличается от граф построенных более, чем на 1
             elif len(self.graph) - len(temp_graph) > 1 \
-                    and set(temp_graph).issubset(self.graph):
+                    and set(temp_graph).issubset(self.graph)\
+                    and '' not in temp_graph:
+                text = 'Сначала нужно построить здание, ' \
+                       'предшествующее этому'
+                self.set_text_and_buy_slot(text, False)
+
+            elif '' in temp_graph and len(self.graph) < 2:
+                text = 'Это здание можно построить'
+                self.set_text_and_buy_slot(text, True)
+
+            elif '' in temp_graph and len(self.graph) >= 2:
                 text = 'Сначала нужно построить здание, ' \
                        'предшествующее этому'
                 self.set_text_and_buy_slot(text, False)
 
             # если граф построенных не входит в текущий граф
-            elif not set(temp_graph).issubset(self.graph):
+            elif not set(temp_graph).issubset(self.graph) and '' not in temp_graph:
                 text = 'Это здание нельзя построить, поскольку ' \
                        'была выбрана другая ветвь развития'
                 self.set_text_and_buy_slot(text, False)
@@ -414,6 +466,11 @@ class CapitalBuildingWindow(QMainWindow):
                     self.get_building_graph(val.prev, graph)
                 else:
                     return
+
+    def no_built(self):
+        """Снятие отметок о постройке зданий"""
+        for slot in self.builded_dict.values():
+            slot.setGeometry(0, 0, 0, 0)
 
     def unlight_all_buildings(self):
         """Снятие подсветки зданий"""
@@ -535,9 +592,18 @@ class CapitalBuildingWindow(QMainWindow):
                 self.database.get_buildings(
                     self.database.current_user,
                     self.faction))
+            print(changed_buildings)
 
             # обновление построек в текущей сессии
-            changed_buildings[BRANCHES[self.branch]] = self.building_name
+            if self.building_name == 'Гильдия':
+                changed_buildings[5] = self.building_name
+            elif self.building_name == 'Храм':
+                changed_buildings[6] = self.building_name
+            elif self.building_name == 'Башня магии':
+                changed_buildings[7] = self.building_name
+            else:
+                changed_buildings[BRANCHES[self.branch]] = self.building_name
+
             self.database.update_buildings(
                 self.database.current_user,
                 self.faction,
@@ -554,6 +620,9 @@ class CapitalBuildingWindow(QMainWindow):
                 self.faction,
                 changed_gold)
             self.ui.gold.setText(str(changed_gold))
+
+        self.building_possibility()
+        self.show_already_built()
 
     def slot_detailed(self):
         """Метод создающий окно юнита (слот)."""
