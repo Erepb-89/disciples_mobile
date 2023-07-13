@@ -3,6 +3,7 @@
 import os.path
 import random
 
+from PyQt5 import QtCore
 from PyQt5.QtCore import QThread, pyqtSignal
 from PyQt5.QtGui import QPixmap, QMovie, QStandardItem, QStandardItemModel
 from PyQt5.QtWidgets import QMainWindow, QHBoxLayout
@@ -624,10 +625,10 @@ class FightWindow(QMainWindow):
             pass
         elif unit in self.new_battle.player1.units:
             slots_dict = slots_dict1
+            func(slots_dict[unit.slot])
         elif unit in self.new_battle.player2.units:
             slots_dict = slots_dict2
-
-        func(slots_dict[unit.slot])
+            func(slots_dict[unit.slot])
 
     def show_attacker(self, unit):
         """Прорисовка модели атакующего юнита"""
@@ -638,6 +639,7 @@ class FightWindow(QMainWindow):
 
     def show_frame_attacker(self):
         """Прорисовка рамки вокруг иконки атакующего юнита"""
+        # QtCore.QTimer.singleShot(3000, lambda: print(1))
         self.show_frames_by_side(self.new_battle.current_unit,
                                  self.unit_icons_dict,
                                  self.dung_icons_dict,

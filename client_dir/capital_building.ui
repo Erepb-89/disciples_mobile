@@ -1332,15 +1332,6 @@
    <zorder>pushButtonReverse</zorder>
    <zorder>gold</zorder>
    <zorder>labelSelected1</zorder>
-   <zorder>pushButtonSlot_1</zorder>
-   <zorder>pushButtonSlot_5</zorder>
-   <zorder>pushButtonSlot_3</zorder>
-   <zorder>pushButtonSlot_7</zorder>
-   <zorder>pushButtonSlot_8</zorder>
-   <zorder>pushButtonSlot_2</zorder>
-   <zorder>pushButtonSlot_4</zorder>
-   <zorder>pushButtonSlot_9</zorder>
-   <zorder>pushButtonSlot_6</zorder>
    <zorder>slotBuy</zorder>
    <zorder>pushButtonBuy</zorder>
    <zorder>slotBuilded_1</zorder>
@@ -1352,6 +1343,15 @@
    <zorder>slotBuilded_7</zorder>
    <zorder>slotBuilded_8</zorder>
    <zorder>slotBuilded_9</zorder>
+   <zorder>pushButtonSlot_3</zorder>
+   <zorder>pushButtonSlot_5</zorder>
+   <zorder>pushButtonSlot_9</zorder>
+   <zorder>pushButtonSlot_6</zorder>
+   <zorder>pushButtonSlot_8</zorder>
+   <zorder>pushButtonSlot_2</zorder>
+   <zorder>pushButtonSlot_4</zorder>
+   <zorder>pushButtonSlot_1</zorder>
+   <zorder>pushButtonSlot_7</zorder>
   </widget>
  </widget>
  <resources/>

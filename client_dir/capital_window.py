@@ -72,12 +72,12 @@ class CapitalWindow(QMainWindow):
 
     def show_building(self):
         """Метод создающий окно строительства."""
-        try:
-            global capital_building_window
-            capital_building_window = CapitalBuildingWindow(self.database)
-            capital_building_window.show()
-        except Exception as err:
-            print(err)
+        # try:
+        global capital_building_window
+        capital_building_window = CapitalBuildingWindow(self.database)
+        capital_building_window.show()
+        # except Exception as err:
+        #     print(err)
 
     def back(self):
         """Кнопка возврата"""

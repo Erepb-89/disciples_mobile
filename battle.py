@@ -87,7 +87,7 @@ class Battle:
             try:
                 unit = self.database.get_unit_by_id(
                     self.dungeon_units[unit_slot],
-                    self.database.AllUnits)[:22]
+                    self.database.AllUnits)[:24]
                 self.database.add_dungeon_unit(
                     *unit,
                     unit_slot + 1)
@@ -208,7 +208,7 @@ class Battle:
                     player.units)
                 self.current_unit.attack(target)
         elif self.target_slots == [None]:
-            line = f'{self.current_unit.name}, пропускает ход'
+            line = f'{self.current_unit.name}, пропускает ход\n'
             logging(line)
             # print(self.current_unit.name, 'пропускает ход')
         else:

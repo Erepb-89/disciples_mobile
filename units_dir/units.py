@@ -24,6 +24,7 @@ class ServerStorage:
                      price: int,
                      exp: int,
                      curr_exp: int,
+                     exp_per_kill: int,
                      health: int,
                      curr_health: int,
                      armor: int,
@@ -36,6 +37,7 @@ class ServerStorage:
                      attack_ini: int,
                      attack_radius: str,
                      attack_purpose: int,
+                     prev_level: str,
                      desc: str,
                      photo: str,
                      gif: str,
@@ -48,6 +50,7 @@ class ServerStorage:
             self.price = price
             self.exp = exp
             self.curr_exp = curr_exp
+            self.exp_per_kill = exp_per_kill
             self.health = health
             self.curr_health = curr_health
             self.armor = armor
@@ -60,6 +63,7 @@ class ServerStorage:
             self.attack_ini = attack_ini
             self.attack_radius = attack_radius
             self.attack_purpose = attack_purpose
+            self.prev_level = prev_level
             self.desc = desc
             self.photo = photo
             self.gif = gif
@@ -77,6 +81,7 @@ class ServerStorage:
                 price,
                 exp,
                 curr_exp,
+                exp_per_kill,
                 health,
                 curr_health,
                 armor,
@@ -89,6 +94,7 @@ class ServerStorage:
                 attack_ini,
                 attack_radius,
                 attack_purpose,
+                prev_level,
                 desc,
                 photo,
                 gif,
@@ -101,6 +107,7 @@ class ServerStorage:
                 price,
                 exp,
                 curr_exp,
+                exp_per_kill,
                 health,
                 curr_health,
                 armor,
@@ -113,6 +120,7 @@ class ServerStorage:
                 attack_ini,
                 attack_radius,
                 attack_purpose,
+                prev_level,
                 desc,
                 photo,
                 gif,
@@ -131,6 +139,7 @@ class ServerStorage:
                 price,
                 exp,
                 curr_exp,
+                exp_per_kill,
                 health,
                 curr_health,
                 armor,
@@ -143,6 +152,7 @@ class ServerStorage:
                 attack_ini,
                 attack_radius,
                 attack_purpose,
+                prev_level,
                 desc,
                 photo,
                 gif,
@@ -155,6 +165,7 @@ class ServerStorage:
                 price,
                 exp,
                 curr_exp,
+                exp_per_kill,
                 health,
                 curr_health,
                 armor,
@@ -167,6 +178,7 @@ class ServerStorage:
                 attack_ini,
                 attack_radius,
                 attack_purpose,
+                prev_level,
                 desc,
                 photo,
                 gif,
@@ -245,6 +257,7 @@ class ServerStorage:
                 price,
                 exp,
                 curr_exp,
+                exp_per_kill,
                 health,
                 curr_health,
                 armor,
@@ -257,6 +270,7 @@ class ServerStorage:
                 attack_ini,
                 attack_radius,
                 attack_purpose,
+                prev_level,
                 desc,
                 photo,
                 gif,
@@ -269,6 +283,7 @@ class ServerStorage:
                 price,
                 exp,
                 curr_exp,
+                exp_per_kill,
                 health,
                 curr_health,
                 armor,
@@ -281,6 +296,7 @@ class ServerStorage:
                 attack_ini,
                 attack_radius,
                 attack_purpose,
+                prev_level,
                 desc,
                 photo,
                 gif,
@@ -308,6 +324,7 @@ class ServerStorage:
                             Column('price', Integer),
                             Column('exp', Integer),
                             Column('curr_exp', Integer),
+                            Column('exp_per_kill', Integer),
                             Column('health', Integer),
                             Column('curr_health', Integer),
                             Column('armor', Integer),
@@ -320,6 +337,7 @@ class ServerStorage:
                             Column('attack_ini', Integer),
                             Column('attack_radius', String),
                             Column('attack_purpose', Integer),
+                            Column('prev_level', String),
                             Column('desc', String),
                             Column('photo', String),
                             Column('gif', String),
@@ -334,6 +352,7 @@ class ServerStorage:
                                    Column('price', Integer),
                                    Column('exp', Integer),
                                    Column('curr_exp', Integer),
+                                   Column('exp_per_kill', Integer),
                                    Column('health', Integer),
                                    Column('curr_health', Integer),
                                    Column('armor', Integer),
@@ -346,6 +365,7 @@ class ServerStorage:
                                    Column('attack_ini', Integer),
                                    Column('attack_radius', String),
                                    Column('attack_purpose', Integer),
+                                   Column('prev_level', String),
                                    Column('desc', String),
                                    Column('photo', String),
                                    Column('gif', String),
@@ -360,6 +380,7 @@ class ServerStorage:
                                    Column('price', Integer),
                                    Column('exp', Integer),
                                    Column('curr_exp', Integer),
+                                   Column('exp_per_kill', Integer),
                                    Column('health', Integer),
                                    Column('curr_health', Integer),
                                    Column('armor', Integer),
@@ -372,6 +393,7 @@ class ServerStorage:
                                    Column('attack_ini', Integer),
                                    Column('attack_radius', String),
                                    Column('attack_purpose', Integer),
+                                   Column('prev_level', String),
                                    Column('desc', String),
                                    Column('photo', String),
                                    Column('gif', String),
@@ -379,14 +401,14 @@ class ServerStorage:
                                    )
 
         # Создаём таблицу игроков
-        players_table = Table('Players', self.metadata,
+        players_table = Table('players', self.metadata,
                               Column('id', Integer, primary_key=True),
                               Column('name', String),
                               Column('email', String)
                               )
 
         # Создаём таблицу построек игрока
-        player_buildings_table = Table('PlayerBuildings', self.metadata,
+        player_buildings_table = Table('player_buildings', self.metadata,
                                        Column('id', Integer, primary_key=True),
                                        Column('name', String),
                                        Column('faction', String),
@@ -403,13 +425,13 @@ class ServerStorage:
 
         # Создаём таблицу игровых сессий
         game_sessions_table = Table(
-            'GameSessions', self.metadata, Column(
+            'game_sessions', self.metadata, Column(
                 'session_id', Integer, primary_key=True), Column(
                 'player_id', Integer), Column(
                 'faction', String))
 
         # Создаём таблицу всех подземелий
-        dungeons = Table('Dungeons', self.metadata,
+        dungeons_table = Table('dungeons', self.metadata,
                          Column('id', Integer, primary_key=True),
                          Column('name', String, unique=True),
                          Column('unit1', Integer),
@@ -420,7 +442,7 @@ class ServerStorage:
                          Column('unit6', Integer)
                          )
 
-        current_dungeon = Table('current_dungeon', self.metadata,
+        current_dungeon_table = Table('current_dungeon', self.metadata,
                                 Column('id', Integer, primary_key=True),
                                 Column('name', String),
                                 Column('level', Integer),
@@ -428,6 +450,7 @@ class ServerStorage:
                                 Column('price', Integer),
                                 Column('exp', Integer),
                                 Column('curr_exp', Integer),
+                                Column('exp_per_kill', Integer),
                                 Column('health', Integer),
                                 Column('curr_health', Integer),
                                 Column('armor', Integer),
@@ -440,7 +463,8 @@ class ServerStorage:
                                 Column('attack_ini', Integer),
                                 Column('attack_radius', String),
                                 Column('attack_purpose', Integer),
-                                Column('desc', Integer),
+                                Column('prev_level', String),
+                                Column('desc', String),
                                 Column('photo', String),
                                 Column('gif', String),
                                 Column('slot', Integer)
@@ -456,8 +480,8 @@ class ServerStorage:
         mapper(self.Players, players_table)
         mapper(self.PlayerBuildings, player_buildings_table)
         mapper(self.GameSessions, game_sessions_table)
-        mapper(self.Dungeons, dungeons)
-        mapper(self.CurrentDungeon, current_dungeon)
+        mapper(self.Dungeons, dungeons_table)
+        mapper(self.CurrentDungeon, current_dungeon_table)
 
         # Создаём сессию
         Session = sessionmaker(bind=self.database_engine)
@@ -466,10 +490,10 @@ class ServerStorage:
         self.current_player = self.get_player('Erepb-89')
 
     def add_dungeon_unit(self, id, name, level, size,
-                 price, exp, curr_exp, health, curr_health, armor,
-                 immune, ward, attack_type, attack_chance, attack_dmg,
+                 price, exp, curr_exp, exp_per_kill, health, curr_health,
+                 armor, immune, ward, attack_type, attack_chance, attack_dmg,
                  attack_source, attack_ini, attack_radius, attack_purpose,
-                 desc, photo, gif, slot):
+                 prev_level, desc, photo, gif, slot):
         """
         Метод регистрации юнита.
         Создаёт запись в таблице CurrentDungeon.
@@ -482,6 +506,7 @@ class ServerStorage:
             price,
             exp,
             curr_exp,
+            exp_per_kill,
             health,
             curr_health,
             armor,
@@ -494,6 +519,7 @@ class ServerStorage:
             attack_ini,
             attack_radius,
             attack_purpose,
+            prev_level,
             desc,
             photo,
             gif,
@@ -512,6 +538,7 @@ class ServerStorage:
             self.AllUnits.price,
             self.AllUnits.exp,
             self.AllUnits.curr_exp,
+            self.AllUnits.exp_per_kill,
             self.AllUnits.health,
             self.AllUnits.curr_health,
             self.AllUnits.armor,
@@ -524,6 +551,7 @@ class ServerStorage:
             self.AllUnits.attack_ini,
             self.AllUnits.attack_radius,
             self.AllUnits.attack_purpose,
+            self.AllUnits.prev_level,
             self.AllUnits.desc,
             self.AllUnits.photo,
             self.AllUnits.gif,
@@ -582,6 +610,7 @@ class ServerStorage:
             database.price,
             database.exp,
             database.curr_exp,
+            database.exp_per_kill,
             database.health,
             database.curr_health,
             database.armor,
@@ -594,6 +623,7 @@ class ServerStorage:
             database.attack_ini,
             database.attack_radius,
             database.attack_purpose,
+            database.prev_level,
             database.desc,
             database.photo,
             database.gif,
@@ -612,6 +642,7 @@ class ServerStorage:
             database.price,
             database.exp,
             database.curr_exp,
+            database.exp_per_kill,
             database.health,
             database.curr_health,
             database.armor,
@@ -624,6 +655,7 @@ class ServerStorage:
             database.attack_ini,
             database.attack_radius,
             database.attack_purpose,
+            database.prev_level,
             database.desc,
             database.photo,
             database.gif,
@@ -642,6 +674,7 @@ class ServerStorage:
             self.PlayerUnits.price,
             self.PlayerUnits.exp,
             self.PlayerUnits.curr_exp,
+            self.PlayerUnits.exp_per_kill,
             self.PlayerUnits.health,
             self.PlayerUnits.curr_health,
             self.PlayerUnits.armor,
@@ -654,6 +687,7 @@ class ServerStorage:
             self.PlayerUnits.attack_ini,
             self.PlayerUnits.attack_radius,
             self.PlayerUnits.attack_purpose,
+            self.PlayerUnits.prev_level,
             self.PlayerUnits.desc,
             self.PlayerUnits.slot
         ).filter_by(slot=slot)
@@ -670,6 +704,7 @@ class ServerStorage:
             self.PlayerUnits.price,
             self.PlayerUnits.exp,
             self.PlayerUnits.curr_exp,
+            self.PlayerUnits.exp_per_kill,
             self.PlayerUnits.health,
             self.PlayerUnits.curr_health,
             self.PlayerUnits.armor,
@@ -682,6 +717,7 @@ class ServerStorage:
             self.PlayerUnits.attack_ini,
             self.PlayerUnits.attack_radius,
             self.PlayerUnits.attack_purpose,
+            self.PlayerUnits.prev_level,
             self.PlayerUnits.desc,
             self.PlayerUnits.slot
         ).order_by(self.PlayerUnits.slot)
@@ -698,6 +734,7 @@ class ServerStorage:
             self.CurrentDungeon.price,
             self.CurrentDungeon.exp,
             self.CurrentDungeon.curr_exp,
+            self.CurrentDungeon.exp_per_kill,
             self.CurrentDungeon.health,
             self.CurrentDungeon.curr_health,
             self.CurrentDungeon.armor,
@@ -710,6 +747,7 @@ class ServerStorage:
             self.CurrentDungeon.attack_ini,
             self.CurrentDungeon.attack_radius,
             self.CurrentDungeon.attack_purpose,
+            self.CurrentDungeon.prev_level,
             self.CurrentDungeon.desc,
             self.CurrentDungeon.slot
         ).order_by(self.CurrentDungeon.slot)
@@ -1012,32 +1050,6 @@ class ServerStorage:
         self.session.add(enemy_unit)
         self.session.commit()
 
-    # def copy_player_unit(self, slot, new_slot):
-    #     unit = self.get_player_unit_by_slot(slot)
-    #
-    #     if self.check_slot(
-    #             unit['name'],
-    #             slot,
-    #             self.get_player_unit_by_slot) is True:  # Нужно заменить на get_unit_by_slot
-    #         copy_of_unit = unit._asdict()
-    #         self.delete_player_unit(slot)
-    #
-    #     new_unit = self.get_player_unit_by_slot(new_slot)
-    #
-    #     if new_unit is not None:
-    #         if self.check_slot(
-    #                 new_unit['name'],
-    #                 new_slot,
-    #                 self.get_player_unit_by_slot) is True:  # Нужно заменить на get_unit_by_slot
-    #             copy_of_new_unit = new_unit._asdict()
-    #             self.delete_player_unit(new_slot)
-    #
-    #         self.add_copied_unit(copy_of_unit, new_slot)
-    #         self.add_copied_unit(copy_of_new_unit, slot)
-    #
-    #     else:
-    #         self.add_copied_unit(copy_of_unit, new_slot)
-
     def delete_player_unit(self, slot):
         """Метод удаляющий юнита из базы игрока по слоту."""
         self.session.query(self.PlayerUnits).filter_by(slot=slot).delete()
@@ -1061,35 +1073,9 @@ class ServerStorage:
             if self.is_double(unit_row.name) and slot % 2 == 1:
                 slot += 1
 
-            # _id = self.auto_id
-            player_unit = self.PlayerUnits(*unit_row[:22], slot)
-            # self.auto_id += 1
+            player_unit = self.PlayerUnits(*unit_row[:24], slot)
             self.session.add(player_unit)
             self.session.commit()
-
-    # def add_copied_unit(self, unit, slot):
-    #     """Метод добавления юнита в базу игрока."""
-    #     if self.check_slot(
-    #             unit['name'],
-    #             slot,
-    #             self.get_player_unit_by_slot) is True:  # Нужно заменить на get_unit_by_slot
-    #         print('Данный слот занят')
-    #     else:
-    #         original_unit_row = self.get_unit_by_name(unit['name'])
-    #         unit_row = unit
-    #         if self.is_double(unit_row['name']) and slot % 2 == 1:
-    #             slot += 1
-    #
-    #         player_unit = self.PlayerUnits(
-    #             *
-    #             list(
-    #                 unit_row.values())[
-    #                 :20],
-    #             original_unit_row[20],
-    #             original_unit_row[21],
-    #             slot)
-    #         self.session.add(player_unit)
-    #         self.session.commit()
 
     def hire_enemy_unit(self, unit, slot):
         """Метод добавления юнита в базу противника."""
@@ -1105,7 +1091,7 @@ class ServerStorage:
             if self.is_double(unit) and slot % 2 == 1:
                 slot += 1
 
-            enemy_unit = self.CurrentDungeon(*unit_row[:22], slot)
+            enemy_unit = self.CurrentDungeon(*unit_row[:24], slot)
             # enemy_unit = self.Dungeons(unit_id)
             self.session.add(enemy_unit)
             self.session.commit()
@@ -1227,6 +1213,7 @@ class ServerStorage:
             self.CurrentDungeon.price,
             self.CurrentDungeon.exp,
             self.CurrentDungeon.curr_exp,
+            self.CurrentDungeon.exp_per_kill,
             self.CurrentDungeon.health,
             self.CurrentDungeon.curr_health,
             self.CurrentDungeon.armor,
@@ -1239,6 +1226,7 @@ class ServerStorage:
             self.CurrentDungeon.attack_ini,
             self.CurrentDungeon.attack_radius,
             self.CurrentDungeon.attack_purpose,
+            self.CurrentDungeon.prev_level,
             self.CurrentDungeon.desc,
             self.CurrentDungeon.slot
         ).filter_by(slot=slot)
@@ -1258,6 +1246,7 @@ class ServerStorage:
             database.price,
             database.exp,
             database.curr_exp,
+            database.exp_per_kill,
             database.health,
             database.curr_health,
             database.armor,
@@ -1270,6 +1259,7 @@ class ServerStorage:
             database.attack_ini,
             database.attack_radius,
             database.attack_purpose,
+            database.prev_level,
             database.desc,
             database.slot
         ).order_by(database.slot)
@@ -1286,6 +1276,7 @@ class ServerStorage:
             self.AllUnits.price,
             self.AllUnits.exp,
             self.AllUnits.curr_exp,
+            self.AllUnits.exp_per_kill,
             self.AllUnits.health,
             self.AllUnits.curr_health,
             self.AllUnits.armor,
@@ -1298,6 +1289,7 @@ class ServerStorage:
             self.AllUnits.attack_ini,
             self.AllUnits.attack_radius,
             self.AllUnits.attack_purpose,
+            self.AllUnits.prev_level,
             self.AllUnits.desc,
             self.AllUnits.photo,
             self.AllUnits.gif,
@@ -1387,7 +1379,7 @@ if __name__ == '__main__':
     #     0
     # ]
 
-    all_buildings = main_db.get_buildings('Erepb-89', 'Empire')
+    all_buildings = main_db.get_buildings('Erepb-89', 'Undead Hordes')
     print(all_buildings._asdict())
 
     #
