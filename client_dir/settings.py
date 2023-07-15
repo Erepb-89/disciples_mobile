@@ -59,6 +59,7 @@ CLOSEST_UNIT = 'Ближайший юнит'
 
 FRONT = 'front/'
 REAR = 'rear/'
+OTHERS = 'others'
 
 # races
 EM = 'Empire'

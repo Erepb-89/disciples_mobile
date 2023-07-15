@@ -47,13 +47,11 @@ class EmpireFighter:
         main_db.update_unit('Сквайр', 70, 50)
 
     @staticmethod
-    # @level_up(empire_fighter_lvls)
-    def lvl_up(slot):
+    def lvl_up(slot, next_form):
         """Боец Империи. Повышение уровня"""
         unit = main_db.get_unit_by_slot(slot, main_db.PlayerUnits)
-        new_unit = empire_fighter_lvls[unit.level + 1]
-        print(unit.name, 'повысил уровень до', new_unit)
-        main_db.replace_unit(slot, new_unit)
+        print(unit.name, 'повысил уровень до', next_form)
+        main_db.replace_unit(slot, next_form)
 
     @staticmethod
     def say():
