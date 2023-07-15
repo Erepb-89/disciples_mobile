@@ -185,10 +185,10 @@
    <widget class="QPushButton" name="pushButtonReverse">
     <property name="geometry">
      <rect>
-      <x>1060</x>
-      <y>610</y>
-      <width>40</width>
-      <height>40</height>
+      <x>1281</x>
+      <y>671</y>
+      <width>46</width>
+      <height>46</height>
      </rect>
     </property>
     <property name="toolTip">
@@ -204,7 +204,7 @@
      <string/>
     </property>
     <property name="flat">
-     <bool>false</bool>
+     <bool>true</bool>
     </property>
    </widget>
    <widget class="QLabel" name="slot">
@@ -1303,6 +1303,40 @@
      <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
     </property>
    </widget>
+   <widget class="QLabel" name="slotReverse">
+    <property name="geometry">
+     <rect>
+      <x>1280</x>
+      <y>670</y>
+      <width>46</width>
+      <height>46</height>
+     </rect>
+    </property>
+    <property name="layoutDirection">
+     <enum>Qt::LeftToRight</enum>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::NoFrame</enum>
+    </property>
+    <property name="frameShadow">
+     <enum>QFrame::Raised</enum>
+    </property>
+    <property name="lineWidth">
+     <number>1</number>
+    </property>
+    <property name="midLineWidth">
+     <number>0</number>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="scaledContents">
+     <bool>true</bool>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+    </property>
+   </widget>
    <zorder>capitalBuildingBG</zorder>
    <zorder>slotFrame1</zorder>
    <zorder>pushButtonBack</zorder>
@@ -1329,7 +1363,6 @@
    <zorder>buildPossib</zorder>
    <zorder>nextLevel</zorder>
    <zorder>prevLevel</zorder>
-   <zorder>pushButtonReverse</zorder>
    <zorder>gold</zorder>
    <zorder>labelSelected1</zorder>
    <zorder>slotBuy</zorder>
@@ -1352,6 +1385,8 @@
    <zorder>pushButtonSlot_4</zorder>
    <zorder>pushButtonSlot_1</zorder>
    <zorder>pushButtonSlot_7</zorder>
+   <zorder>slotReverse</zorder>
+   <zorder>pushButtonReverse</zorder>
   </widget>
  </widget>
  <resources/>

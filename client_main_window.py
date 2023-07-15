@@ -14,7 +14,7 @@ from client_dir.fight_window import FightWindow
 from client_dir.campaign_window import CampaignWindow
 from client_dir.client_main_form import Ui_MainWindow
 from client_dir.hire_menu_window import HireMenuWindow
-from client_dir.settings import UNIT_ICONS, GIF_ANIMATIONS, TOWN_IMG, PLUG, ICON, COMMON, UNIT_ATTACK, FRONT
+from client_dir.settings import UNIT_ICONS, GIF_ANIMATIONS, TOWN_IMG, PLUG, ICON, COMMON, UNIT_ATTACK, FRONT, PORTRAITS
 from client_dir.ui_functions import get_unit_image
 from client_dir.unit_dialog import UnitDialog
 from units_dir.units import main_db
@@ -64,7 +64,10 @@ class ClientMainWindow(QMainWindow):
         self.ui.listAllUnits.setWordWrap(True)
 
         self.ui.pushButtonHire.clicked.connect(self.hire_unit_action)
+        self.ui.pushButtonHire.setStatusTip('Выберите номер слота для найма')
         self.ui.pushButtonDelete.clicked.connect(self.delete_unit_action)
+        self.ui.pushButtonDelete.setStatusTip(
+            'Выберите слот, который хотите освободить')
         self.ui.pushButtonCapital.clicked.connect(self.show_capital)
         self.ui.pushButtonChooseRace.clicked.connect(self.show_choose_race)
         self.ui.pushButtonFight.clicked.connect(self.show_fight_window)
@@ -72,8 +75,11 @@ class ClientMainWindow(QMainWindow):
         self.ui.pushButtonVersus.clicked.connect(self.show_versus_window)
 
         self.ui.pushButtonHireEn.clicked.connect(self.hire_enemy_unit_action)
+        self.ui.pushButtonHireEn.setStatusTip('Выберите номер слота для найма')
         self.ui.pushButtonDeleteEn.clicked.connect(
             self.delete_enemy_unit_action)
+        self.ui.pushButtonDeleteEn.setStatusTip(
+            'Выберите слот, который хотите освободить')
 
         self.ui.pushButtonSlot1.clicked.connect(self.slot1_detailed)
         self.ui.pushButtonSlot2.clicked.connect(self.slot2_detailed)
@@ -105,7 +111,6 @@ class ClientMainWindow(QMainWindow):
         self.ui.enSwap46.clicked.connect(self.swap_enemy_action_46)
         self.ui.enSwap56.clicked.connect(self.swap_enemy_action_56)
 
-        # self.ui.copyUnit.clicked.connect(self.swap_units_action)
         self.ui.pushButtonAddPlayer.clicked.connect(self.add_player_action)
         self.ui.pushButtonDelPlayer.clicked.connect(self.delete_player_action)
         self.ui.pushButtonChoosePlayer.clicked.connect(self.choose_player_action)
@@ -139,12 +144,19 @@ class ClientMainWindow(QMainWindow):
     #             super(ClientMainWindow, self).mousePressEvent(event)
 
     def on_listView_clicked(self):
-        """Показывает gif'ку выбранного из списка юнита"""
+        """Показывает иконку и портрет выбранного из списка юнита"""
         selected = self.ui.listAllUnits.currentIndex().data()
         self.define_hire_active(selected)
+
+        # показываем иконку юнита
         lbl = self.ui.iconLabel
         lbl.setPixmap(QPixmap(
             os.path.join(UNIT_ICONS, f"{selected} {ICON}")))
+
+        # показываем портрет юнита
+        prt = self.ui.portraitLabel
+        prt.setPixmap(QPixmap(
+            os.path.join(PORTRAITS, f"{selected}.gif")))
 
         self.show_gif(selected)
         self.hbox.addWidget(lbl)
@@ -222,19 +234,9 @@ class ClientMainWindow(QMainWindow):
             print(err)
             return None
 
-    # def get_unit_image(self, unit):
-    #     """Получение иконки юнита"""
-    #     try:
-    #         return os.path.join(UNIT_ICONS,
-    #                             f"{unit.name} {ICON}")
-    #     except AttributeError:
-    #         return os.path.join(
-    #             UNIT_ICONS, PLUG)
-
     def show_gif(self, unit_name):
-        """Отображение gif-файла"""
+        """Отображение gif-файла выбранного юнита"""
         gif_label = self.ui.gifLabel
-        # print(unit.name)
         try:
             gif = QMovie(os.path.join(GIF_ANIMATIONS, f"{unit_name}.gif"))
             gif_label.setMovie(gif)
@@ -351,6 +353,7 @@ class ClientMainWindow(QMainWindow):
     #         print('Выберите слот')
 
     def swap_unit_action(self, slot1, slot2):
+        """Меняет слоты двух юнитов игрока"""
         self.database.update_slot(
             slot1,
             slot2,
@@ -358,6 +361,7 @@ class ClientMainWindow(QMainWindow):
         self.player_list_update()
 
     def swap_enemy_unit_action(self, slot1, slot2):
+        """Меняет слоты двух юнитов подземелья"""
         self.database.update_slot(
             slot1,
             slot2,
@@ -365,45 +369,59 @@ class ClientMainWindow(QMainWindow):
         self.enemy_list_update()
 
     def swap_unit_action_12(self):
+        """Меняет местами юнитов игрока в слотах 1 и 2"""
         self.swap_unit_action(1, 2)
 
     def swap_unit_action_13(self):
+        """Меняет местами юнитов игрока в слотах 1 и 3"""
         self.swap_unit_action(1, 3)
 
     def swap_unit_action_24(self):
+        """Меняет местами юнитов игрока в слотах 2 и 4"""
         self.swap_unit_action(2, 4)
 
     def swap_unit_action_34(self):
+        """Меняет местами юнитов игрока в слотах 3 и 4"""
         self.swap_unit_action(3, 4)
 
     def swap_unit_action_35(self):
+        """Меняет местами юнитов игрока в слотах 3 и 5"""
         self.swap_unit_action(3, 5)
 
     def swap_unit_action_46(self):
+        """Меняет местами юнитов игрока в слотах 4 и 6"""
         self.swap_unit_action(4, 6)
 
     def swap_unit_action_56(self):
+        """Меняет местами юнитов игрока в слотах 5 и 6"""
         self.swap_unit_action(5, 6)
 
     def swap_enemy_action_12(self):
+        """Меняет местами юнитов подземелья в слотах 1 и 2"""
         self.swap_enemy_unit_action(1, 2)
 
     def swap_enemy_action_13(self):
+        """Меняет местами юнитов подземелья в слотах 1 и 3"""
         self.swap_enemy_unit_action(1, 3)
 
     def swap_enemy_action_24(self):
+        """Меняет местами юнитов подземелья в слотах 2 и 4"""
         self.swap_enemy_unit_action(2, 4)
 
     def swap_enemy_action_34(self):
+        """Меняет местами юнитов подземелья в слотах 3 и 4"""
         self.swap_enemy_unit_action(3, 4)
 
     def swap_enemy_action_35(self):
+        """Меняет местами юнитов подземелья в слотах 3 и 5"""
         self.swap_enemy_unit_action(3, 5)
 
     def swap_enemy_action_46(self):
+        """Меняет местами юнитов подземелья в слотах 4 и 6"""
         self.swap_enemy_unit_action(4, 6)
 
     def swap_enemy_action_56(self):
+        """Меняет местами юнитов подземелья в слотах 5 и 6"""
         self.swap_enemy_unit_action(5, 6)
 
     def delete_unit_action(self):
@@ -463,7 +481,6 @@ class ClientMainWindow(QMainWindow):
         HIRE_WINDOW.show()
 
         print('Показать доступных для покупки юнитов данной фракции')
-        # print(self.fighter.add_to_band(5))
 
     def show_fight_window(self):
         """Метод создающий окно Битвы."""
