@@ -189,15 +189,15 @@ class Battle:
                         self.player2.units)
                     self.current_unit.heal(target)
 
-            if not self.player1.units:
-                print('You lose!')
-            if not self.player2.units:
-                print('You won!')
-
-            self.units_in_round.remove(self.current_unit)
+            # self.units_in_round.remove(self.current_unit)
             self.units_deque.append(self.current_unit)
         else:
             self.new_round()
+
+        if not self.player1.units:
+            print('You lose!')
+        if not self.player2.units:
+            print('You won!')
 
     def player_attack(self, player):
         if self.current_unit.attack_radius == ANY_UNIT \
@@ -277,61 +277,41 @@ class Battle:
         targets_dict = {
             1: self.closest_side_slot(
                 target_slots,
-                unit.slot,
-                unit.slot + 2,
-                unit.slot + 4),
+                1, 3, 5),
             2: self.closest_side_slot(
                 target_slots,
-                unit.slot + 1,
-                unit.slot + 3,
-                unit.slot + 5),
+                2, 4, 6),
             3: self.closest_middle_slot(
                 target_slots,
-                unit.slot,
-                unit.slot - 2,
-                unit.slot + 2),
+                3, 1, 5),
             4: self.closest_middle_slot(
                 target_slots,
-                unit.slot - 1,
-                unit.slot - 3,
-                unit.slot + 1),
+                4, 2, 6),
             5: self.closest_side_slot(
                 target_slots,
-                unit.slot,
-                unit.slot - 2,
-                unit.slot - 4),
+                5, 3, 1),
             6: self.closest_side_slot(
                 target_slots,
-                unit.slot - 1,
-                unit.slot - 3,
-                unit.slot - 5),
+                6, 4, 2),
         }
 
-        if (
-                vanguard_enemies_died and
-                vanguard_alies_died and
-                unit.slot % 2 == 1
-        ):
-            result = targets_dict[unit.slot]
-        elif (
-                vanguard_enemies_died and
-                unit.slot % 2 == 0):
-            result = targets_dict[unit.slot]
-        elif (
-                not vanguard_enemies_died and
-                vanguard_alies_died and
-                unit.slot % 2 == 1
-        ):
-            result = targets_dict[unit.slot + 1]
-        elif (
-                not vanguard_enemies_died and
-                unit.slot % 2 == 0):
-            result = targets_dict[unit.slot - 1]
-        elif (
-                not vanguard_enemies_died and
-                not vanguard_alies_died and
-                unit.slot % 2 == 1):
-            result = None
+        if (vanguard_enemies_died and
+                vanguard_alies_died):  # Авангард мертв, Авангард врага мертв
+            if unit.slot % 2 == 1:
+                result = targets_dict[unit.slot]
+
+        elif vanguard_enemies_died:  # Авангард мертв
+            if unit.slot % 2 == 0:
+                result = targets_dict[unit.slot - 1]
+
+        elif (not vanguard_enemies_died and
+              vanguard_alies_died):  # Авангард мертв, Авангард врага жив
+            if unit.slot % 2 == 1:
+                result = targets_dict[unit.slot + 1]
+
+        elif not vanguard_enemies_died:  # Авангард врага жив
+            if unit.slot % 2 == 0:
+                result = targets_dict[unit.slot]
 
         return result
 

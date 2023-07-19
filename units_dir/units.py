@@ -934,14 +934,25 @@ class ServerStorage:
                            player_name: str,
                            faction: str):
         """
-        Метод получения построек ветви в столице игрока.
+        Метод получения построек ветви бойцов в столице игрока.
         """
-
         query = self.session.query(
             self.PlayerBuildings.fighter
         ).filter_by(name=player_name, faction=faction)
-        # Возвращаем кортеж
-        return query.all()
+        temp_graph = []
+        self.get_building_graph(query[-1], temp_graph, 'fighter')
+        # Возвращаем список
+        return temp_graph
+
+    def get_building_graph(self, bname, graph, branch):
+        """Рекурсивное создание графа зданий/построек"""
+        for val in FACTIONS.get(self.current_game_faction)[branch]:
+            if val.bname == bname:
+                graph.append(bname)
+                if val.prev not in ('', 0):
+                    self.get_building_graph(val.prev, graph, branch)
+                else:
+                    return
 
     def create_buildings(self,
                          player_name: str,

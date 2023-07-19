@@ -493,12 +493,12 @@ class FightWindow(QMainWindow):
                     f"{side}/empty.gif"))
 
         elif unit.curr_health == 0:
-            unit_faction = self.give_unit_faction(unit)
+            unit_faction = self.get_unit_faction(unit)
             gif = QMovie(
                 os.path.join(
                     action,
                     f"{side}/{unit_faction}.gif"))
-            # unit_faction = self.give_unit_faction(unit)
+            # unit_faction = self.get_unit_faction(unit)
             # print(unit_faction)
         # if unit.curr_health == 0:
         #     gif = QMovie(os.path.join(COMMON, "skull.png"))
@@ -547,7 +547,7 @@ class FightWindow(QMainWindow):
         gif_slot.setMovie(gif)
         gif.start()
 
-    def give_unit_faction(self, unit):
+    def get_unit_faction(self, unit):
         """Получение фракции юнита"""
         try:
             for faction, f_building in FACTIONS.items():
@@ -786,14 +786,14 @@ class FightWindow(QMainWindow):
                             UNIT_EFFECTS_ATTACK,
                             self.player_side)
 
-                # если атакованный юнит погиб, удаляем его
-                if curr_target.curr_health == 0:
-                    if curr_target in self.new_battle.units_deque:
-                        self.new_battle.units_deque.remove(
-                            curr_target)
-                    if curr_target in self.new_battle.units_in_round:
-                        self.new_battle.units_in_round.remove(
-                            curr_target)
+            # если атакованный юнит погиб, удаляем его
+            if curr_target.curr_health == 0:
+                if curr_target in self.new_battle.units_deque:
+                    self.new_battle.units_deque.remove(
+                        curr_target)
+                if curr_target in self.new_battle.units_in_round:
+                    self.new_battle.units_in_round.remove(
+                        curr_target)
 
     @staticmethod
     def _show_damage(icon_slot):
