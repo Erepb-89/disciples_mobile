@@ -5,6 +5,7 @@ import random
 from battle_logging import logging
 
 from client_dir.settings import EM, UH, LD, MC, BATTLE_LOG
+from units_dir.buildings import FACTIONS
 from units_dir.units import main_db
 from units_dir.ranking import empire_fighter_lvls, empire_mage_lvls, \
     empire_archer_lvls, empire_support_lvls, \
@@ -47,11 +48,16 @@ class EmpireFighter:
         main_db.update_unit('Сквайр', 70, 50)
 
     @staticmethod
-    def lvl_up(slot, next_form):
+    def lvl_up(slot, new_form):
         """Боец Империи. Повышение уровня"""
         unit = main_db.get_unit_by_slot(slot, main_db.PlayerUnits)
-        print(unit.name, 'повысил уровень до', next_form)
-        main_db.replace_unit(slot, next_form)
+        faction = main_db.current_game_faction
+        buildings = main_db.get_buildings(
+            main_db.current_user,
+            faction)._asdict()
+
+        print(unit.name, 'повысил уровень до', new_form)
+        main_db.replace_unit(slot, new_form)
 
     @staticmethod
     def say():
@@ -918,18 +924,24 @@ class Unit:
         """Пропуск хода и защита в битве"""
         print(self.name, 'защищается')
 
-
     def add_to_band(self, slot):
         """Найм в отряд игрока"""
         main_db.hire_unit(self.name, slot)
 
-    @staticmethod
-    def lvl_up(slot):
+    def building_name(self):
+        """Получение здания по юниту"""
+        for f_building in FACTIONS.values():
+            for branch in f_building.values():
+                for building in branch.values():
+                    if self.name == building.unit_name:
+                        return building.bname
+        return None
+
+    def lvl_up(self):
         """Повышение уровня"""
-        unit = main_db.get_unit_by_slot(slot, main_db.PlayerUnits)
-        new_unit = hordes_fighter_lvls[unit.level + 1]
-        print(unit.name, 'повысил уровень до', new_unit)
-        main_db.replace_unit(slot, new_unit)
+        new_unit = hordes_fighter_lvls[self.level + 1]
+        print(self.name, 'повысил уровень до', new_unit)
+        main_db.replace_unit(self, new_unit)
 
     @staticmethod
     def say():
@@ -1024,8 +1036,10 @@ if __name__ == '__main__':
     # fighter.say()
     # archer.say()
 
-    new_unit = Unit(main_db.get_unit_by_name('Адский рыцарь'))
+    new_unit = Unit(main_db.get_unit_by_name('Берсерк'))
     new_unit2 = Unit(main_db.get_unit_by_name('Мраморная гаргулья'))
+
+    new_unit.lvl_up()
 
     # new_unit.attack(new_unit2)
     # new_unit2.attack(new_unit)
