@@ -588,6 +588,9 @@ class FightWindow(QMainWindow):
         # if text == "Finished":
         #     self.unit_gifs_update()
 
+        self.new_battle.autofight = False
+        # self.new_battle.next_turn()
+
     def run_autofight(self):
         """Автобой OLD"""
         self.new_battle.auto_fight()
@@ -794,6 +797,9 @@ class FightWindow(QMainWindow):
                 if curr_target in self.new_battle.units_in_round:
                     self.new_battle.units_in_round.remove(
                         curr_target)
+
+        # self.new_battle.autofight = False
+        # self.new_battle.next_turn()
 
     @staticmethod
     def _show_damage(icon_slot):
