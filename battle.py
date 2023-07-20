@@ -59,9 +59,7 @@ class Battle:
             self.player_slots,
             self.database.PlayerUnits)
         self.new_round()
-
-    # def add_player_slots(self, player):
-    #     for pl_slot in range(1, 7):
+        # self.next_turn()
 
     def add_player_units(self, player, slots_list, database):
         """
@@ -151,6 +149,14 @@ class Battle:
     # def defense(self, unit):
     #     unit.armor = 50
 
+    def next_turn(self):
+        """Ход юнита"""
+        self.current_unit = self.units_deque.popleft()
+        # print(f'Ходит: {self.current_unit.name}')
+
+        self.target_slots = self.auto_choose_target(self.current_unit)
+        # print(f'Цели: {self.target_slots}')
+
     def auto_fight(self):
         """Автобой"""
         self.autofight = True
@@ -183,41 +189,42 @@ class Battle:
                 elif self.current_unit in self.player2.units:
                     heal_targets = self.choose_healed(
                         self.current_unit, self.enemy_slots)
-                for target_slot in heal_targets:
-                    target = self.get_unit_by_slot(
-                        target_slot,
-                        self.player2.units)
-                    self.current_unit.heal(target)
+                    for target_slot in heal_targets:
+                        target = self.get_unit_by_slot(
+                            target_slot,
+                            self.player2.units)
+                        self.current_unit.heal(target)
 
-            # self.units_in_round.remove(self.current_unit)
             self.units_deque.append(self.current_unit)
         else:
             self.new_round()
 
-        if not self.player1.units:
-            print('You lose!')
-        if not self.player2.units:
-            print('You won!')
+        player_slots = self.get_player_slots(self.player1)
+        enemy_slots = self.get_player_slots(self.player2)
+        if not player_slots:
+            logging('Вы проиграли!\n')
+        if not enemy_slots:
+            logging('Вы победили!\n')
 
     def player_attack(self, player):
+        """Атака по выбранному игроку"""
         if self.current_unit.attack_radius == ANY_UNIT \
                 and self.current_unit.attack_purpose == 6:
+            print('self.target_slots', self.target_slots)
             for target_slot in self.target_slots:
                 target = self.get_unit_by_slot(
                     target_slot,
                     player.units)
                 self.current_unit.attack(target)
         elif self.target_slots == [None]:
-            line = f'{self.current_unit.name}, пропускает ход\n'
+            self.current_unit.defence()
+            line = f'{self.current_unit.name}, защищается\n'
             logging(line)
-            # print(self.current_unit.name, 'пропускает ход')
         else:
             self.current_unit.attack(
                 self.get_unit_by_slot(
                     self.target_slots[0],
                     player.units))
-        if not player.units:
-            print(f'{player.name} lose!')
 
     def clear_dungeon(self):
         """Очистка текущего подземелья от вражеских юнитов"""
@@ -342,24 +349,16 @@ class Battle:
 
     def auto_choose_target(self, unit):
         """Авто определение следующей цели для атаки"""
-        # print('enemy_slots', self.enemy_slots)
-        # print('player_slots', self.player_slots)
         self.player_slots = self.get_player_slots(self.player1)
         self.enemy_slots = self.get_player_slots(self.player2)
 
         if unit.attack_type \
                 not in ['Лечение', 'Лечение/Исцеление', 'Лечение/Воскрешение']:
             if unit in self.player1.units:
-                # print(f'Ходит {player1_name}')
-                # line = f'Ходит {player1_name}\n'
-                # logging(line)
                 return self.choose_target(
                     unit, self.player_slots, self.enemy_slots)
 
             if unit in self.player2.units:
-                # print(f'Ходит {player2_name}')
-                # line = f'Ходит {player2_name}\n'
-                # logging(line)
                 return self.choose_target(
                     unit, self.enemy_slots, self.player_slots)
         return None

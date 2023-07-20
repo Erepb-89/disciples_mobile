@@ -919,9 +919,15 @@ class Unit:
         """Пропуск хода юнита в битве"""
         print(self.name, 'пропускает ход')
 
-    @staticmethod
+    def undefence(self):
+        """Сброс защиты в битве"""
+        self.armor = main_db.get_unit_by_name(self.name).armor
+
     def defence(self):
         """Пропуск хода и защита в битве"""
+        # self.armor = round(self.armor / 2 + 50)
+        self.armor = round(main_db.get_unit_by_name(self.name).armor / 2 + 50)
+
         print(self.name, 'защищается')
 
     def add_to_band(self, slot):
@@ -950,6 +956,8 @@ class Unit:
 
     def attack(self, target):
         """Атака"""
+        self.undefence()
+
         # Вычисление вероятности попадания
         try:
             accuracy = self.attack_chance.split(
@@ -1009,7 +1017,8 @@ class Unit:
             self.skip_turn()
 
     def heal(self, target):
-        """Атака"""
+        """Лечение"""
+        self.undefence()
         # print('ходит:', self.name)
 
         hp = int(self.attack_dmg)
