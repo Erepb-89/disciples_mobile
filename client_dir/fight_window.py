@@ -577,7 +577,8 @@ class FightWindow(QMainWindow):
 
     def show_all_attacked(self, text):
         """Метод обновляющий анимацию всех атакованных юнитов"""
-        for target_slot in self.new_battle.target_slots:
+        # for target_slot in self.new_battle.target_slots:
+        for target_slot in self.new_battle.attacked_slots:
             self.who_attacked(
                 target_slot,
                 self.new_battle.current_unit)
@@ -588,15 +589,16 @@ class FightWindow(QMainWindow):
         # if text == "Finished":
         #     self.unit_gifs_update()
 
-        self.new_battle.autofight = False
-        # self.new_battle.next_turn()
+        self.new_battle.next_turn()
+        # self.new_battle.autofight = False
 
     def run_autofight(self):
         """Автобой OLD"""
         self.new_battle.auto_fight()
         if self.new_battle.units_in_round:
             self.who_attack()
-            for target_slot in self.new_battle.target_slots:
+            # for target_slot in self.new_battle.target_slots:
+            for target_slot in self.new_battle.attacked_slots:
                 self.who_attacked(
                     target_slot,
                     self.new_battle.current_unit)
@@ -676,8 +678,21 @@ class FightWindow(QMainWindow):
                               self.pl_slots_dict,
                               self.en_slots_dict)
 
+    def show_frame_red(self):
+        """Прорисовка рамки вокруг иконки атакованного юнита"""
+        for target_slot in self.new_battle.target_slots:
+            curr_target = self.get_curr_target(target_slot)
+
+            self.show_frames_by_side(curr_target,
+                                     self.unit_icons_dict,
+                                     self.dung_icons_dict,
+                                     self.show_red_frame)
+
     def show_frame_attacked(self):
         """Прорисовка рамки вокруг иконки атакованного юнита"""
+        # curr_target = self.new_battle.target
+        # print(curr_target)
+
         for target_slot in self.new_battle.target_slots:
             curr_target = self.get_curr_target(target_slot)
 
