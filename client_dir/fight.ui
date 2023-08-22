@@ -2141,7 +2141,7 @@
    <widget class="QLabel" name="damEnemySlot_1">
     <property name="geometry">
      <rect>
-      <x>1465</x>
+      <x>1467</x>
       <y>144</y>
       <width>105</width>
       <height>127</height>
@@ -2172,13 +2172,13 @@
      <number>0</number>
     </property>
     <property name="text">
-     <string>slot_1</string>
+     <string/>
     </property>
    </widget>
    <widget class="QLabel" name="damEnemySlot_2">
     <property name="geometry">
      <rect>
-      <x>1348</x>
+      <x>1350</x>
       <y>144</y>
       <width>105</width>
       <height>127</height>
@@ -2209,14 +2209,14 @@
      <number>0</number>
     </property>
     <property name="text">
-     <string>slot_2</string>
+     <string/>
     </property>
    </widget>
    <widget class="QLabel" name="damEnemySlot_3">
     <property name="geometry">
      <rect>
-      <x>1500</x>
-      <y>350</y>
+      <x>1467</x>
+      <y>304</y>
       <width>105</width>
       <height>127</height>
      </rect>
@@ -2246,14 +2246,14 @@
      <number>0</number>
     </property>
     <property name="text">
-     <string>slot_2</string>
+     <string/>
     </property>
    </widget>
    <widget class="QLabel" name="damEnemySlot_4">
     <property name="geometry">
      <rect>
-      <x>1500</x>
-      <y>170</y>
+      <x>1350</x>
+      <y>304</y>
       <width>105</width>
       <height>127</height>
      </rect>
@@ -2283,14 +2283,14 @@
      <number>0</number>
     </property>
     <property name="text">
-     <string>slot_2</string>
+     <string/>
     </property>
    </widget>
    <widget class="QLabel" name="damEnemySlot_5">
     <property name="geometry">
      <rect>
-      <x>1530</x>
-      <y>120</y>
+      <x>1467</x>
+      <y>464</y>
       <width>105</width>
       <height>127</height>
      </rect>
@@ -2320,14 +2320,14 @@
      <number>0</number>
     </property>
     <property name="text">
-     <string>slot_2</string>
+     <string/>
     </property>
    </widget>
    <widget class="QLabel" name="damEnemySlot_6">
     <property name="geometry">
      <rect>
-      <x>1520</x>
-      <y>50</y>
+      <x>1350</x>
+      <y>464</y>
       <width>105</width>
       <height>127</height>
      </rect>
@@ -2357,7 +2357,7 @@
      <number>0</number>
     </property>
     <property name="text">
-     <string>slot_2</string>
+     <string/>
     </property>
    </widget>
    <widget class="QLabel" name="gifEnemyAreaAttack">
@@ -2931,6 +2931,228 @@
      <enum>Qt::ScrollBarAlwaysOn</enum>
     </property>
    </widget>
+   <widget class="QLabel" name="damPlayerSlot_1">
+    <property name="geometry">
+     <rect>
+      <x>30</x>
+      <y>140</y>
+      <width>105</width>
+      <height>127</height>
+     </rect>
+    </property>
+    <property name="minimumSize">
+     <size>
+      <width>105</width>
+      <height>127</height>
+     </size>
+    </property>
+    <property name="maximumSize">
+     <size>
+      <width>224</width>
+      <height>127</height>
+     </size>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::Panel</enum>
+    </property>
+    <property name="frameShadow">
+     <enum>QFrame::Raised</enum>
+    </property>
+    <property name="lineWidth">
+     <number>0</number>
+    </property>
+    <property name="midLineWidth">
+     <number>0</number>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QLabel" name="damPlayerSlot_2">
+    <property name="geometry">
+     <rect>
+      <x>147</x>
+      <y>140</y>
+      <width>105</width>
+      <height>127</height>
+     </rect>
+    </property>
+    <property name="minimumSize">
+     <size>
+      <width>105</width>
+      <height>127</height>
+     </size>
+    </property>
+    <property name="maximumSize">
+     <size>
+      <width>224</width>
+      <height>127</height>
+     </size>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::Panel</enum>
+    </property>
+    <property name="frameShadow">
+     <enum>QFrame::Raised</enum>
+    </property>
+    <property name="lineWidth">
+     <number>0</number>
+    </property>
+    <property name="midLineWidth">
+     <number>0</number>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QLabel" name="damPlayerSlot_3">
+    <property name="geometry">
+     <rect>
+      <x>30</x>
+      <y>300</y>
+      <width>105</width>
+      <height>127</height>
+     </rect>
+    </property>
+    <property name="minimumSize">
+     <size>
+      <width>105</width>
+      <height>127</height>
+     </size>
+    </property>
+    <property name="maximumSize">
+     <size>
+      <width>224</width>
+      <height>127</height>
+     </size>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::Panel</enum>
+    </property>
+    <property name="frameShadow">
+     <enum>QFrame::Raised</enum>
+    </property>
+    <property name="lineWidth">
+     <number>0</number>
+    </property>
+    <property name="midLineWidth">
+     <number>0</number>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QLabel" name="damPlayerSlot_4">
+    <property name="geometry">
+     <rect>
+      <x>147</x>
+      <y>300</y>
+      <width>105</width>
+      <height>127</height>
+     </rect>
+    </property>
+    <property name="minimumSize">
+     <size>
+      <width>105</width>
+      <height>127</height>
+     </size>
+    </property>
+    <property name="maximumSize">
+     <size>
+      <width>224</width>
+      <height>127</height>
+     </size>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::Panel</enum>
+    </property>
+    <property name="frameShadow">
+     <enum>QFrame::Raised</enum>
+    </property>
+    <property name="lineWidth">
+     <number>0</number>
+    </property>
+    <property name="midLineWidth">
+     <number>0</number>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QLabel" name="damPlayerSlot_5">
+    <property name="geometry">
+     <rect>
+      <x>30</x>
+      <y>460</y>
+      <width>105</width>
+      <height>127</height>
+     </rect>
+    </property>
+    <property name="minimumSize">
+     <size>
+      <width>105</width>
+      <height>127</height>
+     </size>
+    </property>
+    <property name="maximumSize">
+     <size>
+      <width>224</width>
+      <height>127</height>
+     </size>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::Panel</enum>
+    </property>
+    <property name="frameShadow">
+     <enum>QFrame::Raised</enum>
+    </property>
+    <property name="lineWidth">
+     <number>0</number>
+    </property>
+    <property name="midLineWidth">
+     <number>0</number>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QLabel" name="damPlayerSlot_6">
+    <property name="geometry">
+     <rect>
+      <x>147</x>
+      <y>460</y>
+      <width>105</width>
+      <height>127</height>
+     </rect>
+    </property>
+    <property name="minimumSize">
+     <size>
+      <width>105</width>
+      <height>127</height>
+     </size>
+    </property>
+    <property name="maximumSize">
+     <size>
+      <width>224</width>
+      <height>127</height>
+     </size>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::Panel</enum>
+    </property>
+    <property name="frameShadow">
+     <enum>QFrame::Raised</enum>
+    </property>
+    <property name="lineWidth">
+     <number>0</number>
+    </property>
+    <property name="midLineWidth">
+     <number>0</number>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
    <zorder>FightBG</zorder>
    <zorder>rightIcons</zorder>
    <zorder>leftIcons</zorder>
@@ -2973,17 +3195,11 @@
    <zorder>gifEnemyEffSlot_3</zorder>
    <zorder>gifEnemyEffSlot_5</zorder>
    <zorder>enemyHPSlot6</zorder>
-   <zorder>damEnemySlot_6</zorder>
-   <zorder>damEnemySlot_5</zorder>
    <zorder>enemyHPSlot4</zorder>
-   <zorder>damEnemySlot_1</zorder>
-   <zorder>damEnemySlot_3</zorder>
    <zorder>enemyHPSlot3</zorder>
    <zorder>enemyHPSlot1</zorder>
-   <zorder>damEnemySlot_2</zorder>
    <zorder>enemyHPSlot2</zorder>
    <zorder>enemyHPSlot5</zorder>
-   <zorder>damEnemySlot_4</zorder>
    <zorder>gifEnemyAreaAttack</zorder>
    <zorder>gifPlayerSlot_2</zorder>
    <zorder>gifPlayerSlot_4</zorder>
@@ -3004,36 +3220,48 @@
    <zorder>gifPlayerAttEffSlot_3</zorder>
    <zorder>gifPlayerAttEffSlot_2</zorder>
    <zorder>gifPlayerAttEffSlot_4</zorder>
-   <zorder>slot3</zorder>
-   <zorder>slot5</zorder>
-   <zorder>slot1</zorder>
-   <zorder>slot2</zorder>
-   <zorder>slot6</zorder>
-   <zorder>slot4</zorder>
-   <zorder>pushButtonSlot5</zorder>
-   <zorder>pushButtonSlot3</zorder>
-   <zorder>pushButtonSlot1</zorder>
-   <zorder>pushButtonSlot6</zorder>
-   <zorder>pushButtonSlot2</zorder>
-   <zorder>pushButtonSlot4</zorder>
-   <zorder>enemySlot3</zorder>
-   <zorder>enemySlot1</zorder>
-   <zorder>enemySlot5</zorder>
-   <zorder>enemySlot2</zorder>
-   <zorder>enemySlot4</zorder>
-   <zorder>enemySlot6</zorder>
-   <zorder>pushButtonEnemySlot1</zorder>
-   <zorder>pushButtonEnemySlot5</zorder>
-   <zorder>pushButtonEnemySlot3</zorder>
-   <zorder>pushButtonEnemySlot2</zorder>
-   <zorder>pushButtonEnemySlot6</zorder>
-   <zorder>pushButtonEnemySlot4</zorder>
    <zorder>ChangeSideSlot</zorder>
    <zorder>pushButtonChange</zorder>
    <zorder>EscapeSlot</zorder>
    <zorder>pushButtonBack</zorder>
    <zorder>batPanel</zorder>
    <zorder>battleLog</zorder>
+   <zorder>slot5</zorder>
+   <zorder>slot1</zorder>
+   <zorder>slot3</zorder>
+   <zorder>slot2</zorder>
+   <zorder>slot4</zorder>
+   <zorder>slot6</zorder>
+   <zorder>damPlayerSlot_5</zorder>
+   <zorder>damPlayerSlot_3</zorder>
+   <zorder>damPlayerSlot_1</zorder>
+   <zorder>damPlayerSlot_2</zorder>
+   <zorder>damPlayerSlot_4</zorder>
+   <zorder>damPlayerSlot_6</zorder>
+   <zorder>pushButtonSlot5</zorder>
+   <zorder>pushButtonSlot3</zorder>
+   <zorder>pushButtonSlot1</zorder>
+   <zorder>pushButtonSlot4</zorder>
+   <zorder>pushButtonSlot2</zorder>
+   <zorder>pushButtonSlot6</zorder>
+   <zorder>enemySlot1</zorder>
+   <zorder>enemySlot3</zorder>
+   <zorder>enemySlot5</zorder>
+   <zorder>enemySlot4</zorder>
+   <zorder>enemySlot2</zorder>
+   <zorder>enemySlot6</zorder>
+   <zorder>damEnemySlot_5</zorder>
+   <zorder>damEnemySlot_1</zorder>
+   <zorder>damEnemySlot_3</zorder>
+   <zorder>damEnemySlot_2</zorder>
+   <zorder>damEnemySlot_4</zorder>
+   <zorder>damEnemySlot_6</zorder>
+   <zorder>pushButtonEnemySlot3</zorder>
+   <zorder>pushButtonEnemySlot5</zorder>
+   <zorder>pushButtonEnemySlot1</zorder>
+   <zorder>pushButtonEnemySlot4</zorder>
+   <zorder>pushButtonEnemySlot2</zorder>
+   <zorder>pushButtonEnemySlot6</zorder>
   </widget>
  </widget>
  <resources/>

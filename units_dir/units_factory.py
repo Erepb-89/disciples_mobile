@@ -945,6 +945,14 @@ class Unit:
 
     def lvl_up(self):
         """Повышение уровня"""
+        faction = main_db.current_game_faction
+        buildings = main_db.get_buildings(
+            main_db.current_user,
+            faction)._asdict()
+
+        if self.building_name in buildings:
+            print(True)
+
         new_unit = hordes_fighter_lvls[self.level + 1]
         print(self.name, 'повысил уровень до', new_unit)
         main_db.replace_unit(self, new_unit)
@@ -968,12 +976,11 @@ class Unit:
             accuracy = int(self.attack_chance.split('%')[0]) / 100
 
         attack_successful = True if random.random() <= accuracy else False
-        # print(attack_successful)
 
-        if attack_successful:
-            print(f"{self.name}: Атака успешна")
-        else:
-            print(f"{self.name}: Промах")
+        # if attack_successful:
+        #     print(f"{self.name}: Атака успешна")
+        # else:
+        #     print(f"{self.name}: Промах")
 
         # Если атака успешна
         if attack_successful:
@@ -1015,6 +1022,8 @@ class Unit:
         if self.attack_type \
                 in ['Лечение', 'Лечение/Исцеление', 'Лечение/Воскрешение']:
             self.skip_turn()
+
+        return attack_successful
 
     def heal(self, target):
         """Лечение"""

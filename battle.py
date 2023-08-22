@@ -207,8 +207,57 @@ class Battle:
         enemy_slots = self.get_player_slots(self.player2)
         if not player_slots:
             logging('Вы проиграли!\n')
+            killed_units = self.player1.units
+
+            for unit in killed_units:
+                print(unit.name, unit.exp_per_kill)
+                self.en_exp_killed += unit.exp_per_kill
+
+            print('en_exp_killed', self.en_exp_killed)
+
+            for slot in enemy_slots:
+                alive_unit = self.get_unit_by_slot(
+                    slot, self.player2.units)
+                exp_value = self.en_exp_killed / len(enemy_slots)
+                if exp_value < alive_unit.exp:
+                    alive_unit.curr_exp += exp_value
+
+                    if player2_name == 'Computer':
+                        self.database.update_unit_exp(
+                            alive_unit.slot,
+                            alive_unit.curr_exp,
+                            self.database.CurrentDungeon
+                        )
+                    else:
+                        self.database.update_unit_exp(
+                            alive_unit.slot,
+                            alive_unit.curr_exp,
+                            self.database.Player2Units
+                        )
+                else:
+                    alive_unit.lvl_up
+
         if not enemy_slots:
             logging('Вы победили!\n')
+            killed_units = self.player2.units
+
+            for unit in killed_units:
+                print(unit.name, unit.exp_per_kill)
+                self.en_exp_killed += unit.exp_per_kill
+
+            print('en_exp_killed', self.en_exp_killed)
+
+            for slot in player_slots:
+                alive_unit = self.get_unit_by_slot(
+                    slot, self.player1.units)
+                alive_unit.curr_exp += \
+                    self.en_exp_killed / len(player_slots)
+
+                self.database.update_unit_exp(
+                    alive_unit.slot,
+                    alive_unit.curr_exp,
+                    self.database.PlayerUnits
+                )
 
     def player_attack(self, player: Player):
         """Атака по выбранному игроку"""
@@ -225,19 +274,22 @@ class Battle:
                     target = self.get_unit_by_slot(
                         target_slot,
                         player.units)
-                    self.current_unit.attack(target)
+                    succ = self.current_unit.attack(target)
 
-                    self.attacked_slots.append(target.slot)
+                    if succ:
+                        self.attacked_slots.append(target.slot)
+                    # print(self.attacked_slots)
             else:
                 self.attacked_slots = []
                 self.target = self.get_unit_by_slot(
                     # self.target_slots[0],
                     random.choice(self.target_slots),
                     player.units)
-                self.current_unit.attack(self.target)
+                succ = self.current_unit.attack(self.target)
 
-                self.attacked_slots.append(self.target.slot)
-                print(self.attacked_slots)
+                if succ:
+                    self.attacked_slots.append(self.target.slot)
+                    print(self.attacked_slots)
 
 
     def clear_dungeon(self):
