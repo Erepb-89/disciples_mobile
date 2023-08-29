@@ -30,13 +30,13 @@ class Thread(QThread):
 
     def run(self):
         if self.attacker is True:
-            i = 10_000
+            i = 10_000_000
         else:
             i = 15_000_000
 
         while i > 1:
             i -= 1
-            if i == 1:
+            if i == 5_000:
                 self.dataThread.emit("Finished")
 
 
@@ -603,9 +603,13 @@ class FightWindow(QMainWindow):
             self.show_frame_attacker()
             self.show_frame_attacked()
 
-            self.worker = Thread(False)
+            self.worker = Thread(True)
             self.worker.dataThread.connect(self.show_all_attacked)
             self.worker.start()
+
+            # self.worker = Thread(False)
+            # self.worker.dataThread.connect(self.unit_gifs_update)
+            # self.worker.start()
 
         # self.unit_gifs_update()
 
