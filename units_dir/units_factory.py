@@ -928,12 +928,14 @@ class Unit:
         # self.armor = round(self.armor / 2 + 50)
         self.armor = round(main_db.get_unit_by_name(self.name).armor / 2 + 50)
 
-        print(self.name, 'защищается')
+        line = f"{self.name} защищается\n"
+        logging(line)
 
     def add_to_band(self, slot):
         """Найм в отряд игрока"""
         main_db.hire_unit(self.name, slot)
 
+    @property
     def building_name(self):
         """Получение здания по юниту"""
         for f_building in FACTIONS.values():
@@ -945,17 +947,24 @@ class Unit:
 
     def lvl_up(self):
         """Повышение уровня"""
+        next_unit = ''
         faction = main_db.current_game_faction
         buildings = main_db.get_buildings(
             main_db.current_user,
             faction)._asdict()
 
-        if self.building_name in buildings:
-            print(True)
+        for f_building in FACTIONS.values():
+            for branch in f_building.values():
+                for building in branch.values():
+                    if self.building_name == building.prev and building.bname in buildings.values():
+                        next_unit = building.unit_name
 
-        new_unit = hordes_fighter_lvls[self.level + 1]
-        print(self.name, 'повысил уровень до', new_unit)
-        main_db.replace_unit(self, new_unit)
+        if next_unit == '':
+            next_unit = self.name
+
+        line = f"{self.name}, повысил уровень до {next_unit}\n"
+        logging(line)
+        main_db.replace_unit(self.slot, next_unit)
 
     @staticmethod
     def say():
@@ -1059,7 +1068,7 @@ if __name__ == '__main__':
 
     new_unit.lvl_up()
 
-    # new_unit.attack(new_unit2)
+    new_unit.attack(new_unit2)
     # new_unit2.attack(new_unit)
 
     # new_unit.attack(new_unit2)

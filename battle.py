@@ -37,6 +37,7 @@ class Battle:
         self.units_in_round = []
         self.en_exp_killed = 0
         self.target = None
+        self.battle_is_over = False
 
         self.player1 = Player(player1_name)
         self.player2 = Player(player2_name)
@@ -150,9 +151,6 @@ class Battle:
                 return unit
         return None
 
-    # def defense(self, unit):
-    #     unit.armor = 50
-
     def next_turn(self):
         """Ход юнита"""
         self.current_unit = self.units_deque.popleft()
@@ -218,24 +216,28 @@ class Battle:
             for slot in enemy_slots:
                 alive_unit = self.get_unit_by_slot(
                     slot, self.player2.units)
-                exp_value = self.en_exp_killed / len(enemy_slots)
-                if exp_value < alive_unit.exp:
-                    alive_unit.curr_exp += exp_value
 
-                    if player2_name == 'Computer':
-                        self.database.update_unit_exp(
-                            alive_unit.slot,
-                            alive_unit.curr_exp,
-                            self.database.CurrentDungeon
-                        )
+                exp_value = int(self.en_exp_killed / len(enemy_slots))
+                if exp_value < alive_unit.exp:
+                    if alive_unit.curr_exp + exp_value >= alive_unit.exp:
+                        alive_unit.lvl_up()
                     else:
-                        self.database.update_unit_exp(
-                            alive_unit.slot,
-                            alive_unit.curr_exp,
-                            self.database.Player2Units
-                        )
+                        alive_unit.curr_exp += exp_value
+
+                        if player2_name == 'Computer':
+                            self.database.update_unit_exp(
+                                alive_unit.slot,
+                                alive_unit.curr_exp,
+                                self.database.CurrentDungeon
+                            )
+                        else:
+                            self.database.update_unit_exp(
+                                alive_unit.slot,
+                                alive_unit.curr_exp,
+                                self.database.Player2Units
+                            )
                 else:
-                    alive_unit.lvl_up
+                    alive_unit.lvl_up()
 
         if not enemy_slots:
             logging('Вы победили!\n')
@@ -250,14 +252,34 @@ class Battle:
             for slot in player_slots:
                 alive_unit = self.get_unit_by_slot(
                     slot, self.player1.units)
-                alive_unit.curr_exp += \
-                    self.en_exp_killed / len(player_slots)
 
-                self.database.update_unit_exp(
-                    alive_unit.slot,
-                    alive_unit.curr_exp,
-                    self.database.PlayerUnits
-                )
+                exp_value = int(self.en_exp_killed / len(player_slots))
+                if exp_value < alive_unit.exp:
+                    # если текущий опыт юнита + заработанный опыт >= макс опыта юнита
+                    if alive_unit.curr_exp + exp_value >= alive_unit.exp:
+                        # повышаем юниту уровень
+                        alive_unit.lvl_up()
+
+                        self.add_player_units(
+                            self.player1,
+                            self.player_slots,
+                            self.database.PlayerUnits)
+                        self.battle_is_over = True
+                    else:
+                        alive_unit.curr_exp += exp_value
+
+                        self.database.update_unit_exp(
+                            alive_unit.slot,
+                            alive_unit.curr_exp,
+                            self.database.PlayerUnits
+                        )
+                else:
+                    alive_unit.lvl_up()
+                    self.add_player_units(
+                        self.player1,
+                        self.player_slots,
+                        self.database.PlayerUnits)
+                    self.battle_is_over = True
 
     def player_attack(self, player: Player):
         """Атака по выбранному игроку"""
@@ -265,8 +287,7 @@ class Battle:
             if self.target_slots == [None]:
                 self.attacked_slots = []
                 self.current_unit.defence()
-                line = f'{self.current_unit.name}, защищается\n'
-                logging(line)
+
             elif self.current_unit.attack_radius == ANY_UNIT \
                     and self.current_unit.attack_purpose == 6:
                 self.attacked_slots = []
@@ -274,9 +295,9 @@ class Battle:
                     target = self.get_unit_by_slot(
                         target_slot,
                         player.units)
-                    succ = self.current_unit.attack(target)
+                    success = self.current_unit.attack(target)
 
-                    if succ:
+                    if success:
                         self.attacked_slots.append(target.slot)
                     # print(self.attacked_slots)
             else:
@@ -285,9 +306,9 @@ class Battle:
                     # self.target_slots[0],
                     random.choice(self.target_slots),
                     player.units)
-                succ = self.current_unit.attack(self.target)
+                success = self.current_unit.attack(self.target)
 
-                if succ:
+                if success:
                     self.attacked_slots.append(self.target.slot)
                     print(self.attacked_slots)
 
