@@ -126,9 +126,13 @@ class Battle:
     @staticmethod
     def sorting_units(all_units):
         """Сортировка юнитов по инициативе"""
-        sorted_units_by_ini = sorted(
-            all_units, key=lambda u: u.attack_ini, reverse=True)
+        units_ini = {}
+        for unit in all_units:
+            ini = unit.attack_ini + random.randrange(-4, 5)
+            units_ini[unit] = ini
 
+        sorted_units_by_ini = sorted(
+            units_ini, key=units_ini.get, reverse=True)
         return sorted_units_by_ini
 
     def new_round(self):
