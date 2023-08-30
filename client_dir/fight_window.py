@@ -32,7 +32,7 @@ class Thread(QThread):
         if self.attacker is True:
             i = 10_000_000
         else:
-            i = 15_000_000
+            i = 12_000_000
 
         while i > 1:
             i -= 1
@@ -107,7 +107,9 @@ class FightWindow(QMainWindow):
         self.InitUI()
 
         with open(BATTLE_LOG, 'w', encoding='utf-8') as log:
+            log.write(f'Ходит: {self.new_battle.current_unit.name}\n')
             log.write("Новая битва\n")
+        self.update_log()
 
     def InitUI(self):
         """Загружаем конфигурацию окна из дизайнера"""
@@ -191,6 +193,9 @@ class FightWindow(QMainWindow):
         ]
 
         self.show()
+        self.show_frame_attacker()
+        self.update_log()
+        # self.show_frame_attacked()
 
     def update_bg(self):
         """Обновление бэкграунда, заполнение картинкой поля сражения"""
@@ -250,6 +255,10 @@ class FightWindow(QMainWindow):
         self.unit_gifs_update()
         self._update_all_unit_health()
         self.unit_icons_update()
+        self.show_no_damaged()
+        self.show_no_frames(self.unit_icons_dict, self.show_no_frame)
+        self.show_no_frames(self.dung_icons_dict, self.show_no_frame)
+        self.show_frame_attacker()
 
     def set_front_gif_player1_dict(self):
         """Задание FRONT стороны для анимационных GIF игрока 1"""
@@ -600,10 +609,19 @@ class FightWindow(QMainWindow):
 
         if self.new_battle.units_in_round:
             self.who_attack()
-            self.show_frame_attacker()
+            # self.show_frame_attacker()
             self.show_frame_attacked()
 
-            self.worker = Thread(True)
+            # if self.target_is_enemy:
+            #     # Показывает атакованный вражеский юнит
+            #     self._show_damage(
+            #         self.dung_damaged_dict[curr_target.slot])
+            # else:
+            #     # Показывает атакованный юнит игрока
+            #     self._show_damage(
+            #         self.unit_damaged_dict[curr_target.slot])
+
+            self.worker = Thread(False)
             self.worker.dataThread.connect(self.show_all_attacked)
             self.worker.start()
 
@@ -627,7 +645,12 @@ class FightWindow(QMainWindow):
         #     self.unit_gifs_update()
 
         self.new_battle.next_turn()
+        self.show_frame_attacker()
+        # self.show_frame_attacked()
+        # self.show_no_damaged()
         # self.new_battle.autofight = False
+
+        self.update_log()
 
     def run_autofight(self):
         """Автобой OLD"""
@@ -666,11 +689,14 @@ class FightWindow(QMainWindow):
         if unit is None:
             pass
         elif unit in self.new_battle.player1.units:
-            slots_dict = slots_dict1
-            func(slots_dict[unit.slot])
+            func(slots_dict1[unit.slot])
         elif unit in self.new_battle.player2.units:
-            slots_dict = slots_dict2
-            func(slots_dict[unit.slot])
+            func(slots_dict2[unit.slot])
+
+    def show_no_frames(self, slots_dict, func):
+        """Убирает все рамки"""
+        for slot in range(1, 7):
+            func(slots_dict[slot])
 
     def show_attacker(self, unit):
         """Прорисовка модели атакующего юнита"""
