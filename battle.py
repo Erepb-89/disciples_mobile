@@ -159,6 +159,8 @@ class Battle:
         """Ход юнита"""
         self.current_unit = self.units_deque.popleft()
         print(f'Ходит: {self.current_unit.name}')
+        line = f'Ходит: {self.current_unit.name}\n'
+        logging(line)
 
         self.target_slots = self.auto_choose_target(self.current_unit)
         print(f'Цели: {self.target_slots}')
