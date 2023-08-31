@@ -6,9 +6,8 @@ from client_dir.settings import ANY_UNIT, CLOSEST_UNIT
 from battle_logging import logging
 from units_dir.units_factory import Unit
 
-player1_name = 'Erepb-89'
-# player2_name = 'Erepb'
-player2_name = 'Computer'
+PLAYER1_NAME = 'Erepb-89'
+PLAYER2_NAME = 'Computer'
 
 
 class Player:
@@ -16,6 +15,7 @@ class Player:
     def __init__(self, name):
         self.name = name
         self.units = []
+        self.slots = []
 
 class Battle:
     """Класс битвы"""
@@ -29,15 +29,13 @@ class Battle:
         self.target_slots = []
         self.attacked_slots = []
         self.current_unit = None
-        self.player_slots = []
-        self.enemy_slots = []
         self.units_in_round = []
         self.en_exp_killed = 0
         self.target = None
         self.battle_is_over = False
 
-        self.player1 = Player(player1_name)
-        self.player2 = Player(player2_name)
+        self.player1 = Player(PLAYER1_NAME)
+        self.player2 = Player(PLAYER2_NAME)
 
         # self.current_faction = self.database.current_game_faction
 
@@ -46,23 +44,21 @@ class Battle:
         # self.dungeon_units = self.database.show_dungeon_units('knight')
         # self.dungeon_units = self.database.show_dungeon_units('mirror')
 
-        if player2_name == "Computer":
+        if self.player2.name == "Computer":
             self.add_dung_units()
         else:
             self.add_player_units(
                 self.player2,
-                self.enemy_slots,
                 self.database.Player2Units)
 
         self.add_player_units(
             self.player1,
-            self.player_slots,
             self.database.PlayerUnits)
         self.new_round()
         self.next_turn()
 
-    def add_player_units(self, player: Player,
-                         slots_list,
+    def add_player_units(self,
+                         player: Player,
                          database):
         """
         Добавление юнитов игрока в текущую битву.
@@ -75,7 +71,7 @@ class Battle:
             if unit is not None:
                 player.units.append(Unit(unit))
                 if not unit.curr_health <= 0:
-                    slots_list.append(unit.slot)
+                    player.slots.append(unit.slot)
 
     def add_dung_units(self):
         """
@@ -96,7 +92,7 @@ class Battle:
                 if unit is not None:
                     self.player2.units.append(Unit(unit))
                     if not unit.curr_health <= 0:
-                        self.enemy_slots.append(unit.slot)
+                        self.player2.slots.append(unit.slot)
             except (TypeError, AttributeError) as err:
                 print(err)
 
@@ -167,7 +163,6 @@ class Battle:
         self.autofight = True
         if self.units_in_round:
 
-            # self.current_unit = self.units_deque.popleft()
             if self.current_unit.attack_type \
                 not in ['Лечение', 'Лечение/Исцеление', 'Лечение/Воскрешение']:
 
@@ -184,7 +179,7 @@ class Battle:
             else:
                 if self.current_unit in self.player1.units:
                     heal_targets = self.choose_healed(
-                        self.current_unit, self.player_slots)
+                        self.current_unit, self.player1.slots)
                     # for target_slot in heal_targets:
                     #     target = self.get_unit_by_slot(
                     #         target_slot,
@@ -193,7 +188,7 @@ class Battle:
 
                 elif self.current_unit in self.player2.units:
                     heal_targets = self.choose_healed(
-                        self.current_unit, self.enemy_slots)
+                        self.current_unit, self.player2.slots)
                     for target_slot in heal_targets:
                         target = self.get_unit_by_slot(
                             target_slot,
@@ -204,143 +199,71 @@ class Battle:
         else:
             self.new_round()
 
-        self.alive_units_lvl_up()
+        self._alive_getting_experience()
 
-    def level_up_x(self, player1, player2, pl_database):
+    def _getting_experience(self, player1, player2, pl_database):
+        """Получение опыта юнитами"""
         killed_units = player1.units
-        enemy_slots = self.get_player_slots(player2)
+        self.get_player_slots(player2)
 
         for unit in killed_units:
-            print(unit.name, unit.exp_per_kill)
             self.en_exp_killed += unit.exp_per_kill
 
-        print('en_exp_killed', self.en_exp_killed)
-
-        for slot in enemy_slots:
+        for slot in player2.slots:
             alive_unit = self.get_unit_by_slot(
-                slot, player1.units)
+                slot, player2.units)
 
-            exp_value = int(self.en_exp_killed / len(enemy_slots))
-            if exp_value < alive_unit.exp:
-                if alive_unit.curr_exp + exp_value >= alive_unit.exp:
-                    alive_unit.lvl_up()
-                else:
-                    alive_unit.curr_exp += exp_value
-
-                    if player2.name == 'Computer':
-                        self.database.update_unit_exp(
-                            alive_unit.slot,
-                            alive_unit.curr_exp,
-                            self.database.CurrentDungeon
-                        )
-                    else:
-                        self.database.update_unit_exp(
-                            alive_unit.slot,
-                            alive_unit.curr_exp,
-                            pl_database
-                        )
-            else:
-                alive_unit.lvl_up()
-                self.add_player_units(
-                    player1,
-                    self.player_slots,
-                    pl_database)
-
-    def alive_units_lvl_up(self):
-        """Повышение опыта или уровня выжившим юнитам"""
-        # player_slots = self.get_player_slots(self.player1)
-        # enemy_slots = self.get_player_slots(self.player2)
-        # if not player_slots:
-        #     logging('Вы проиграли!\n')
-        #
-        #     self.level_up_x(self.player1, self.player2, self.database.Player2Units)
-        #
-        # if not enemy_slots:
-        #     logging('Вы победили!\n')
-        #
-        #     self.level_up_x(self.player2, self.player1, self.database.PlayerUnits)
-        #
-
-        player_slots = self.get_player_slots(self.player1)
-        enemy_slots = self.get_player_slots(self.player2)
-        if not player_slots:
-            logging('Вы проиграли!\n')
-            killed_units = self.player1.units
-
-            for unit in killed_units:
-                print(unit.name, unit.exp_per_kill)
-                self.en_exp_killed += unit.exp_per_kill
-
-            print('en_exp_killed', self.en_exp_killed)
-
-            for slot in enemy_slots:
-                alive_unit = self.get_unit_by_slot(
-                    slot, self.player2.units)
-
-                exp_value = int(self.en_exp_killed / len(enemy_slots))
+            if alive_unit.exp != 'Максимальный':
+                exp_value = int(self.en_exp_killed / len(player2.slots))
                 if exp_value < alive_unit.exp:
                     if alive_unit.curr_exp + exp_value >= alive_unit.exp:
                         alive_unit.lvl_up()
                     else:
                         alive_unit.curr_exp += exp_value
 
-                        if player2_name == 'Computer':
+                        # if player2.name == 'Computer':
+                        #     print('player Computer')
+                        #     self.database.update_unit_exp(
+                        #         alive_unit.slot,
+                        #         alive_unit.curr_exp,
+                        #         self.database.CurrentDungeon
+                        #     )
+                        if player2.name != 'Computer':
                             self.database.update_unit_exp(
                                 alive_unit.slot,
                                 alive_unit.curr_exp,
-                                self.database.CurrentDungeon
+                                pl_database
                             )
-                        else:
-                            self.database.update_unit_exp(
-                                alive_unit.slot,
-                                alive_unit.curr_exp,
-                                self.database.Player2Units
-                            )
-                else:
-                    alive_unit.lvl_up()
 
-
-        if not enemy_slots:
-            logging('Вы победили!\n')
-            killed_units = self.player2.units
-
-            for unit in killed_units:
-                print(unit.name, unit.exp_per_kill)
-                self.en_exp_killed += unit.exp_per_kill
-
-            print('en_exp_killed', self.en_exp_killed)
-
-            for slot in player_slots:
-                alive_unit = self.get_unit_by_slot(
-                    slot, self.player1.units)
-
-                exp_value = int(self.en_exp_killed / len(player_slots))
-                if exp_value < alive_unit.exp:
-                    # если текущий опыт юнита + заработанный опыт >= макс опыта юнита
-                    if alive_unit.curr_exp + exp_value >= alive_unit.exp:
-                        # повышаем юниту уровень
-                        alive_unit.lvl_up()
-
-                        self.add_player_units(
-                            self.player1,
-                            self.player_slots,
-                            self.database.PlayerUnits)
-                        self.battle_is_over = True
-                    else:
-                        alive_unit.curr_exp += exp_value
-
-                        self.database.update_unit_exp(
-                            alive_unit.slot,
-                            alive_unit.curr_exp,
-                            self.database.PlayerUnits
-                        )
                 else:
                     alive_unit.lvl_up()
                     self.add_player_units(
-                        self.player1,
-                        self.player_slots,
-                        self.database.PlayerUnits)
-                    self.battle_is_over = True
+                        player2,
+                        pl_database)
+
+        self.add_player_units(
+            player2,
+            pl_database)
+        # for unit in player2.units:
+        #     print(unit.name, unit.health)
+
+    def _alive_getting_experience(self):
+        """Повышение опыта или уровня выжившим юнитам"""
+        self.get_player_slots(self.player1)
+        self.get_player_slots(self.player2)
+        if not self.player1.slots:
+            logging('Вы проиграли!\n')
+
+            self._getting_experience(self.player1, self.player2,
+                                     self.database.Player2Units)
+            self.battle_is_over = True
+
+        if not self.player2.slots:
+            logging('Вы победили!\n')
+
+            self._getting_experience(self.player2, self.player1,
+                                     self.database.PlayerUnits)
+            self.battle_is_over = True
 
     def player_attack(self, player: Player):
         """Атака по выбранному игроку"""
@@ -360,7 +283,6 @@ class Battle:
 
                     if success:
                         self.attacked_slots.append(target.slot)
-                    # print(self.attacked_slots)
             else:
                 self.attacked_slots = []
                 self.target = self.get_unit_by_slot(
@@ -371,8 +293,6 @@ class Battle:
 
                 if success:
                     self.attacked_slots.append(self.target.slot)
-                    print(self.attacked_slots)
-
 
     def clear_dungeon(self):
         """Очистка текущего подземелья от вражеских юнитов"""
@@ -500,29 +420,27 @@ class Battle:
 
     def auto_choose_target(self, unit):
         """Авто определение следующей цели для атаки"""
-        self.player_slots = self.get_player_slots(self.player1)
-        self.enemy_slots = self.get_player_slots(self.player2)
+        self.get_player_slots(self.player1)
+        self.get_player_slots(self.player2)
 
         if unit.attack_type \
                 not in ['Лечение', 'Лечение/Исцеление', 'Лечение/Воскрешение']:
             if unit in self.player1.units:
                 return self.choose_target(
-                    unit, self.player_slots, self.enemy_slots)
+                    unit, self.player1.slots, self.player2.slots)
             if unit in self.player2.units:
                 return self.choose_target(
-                    unit, self.enemy_slots, self.player_slots)
+                    unit, self.player2.slots, self.player1.slots)
 
         return None
 
     @staticmethod
     def get_player_slots(player: Player):
         """Получение слотов с живыми юнитами игрока"""
-        player_slots = []
+        player.slots = []
         for unit in player.units:
             if unit is not None and not unit.curr_health <= 0:
-                player_slots.append(unit.slot)
-
-        return player_slots
+                player.slots.append(unit.slot)
 
     @staticmethod
     def get_player_units(player: Player):

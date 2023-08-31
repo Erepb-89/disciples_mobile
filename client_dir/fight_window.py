@@ -3,7 +3,6 @@
 import os.path
 import random
 
-from PyQt5 import QtCore
 from PyQt5.QtCore import QThread, pyqtSignal
 from PyQt5.QtGui import QPixmap, QMovie, QStandardItem, QStandardItemModel
 from PyQt5.QtWidgets import QMainWindow, QHBoxLayout
@@ -29,6 +28,7 @@ class Thread(QThread):
         self.attacker = attacker
 
     def run(self):
+        """Запуск"""
         if self.attacker is True:
             i = 10_000_000
         else:
@@ -571,7 +571,7 @@ class FightWindow(QMainWindow):
                         if unit.name == building.unit_name:
                             return faction
             return 'is_dead'
-        except:
+        except AttributeError:
             pass
 
     def autofight(self):
@@ -607,8 +607,7 @@ class FightWindow(QMainWindow):
             self.new_battle.next_turn()
             self.show_frame_attacker()
         else:
-            print(self.new_battle.player1.units)
-            self.unit_gifs_update()
+            # self.unit_gifs_update()
             self._update_all_unit_health()
             self.unit_icons_update()
         # self.new_battle.autofight = False
@@ -656,7 +655,8 @@ class FightWindow(QMainWindow):
         elif unit in self.new_battle.player2.units:
             func(slots_dict2[unit.slot])
 
-    def show_no_frames(self, slots_dict, func):
+    @staticmethod
+    def show_no_frames(slots_dict, func):
         """Убирает все рамки"""
         for slot in range(1, 7):
             func(slots_dict[slot])
@@ -1155,6 +1155,7 @@ class FightWindow(QMainWindow):
         """Метод получающий юнита игрока по слоту и стороне."""
         if side == self.player_side:
             for unit in self.new_battle.player1.units:
+                # print(unit.name, unit.health)
                 if unit.slot == slot:
                     return unit
         else:

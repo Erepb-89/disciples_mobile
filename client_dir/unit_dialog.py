@@ -194,8 +194,13 @@ class UnitDialog(QDialog):
         self.immune.setText(str(unit.immune))
         self.ward.setText(str(unit.ward))
         self.attackType.setText(str(unit.attack_type))
-        self.attackChance.setText(str(unit.attack_chance))
-        self.attackDmg.setText(str(unit.attack_dmg))
+        self.attackChance.setText(f'{unit.attack_chance}%')
+        if unit.attack_dmg == 300:
+            self.attackDmg.setText(f'{unit.attack_dmg} (Макс.)')
+            self.attackDmg.setStyleSheet('color: darkred')
+        else:
+            self.attackDmg.setText(str(unit.attack_dmg))
+            self.attackDmg.setStyleSheet('color: black')
         self.attackSource.setText(str(unit.attack_source))
         self.attackIni.setText(str(unit.attack_ini))
         self.attackRadius.setText(str(unit.attack_radius))
@@ -385,8 +390,13 @@ class UnitNameDialog(QDialog):
         self.immune.setText(str(unit.immune))
         self.ward.setText(str(unit.ward))
         self.attackType.setText(str(unit.attack_type))
-        self.attackChance.setText(str(unit.attack_chance))
-        self.attackDmg.setText(str(unit.attack_dmg))
+        self.attackChance.setText(f'{unit.attack_chance}%')
+        if unit.attack_dmg == 300:
+            self.attackDmg.setText(f'{unit.attack_dmg} (Макс.)')
+            self.attackDmg.setStyleSheet('color: darkred')
+        else:
+            self.attackDmg.setText(str(unit.attack_dmg))
+            self.attackDmg.setStyleSheet('color: black')
         self.attackSource.setText(str(unit.attack_source))
         self.attackIni.setText(str(unit.attack_ini))
         self.attackRadius.setText(str(unit.attack_radius))

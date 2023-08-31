@@ -1135,7 +1135,15 @@ class ServerStorage:
     def is_double(self, unit):
         return self.get_unit_by_name(unit).size == "Большой"
 
-    def update_unit(self, unit_id, curr_health, exp):
+    def update_unit(self,
+                    unit_id,
+                    level,
+                    health,
+                    curr_health,
+                    curr_exp,
+                    exp_per_kill,
+                    attack_chance,
+                    attack_dmg):
         """
         Метод изменения юнита игрока (здоровье и опыт).
         Изменяет запись в таблице PlayerUnits.
@@ -1144,8 +1152,14 @@ class ServerStorage:
         changes = update(
             self.PlayerUnits).where(
             self.PlayerUnits.id == unit_id).values(
+            level=level,
+            health=health,
             curr_health=curr_health,
-            exp=exp).execution_options(
+            curr_exp=curr_exp,
+            exp_per_kill=exp_per_kill,
+            attack_chance=attack_chance,
+            attack_dmg=attack_dmg
+        ).execution_options(
             synchronize_session="fetch")
 
         self.session.execute(changes)
