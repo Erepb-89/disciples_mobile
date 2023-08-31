@@ -343,17 +343,6 @@ class FightWindow(QMainWindow):
             6: self.ui.hpSlot6,
         }
 
-    # def append_front_damage(self):
-    #     """GIF показывающие урон по юнитам FRONT стороны"""
-    #     self.front_damage_icons = {
-    #         1: self.ui.damPlayerSlot_1,
-    #         2: self.ui.damPlayerSlot_2,
-    #         3: self.ui.damPlayerSlot_3,
-    #         4: self.ui.damPlayerSlot_4,
-    #         5: self.ui.damPlayerSlot_5,
-    #         6: self.ui.damPlayerSlot_6,
-    #     }
-
     def append_rear(self):
         """Анимационные GIF теней юнитов REAR стороны"""
         self.rear_slots_dict = {
@@ -409,17 +398,6 @@ class FightWindow(QMainWindow):
             6: self.ui.enemyHPSlot6,
         }
 
-    def append_rear_damage(self):
-        """GIF показывающие урон по юнитам REAR стороны"""
-        self.rear_damage_icons = {
-            1: self.ui.damEnemySlot_1,
-            2: self.ui.damEnemySlot_2,
-            3: self.ui.damEnemySlot_3,
-            4: self.ui.damEnemySlot_4,
-            5: self.ui.damEnemySlot_5,
-            6: self.ui.damEnemySlot_6,
-        }
-
     def set_front_gif_player1(self):
         """Задание FRONT стороны для анимационных GIF игрока 1 (по умолчанию)"""
         self.player_side = FRONT
@@ -440,9 +418,6 @@ class FightWindow(QMainWindow):
         # GIF очков здоровья юнитов FRONT стороны
         self.append_front_hp()
 
-        # GIF показывающие урон по юнитам FRONT стороны
-        # self.append_front_damage()
-
         # Основные анимационные GIF юнитов REAR стороны
         self.append_rear()
 
@@ -457,9 +432,6 @@ class FightWindow(QMainWindow):
 
         # GIF очков здоровья юнитов REAR стороны
         self.append_rear_hp()
-
-        # GIF показывающие урон по юнитам REAR стороны
-        # self.append_rear_damage()
 
     def append_front_icons(self):
         """Иконки юнитов FRONT стороны"""
@@ -612,22 +584,9 @@ class FightWindow(QMainWindow):
             # self.show_frame_attacker()
             self.show_frame_attacked()
 
-            # if self.target_is_enemy:
-            #     # Показывает атакованный вражеский юнит
-            #     self._show_damage(
-            #         self.dung_damaged_dict[curr_target.slot])
-            # else:
-            #     # Показывает атакованный юнит игрока
-            #     self._show_damage(
-            #         self.unit_damaged_dict[curr_target.slot])
-
-            self.worker = Thread(False)
+            self.worker = Thread(True)
             self.worker.dataThread.connect(self.show_all_attacked)
             self.worker.start()
-
-            # self.worker = Thread(False)
-            # self.worker.dataThread.connect(self.unit_gifs_update)
-            # self.worker.start()
 
         # self.unit_gifs_update()
 
@@ -644,10 +603,14 @@ class FightWindow(QMainWindow):
         # if text == "Finished":
         #     self.unit_gifs_update()
 
-        self.new_battle.next_turn()
-        self.show_frame_attacker()
-        # self.show_frame_attacked()
-        # self.show_no_damaged()
+        if not self.new_battle.battle_is_over:
+            self.new_battle.next_turn()
+            self.show_frame_attacker()
+        else:
+            print(self.new_battle.player1.units)
+            self.unit_gifs_update()
+            self._update_all_unit_health()
+            self.unit_icons_update()
         # self.new_battle.autofight = False
 
         self.update_log()
@@ -803,7 +766,7 @@ class FightWindow(QMainWindow):
 
         if self.new_battle.autofight:
 
-            #
+            # очищает иконки атакованных юнитов
             self.show_no_damaged()
 
             # прорисовка модели атакующего юнита
