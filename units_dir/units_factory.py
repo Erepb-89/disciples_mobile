@@ -1,6 +1,7 @@
 """Фабрика юнитов"""
 
 import abc
+import math
 import random
 from battle_logging import logging
 
@@ -914,7 +915,6 @@ class Unit:
         """Проверка на двухслотовость"""
         return True if self.size == "Большой" else False
 
-    @staticmethod
     def skip_turn(self):
         """Пропуск хода юнита в битве"""
         print(self.name, 'пропускает ход')
@@ -945,26 +945,91 @@ class Unit:
                         return building.bname
         return None
 
+    def upgrade_stats(self):
+        """Увеличение характеристик юнита"""
+        # Уровень
+        next_level = self.level + 1
+
+        # Здоровье
+        next_hp = int(self.health * 1.10)
+        while next_hp % 5 != 0:
+            next_hp += 1
+
+        # Шанс на попадание
+        try:
+            chance = int(self.attack_chance.split('/')[0])
+            poison = int(self.attack_chance.split('/')[1])
+            next_chance = f'{chance + 1}/{poison + 1}'
+        except BaseException:
+            chance = int(self.attack_chance)
+            next_chance = chance + 1
+
+        # Урон
+        next_damage = int(self.attack_dmg * 1.10)
+        # if next_damage >= 300:
+        #     next_damage = 300
+        next_damage = min(next_damage, 300)
+
+        # Опыт за убийство
+        if self.level <= 10:
+            next_killed_exp = math.ceil(self.exp_per_kill * 1.10)
+        else:
+            next_killed_exp = math.ceil(self.exp_per_kill * 1.05)
+
+        main_db.update_unit(
+            self.id,
+            next_level,
+            next_hp,
+            next_hp,
+            0,
+            next_killed_exp,
+            next_chance,
+            next_damage)
+
     def lvl_up(self):
         """Повышение уровня"""
         next_unit = ''
+        # Фракция
         faction = main_db.current_game_faction
+        # Постройки
         buildings = main_db.get_buildings(
             main_db.current_user,
             faction)._asdict()
 
-        for f_building in FACTIONS.values():
-            for branch in f_building.values():
-                for building in branch.values():
-                    if self.building_name == building.prev and building.bname in buildings.values():
-                        next_unit = building.unit_name
+        faction_units = []
+        for branch, b_value in FACTIONS.get(main_db.current_game_faction).items():
+            if branch != 'others':
+                for building in b_value.values():
+                    faction_units.append(building.unit_name)
 
+        if self.name in faction_units:
+            # Следующая стадия согласно постройкам в столице
+            for f_building in FACTIONS.values():
+                for branch in f_building.values():
+                    for building in branch.values():
+                        if self.building_name == building.prev and building.bname in buildings.values():
+                            # Следующая стадия
+                            next_unit = building.unit_name
+
+            if next_unit == '' and self.curr_exp == self.exp - 1:
+                next_unit = self.name
+
+            elif next_unit == '' and self.curr_exp != self.exp - 1:
+                next_unit = self.name
+                main_db.update_unit_exp(self.slot, self.exp - 1, main_db.PlayerUnits)
+
+            elif next_unit != '':
+                # Меняем юнит на следующую стадию согласно постройкам в столице
+                main_db.replace_unit(self.slot, next_unit)
+                line = f"{self.name} повысил уровень до {next_unit}\n"
+                logging(line)
+
+        # Апгрейд юнита по характеристикам
         if next_unit == '':
-            next_unit = self.name
+            self.upgrade_stats()
 
-        line = f"{self.name}, повысил уровень до {next_unit}\n"
-        logging(line)
-        main_db.replace_unit(self.slot, next_unit)
+            line = f"{self.name} повысил свой уровень\n"
+            logging(line)
 
     @staticmethod
     def say():
@@ -977,12 +1042,12 @@ class Unit:
 
         # Вычисление вероятности попадания
         try:
-            accuracy = self.attack_chance.split(
-                '/')[0].split('%')[0] / 100
-            poison = self.attack_chance.split(
-                '/')[1].split('%')[0] / 100
+            accuracy = int(self.attack_chance.split(
+                '/')[0]) / 100
+            poison = int(self.attack_chance.split(
+                '/')[1]) / 100
         except BaseException:
-            accuracy = int(self.attack_chance.split('%')[0]) / 100
+            accuracy = int(self.attack_chance) / 100
 
         attack_successful = True if random.random() <= accuracy else False
 
@@ -995,11 +1060,11 @@ class Unit:
         if attack_successful:
             # Вычисление урона с учетом брони
             try:
-                damage = int(int(self.attack_dmg.split(
-                    '/')[0]) * (1 - target.armor * 0.01)) + random.randrange(5)
-            except BaseException:
-                damage = int(self.attack_dmg *
-                             (1 - target.armor * 0.01)) + random.randrange(5)
+                damage = int((int(self.attack_dmg.split(
+                    '/')[0]) + random.randrange(6)) * (1 - target.armor * 0.01))
+            except AttributeError:
+                damage = int((self.attack_dmg + random.randrange(6)) * \
+                             (1 - target.armor * 0.01))
 
             # если урон больше, чем здоровье врага, приравниваем урон к
             # здоровью
@@ -1047,6 +1112,7 @@ class Unit:
         # вычисление текущего здоровья цели после получения лечения
         target.curr_health = hp
 
+
 # Отладка
 if __name__ == '__main__':
     # empire_factory = AbstractFactory.create_factory('Em')
@@ -1079,4 +1145,3 @@ if __name__ == '__main__':
     #
     # new_unit.attack(new_unit2)
     # new_unit2.attack(new_unit)
-
