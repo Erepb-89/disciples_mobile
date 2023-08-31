@@ -881,7 +881,7 @@ class Ui_FightWindow(object):
         self.batPanel.setObjectName("batPanel")
         self.battleLog = QtWidgets.QListView(self.centralwidget)
         self.battleLog.setEnabled(True)
-        self.battleLog.setGeometry(QtCore.QRect(252, 850, 1091, 50))
+        self.battleLog.setGeometry(QtCore.QRect(252, 829, 1091, 71))
         font = QtGui.QFont()
         font.setFamily("Arial")
         font.setPointSize(11)

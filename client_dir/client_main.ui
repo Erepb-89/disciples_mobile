@@ -1403,6 +1403,19 @@
      <set>Qt::AlignCenter</set>
     </property>
    </widget>
+   <widget class="QPushButton" name="pushButtonReset">
+    <property name="geometry">
+     <rect>
+      <x>260</x>
+      <y>0</y>
+      <width>90</width>
+      <height>28</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Обновить</string>
+    </property>
+   </widget>
    <zorder>gifLabel</zorder>
    <zorder>capital</zorder>
    <zorder>listAllUnits</zorder>
@@ -1479,6 +1492,7 @@
    <zorder>EnemySlotTxt_2</zorder>
    <zorder>EnemySlotTxt_4</zorder>
    <zorder>portraitLabel</zorder>
+   <zorder>pushButtonReset</zorder>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
  </widget>

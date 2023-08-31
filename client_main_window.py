@@ -114,6 +114,7 @@ class ClientMainWindow(QMainWindow):
         self.ui.pushButtonAddPlayer.clicked.connect(self.add_player_action)
         self.ui.pushButtonDelPlayer.clicked.connect(self.delete_player_action)
         self.ui.pushButtonChoosePlayer.clicked.connect(self.choose_player_action)
+        self.ui.pushButtonReset.clicked.connect(self.reset)
 
         self.all_players_list_update()
         self.units_list_update()
@@ -131,6 +132,18 @@ class ClientMainWindow(QMainWindow):
     def closeEvent(event):
         """Закрытие всех окон по выходу из главного"""
         os.sys.exit(0)
+
+    def reset(self):
+        """Обновить"""
+        self.player_list_update()
+        self.player_slots_update()
+
+        self.get_current_faction()
+        self.set_capital_image()
+
+        self.enemy_list_update()
+        self.enemy_slots_update()
+
 
     # def mousePressEvent(self, event):
     #     """re-implemented to suppress Right-Clicks from selecting items."""
