@@ -2,7 +2,7 @@
 
 import os.path
 
-import pymorphy2
+# import pymorphy2
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QMainWindow, QHBoxLayout, QMessageBox
 
@@ -35,7 +35,7 @@ class CapitalBuildingWindow(QMainWindow):
         self.archer_graph = []
         self.support_graph = []
         self.others_graph = []
-        self.morph = pymorphy2.MorphAnalyzer()
+        # self.morph = pymorphy2.MorphAnalyzer()
         self.icons = True
 
         self.InitUI()
@@ -288,11 +288,12 @@ class CapitalBuildingWindow(QMainWindow):
             self.ui.prevLevelText.setText('Пред. уровень:')
 
             # просклонять имя юнита
-            declined_name = self.decline(unit_name)
+            # declined_name = self.decline(unit_name)
 
             self.ui.desc.setText(
                 f'{self.branch_settings[b_slot].desc}\n'
-                f'{prev_unit_name} становится {declined_name}')
+                # f'{prev_unit_name} становится {declined_name}')
+                f'{prev_unit_name} превращается в {unit_name}')
         else:
             self.ui.nextLevel.setText('')
             self.ui.prevLevel.setText('')
