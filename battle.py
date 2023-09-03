@@ -12,10 +12,12 @@ PLAYER2_NAME = 'Computer'
 
 class Player:
     """Класс Игрок"""
+
     def __init__(self, name):
         self.name = name
         self.units = []
         self.slots = []
+
 
 class Battle:
     """Класс битвы"""
@@ -33,6 +35,7 @@ class Battle:
         self.en_exp_killed = 0
         self.target = None
         self.battle_is_over = False
+        self.alive_units = []
 
         self.player1 = Player(PLAYER1_NAME)
         self.player2 = Player(PLAYER2_NAME)
@@ -64,6 +67,7 @@ class Battle:
         Добавление юнитов игрока в текущую битву.
         Выполняется в начале каждой новой битвы.
         """
+        player.units = []
         for pl_slot in range(1, 7):
             unit = self.database.get_unit_by_slot(
                 pl_slot,
@@ -132,8 +136,7 @@ class Battle:
         """Высчитывание оставшихся выживших в новом раунде"""
         self.units_deque.clear()
 
-        all_units = self.get_player_units(self.player1) + \
-                    self.get_player_units(self.player2)
+        all_units = self.player1.units + self.player2.units
 
         sorted_units_by_ini = self.sorting_units(all_units)
 
@@ -151,7 +154,8 @@ class Battle:
     def next_turn(self):
         """Ход юнита"""
         self.current_unit = self.units_deque.popleft()
-        print(f'Ходит: {self.current_unit.name}')
+        print(
+            f'Ходит: {self.current_unit.name}, инициатива: {self.current_unit.attack_ini}')
         line = f'Ходит: {self.current_unit.name}\n'
         logging(line)
 
@@ -163,8 +167,8 @@ class Battle:
         self.autofight = True
         if self.units_in_round:
 
-            if self.current_unit.attack_type \
-                not in ['Лечение', 'Лечение/Исцеление', 'Лечение/Воскрешение']:
+            if self.current_unit.attack_type not in [
+                    'Лечение', 'Лечение/Исцеление', 'Лечение/Воскрешение']:
 
                 self.target_slots = self.auto_choose_target(self.current_unit)
 
@@ -203,6 +207,7 @@ class Battle:
 
     def _getting_experience(self, player1, player2, pl_database):
         """Получение опыта юнитами"""
+        self.alive_units = []
         killed_units = player1.units
         self.get_player_slots(player2)
 
@@ -218,6 +223,7 @@ class Battle:
                 if exp_value < alive_unit.exp:
                     if alive_unit.curr_exp + exp_value >= alive_unit.exp:
                         alive_unit.lvl_up()
+                        self.alive_units.append(alive_unit.slot)
                     else:
                         alive_unit.curr_exp += exp_value
 
@@ -234,18 +240,9 @@ class Battle:
                                 alive_unit.curr_exp,
                                 pl_database
                             )
-
                 else:
                     alive_unit.lvl_up()
-                    self.add_player_units(
-                        player2,
-                        pl_database)
-
-        self.add_player_units(
-            player2,
-            pl_database)
-        # for unit in player2.units:
-        #     print(unit.name, unit.health)
+                    self.alive_units.append(alive_unit.slot)
 
     def _alive_getting_experience(self):
         """Повышение опыта или уровня выжившим юнитам"""
@@ -344,11 +341,11 @@ class Battle:
         """Определение ближайшего слота для текущего юнита"""
         result = [None]
         vanguard_alies_died = 2 not in alies_slots and \
-                              4 not in alies_slots and \
-                              6 not in alies_slots
+            4 not in alies_slots and \
+            6 not in alies_slots
         vanguard_enemies_died = 2 not in target_slots and \
-                                4 not in target_slots and \
-                                6 not in target_slots
+            4 not in target_slots and \
+            6 not in target_slots
 
         targets_dict = {
             1: self.closest_side_slot(
@@ -431,7 +428,6 @@ class Battle:
             if unit in self.player2.units:
                 return self.choose_target(
                     unit, self.player2.slots, self.player1.slots)
-
         return None
 
     @staticmethod
@@ -441,13 +437,3 @@ class Battle:
         for unit in player.units:
             if unit is not None and not unit.curr_health <= 0:
                 player.slots.append(unit.slot)
-
-    @staticmethod
-    def get_player_units(player: Player):
-        """Получение живых юнитов игрока"""
-        player_units = []
-        for unit in player.units:
-            if unit is not None and not unit.curr_health <= 0:
-                player_units.append(unit)
-
-        return player_units

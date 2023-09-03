@@ -151,7 +151,7 @@ class Ui_MainWindow(object):
         self.swap12.setGeometry(QtCore.QRect(120, 227, 71, 28))
         self.swap12.setObjectName("swap12")
         self.pushButtonCampaign = QtWidgets.QPushButton(self.centralwidget)
-        self.pushButtonCampaign.setEnabled(False)
+        self.pushButtonCampaign.setEnabled(True)
         self.pushButtonCampaign.setGeometry(QtCore.QRect(860, 0, 90, 28))
         self.pushButtonCampaign.setObjectName("pushButtonCampaign")
         self.EnemySlot2 = QtWidgets.QLabel(self.centralwidget)

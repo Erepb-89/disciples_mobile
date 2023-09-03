@@ -13,7 +13,7 @@ from client_dir.settings import UNIT_STAND, UNIT_ATTACK, \
     UNIT_ATTACKED, UNIT_EFFECTS_ATTACK, BATTLE_GROUND, FRONT, REAR, \
     COMMON, BATTLE_GROUNDS, UNIT_SHADOW_ATTACK, UNIT_SHADOW_STAND, \
     UNIT_SHADOW_ATTACKED, UNIT_EFFECTS_AREA, UNIT_EFFECTS_TARGET, \
-    RIGHT_ICONS, LEFT_ICONS, SCREEN_RECT, PANEL_RECT, BATTLE_LOG
+    RIGHT_ICONS, LEFT_ICONS, SCREEN_RECT, PANEL_RECT, BATTLE_LOG, BATTLE_ANIM
 from client_dir.ui_functions import get_unit_image
 from client_dir.unit_dialog import UnitDialog
 from units_dir.buildings import FACTIONS
@@ -32,7 +32,7 @@ class Thread(QThread):
         if self.attacker is True:
             i = 10_000_000
         else:
-            i = 12_000_000
+            i = 15_000_000
 
         while i > 1:
             i -= 1
@@ -178,8 +178,6 @@ class FightWindow(QMainWindow):
         self.set_unit_icons_player1()
 
         self.unit_gifs_update()
-        self.unit_icons_update()
-        self._update_all_unit_health()
 
         self.ui.battleLog.setStyleSheet("background-color: rgb(65, 3, 2)")
 
@@ -253,8 +251,6 @@ class FightWindow(QMainWindow):
             self.set_front_gif_player1_dict()
 
         self.unit_gifs_update()
-        self._update_all_unit_health()
-        self.unit_icons_update()
         self.show_no_damaged()
         self.show_no_frames(self.unit_icons_dict, self.show_no_frame)
         self.show_no_frames(self.dung_icons_dict, self.show_no_frame)
@@ -517,6 +513,7 @@ class FightWindow(QMainWindow):
             # print(unit_faction)
         # if unit.curr_health == 0:
         #     gif = QMovie(os.path.join(COMMON, "skull.png"))
+
         else:
             gif = QMovie(
                 os.path.join(
@@ -524,7 +521,6 @@ class FightWindow(QMainWindow):
                     f"{side}{unit.name}.gif"))
 
         gif_slot.setMovie(gif)
-        self._update_all_unit_health()
         gif.start()
 
     @staticmethod
@@ -599,19 +595,49 @@ class FightWindow(QMainWindow):
         self.show_no_frame_attacker()
         self.show_no_frame_attacked()
 
-        # if text == "Finished":
-        #     self.unit_gifs_update()
-
+        # битва еще не закончена
         if not self.new_battle.battle_is_over:
+            self._update_all_unit_health()
             self.new_battle.next_turn()
             self.show_frame_attacker()
+
+        # битва закончена
         else:
-            # self.unit_gifs_update()
-            self._update_all_unit_health()
-            self.unit_icons_update()
-        # self.new_battle.autofight = False
+            self.show_lvl_up_animations()
+
+            self.worker = Thread(False)
+            self.worker.dataThread.connect(self.unit_gifs_update)
+            self.worker.start()
 
         self.update_log()
+
+    def show_lvl_up_animations(self):
+        """Анимация всех получивших уровень юнитов"""
+        # если юниты игрока1 мертвы
+        if not self.new_battle.player1.slots:
+            self.new_battle.add_player_units(
+                self.new_battle.player2,
+                self.database.Player2Units)
+
+            for unit_slot in self.new_battle.alive_units:
+                self.show_level_up(
+                    self._unit_by_slot_and_side(
+                        unit_slot,
+                        self.enemy_side),
+                    self.en_slots_eff_dict)
+
+        # если юниты игрока2 мертвы
+        elif not self.new_battle.player2.slots:
+            self.new_battle.add_player_units(
+                self.new_battle.player1,
+                self.database.PlayerUnits)
+
+            for unit_slot in self.new_battle.alive_units:
+                self.show_level_up(
+                    self._unit_by_slot_and_side(
+                        unit_slot,
+                        self.player_side),
+                    self.pl_slots_eff_dict)
 
     def run_autofight(self):
         """Автобой OLD"""
@@ -626,18 +652,18 @@ class FightWindow(QMainWindow):
 
     def show_gif_by_side(self, unit, action, slots_dict1, slots_dict2):
         """Отображает GIF в зависимости от стороны и действия"""
+        slots_dict = {}
+        side = self.player_side
+
         if unit is None:
             pass
 
         elif unit in self.new_battle.player1.units:
-            side = self.player_side
             slots_dict = slots_dict1
-            # self.target_is_enemy = True
 
         elif unit in self.new_battle.player2.units:
             side = self.enemy_side
             slots_dict = slots_dict2
-            # self.target_is_enemy = False
 
         self.show_gif_side(
             unit,
@@ -659,6 +685,21 @@ class FightWindow(QMainWindow):
         """Убирает все рамки"""
         for slot in range(1, 7):
             func(slots_dict[slot])
+
+    def show_level_up(self, unit, slots_dict):
+        """Прорисовка модели юнита, получившего уровень"""
+        if unit.slot in self.new_battle.alive_units and self.new_battle.battle_is_over:
+            if unit.size == "Большой":
+                unit_gif = "lvl_up_big.gif"
+            else:
+                unit_gif = "lvl_up.gif"
+            gif = QMovie(
+                os.path.join(
+                    BATTLE_ANIM,
+                    unit_gif))
+
+            slots_dict[unit.slot].setMovie(gif)
+            gif.start()
 
     def show_attacker(self, unit):
         """Прорисовка модели атакующего юнита"""
@@ -984,6 +1025,9 @@ class FightWindow(QMainWindow):
             UNIT_SHADOW_STAND,
             self.enemy_side)
 
+        self._update_all_unit_health()
+        self.unit_icons_update()
+
     @staticmethod
     def _update_unit_health(unit, slot):
         """Обновление здоровья юнита"""
@@ -1154,7 +1198,6 @@ class FightWindow(QMainWindow):
         """Метод получающий юнита игрока по слоту и стороне."""
         if side == self.player_side:
             for unit in self.new_battle.player1.units:
-                # print(unit.name, unit.health)
                 if unit.slot == slot:
                     return unit
         else:
