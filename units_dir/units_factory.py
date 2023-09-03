@@ -965,10 +965,15 @@ class Unit:
             next_chance = chance + 1
 
         # Урон
-        next_damage = int(self.attack_dmg * 1.10)
-        # if next_damage >= 300:
-        #     next_damage = 300
-        next_damage = min(next_damage, 300)
+        try:
+            damage = int(self.attack_dmg.split('/')[0])
+            # Доделать увеличение доп. урона
+            additional = self.attack_dmg.split('/')[1]
+            next_damage = int(damage * 1.10)
+            next_damage = f'{min(next_damage, 300)}/{additional}'
+        except BaseException:
+            next_damage = int(self.attack_dmg * 1.10)
+            next_damage = min(next_damage, 300)
 
         # Опыт за убийство
         if self.level <= 10:
@@ -997,7 +1002,8 @@ class Unit:
             faction)._asdict()
 
         faction_units = []
-        for branch, b_value in FACTIONS.get(main_db.current_game_faction).items():
+        for branch, b_value in FACTIONS.get(
+                main_db.current_game_faction).items():
             if branch != 'others':
                 for building in b_value.values():
                     faction_units.append(building.unit_name)
@@ -1007,7 +1013,8 @@ class Unit:
             for f_building in FACTIONS.values():
                 for branch in f_building.values():
                     for building in branch.values():
-                        if self.building_name == building.prev and building.bname in buildings.values():
+                        if self.building_name == building.prev \
+                                and building.bname in buildings.values():
                             # Следующая стадия
                             next_unit = building.unit_name
 
@@ -1016,7 +1023,8 @@ class Unit:
 
             elif next_unit == '' and self.curr_exp != self.exp - 1:
                 next_unit = self.name
-                main_db.update_unit_exp(self.slot, self.exp - 1, main_db.PlayerUnits)
+                main_db.update_unit_exp(
+                    self.slot, self.exp - 1, main_db.PlayerUnits)
 
             elif next_unit != '':
                 # Меняем юнит на следующую стадию согласно постройкам в столице
@@ -1063,7 +1071,7 @@ class Unit:
                 damage = int((int(self.attack_dmg.split(
                     '/')[0]) + random.randrange(6)) * (1 - target.armor * 0.01))
             except AttributeError:
-                damage = int((self.attack_dmg + random.randrange(6)) * \
+                damage = int((self.attack_dmg + random.randrange(6)) *
                              (1 - target.armor * 0.01))
 
             # если урон больше, чем здоровье врага, приравниваем урон к
@@ -1074,7 +1082,9 @@ class Unit:
             target.curr_health -= damage
 
             # если есть вампиризм у атакующего:
-            if self.attack_type in ['Высасывание жизни', 'Избыточное высасывание жизни']:
+            if self.attack_type in [
+                'Высасывание жизни',
+                    'Избыточное высасывание жизни']:
                 self.curr_health += int(damage / 2)
                 if self.curr_health > self.health:
                     self.curr_health = self.health

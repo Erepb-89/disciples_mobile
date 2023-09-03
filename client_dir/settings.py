@@ -6,6 +6,7 @@ from PyQt5.QtCore import QRect
 
 BATTLE_LOG = '../battle_log.txt'
 
+BATTLE_ANIM = '../images/gif/battle_anim/'
 UNIT_ICONS = '../images/icons/'
 UNIT_FACES = '../images/faces/'
 TOWN_IMG = '../images/towns/'
