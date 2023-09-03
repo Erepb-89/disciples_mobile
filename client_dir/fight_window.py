@@ -576,6 +576,7 @@ class FightWindow(QMainWindow):
 
     def autofight(self):
         """Автобой"""
+        self.unit_gifs_update()
         self.new_battle.auto_fight()
         self.update_log()
 
@@ -587,8 +588,6 @@ class FightWindow(QMainWindow):
             self.worker = Thread(True)
             self.worker.dataThread.connect(self.show_all_attacked)
             self.worker.start()
-
-        # self.unit_gifs_update()
 
     def show_all_attacked(self, text):
         """Метод обновляющий анимацию всех атакованных юнитов"""
