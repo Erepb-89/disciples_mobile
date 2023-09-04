@@ -329,6 +329,12 @@ class Battle:
         """Вычисление рандомной цели для среднего слота"""
         if slot_a in tg_slots and slot_b in tg_slots and slot_c in tg_slots:
             return [slot_a, slot_b, slot_c]
+        if slot_a in tg_slots and slot_b in tg_slots:
+            return [slot_a, slot_b]
+        if slot_b in tg_slots and slot_c in tg_slots:
+            return [slot_b, slot_c]
+        if slot_c in tg_slots and slot_a in tg_slots:
+            return [slot_c, slot_a]
         if slot_a in tg_slots:
             return [slot_a]
         if slot_b in tg_slots:
