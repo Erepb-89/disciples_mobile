@@ -6,7 +6,7 @@ import random
 from battle_logging import logging
 
 from client_dir.settings import EM, UH, LD, MC, BATTLE_LOG
-from units_dir.buildings import FACTIONS
+from units_dir.buildings import FACTIONS, ELDER_FORMS
 from units_dir.units import main_db
 from units_dir.ranking import empire_fighter_lvls, empire_mage_lvls, \
     empire_archer_lvls, empire_support_lvls, \
@@ -991,15 +991,44 @@ class Unit:
             next_chance,
             next_damage)
 
+    @property
+    def race_settings(self):
+        """Получение настроек фракции"""
+        return FACTIONS.get(main_db.current_game_faction)
+
+    def get_building_graph(self, bname: str, branch: str, graph: list):
+        """Рекурсивное создание словаря графов зданий/построек"""
+        for building in self.race_settings[branch].values():
+            if building.bname == bname and bname != '':
+                graph.append(building)
+                if building.prev not in ('', 0):
+                    self.get_building_graph(building.prev, branch, graph)
+                else:
+                    return
+
     def lvl_up(self):
         """Повышение уровня"""
         next_unit = ''
         # Фракция
         faction = main_db.current_game_faction
+        # словарь графов построек
+        graph_dict = {
+            'fighter': [],
+            'archer': [],
+            'mage': [],
+            'support': [],
+            'special': [],
+        }
         # Постройки
         buildings = main_db.get_buildings(
             main_db.current_user,
             faction)._asdict()
+
+        for bld in buildings.values():
+            for branch in graph_dict:
+                self.get_building_graph(bld, branch, graph_dict[branch])
+
+        print(graph_dict)
 
         faction_units = []
         for branch, b_value in FACTIONS.get(
@@ -1009,19 +1038,25 @@ class Unit:
                     faction_units.append(building.unit_name)
 
         if self.name in faction_units:
-            # Следующая стадия согласно постройкам в столице
-            for f_building in FACTIONS.values():
-                for branch in f_building.values():
-                    for building in branch.values():
-                        if self.building_name == building.prev \
-                                and building.bname in buildings.values():
-                            # Следующая стадия
-                            next_unit = building.unit_name
+            # Следующая стадия юнита согласно постройкам в столице
+            for graph in graph_dict.values():
+                for graph_item in graph:
+                    if self.building_name == graph_item.prev:
+                        # Следующая стадия
+                        next_unit = graph_item.unit_name
 
-            if next_unit == '' and self.curr_exp == self.exp - 1:
+            # уже является старшей формой ветви
+            if self.name in ELDER_FORMS:
+                next_unit = ''
+
+            elif next_unit == '' and \
+                    self.curr_exp == self.exp - 1 and \
+                    self.name not in ELDER_FORMS:
+                # ожидает апгрейда, опыт равен (exp - 1)
                 next_unit = self.name
 
             elif next_unit == '' and self.curr_exp != self.exp - 1:
+                # ожидает апгрейда, поднять опыт до (exp - 1)
                 next_unit = self.name
                 main_db.update_unit_exp(
                     self.slot, self.exp - 1, main_db.PlayerUnits)
@@ -1031,6 +1066,9 @@ class Unit:
                 main_db.replace_unit(self.slot, next_unit)
                 line = f"{self.name} повысил уровень до {next_unit}\n"
                 logging(line)
+
+            else:
+                self.upgrade_stats()
 
         # Апгрейд юнита по характеристикам
         if next_unit == '':
@@ -1086,8 +1124,7 @@ class Unit:
                 'Высасывание жизни',
                     'Избыточное высасывание жизни']:
                 self.curr_health += int(damage / 2)
-                if self.curr_health > self.health:
-                    self.curr_health = self.health
+                self.curr_health = min(self.curr_health, self.health)
 
                 # main_db.update_unit_hp(
                 #     self.slot, self.curr_health, main_db.attacker_db)

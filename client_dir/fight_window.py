@@ -581,7 +581,11 @@ class FightWindow(QMainWindow):
             # self.show_frame_attacker()
             self.show_frame_attacked()
 
-            self.worker = Thread(True)
+            if 'жизни' in self.new_battle.current_unit.attack_type:
+                self.worker = Thread(False)
+            else:
+                self.worker = Thread(True)
+
             self.worker.dataThread.connect(self.show_all_attacked)
             self.worker.start()
 
@@ -597,6 +601,9 @@ class FightWindow(QMainWindow):
 
         # битва еще не закончена
         if not self.new_battle.battle_is_over:
+            if 'жизни' in self.new_battle.current_unit.attack_type:
+                self.show_life_drain()
+
             self._update_all_unit_health()
             self.new_battle.next_turn()
             self.show_frame_attacker()
@@ -615,9 +622,12 @@ class FightWindow(QMainWindow):
         """Анимация всех получивших уровень юнитов"""
         # если юниты игрока1 мертвы
         if not self.new_battle.player1.slots:
-            self.new_battle.add_player_units(
-                self.new_battle.player2,
-                self.database.Player2Units)
+            if self.new_battle.player2.name == "Computer":
+                self.new_battle.add_dung_units()
+            else:
+                self.new_battle.add_player_units(
+                    self.new_battle.player2,
+                    self.database.Player2Units)
 
             for unit_slot in self.new_battle.alive_units:
                 self.show_level_up(
@@ -824,10 +834,29 @@ class FightWindow(QMainWindow):
                     curr_unit,
                     UNIT_EFFECTS_AREA)
 
+            # if 'жизни' in curr_unit.attack_type:
+            #     self.show_life_drain()
+                # self.worker = Thread(True)
+                # self.worker.dataThread.connect(self.show_life_drain)
+                # self.worker.start()
+
             if curr_unit in self.new_battle.player1.units:
                 self.target_is_enemy = True
             else:
                 self.target_is_enemy = False
+
+    def show_life_drain(self):
+        """Прорисовка анимации высасывания жизни"""
+        unit_gif = "life_drain.gif"
+        gif = QMovie(
+            os.path.join(
+                BATTLE_ANIM,
+                unit_gif))
+
+        self.pl_slots_eff_dict[
+            self.new_battle.current_unit.slot
+        ].setMovie(gif)
+        gif.start()
 
     def who_attacked(self, target_slot, current_unit):
         """Метод обновляющий анимацию атакованного юнита"""
