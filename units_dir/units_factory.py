@@ -1028,8 +1028,6 @@ class Unit:
             for branch in graph_dict:
                 self.get_building_graph(bld, branch, graph_dict[branch])
 
-        print(graph_dict)
-
         faction_units = []
         for branch, b_value in FACTIONS.get(
                 main_db.current_game_faction).items():
@@ -1097,11 +1095,6 @@ class Unit:
 
         attack_successful = True if random.random() <= accuracy else False
 
-        # if attack_successful:
-        #     print(f"{self.name}: Атака успешна")
-        # else:
-        #     print(f"{self.name}: Промах")
-
         # Если атака успешна
         if attack_successful:
             # Вычисление урона с учетом брони
@@ -1132,33 +1125,29 @@ class Unit:
             line = f"{self.name} наносит урон {damage} воину {target.name}. " \
                    f"Осталось ХП: {target.curr_health}\n"
             logging(line)
-
-            # print(
-            #     f"{self.name} наносит урон {damage} воину "
-            #     f"{target.name}. Осталось ХП: {target.curr_health}")
         else:
             logging(f"{self.name} промахивается по {target.name}\n")
-
-        # Если текущий юнит - лекарь
-        if self.attack_type \
-                in ['Лечение', 'Лечение/Исцеление', 'Лечение/Воскрешение']:
-            self.skip_turn()
 
         return attack_successful
 
     def heal(self, target):
         """Лечение"""
         self.undefence()
-        # print('ходит:', self.name)
 
         hp = int(self.attack_dmg)
-        # если размер лечения больше, чем здоровье цели,
-        # приравниваем урон к здоровью
-        hp = min(hp, target.curr_health)
+        # target.curr_health += hp
 
-        # вычисление текущего здоровья цели после получения лечения
-        target.curr_health = hp
+        # если размер лечения больше, чем макс. здоровье цели,
+        if target.curr_health + hp > target.health:
+            hp = target.health - target.curr_health
 
+        target.curr_health += hp
+
+        line = f"{self.name} лечит {hp} воину {target.name}. " \
+               f"Стало ХП: {target.curr_health}\n"
+        logging(line)
+
+        return True
 
 # Отладка
 if __name__ == '__main__':

@@ -31,6 +31,8 @@ class Battle:
         self.target_slots = []
         self.attacked_slots = []
         self.current_unit = None
+        self.current_player = None
+        self.target_player = None
         self.units_in_round = []
         self.en_exp_killed = 0
         self.target = None
@@ -59,6 +61,20 @@ class Battle:
             self.database.PlayerUnits)
         self.new_round()
         self.next_turn()
+
+    def add_player_unit(self,
+                        slot,
+                        player: Player,
+                        database):
+        """
+        Добавление юнита игрока в текущую битву.
+        """
+        unit = self.database.get_unit_by_slot(
+            slot,
+            database)
+
+        player.units.append(Unit(unit))
+        player.slots.append(unit.slot)
 
     def add_player_units(self,
                          player: Player,
@@ -154,6 +170,21 @@ class Battle:
     def next_turn(self):
         """Ход юнита"""
         self.current_unit = self.units_deque.popleft()
+
+        if self.current_unit in self.player1.units:
+            self.current_player = self.player1
+            if self.current_unit.attack_type not in [
+                'Лечение', 'Лечение/Исцеление', 'Лечение/Воскрешение']:
+                self.target_player = self.player2
+            else:
+                self.target_player = self.player1
+        else:
+            self.current_player = self.player2
+            if self.current_unit.attack_type not in [
+                'Лечение', 'Лечение/Исцеление', 'Лечение/Воскрешение']:
+                self.target_player = self.player1
+            else:
+                self.target_player = self.player2
         print(
             f'Ходит: {self.current_unit.name}, инициатива: {self.current_unit.attack_ini}')
         line = f'Ходит: {self.current_unit.name}\n'
@@ -162,43 +193,23 @@ class Battle:
         self.target_slots = self.auto_choose_target(self.current_unit)
         print(f'Цели: {self.target_slots}')
 
+    def action(self):
+        """Действие игрока"""
+        if self.units_in_round:
+
+            self.player_attack(self.target_player)
+            self.units_deque.append(self.current_unit)
+        else:
+            self.new_round()
+
+        self._alive_getting_experience()
+
     def auto_fight(self):
         """Автобой"""
         self.autofight = True
         if self.units_in_round:
 
-            if self.current_unit.attack_type not in [
-                    'Лечение', 'Лечение/Исцеление', 'Лечение/Воскрешение']:
-
-                self.target_slots = self.auto_choose_target(self.current_unit)
-
-                # атака игрока player1 по игроку player2
-                if self.current_unit in self.player1.units:
-                    self.player_attack(self.player2)
-
-                # атака игрока player2 по игроку player1
-                elif self.current_unit in self.player2.units:
-                    self.player_attack(self.player1)
-
-            else:
-                if self.current_unit in self.player1.units:
-                    heal_targets = self.choose_healed(
-                        self.current_unit, self.player1.slots)
-                    # for target_slot in heal_targets:
-                    #     target = self.get_unit_by_slot(
-                    #         target_slot,
-                    #         self.player1.units)
-                    #     self.current_unit.heal(target)
-
-                elif self.current_unit in self.player2.units:
-                    heal_targets = self.choose_healed(
-                        self.current_unit, self.player2.slots)
-                    for target_slot in heal_targets:
-                        target = self.get_unit_by_slot(
-                            target_slot,
-                            self.player2.units)
-                        self.current_unit.heal(target)
-
+            self.player_attack(self.target_player)
             self.units_deque.append(self.current_unit)
         else:
             self.new_round()
@@ -262,6 +273,27 @@ class Battle:
                                      self.database.PlayerUnits)
             self.battle_is_over = True
 
+    def attack_6_units(self, player):
+        """Если цели - 6 юнитов"""
+        self.attacked_slots = []
+        for target_slot in self.target_slots:
+            target = self.get_unit_by_slot(
+                target_slot,
+                player.units)
+            self.attack_1_unit(target)
+
+    def attack_1_unit(self, target):
+        """Если цель - 1 юнит"""
+        if self.current_unit.attack_type \
+                not in ['Лечение', 'Лечение/Исцеление', 'Лечение/Воскрешение']:
+            success = self.current_unit.attack(target)
+        else:
+            # Если текущий юнит - лекарь
+            success = self.current_unit.heal(target)
+
+        if success:
+            self.attacked_slots.append(target.slot)
+
     def player_attack(self, player: Player):
         """Атака по выбранному игроку"""
         if self.autofight:
@@ -271,25 +303,14 @@ class Battle:
 
             elif self.current_unit.attack_radius == ANY_UNIT \
                     and self.current_unit.attack_purpose == 6:
-                self.attacked_slots = []
-                for target_slot in self.target_slots:
-                    target = self.get_unit_by_slot(
-                        target_slot,
-                        player.units)
-                    success = self.current_unit.attack(target)
+                self.attack_6_units(player)
 
-                    if success:
-                        self.attacked_slots.append(target.slot)
             else:
                 self.attacked_slots = []
-                self.target = self.get_unit_by_slot(
-                    # self.target_slots[0],
+                target = self.get_unit_by_slot(
                     random.choice(self.target_slots),
                     player.units)
-                success = self.current_unit.attack(self.target)
-
-                if success:
-                    self.attacked_slots.append(self.target.slot)
+                self.attack_1_unit(target)
 
     def clear_dungeon(self):
         """Очистка текущего подземелья от вражеских юнитов"""
@@ -394,31 +415,19 @@ class Battle:
 
         return result
 
-    @staticmethod
-    def choose_healed(unit, target_slots):
-        """Определение следующей цели для лечения"""
-        if unit.attack_radius == ANY_UNIT and unit.attack_purpose == 6:
-            print('choose_healed targets:', target_slots)
-            return target_slots
-        if unit.attack_radius == ANY_UNIT and unit.attack_purpose == 1:
-            target = random.choice(target_slots)
-            print('choose_healed targets:', [target])
-            return [target]
-        return None
-
     def choose_target(self, unit, attacker_slots, target_slots):
         """Определение следующей цели для атаки"""
+        # для контактных юнитов
         if unit.attack_radius == CLOSEST_UNIT:
             targets = self.define_closest_slots(
                 unit, target_slots, attacker_slots)
             if targets != [None]:
                 return targets
-        if unit.attack_radius == ANY_UNIT and unit.attack_purpose == 6:
+
+        # Для дальнобойных юнитов
+        if unit.attack_radius == ANY_UNIT and unit.attack_purpose in [1, 6]:
             return target_slots
-        if unit.attack_radius == ANY_UNIT and unit.attack_purpose == 1:
-            # target = random.choice(target_slots)
-            # return [target]
-            return target_slots
+
         return [None]
 
     def auto_choose_target(self, unit):
@@ -426,15 +435,8 @@ class Battle:
         self.get_player_slots(self.player1)
         self.get_player_slots(self.player2)
 
-        if unit.attack_type \
-                not in ['Лечение', 'Лечение/Исцеление', 'Лечение/Воскрешение']:
-            if unit in self.player1.units:
-                return self.choose_target(
-                    unit, self.player1.slots, self.player2.slots)
-            if unit in self.player2.units:
-                return self.choose_target(
-                    unit, self.player2.slots, self.player1.slots)
-        return None
+        return self.choose_target(
+            unit, self.current_player.slots, self.target_player.slots)
 
     @staticmethod
     def get_player_slots(player: Player):

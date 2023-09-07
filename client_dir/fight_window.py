@@ -55,8 +55,6 @@ class FightWindow(QMainWindow):
         self.new_battle = Battle(self.database, dungeon)
         self.player_side = FRONT
         self.enemy_side = REAR
-        self.target_is_enemy = False
-        self.target_is_friend = False
 
         # временные словари иконок и кнопок на них
         self.front_icons_dict = {}
@@ -190,10 +188,10 @@ class FightWindow(QMainWindow):
             self.ui.damEnemySlot_6,
         ]
 
-        self.show()
+        self.show_frame_attacked()
         self.show_frame_attacker()
         self.update_log()
-        # self.show_frame_attacked()
+        self.show()
 
     def update_bg(self):
         """Обновление бэкграунда, заполнение картинкой поля сражения"""
@@ -244,7 +242,6 @@ class FightWindow(QMainWindow):
 
             self.set_front_gif_player2_dict()
         else:
-            # self.set_front_gif_player1()
             self.player_side = FRONT
             self.enemy_side = REAR
 
@@ -254,7 +251,9 @@ class FightWindow(QMainWindow):
         self.show_no_damaged()
         self.show_no_frames(self.unit_icons_dict, self.show_no_frame)
         self.show_no_frames(self.dung_icons_dict, self.show_no_frame)
-        self.show_frame_attacker()
+        if not self.new_battle.battle_is_over:
+            self.show_frame_attacked()
+            self.show_frame_attacker()
 
     def set_front_gif_player1_dict(self):
         """Задание FRONT стороны для анимационных GIF игрока 1"""
@@ -534,6 +533,11 @@ class FightWindow(QMainWindow):
         gif_slot.setStyleSheet("border: 4px solid green;")
 
     @staticmethod
+    def show_blue_frame(gif_slot):
+        """Обновление зеленой рамки в слоте"""
+        gif_slot.setStyleSheet("border: 4px solid blue;")
+
+    @staticmethod
     def show_red_frame(gif_slot):
         """Обновление красной рамки в слоте"""
         gif_slot.setStyleSheet("border: 4px solid darkred;")
@@ -579,7 +583,7 @@ class FightWindow(QMainWindow):
         if self.new_battle.units_in_round:
             self.who_attack()
             # self.show_frame_attacker()
-            self.show_frame_attacked()
+            # self.show_frame_attacked()
 
             if 'жизни' in self.new_battle.current_unit.attack_type:
                 self.worker = Thread(False)
@@ -596,8 +600,8 @@ class FightWindow(QMainWindow):
                 target_slot,
                 self.new_battle.current_unit)
 
-        self.show_no_frame_attacker()
-        self.show_no_frame_attacked()
+        self.show_no_frames(self.unit_icons_dict, self.show_no_frame)
+        self.show_no_frames(self.dung_icons_dict, self.show_no_frame)
 
         # битва еще не закончена
         if not self.new_battle.battle_is_over:
@@ -606,48 +610,70 @@ class FightWindow(QMainWindow):
 
             self._update_all_unit_health()
             self.new_battle.next_turn()
+            self.show_frame_attacked()
             self.show_frame_attacker()
 
         # битва закончена
         else:
             self.show_lvl_up_animations()
+            print(self.new_battle.alive_units, 'self.new_battle.alive_units')
 
             self.worker = Thread(False)
             self.worker.dataThread.connect(self.unit_gifs_update)
             self.worker.start()
 
         self.update_log()
+        self.new_battle.autofight = False
+
+    def add_upgraded_units(self,
+                           player,
+                           database,
+                           side,
+                           slots_dict):
+        """Добавление в битву получивших опыт юнитов (из базы)"""
+        for unit_slot in self.new_battle.alive_units:
+            player.slots.remove(unit_slot)
+            player.units.remove(
+                self._unit_by_slot_and_side(
+                    unit_slot,
+                    side)
+            )
+
+        for unit_slot in self.new_battle.alive_units:
+            if player.name == "Computer":
+                self.new_battle.add_dung_units()
+            else:
+                self.new_battle.add_player_unit(
+                        unit_slot,
+                        player,
+                        database)
+
+                self.show_level_up(
+                    self._unit_by_slot_and_side(
+                        unit_slot,
+                        side),
+                    slots_dict)
 
     def show_lvl_up_animations(self):
         """Анимация всех получивших уровень юнитов"""
         # если юниты игрока1 мертвы
         if not self.new_battle.player1.slots:
-            if self.new_battle.player2.name == "Computer":
-                self.new_battle.add_dung_units()
-            else:
-                self.new_battle.add_player_units(
-                    self.new_battle.player2,
-                    self.database.Player2Units)
-
-            for unit_slot in self.new_battle.alive_units:
-                self.show_level_up(
-                    self._unit_by_slot_and_side(
-                        unit_slot,
-                        self.enemy_side),
-                    self.en_slots_eff_dict)
+            self.add_upgraded_units(
+                self.new_battle.player2,
+                self.database.Player2Units,
+                self.enemy_side,
+                self.en_slots_eff_dict
+            )
 
         # если юниты игрока2 мертвы
         elif not self.new_battle.player2.slots:
-            self.new_battle.add_player_units(
-                self.new_battle.player1,
-                self.database.PlayerUnits)
 
-            for unit_slot in self.new_battle.alive_units:
-                self.show_level_up(
-                    self._unit_by_slot_and_side(
-                        unit_slot,
-                        self.player_side),
-                    self.pl_slots_eff_dict)
+            self.add_upgraded_units(
+                self.new_battle.player1,
+                self.database.PlayerUnits,
+                self.player_side,
+                self.pl_slots_eff_dict
+            )
 
     def run_autofight(self):
         """Автобой OLD"""
@@ -726,13 +752,6 @@ class FightWindow(QMainWindow):
                                  self.dung_icons_dict,
                                  self.show_green_frame)
 
-    def show_no_frame_attacker(self):
-        """Прорисовка рамки вокруг иконки атакующего юнита"""
-        self.show_frames_by_side(self.new_battle.current_unit,
-                                 self.unit_icons_dict,
-                                 self.dung_icons_dict,
-                                 self.show_no_frame)
-
     def show_attacker_eff(self, unit):
         """Прорисовка эффектов атакующего юнита"""
         self.show_gif_by_side(unit,
@@ -754,35 +773,25 @@ class FightWindow(QMainWindow):
                               self.pl_slots_dict,
                               self.en_slots_dict)
 
-    def show_frame_red(self):
-        """Прорисовка рамки вокруг иконки атакованного юнита"""
-        for target_slot in self.new_battle.target_slots:
-            curr_target = self.get_curr_target(target_slot)
-
-            self.show_frames_by_side(curr_target,
-                                     self.unit_icons_dict,
-                                     self.dung_icons_dict,
-                                     self.show_red_frame)
-
     def show_frame_attacked(self):
         """Прорисовка рамки вокруг иконки атакованного юнита"""
         for target_slot in self.new_battle.target_slots:
             curr_target = self.get_curr_target(target_slot)
 
-            self.show_frames_by_side(curr_target,
-                                     self.unit_icons_dict,
-                                     self.dung_icons_dict,
-                                     self.show_red_frame)
+            # цель и текущий юнит принадлежат одному игроку
+            if curr_target in self.new_battle.target_player.units and \
+                    self.new_battle.current_unit in self.new_battle.target_player.units:
+                self.show_frames_by_side(curr_target,
+                                         self.unit_icons_dict,
+                                         self.dung_icons_dict,
+                                         self.show_blue_frame)
 
-    def show_no_frame_attacked(self):
-        """Прорисовка рамки вокруг иконки атакованного юнита"""
-        for target_slot in self.new_battle.target_slots:
-            curr_target = self.get_curr_target(target_slot)
+            else:
+                self.show_frames_by_side(curr_target,
+                                         self.unit_icons_dict,
+                                         self.dung_icons_dict,
+                                         self.show_red_frame)
 
-            self.show_frames_by_side(curr_target,
-                                     self.unit_icons_dict,
-                                     self.dung_icons_dict,
-                                     self.show_no_frame)
 
     def show_no_damaged(self):
         """Метод скрывающий нанесенный урон"""
@@ -801,7 +810,7 @@ class FightWindow(QMainWindow):
 
     def get_curr_target(self, target_slot):
         """Получение текущей цели"""
-        if self.target_is_enemy:
+        if self.new_battle.target_player == self.new_battle.player2:
             curr_target = self._unit_by_slot_and_side(
                 target_slot, self.enemy_side)
         else:
@@ -834,17 +843,6 @@ class FightWindow(QMainWindow):
                     curr_unit,
                     UNIT_EFFECTS_AREA)
 
-            # if 'жизни' in curr_unit.attack_type:
-            #     self.show_life_drain()
-                # self.worker = Thread(True)
-                # self.worker.dataThread.connect(self.show_life_drain)
-                # self.worker.start()
-
-            if curr_unit in self.new_battle.player1.units:
-                self.target_is_enemy = True
-            else:
-                self.target_is_enemy = False
-
     def show_life_drain(self):
         """Прорисовка анимации высасывания жизни"""
         unit_gif = "life_drain.gif"
@@ -869,17 +867,44 @@ class FightWindow(QMainWindow):
         if self.new_battle.autofight:
             if curr_target is None:
                 pass
+
+            # цель и текущий юнит принадлежат одному игроку
+            elif curr_target in self.new_battle.target_player.units and \
+                    self.new_battle.current_unit in self.new_battle.target_player.units:
+
+                if self.new_battle.target_player == self.new_battle.player2:
+                    self.animate_action_side(
+                        self.en_slots_dict,
+                        UNIT_STAND,
+                        self.enemy_side)
+
+                    # прорисовка эффекта на атакованном вражеском юните
+                    self.show_gif_side(
+                        current_unit,
+                        self.en_slots_attacked_eff_dict[curr_target.slot],
+                        UNIT_EFFECTS_TARGET,
+                        self.enemy_side)
+                else:
+                    self.animate_action_side(
+                        self.pl_slots_dict,
+                        UNIT_STAND,
+                        self.player_side)
+
+                    # прорисовка эффекта на атакованном юните игрока
+                    self.show_gif_side(
+                        current_unit,
+                        self.pl_slots_attacked_eff_dict[curr_target.slot],
+                        UNIT_EFFECTS_TARGET,
+                        self.player_side)
+
             else:
                 # прорисовка модели атакованного юнита
                 self.show_attacked(curr_target)
 
-                # прорисовка рамки вокруг слота атакованного юнита
-                # self.show_frame_attacked(curr_target)
-
                 # прорисовка тени атакованного юнита
                 self.show_shadow_attacked(curr_target)
 
-                if self.target_is_enemy:
+                if self.new_battle.target_player == self.new_battle.player2:
                     # прорисовка эффекта на атакованном вражеском юните
                     self.show_gif_side(
                         current_unit,
