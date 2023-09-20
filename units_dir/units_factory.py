@@ -1038,7 +1038,9 @@ class Unit:
         if self.name in faction_units:
             # Следующая стадия юнита согласно постройкам в столице
             for graph in graph_dict.values():
+                # print(graph, 'graph')
                 for graph_item in graph:
+                    # print(graph_item, 'graph_item')
                     if self.building_name == graph_item.prev:
                         # Следующая стадия
                         next_unit = graph_item.unit_name

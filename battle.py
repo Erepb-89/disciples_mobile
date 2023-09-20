@@ -26,7 +26,7 @@ class Battle:
         # super().__init__()
         # основные переменные
         self.database = database
-        self.autofight = False
+        # self.autofight = False
         self.units_deque = deque()
         self.target_slots = []
         self.attacked_slots = []
@@ -38,6 +38,7 @@ class Battle:
         self.target = None
         self.battle_is_over = False
         self.alive_units = []
+        self.curr_target_slot = 1
 
         self.player1 = Player(PLAYER1_NAME)
         self.player2 = Player(PLAYER2_NAME)
@@ -193,23 +194,12 @@ class Battle:
         self.target_slots = self.auto_choose_target(self.current_unit)
         print(f'Цели: {self.target_slots}')
 
-    def action(self):
-        """Действие игрока"""
-        if self.units_in_round:
-
-            self.player_attack(self.target_player)
-            self.units_deque.append(self.current_unit)
-        else:
-            self.new_round()
-
-        self._alive_getting_experience()
-
     def auto_fight(self):
         """Автобой"""
         self.autofight = True
         if self.units_in_round:
 
-            self.player_attack(self.target_player)
+            self.auto_attack()
             self.units_deque.append(self.current_unit)
         else:
             self.new_round()
@@ -294,23 +284,40 @@ class Battle:
         if success:
             self.attacked_slots.append(target.slot)
 
-    def player_attack(self, player: Player):
-        """Атака по выбранному игроку"""
-        if self.autofight:
-            if self.target_slots == [None]:
-                self.attacked_slots = []
-                self.current_unit.defence()
+    def player_attack(self, curr_target):
+        """Действие игрока"""
+        if self.units_in_round:
 
-            elif self.current_unit.attack_radius == ANY_UNIT \
+            if self.current_unit.attack_radius == ANY_UNIT \
                     and self.current_unit.attack_purpose == 6:
-                self.attack_6_units(player)
-
+                self.attack_6_units(self.target_player)
             else:
                 self.attacked_slots = []
-                target = self.get_unit_by_slot(
-                    random.choice(self.target_slots),
-                    player.units)
-                self.attack_1_unit(target)
+                self.attack_1_unit(curr_target)
+
+            self.units_deque.append(self.current_unit)
+        else:
+            self.new_round()
+
+        self._alive_getting_experience()
+
+    def auto_attack(self):
+        """Автоматическая атака игрока по противнику"""
+        # if self.autofight:
+        if self.target_slots == [None]:
+            self.attacked_slots = []
+            self.current_unit.defence()
+
+        elif self.current_unit.attack_radius == ANY_UNIT \
+                and self.current_unit.attack_purpose == 6:
+            self.attack_6_units(self.target_player)
+
+        else:
+            self.attacked_slots = []
+            target = self.get_unit_by_slot(
+                random.choice(self.target_slots),
+                self.target_player.units)
+            self.attack_1_unit(target)
 
     def clear_dungeon(self):
         """Очистка текущего подземелья от вражеских юнитов"""

@@ -393,6 +393,9 @@ class CapitalBuildingWindow(QMainWindow):
             # рекурсивное создание графа уже построенных зданий
             self.get_building_graph(buildings[self.branch], temp_graph)
 
+            # print('self.graph', self.graph)
+            # print('temp_graph', temp_graph)
+
             # если здание входит в граф построенных
             if self.building_name in temp_graph:
                 text = 'Это здание уже построено'
