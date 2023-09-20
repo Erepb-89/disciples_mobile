@@ -1082,23 +1082,15 @@ class Unit:
         """Боевой клич"""
         print('fight')
 
-    def attack(self, target):
-        """Атака"""
-        # self.undefence()
-
-        # Вычисление вероятности попадания
-        try:
-            accuracy = int(self.attack_chance.split(
-                '/')[0]) / 100
-            poison = int(self.attack_chance.split(
-                '/')[1]) / 100
-        except BaseException:
-            accuracy = int(self.attack_chance) / 100
-
-        attack_successful = True if random.random() <= accuracy else False
+    def is_attack_successful(self,
+                             target: any,
+                             attack_successful: bool,
+                             immune_activated: bool,
+                             ward_activated: bool):
+        """Проверка успешности атаки"""
 
         # Если атака успешна
-        if attack_successful:
+        if attack_successful and not immune_activated and not ward_activated:
             # Вычисление урона с учетом брони
             try:
                 damage = int((int(self.attack_dmg.split(
@@ -1127,15 +1119,74 @@ class Unit:
             line = f"{self.name} наносит урон {damage} воину {target.name}. " \
                    f"Осталось ХП: {target.curr_health}\n"
             logging(line)
-        else:
+
+        elif immune_activated:
+            logging(f"{target.name} имеет иммунитет к {self.attack_source} \n")
+
+        elif ward_activated:
+            logging(f"{target.name} имеет защиту от {self.attack_source} \n")
+
+        elif not attack_successful:
             logging(f"{self.name} промахивается по {target.name}\n")
+
+    def attack(self, target):
+        """Атака"""
+        attack_successful = False
+        immune_activated = False
+        ward_activated = False
+
+        # Вычисление вероятности попадания
+        try:
+            accuracy = int(self.attack_chance.split(
+                '/')[0]) / 100
+            poison = int(self.attack_chance.split(
+                '/')[1]) / 100
+        except BaseException:
+            accuracy = int(self.attack_chance) / 100
+
+        # иммунитеты и защиты
+        target_immunes = target.immune.split(', ')
+        target_wards = target.ward.split(', ')
+
+        # у цели нет иммунитета и защиты от источника атаки
+        if self.attack_source not in target_immunes \
+                and self.attack_source not in target_wards:
+            # атака удачна
+            if random.random() <= accuracy:
+                attack_successful = True
+            # атака неудачна - промах
+            else:
+                attack_successful = False
+
+        # у цели есть иммунитет от источника атаки
+        elif self.attack_source in target_immunes:
+            # иммунитет остается всегда
+            immune_activated = True
+
+        # у цели есть защита от источника атаки
+        elif self.attack_source in target_wards:
+            # -1 защита из списка
+            target_wards.remove(self.attack_source)
+            target.ward = ''
+
+            for ward in target_wards:
+                if target_wards.index(ward) == len(target_wards) - 1:
+                    target.ward += ward
+                else:
+                    target.ward += ward + ", "
+
+            ward_activated = True
+
+        # проверка успешности атаки
+        self.is_attack_successful(target,
+                                  attack_successful,
+                                  immune_activated,
+                                  ward_activated)
 
         return attack_successful
 
     def heal(self, target):
         """Лечение"""
-        # self.undefence()
-
         hp = int(self.attack_dmg)
         # target.curr_health += hp
 
