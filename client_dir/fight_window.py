@@ -129,6 +129,8 @@ class FightWindow(QMainWindow):
 
         self.ui.pushButtonBack.clicked.connect(self.back)
 
+        self.ui.pushButtonDefence.clicked.connect(self.unit_defence)
+
         self.ui.pushButtonSlot1.clicked.connect(
             self._attack_player_slot1)
         self.ui.pushButtonSlot2.clicked.connect(
@@ -649,6 +651,22 @@ class FightWindow(QMainWindow):
         except AttributeError:
             pass
 
+    def unit_defence(self):
+        """Встать в Защиту выбранным юнитом"""
+        self.new_battle.current_unit.defence()
+        self.update_log()
+        self.show_no_damaged()
+        self.show_no_frames(self.unit_icons_dict, self.show_no_frame)
+        self.show_no_frames(self.dung_icons_dict, self.show_no_frame)
+
+        self.new_battle.units_deque.append(self.new_battle.current_unit)
+
+        self.new_battle.next_turn()
+        self.update_log()
+
+        self.show_frame_attacked()
+        self.show_frame_attacker()
+
     def show_attack_and_attacked(self):
         """Анимация атакующей и атакованной стороны"""
         self.update_log()
@@ -668,10 +686,14 @@ class FightWindow(QMainWindow):
         """Автобой"""
         # пока битва не окончена
         if not self.new_battle.battle_is_over:
-            self.unit_gifs_update()
-            self.new_battle.auto_fight()
-
-            self.show_attack_and_attacked()
+            # если есть кого атаковать
+            if self.new_battle.target_slots != [None]:
+                self.unit_gifs_update()
+                self.new_battle.auto_fight()
+                self.show_attack_and_attacked()
+            # иначе защита
+            else:
+                self.unit_defence()
 
     def show_all_attacked(self, text):
         """Метод обновляющий анимацию всех атакованных юнитов"""

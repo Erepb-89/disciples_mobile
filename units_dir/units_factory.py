@@ -1084,7 +1084,7 @@ class Unit:
 
     def attack(self, target):
         """Атака"""
-        self.undefence()
+        # self.undefence()
 
         # Вычисление вероятности попадания
         try:
@@ -1134,7 +1134,7 @@ class Unit:
 
     def heal(self, target):
         """Лечение"""
-        self.undefence()
+        # self.undefence()
 
         hp = int(self.attack_dmg)
         # target.curr_health += hp

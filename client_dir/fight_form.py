@@ -948,6 +948,9 @@ class Ui_FightWindow(object):
         self.damPlayerSlot_6.setMidLineWidth(0)
         self.damPlayerSlot_6.setText("")
         self.damPlayerSlot_6.setObjectName("damPlayerSlot_6")
+        self.pushButtonDefence = QtWidgets.QPushButton(self.centralwidget)
+        self.pushButtonDefence.setGeometry(QtCore.QRect(50, 800, 90, 28))
+        self.pushButtonDefence.setObjectName("pushButtonDefence")
         self.FightBG.raise_()
         self.rightIcons.raise_()
         self.leftIcons.raise_()
@@ -1057,6 +1060,7 @@ class Ui_FightWindow(object):
         self.pushButtonEnemySlot4.raise_()
         self.pushButtonEnemySlot2.raise_()
         self.pushButtonEnemySlot6.raise_()
+        self.pushButtonDefence.raise_()
         FightWindow.setCentralWidget(self.centralwidget)
 
         self.retranslateUi(FightWindow)
@@ -1133,3 +1137,4 @@ class Ui_FightWindow(object):
         self.gifPlayerAttEffSlot_4.setText(_translate("FightWindow", "slot_4"))
         self.pushButtonChange.setToolTip(_translate("FightWindow", "Поменять стороны"))
         self.batPanel.setText(_translate("FightWindow", "bp"))
+        self.pushButtonDefence.setText(_translate("FightWindow", "Защита"))
