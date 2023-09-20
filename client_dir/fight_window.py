@@ -129,6 +129,8 @@ class FightWindow(QMainWindow):
 
         self.ui.pushButtonBack.clicked.connect(self.back)
 
+        self.ui.pushButtonDefence.clicked.connect(self.unit_defence)
+
         self.ui.pushButtonSlot1.clicked.connect(
             self._attack_player_slot1)
         self.ui.pushButtonSlot2.clicked.connect(
@@ -577,17 +579,17 @@ class FightWindow(QMainWindow):
                     UNIT_STAND,
                     f"{side}/empty.gif"))
 
+        # анимация смерти
         elif unit.curr_health == 0:
             unit_faction = self.get_unit_faction(unit)
             gif = QMovie(
                 os.path.join(
                     action,
                     f"{side}/{unit_faction}.gif"))
-            # unit_faction = self.get_unit_faction(unit)
-            # print(unit_faction)
         # if unit.curr_health == 0:
         #     gif = QMovie(os.path.join(COMMON, "skull.png"))
 
+        # анимация действия
         else:
             gif = QMovie(
                 os.path.join(
@@ -649,6 +651,22 @@ class FightWindow(QMainWindow):
         except AttributeError:
             pass
 
+    def unit_defence(self):
+        """Встать в Защиту выбранным юнитом"""
+        self.new_battle.current_unit.defence()
+        self.update_log()
+        self.show_no_damaged()
+        self.show_no_frames(self.unit_icons_dict, self.show_no_frame)
+        self.show_no_frames(self.dung_icons_dict, self.show_no_frame)
+
+        self.new_battle.units_deque.append(self.new_battle.current_unit)
+
+        self.new_battle.next_turn()
+        self.update_log()
+
+        self.show_frame_attacked()
+        self.show_frame_attacker()
+
     def show_attack_and_attacked(self):
         """Анимация атакующей и атакованной стороны"""
         self.update_log()
@@ -668,10 +686,14 @@ class FightWindow(QMainWindow):
         """Автобой"""
         # пока битва не окончена
         if not self.new_battle.battle_is_over:
-            self.unit_gifs_update()
-            self.new_battle.auto_fight()
-
-            self.show_attack_and_attacked()
+            # если есть кого атаковать
+            if self.new_battle.target_slots != [None]:
+                self.unit_gifs_update()
+                self.new_battle.auto_fight()
+                self.show_attack_and_attacked()
+            # иначе защита
+            else:
+                self.unit_defence()
 
     def show_all_attacked(self, text):
         """Метод обновляющий анимацию всех атакованных юнитов"""
@@ -988,12 +1010,12 @@ class FightWindow(QMainWindow):
                 self._show_damage(
                     self.dung_damaged_dict[curr_target.slot])
 
-                if curr_target.curr_health == 0:
-                    self.show_gif_side(
-                        curr_target,
-                        self.en_slots_eff_dict[curr_target.slot],
-                        UNIT_EFFECTS_ATTACK,
-                        self.enemy_side)
+                # if curr_target.curr_health == 0:
+                #     self.show_gif_side(
+                #         curr_target,
+                #         self.en_slots_eff_dict[curr_target.slot],
+                #         UNIT_EFFECTS_ATTACK,
+                #         self.enemy_side)
 
             else:
                 # прорисовка эффекта на атакованном юните игрока
@@ -1007,12 +1029,12 @@ class FightWindow(QMainWindow):
                 self._show_damage(
                     self.unit_damaged_dict[curr_target.slot])
 
-                if curr_target.curr_health == 0:
-                    self.show_gif_side(
-                        curr_target,
-                        self.pl_slots_eff_dict[curr_target.slot],
-                        UNIT_EFFECTS_ATTACK,
-                        self.player_side)
+                # if curr_target.curr_health == 0:
+                #     self.show_gif_side(
+                #         curr_target,
+                #         self.pl_slots_eff_dict[curr_target.slot],
+                #         UNIT_EFFECTS_ATTACK,
+                #         self.player_side)
 
         # если атакованный юнит погиб, удаляем его
         if curr_target.curr_health == 0:
@@ -1261,10 +1283,20 @@ class FightWindow(QMainWindow):
         """Атака и анимация по выбранному слоту противника"""
         self.unit_gifs_update()
         target = self._unit_by_slot_and_side(slot, side)
-        # невозможность атаковать себя
-        if target not in self.new_battle.current_player.units:
-            self.new_battle.player_attack(target)
+        # невозможность атаковать своих
+        if target not in self.new_battle.current_player.units \
+                and self.new_battle.current_unit.attack_type not in [
+                'Лечение', 'Лечение/Исцеление', 'Лечение/Воскрешение']:
 
+            self.new_battle.player_attack(target)
+            self.show_attack_and_attacked()
+
+        # если текущий юнит лекарь - можно выбрать целью свой юнит
+        elif target in self.new_battle.current_player.units \
+                and self.new_battle.current_unit.attack_type in [
+                'Лечение', 'Лечение/Исцеление', 'Лечение/Воскрешение']:
+
+            self.new_battle.player_attack(target)
             self.show_attack_and_attacked()
 
     def _attack_player_slot1(self):

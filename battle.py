@@ -171,6 +171,7 @@ class Battle:
     def next_turn(self):
         """Ход юнита"""
         self.current_unit = self.units_deque.popleft()
+        self.current_unit.undefence()
 
         if self.current_unit in self.player1.units:
             self.current_player = self.player1
