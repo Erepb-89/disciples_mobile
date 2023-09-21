@@ -130,6 +130,7 @@ class FightWindow(QMainWindow):
         self.ui.pushButtonBack.clicked.connect(self.back)
 
         self.ui.pushButtonDefence.clicked.connect(self.unit_defence)
+        self.ui.pushButtonWaiting.clicked.connect(self.unit_waiting)
 
         self.ui.pushButtonSlot1.clicked.connect(
             self._attack_player_slot1)
@@ -659,6 +660,28 @@ class FightWindow(QMainWindow):
         self.show_no_frames(self.unit_icons_dict, self.show_no_frame)
         self.show_no_frames(self.dung_icons_dict, self.show_no_frame)
 
+        if self.new_battle.current_unit in self.new_battle.units_in_round:
+            self.new_battle.units_in_round.remove(self.new_battle.current_unit)
+
+        if self.new_battle.units_in_round:
+            self.new_battle.next_turn()
+        else:
+            self.new_battle.new_round()
+            self.new_battle.next_turn()
+        self.update_log()
+
+        self.show_frame_attacked()
+        self.show_frame_attacker()
+
+    def unit_waiting(self):
+        """Ожидать выбранным юнитом"""
+        self.new_battle.current_unit.waiting()
+
+        self.update_log()
+        self.show_no_damaged()
+        self.show_no_frames(self.unit_icons_dict, self.show_no_frame)
+        self.show_no_frames(self.dung_icons_dict, self.show_no_frame)
+
         self.new_battle.units_deque.append(self.new_battle.current_unit)
 
         self.new_battle.next_turn()
@@ -714,7 +737,15 @@ class FightWindow(QMainWindow):
                 self.show_life_drain()
 
             self._update_all_unit_health()
-            self.new_battle.next_turn()
+
+            if self.new_battle.current_unit in self.new_battle.units_in_round:
+                self.new_battle.units_in_round.remove(self.new_battle.current_unit)
+
+            if self.new_battle.units_in_round:
+                self.new_battle.next_turn()
+            else:
+                self.new_battle.new_round()
+                self.new_battle.next_turn()
             self.show_frame_attacked()
             self.show_frame_attacker()
 

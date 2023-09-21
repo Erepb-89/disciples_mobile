@@ -931,6 +931,12 @@ class Unit:
         line = f"{self.name} защищается\n"
         logging(line)
 
+    def waiting(self):
+        """Ожидание в битве"""
+
+        line = f"{self.name} ждет удачного момента\n"
+        logging(line)
+
     def add_to_band(self, slot):
         """Найм в отряд игрока"""
         main_db.hire_unit(self.name, slot)
