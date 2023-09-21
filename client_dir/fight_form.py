@@ -951,6 +951,9 @@ class Ui_FightWindow(object):
         self.pushButtonDefence = QtWidgets.QPushButton(self.centralwidget)
         self.pushButtonDefence.setGeometry(QtCore.QRect(50, 800, 90, 28))
         self.pushButtonDefence.setObjectName("pushButtonDefence")
+        self.pushButtonWaiting = QtWidgets.QPushButton(self.centralwidget)
+        self.pushButtonWaiting.setGeometry(QtCore.QRect(150, 800, 90, 28))
+        self.pushButtonWaiting.setObjectName("pushButtonWaiting")
         self.FightBG.raise_()
         self.rightIcons.raise_()
         self.leftIcons.raise_()
@@ -1061,6 +1064,7 @@ class Ui_FightWindow(object):
         self.pushButtonEnemySlot2.raise_()
         self.pushButtonEnemySlot6.raise_()
         self.pushButtonDefence.raise_()
+        self.pushButtonWaiting.raise_()
         FightWindow.setCentralWidget(self.centralwidget)
 
         self.retranslateUi(FightWindow)
@@ -1138,3 +1142,4 @@ class Ui_FightWindow(object):
         self.pushButtonChange.setToolTip(_translate("FightWindow", "Поменять стороны"))
         self.batPanel.setText(_translate("FightWindow", "bp"))
         self.pushButtonDefence.setText(_translate("FightWindow", "Защита"))
+        self.pushButtonWaiting.setText(_translate("FightWindow", "Ожидание"))

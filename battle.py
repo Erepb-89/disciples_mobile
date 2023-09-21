@@ -138,7 +138,7 @@ class Battle:
         return None
 
     @staticmethod
-    def sorting_units(all_units):
+    def sorting_units(all_units: list):
         """Сортировка юнитов по инициативе"""
         units_ini = {}
         for unit in all_units:
@@ -151,25 +151,28 @@ class Battle:
 
     def new_round(self):
         """Высчитывание оставшихся выживших в новом раунде"""
+        print('Новый раунд')
+        logging('Новый раунд\n')
+
         self.units_deque.clear()
 
-        all_units = self.player1.units + self.player2.units
+        units_pl1 = [unit for unit in self.player1.units if unit.curr_health != 0]
+        units_pl2 = [unit for unit in self.player2.units if unit.curr_health != 0]
 
+        all_units = units_pl1 + units_pl2
         sorted_units_by_ini = self.sorting_units(all_units)
 
         for unit in sorted_units_by_ini:
             self.units_deque.append(unit)
             self.units_in_round.append(unit)
 
-    def _get_battle_unit_by_id(self, _id):
-        """Метод возвращает юнита из deque по id"""
-        for unit in self.units_deque:
-            if unit.id == _id:
-                return unit
-        return None
-
     def next_turn(self):
         """Ход юнита"""
+        print(self.units_in_round)
+
+        for unit in self.units_deque:
+            print('deque:', unit.name)
+
         self.current_unit = self.units_deque.popleft()
         self.current_unit.undefence()
 
@@ -195,15 +198,22 @@ class Battle:
         self.target_slots = self.auto_choose_target(self.current_unit)
         print(f'Цели: {self.target_slots}')
 
+    def _get_battle_unit_by_id(self, _id):
+        """Метод возвращает юнита из deque по id"""
+        for unit in self.units_deque:
+            if unit.id == _id:
+                return unit
+        return None
+
     def auto_fight(self):
         """Автобой"""
         self.autofight = True
         if self.units_in_round:
 
             self.auto_attack()
-            self.units_deque.append(self.current_unit)
         else:
             self.new_round()
+            self.next_turn()
 
         self._alive_getting_experience()
 
@@ -286,7 +296,7 @@ class Battle:
             self.attacked_slots.append(target.slot)
 
     def player_attack(self, curr_target):
-        """Действие игрока"""
+        """Атака игрока по цели"""
         if self.units_in_round:
 
             if self.current_unit.attack_radius == ANY_UNIT \
@@ -296,15 +306,16 @@ class Battle:
                 self.attacked_slots = []
                 self.attack_1_unit(curr_target)
 
-            self.units_deque.append(self.current_unit)
         else:
             self.new_round()
+            self.next_turn()
 
         self._alive_getting_experience()
 
     def auto_attack(self):
         """Автоматическая атака игрока по противнику"""
         # if self.autofight:
+
         if self.target_slots == [None]:
             self.attacked_slots = []
             self.current_unit.defence()

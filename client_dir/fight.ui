@@ -3166,6 +3166,19 @@
      <string>Защита</string>
     </property>
    </widget>
+   <widget class="QPushButton" name="pushButtonWaiting">
+    <property name="geometry">
+     <rect>
+      <x>150</x>
+      <y>800</y>
+      <width>90</width>
+      <height>28</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Ожидание</string>
+    </property>
+   </widget>
    <zorder>FightBG</zorder>
    <zorder>rightIcons</zorder>
    <zorder>leftIcons</zorder>
@@ -3276,6 +3289,7 @@
    <zorder>pushButtonEnemySlot2</zorder>
    <zorder>pushButtonEnemySlot6</zorder>
    <zorder>pushButtonDefence</zorder>
+   <zorder>pushButtonWaiting</zorder>
   </widget>
  </widget>
  <resources/>
