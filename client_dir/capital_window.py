@@ -32,7 +32,7 @@ class CapitalWindow(QMainWindow):
 
     def keySPressEvent(self, event):
         if event.key() == QtCore.Qt.Key_S:
-            self.show_army()
+            self.show_building()
 
     def InitUI(self):
         # Загружаем конфигурацию окна из дизайнера

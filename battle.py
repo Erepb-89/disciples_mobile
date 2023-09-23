@@ -28,6 +28,7 @@ class Battle:
         self.database = database
         # self.autofight = False
         self.units_deque = deque()
+        self.waiting_units = []
         self.target_slots = []
         self.attacked_slots = []
         self.current_unit = None
@@ -148,6 +149,18 @@ class Battle:
         sorted_units_by_ini = sorted(
             units_ini, key=units_ini.get, reverse=True)
         return sorted_units_by_ini
+
+    def waiting_round(self):
+        """Раунд для ожидающих юнитов"""
+        self.units_deque.clear()
+
+        sorted_units_by_ini = reversed(self.waiting_units)
+
+        for unit in sorted_units_by_ini:
+            self.units_deque.append(unit)
+            self.units_in_round.append(unit)
+
+        self.waiting_units = []
 
     def new_round(self):
         """Высчитывание оставшихся выживших в новом раунде"""
