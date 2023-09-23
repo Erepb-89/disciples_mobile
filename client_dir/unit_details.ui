@@ -212,8 +212,8 @@
     <rect>
      <x>660</x>
      <y>203</y>
-     <width>221</width>
-     <height>20</height>
+     <width>191</width>
+     <height>41</height>
     </rect>
    </property>
    <property name="font">
@@ -226,6 +226,12 @@
    </property>
    <property name="text">
     <string>ward</string>
+   </property>
+   <property name="alignment">
+    <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+   </property>
+   <property name="wordWrap">
+    <bool>true</bool>
    </property>
   </widget>
   <widget class="QLabel" name="attackDmg">

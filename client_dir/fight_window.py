@@ -652,6 +652,40 @@ class FightWindow(QMainWindow):
         except AttributeError:
             pass
 
+    def are_units_in_round(self):
+        """Проверка на наличие юнитов в раунде"""
+        if self.new_battle.current_unit in self.new_battle.units_in_round:
+            self.new_battle.units_in_round.remove(self.new_battle.current_unit)
+
+        # есть не ходившие юниты в текущем раунде
+        if self.new_battle.units_in_round:
+            self.new_battle.next_turn()
+
+        # есть юниты, ожидающие лучшего момента
+        elif self.new_battle.waiting_units:
+            for unit in self.new_battle.waiting_units:
+                print(unit.name)
+
+            if self.new_battle.current_unit in self.new_battle.waiting_units:
+                # кнопка ожидания недоступна
+                self.ui.pushButtonWaiting.setEnabled(False)
+
+            self.new_battle.waiting_round()
+            self.new_battle.next_turn()
+
+        # новый раунд
+        else:
+            # новый раунд
+            self.new_battle.new_round()
+            # кнопка ожидания снова доступна
+            self.ui.pushButtonWaiting.setEnabled(True)
+            # следующий ход
+            self.new_battle.next_turn()
+
+        # Показать рамки
+        self.show_frame_attacked()
+        self.show_frame_attacker()
+
     def unit_defence(self):
         """Встать в Защиту выбранным юнитом"""
         self.new_battle.current_unit.defence()
@@ -660,18 +694,9 @@ class FightWindow(QMainWindow):
         self.show_no_frames(self.unit_icons_dict, self.show_no_frame)
         self.show_no_frames(self.dung_icons_dict, self.show_no_frame)
 
-        if self.new_battle.current_unit in self.new_battle.units_in_round:
-            self.new_battle.units_in_round.remove(self.new_battle.current_unit)
+        self.are_units_in_round()
 
-        if self.new_battle.units_in_round:
-            self.new_battle.next_turn()
-        else:
-            self.new_battle.new_round()
-            self.new_battle.next_turn()
         self.update_log()
-
-        self.show_frame_attacked()
-        self.show_frame_attacker()
 
     def unit_waiting(self):
         """Ожидать выбранным юнитом"""
@@ -682,13 +707,13 @@ class FightWindow(QMainWindow):
         self.show_no_frames(self.unit_icons_dict, self.show_no_frame)
         self.show_no_frames(self.dung_icons_dict, self.show_no_frame)
 
-        self.new_battle.units_deque.append(self.new_battle.current_unit)
+        # self.new_battle.units_deque.append(self.new_battle.current_unit)
 
-        self.new_battle.next_turn()
+        self.new_battle.waiting_units.append(self.new_battle.current_unit)
+
+        self.are_units_in_round()
+
         self.update_log()
-
-        self.show_frame_attacked()
-        self.show_frame_attacker()
 
     def show_attack_and_attacked(self):
         """Анимация атакующей и атакованной стороны"""
@@ -738,16 +763,7 @@ class FightWindow(QMainWindow):
 
             self._update_all_unit_health()
 
-            if self.new_battle.current_unit in self.new_battle.units_in_round:
-                self.new_battle.units_in_round.remove(self.new_battle.current_unit)
-
-            if self.new_battle.units_in_round:
-                self.new_battle.next_turn()
-            else:
-                self.new_battle.new_round()
-                self.new_battle.next_turn()
-            self.show_frame_attacked()
-            self.show_frame_attacker()
+            self.are_units_in_round()
 
         # битва закончена
         else:
