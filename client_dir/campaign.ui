@@ -9,7 +9,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>891</width>
+    <width>806</width>
     <height>482</height>
    </rect>
   </property>
@@ -27,7 +27,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>Exit</string>
+     <string>Выйти</string>
     </property>
    </widget>
    <widget class="QPushButton" name="pushButtonFight">
@@ -40,7 +40,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>Start</string>
+     <string>В бой!</string>
     </property>
    </widget>
    <widget class="QLabel" name="slot2">
@@ -99,7 +99,7 @@
      <string>slot_4</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="pushButtonSlot4">
+   <widget class="QPushButton" name="pushButtonSlot_4">
     <property name="geometry">
      <rect>
       <x>410</x>
@@ -115,7 +115,7 @@
      <bool>true</bool>
     </property>
    </widget>
-   <widget class="QPushButton" name="pushButtonSlot2">
+   <widget class="QPushButton" name="pushButtonSlot_2">
     <property name="geometry">
      <rect>
       <x>170</x>
@@ -159,7 +159,7 @@
      <string>slot_1</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="pushButtonSlot1">
+   <widget class="QPushButton" name="pushButtonSlot_1">
     <property name="geometry">
      <rect>
       <x>50</x>
@@ -200,7 +200,7 @@
      <string>slot_3</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="pushButtonSlot3">
+   <widget class="QPushButton" name="pushButtonSlot_3">
     <property name="geometry">
      <rect>
       <x>290</x>
@@ -214,94 +214,6 @@
     </property>
     <property name="flat">
      <bool>true</bool>
-    </property>
-   </widget>
-   <widget class="QLabel" name="labelSelected1">
-    <property name="enabled">
-     <bool>true</bool>
-    </property>
-    <property name="geometry">
-     <rect>
-      <x>46</x>
-      <y>68</y>
-      <width>111</width>
-      <height>131</height>
-     </rect>
-    </property>
-    <property name="frameShape">
-     <enum>QFrame::Box</enum>
-    </property>
-    <property name="lineWidth">
-     <number>0</number>
-    </property>
-    <property name="text">
-     <string/>
-    </property>
-   </widget>
-   <widget class="QLabel" name="labelSelected2">
-    <property name="enabled">
-     <bool>true</bool>
-    </property>
-    <property name="geometry">
-     <rect>
-      <x>166</x>
-      <y>68</y>
-      <width>111</width>
-      <height>131</height>
-     </rect>
-    </property>
-    <property name="frameShape">
-     <enum>QFrame::Box</enum>
-    </property>
-    <property name="lineWidth">
-     <number>0</number>
-    </property>
-    <property name="text">
-     <string/>
-    </property>
-   </widget>
-   <widget class="QLabel" name="labelSelected3">
-    <property name="enabled">
-     <bool>true</bool>
-    </property>
-    <property name="geometry">
-     <rect>
-      <x>286</x>
-      <y>68</y>
-      <width>111</width>
-      <height>131</height>
-     </rect>
-    </property>
-    <property name="frameShape">
-     <enum>QFrame::Box</enum>
-    </property>
-    <property name="lineWidth">
-     <number>0</number>
-    </property>
-    <property name="text">
-     <string/>
-    </property>
-   </widget>
-   <widget class="QLabel" name="labelSelected4">
-    <property name="enabled">
-     <bool>true</bool>
-    </property>
-    <property name="geometry">
-     <rect>
-      <x>406</x>
-      <y>68</y>
-      <width>111</width>
-      <height>131</height>
-     </rect>
-    </property>
-    <property name="frameShape">
-     <enum>QFrame::Box</enum>
-    </property>
-    <property name="lineWidth">
-     <number>0</number>
-    </property>
-    <property name="text">
-     <string/>
     </property>
    </widget>
    <widget class="QLabel" name="campaignBG">
@@ -323,21 +235,103 @@
      <string>bg</string>
     </property>
    </widget>
+   <widget class="QPushButton" name="pushButtonSlot_5">
+    <property name="geometry">
+     <rect>
+      <x>530</x>
+      <y>70</y>
+      <width>104</width>
+      <height>127</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="flat">
+     <bool>true</bool>
+    </property>
+   </widget>
+   <widget class="QLabel" name="slot5">
+    <property name="geometry">
+     <rect>
+      <x>530</x>
+      <y>70</y>
+      <width>104</width>
+      <height>127</height>
+     </rect>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::Panel</enum>
+    </property>
+    <property name="frameShadow">
+     <enum>QFrame::Raised</enum>
+    </property>
+    <property name="lineWidth">
+     <number>3</number>
+    </property>
+    <property name="midLineWidth">
+     <number>0</number>
+    </property>
+    <property name="text">
+     <string>slot_5</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButtonSlot_6">
+    <property name="geometry">
+     <rect>
+      <x>650</x>
+      <y>70</y>
+      <width>104</width>
+      <height>127</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="flat">
+     <bool>true</bool>
+    </property>
+   </widget>
+   <widget class="QLabel" name="slot6">
+    <property name="geometry">
+     <rect>
+      <x>650</x>
+      <y>70</y>
+      <width>104</width>
+      <height>127</height>
+     </rect>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::Panel</enum>
+    </property>
+    <property name="frameShadow">
+     <enum>QFrame::Raised</enum>
+    </property>
+    <property name="lineWidth">
+     <number>3</number>
+    </property>
+    <property name="midLineWidth">
+     <number>0</number>
+    </property>
+    <property name="text">
+     <string>slot_6</string>
+    </property>
+   </widget>
    <zorder>campaignBG</zorder>
-   <zorder>labelSelected1</zorder>
-   <zorder>labelSelected2</zorder>
-   <zorder>labelSelected4</zorder>
-   <zorder>labelSelected3</zorder>
    <zorder>ExitButton</zorder>
    <zorder>pushButtonFight</zorder>
    <zorder>slot2</zorder>
    <zorder>slot4</zorder>
-   <zorder>pushButtonSlot4</zorder>
-   <zorder>pushButtonSlot2</zorder>
+   <zorder>pushButtonSlot_4</zorder>
+   <zorder>pushButtonSlot_2</zorder>
    <zorder>slot1</zorder>
-   <zorder>pushButtonSlot1</zorder>
+   <zorder>pushButtonSlot_1</zorder>
    <zorder>slot3</zorder>
-   <zorder>pushButtonSlot3</zorder>
+   <zorder>pushButtonSlot_3</zorder>
+   <zorder>slot5</zorder>
+   <zorder>slot6</zorder>
+   <zorder>pushButtonSlot_6</zorder>
+   <zorder>pushButtonSlot_5</zorder>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
  </widget>

@@ -434,12 +434,12 @@ class ServerStorage:
         dungeons_table = Table('dungeons', self.metadata,
                          Column('id', Integer, primary_key=True),
                          Column('name', String, unique=True),
-                         Column('unit1', Integer),
-                         Column('unit2', Integer),
-                         Column('unit3', Integer),
-                         Column('unit4', Integer),
-                         Column('unit5', Integer),
-                         Column('unit6', Integer)
+                         Column('unit1', String),
+                         Column('unit2', String),
+                         Column('unit3', String),
+                         Column('unit4', String),
+                         Column('unit5', String),
+                         Column('unit6', String)
                          )
 
         current_dungeon_table = Table('current_dungeon', self.metadata,
@@ -1021,43 +1021,28 @@ class ServerStorage:
 
     def transfer_units(self):
         """Перенос юнитов из CurrentDungeon в запись versus"""
-        current_dict = {}
-        enemy_dict = {}
-        id_list = []
+        names_list = []
 
         # Достаем из базы подземелий имена по слоту,
-        # складываем в словарь
+        # складываем в список
         for slot in range(1, 7):
             try:
                 unit_name = self.get_unit_by_slot(
                     slot, self.CurrentDungeon).name
             except BaseException:
                 unit_name = None
-            current_dict[slot] = unit_name
 
-        # Достаем из базы существ id по имени существа,
-        # складываем в словарь
-        for slot, name in current_dict.items():
-            try:
-                enemy_dict[slot] = self.get_unit_by_name(
-                    name).id
-            except BaseException:
-                enemy_dict[slot] = None
-
-        # Пробегаемся по словарю, если слот не пустой (есть id),
-        # добавляем id в список, иначе - добавляем Null
-        for slot, _id in enemy_dict.items():
-            if _id is not None:
-                id_list.append(_id)
+            if unit_name is not None:
+                names_list.append(unit_name)
             else:
-                id_list.append('<null>')
+                names_list.append('<null>')
 
         # удаляем запись 'versus' из таблицы Dungeons
         self.session.query(self.Dungeons).filter_by(name='versus').delete()
 
         # добавляем запись 'versus' в таблицу Dungeons,
-        # заполненную id текущих юнитов
-        enemy_unit = self.Dungeons('versus', *id_list)
+        # заполненную именами текущих юнитов
+        enemy_unit = self.Dungeons('versus', *names_list)
         self.session.add(enemy_unit)
         self.session.commit()
 

@@ -20,7 +20,6 @@ class EnemyArmyDialog(QDialog):
     def __init__(self, database, slot):
         super().__init__()
         self.database = database
-        self.mission_slot = slot
 
         self.setFixedSize(320, 490)
         self.setWindowTitle('Окно армии противника')
@@ -126,14 +125,18 @@ class EnemyArmyDialog(QDialog):
             6: self.EnemySlot6,
         }
 
+        slots_units = {}
+        for num, unit_name in enumerate(self.dungeon_units):
+            unit = self.database.get_unit_by_name(unit_name)
+            slots_units[num + 1] = unit
+
         for num, icon_slot in self.dung_icons_dict.items():
             try:
                 self._slot_update(
-                    self._enemy_unit_by_slot(num),
+                    slots_units[num],
                     icon_slot)
             except Exception as err:
                 print(err)
-
 
     def _slot_update(self, unit, slot):
         """Метод обновления иконки"""
@@ -142,12 +145,3 @@ class EnemyArmyDialog(QDialog):
         slot.setPixmap(QPixmap(
             get_unit_image(unit)).scaled(
             slot.width(), slot.height()))
-
-
-    def _enemy_unit_by_slot(self, slot):
-        """Метод получающий вражеского юнита по слоту."""
-        unit = self.database.get_unit_by_slot(
-            slot,
-            self.dungeon)
-        print(unit)
-        return unit
