@@ -7,7 +7,8 @@ from PyQt5.QtWidgets import QMainWindow, QHBoxLayout
 from client_dir.campaign_form import Ui_CampaignWindow
 from client_dir.fight_window import FightWindow
 from client_dir.army_dialog import EnemyArmyDialog
-from client_dir.settings import HIRE_SCREEN
+from client_dir.settings import HIRE_SCREEN, MISSION_UNITS
+from client_dir.ui_functions import set_size_by_unit, get_unit_image
 
 
 class CampaignWindow(QMainWindow):
@@ -23,6 +24,7 @@ class CampaignWindow(QMainWindow):
         # основные переменные
         self.database = database
         self.current_faction = self.database.current_game_faction
+        self.dungeon = None
 
         self.InitUI()
 
@@ -49,9 +51,12 @@ class CampaignWindow(QMainWindow):
         self.ui.pushButtonSlot_6.clicked.connect(
             self.highlight_selected_6)
 
+        self.append_campaign_buttons()
         self.append_campaign_icons()
         self.show_red_frame(self.ui.pushButtonSlot_1)
         self.dungeon = f'{self.current_faction}_{1}'
+
+        self.mission_list_update()
 
         self.show()
 
@@ -78,8 +83,8 @@ class CampaignWindow(QMainWindow):
             slot,
             self.database.CurrentDungeon)
 
-    def append_campaign_icons(self):
-        """Иконки миссий в кампании"""
+    def append_campaign_buttons(self):
+        """Кнопки миссий в кампании"""
         self.campaign_buttons_dict = {
             1: self.ui.pushButtonSlot_1,
             2: self.ui.pushButtonSlot_2,
@@ -87,6 +92,17 @@ class CampaignWindow(QMainWindow):
             4: self.ui.pushButtonSlot_4,
             5: self.ui.pushButtonSlot_5,
             6: self.ui.pushButtonSlot_6,
+        }
+
+    def append_campaign_icons(self):
+        """Иконки миссий в кампании"""
+        self.campaign_icons_dict = {
+            1: self.ui.slot1,
+            2: self.ui.slot2,
+            3: self.ui.slot3,
+            4: self.ui.slot4,
+            5: self.ui.slot5,
+            6: self.ui.slot6,
         }
 
     @staticmethod
@@ -156,6 +172,25 @@ class CampaignWindow(QMainWindow):
 
         self.mission_slot_detailed(self.database, 6)
         self.dungeon = f'{self.current_faction}_{6}'
+
+    @staticmethod
+    def _slot_update(unit, slot):
+        """Метод обновления иконки"""
+        set_size_by_unit(unit, slot)
+
+        slot.setPixmap(QPixmap(
+            get_unit_image(unit)).scaled(
+            slot.width(), slot.height()))
+
+    def mission_list_update(self):
+        """Обновление иконок миссий кампании"""
+        for num, icon_slot in self.campaign_icons_dict.items():
+            unit = self.database.get_unit_by_name(
+                MISSION_UNITS[self.current_faction][num])
+
+            self._slot_update(
+                unit,
+                icon_slot)
 
     def back(self):
         """Кнопка возврата"""

@@ -54,6 +54,7 @@ class FightWindow(QMainWindow):
         # основные переменные
         self.database = database
         self.new_battle = Battle(self.database, dungeon)
+        self.dungeon = dungeon
         self.player_side = FRONT
         self.enemy_side = REAR
 
@@ -640,7 +641,8 @@ class FightWindow(QMainWindow):
         gif_slot.setMovie(gif)
         gif.start()
 
-    def get_unit_faction(self, unit):
+    @staticmethod
+    def get_unit_faction(unit):
         """Получение фракции юнита"""
         try:
             for faction, f_building in FACTIONS.items():
@@ -650,7 +652,7 @@ class FightWindow(QMainWindow):
                             return faction
             return 'is_dead'
         except AttributeError:
-            pass
+            return None
 
     def are_units_in_round(self):
         """Проверка на наличие юнитов в раунде"""
@@ -777,6 +779,29 @@ class FightWindow(QMainWindow):
         self.update_log()
         self.new_battle.autofight = False
 
+    def add_gold(self, mission_number):
+        """Добавление золота за победу"""
+        gold_gradation = {
+            "1": 100,
+            "2": 150,
+            "3": 200,
+            "4": 250,
+            "5": 300,
+            "6": 350,
+        }
+
+        player_gold = self.database.get_gold(
+            self.database.current_user,
+            self.database.current_game_faction)
+
+        changed_gold = player_gold + gold_gradation[mission_number]
+
+        # обновление золота в базе
+        self.database.update_gold(
+            self.database.current_user,
+            self.database.current_game_faction,
+            changed_gold)
+
     def add_upgraded_units(self,
                            player,
                            database,
@@ -826,6 +851,10 @@ class FightWindow(QMainWindow):
                 self.player_side,
                 self.pl_slots_eff_dict
             )
+
+            mission_number = self.dungeon.split('_')[1]
+            if self.new_battle.player2.name == 'Computer':
+                self.add_gold(mission_number)
 
     def show_gif_by_side(self, unit, action, slots_dict1, slots_dict2):
         """Отображает GIF в зависимости от стороны и действия"""
