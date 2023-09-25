@@ -36,21 +36,29 @@ class CampaignWindow(QMainWindow):
             self.show_fight_window)
         self.ui.ExitButton.clicked.connect(self.back)
 
-        self.ui.pushButtonSlot1.clicked.connect(
+        self.ui.pushButtonSlot_1.clicked.connect(
             self.highlight_selected_1)
-        self.ui.pushButtonSlot2.clicked.connect(
+        self.ui.pushButtonSlot_2.clicked.connect(
             self.highlight_selected_2)
-        self.ui.pushButtonSlot3.clicked.connect(
+        self.ui.pushButtonSlot_3.clicked.connect(
             self.highlight_selected_3)
-        self.ui.pushButtonSlot4.clicked.connect(
+        self.ui.pushButtonSlot_4.clicked.connect(
             self.highlight_selected_4)
+        self.ui.pushButtonSlot_5.clicked.connect(
+            self.highlight_selected_5)
+        self.ui.pushButtonSlot_6.clicked.connect(
+            self.highlight_selected_6)
+
+        self.append_campaign_icons()
+        self.show_red_frame(self.ui.pushButtonSlot_1)
+        self.dungeon = f'{self.current_faction}_{1}'
 
         self.show()
 
     def show_fight_window(self):
         """Метод создающий окно Битвы."""
         global fight_window
-        fight_window = FightWindow(self.database, 'darkest')
+        fight_window = FightWindow(self.database, self.dungeon)
         fight_window.show()
 
     def mission_slot_detailed(self, database, slot):
@@ -64,35 +72,90 @@ class CampaignWindow(QMainWindow):
         except Exception as err:
             print(err)
 
+    def dungeon_unit_by_slot(self, slot):
+        """Метод получающий юнита подземелья по слоту."""
+        return self.database.get_unit_by_slot(
+            slot,
+            self.database.CurrentDungeon)
+
+    def append_campaign_icons(self):
+        """Иконки миссий в кампании"""
+        self.campaign_buttons_dict = {
+            1: self.ui.pushButtonSlot_1,
+            2: self.ui.pushButtonSlot_2,
+            3: self.ui.pushButtonSlot_3,
+            4: self.ui.pushButtonSlot_4,
+            5: self.ui.pushButtonSlot_5,
+            6: self.ui.pushButtonSlot_6,
+        }
+
+    @staticmethod
+    def show_red_frame(gif_slot):
+        """Обновление красной рамки в слоте"""
+        gif_slot.setStyleSheet("border: 4px solid darkred;")
+
+    @staticmethod
+    def show_no_frames(slots_dict, func):
+        """Убирает все рамки"""
+        for slot in range(1, 7):
+            func(slots_dict[slot])
+
+    @staticmethod
+    def show_no_frame(gif_slot):
+        """Убрать рамки в слоте"""
+        gif_slot.setStyleSheet("border: 0px;")
+
     def unlight_all(self):
-        self.ui.labelSelected1.setLineWidth(0)
-        self.ui.labelSelected2.setLineWidth(0)
-        self.ui.labelSelected3.setLineWidth(0)
-        self.ui.labelSelected4.setLineWidth(0)
+        """Снять выделение миссии"""
+        self.show_no_frames(self.campaign_buttons_dict, self.show_no_frame)
 
     def highlight_selected_1(self):
         """Подсветка выбранной миссии"""
         self.unlight_all()
-        self.ui.labelSelected1.setLineWidth(2)
+        self.show_red_frame(self.ui.pushButtonSlot_1)
+
         self.mission_slot_detailed(self.database, 1)
+        self.dungeon = f'{self.current_faction}_{1}'
 
     def highlight_selected_2(self):
         """Подсветка выбранной миссии"""
         self.unlight_all()
-        self.ui.labelSelected2.setLineWidth(2)
+        self.show_red_frame(self.ui.pushButtonSlot_2)
+
         self.mission_slot_detailed(self.database, 2)
+        self.dungeon = f'{self.current_faction}_{2}'
 
     def highlight_selected_3(self):
         """Подсветка выбранной миссии"""
         self.unlight_all()
-        self.ui.labelSelected3.setLineWidth(2)
+        self.show_red_frame(self.ui.pushButtonSlot_3)
+
         self.mission_slot_detailed(self.database, 3)
+        self.dungeon = f'{self.current_faction}_{3}'
 
     def highlight_selected_4(self):
         """Подсветка выбранной миссии"""
         self.unlight_all()
-        self.ui.labelSelected4.setLineWidth(2)
+        self.show_red_frame(self.ui.pushButtonSlot_4)
+
         self.mission_slot_detailed(self.database, 4)
+        self.dungeon = f'{self.current_faction}_{4}'
+
+    def highlight_selected_5(self):
+        """Подсветка выбранной миссии"""
+        self.unlight_all()
+        self.show_red_frame(self.ui.pushButtonSlot_5)
+
+        self.mission_slot_detailed(self.database, 5)
+        self.dungeon = f'{self.current_faction}_{5}'
+
+    def highlight_selected_6(self):
+        """Подсветка выбранной миссии"""
+        self.unlight_all()
+        self.show_red_frame(self.ui.pushButtonSlot_6)
+
+        self.mission_slot_detailed(self.database, 6)
+        self.dungeon = f'{self.current_faction}_{6}'
 
     def back(self):
         """Кнопка возврата"""

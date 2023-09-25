@@ -103,9 +103,13 @@ class Battle:
         self.clear_dungeon()
         for unit_slot in range(6):
             try:
-                unit = self.database.get_unit_by_id(
-                    self.dungeon_units[unit_slot],
-                    self.database.AllUnits)[:24]
+                # unit = self.database.get_unit_by_id(
+                #     self.dungeon_units[unit_slot],
+                #     self.database.AllUnits)[:24]
+
+                unit = self.database.get_unit_by_name(
+                    self.dungeon_units[unit_slot])[:24]
+
                 self.database.add_dungeon_unit(
                     *unit,
                     unit_slot + 1)

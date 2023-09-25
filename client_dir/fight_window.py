@@ -602,7 +602,7 @@ class FightWindow(QMainWindow):
 
     @staticmethod
     def show_no_frame(gif_slot):
-        """Обновление зеленой рамки в слоте"""
+        """Убрать рамки в слоте"""
         gif_slot.setStyleSheet("border: 0px;")
 
     @staticmethod
