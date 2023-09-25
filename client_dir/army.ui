@@ -260,6 +260,16 @@
     <string>bg</string>
    </property>
   </widget>
+  <zorder>armyBG</zorder>
+  <zorder>EnemySlot4</zorder>
+  <zorder>pushButtonEnSlot5</zorder>
+  <zorder>EnemySlot2</zorder>
+  <zorder>EnemySlot1</zorder>
+  <zorder>pushButtonEnSlot3</zorder>
+  <zorder>EnemySlot5</zorder>
+  <zorder>EnemySlot6</zorder>
+  <zorder>EnemySlot3</zorder>
+  <zorder>pushButtonEnSlot6</zorder>
  </widget>
  <resources/>
  <connections/>
