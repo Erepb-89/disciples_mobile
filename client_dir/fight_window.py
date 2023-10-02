@@ -2,22 +2,26 @@
 
 import os.path
 import random
+from typing import Callable, Optional
 
-from PyQt5 import QtCore, QtGui
+from PyQt5 import QtCore, QtWidgets
 from PyQt5.QtCore import QThread, pyqtSignal
-from PyQt5.QtGui import QPixmap, QMovie, QStandardItem, QStandardItemModel, QCursor
+from PyQt5.QtGui import QPixmap, QMovie, QStandardItem, QStandardItemModel
 from PyQt5.QtWidgets import QMainWindow, QHBoxLayout
 
-from battle import Battle
+from battle import Battle, Player
 from client_dir.fight_form import Ui_FightWindow
 from client_dir.settings import UNIT_STAND, UNIT_ATTACK, \
     UNIT_ATTACKED, UNIT_EFFECTS_ATTACK, BATTLE_GROUND, FRONT, REAR, \
     COMMON, BATTLE_GROUNDS, UNIT_SHADOW_ATTACK, UNIT_SHADOW_STAND, \
     UNIT_SHADOW_ATTACKED, UNIT_EFFECTS_AREA, UNIT_EFFECTS_TARGET, \
-    RIGHT_ICONS, LEFT_ICONS, SCREEN_RECT, PANEL_RECT, BATTLE_LOG, BATTLE_ANIM
-from client_dir.ui_functions import get_unit_image
+    RIGHT_ICONS, LEFT_ICONS, SCREEN_RECT, PANEL_RECT, BATTLE_LOG, \
+    BATTLE_ANIM
+from client_dir.ui_functions import show_no_frame, \
+    show_damage, show_no_damage, show_green_frame, \
+    show_red_frame, show_blue_frame, update_unit_health, show_gif_side, get_unit_image
 from client_dir.unit_dialog import UnitDialog
-from units_dir.buildings import FACTIONS
+from units_dir.units_factory import Unit
 
 
 class Thread(QThread):
@@ -28,7 +32,7 @@ class Thread(QThread):
         QThread.__init__(self)
         self.attacker = attacker
 
-    def run(self):
+    def run(self) -> None:
         """Запуск"""
         if self.attacker is True:
             i = 10_000_000
@@ -49,7 +53,7 @@ class FightWindow(QMainWindow):
     конвертированного файла fight_menu_form.py
     """
 
-    def __init__(self, database, dungeon):
+    def __init__(self, database: any, dungeon: str):
         super().__init__()
         # основные переменные
         self.database = database
@@ -272,7 +276,7 @@ class FightWindow(QMainWindow):
         self.update_log()
         self.show()
 
-    def update_bg(self):
+    def update_bg(self) -> None:
         """Обновление бэкграунда, заполнение картинкой поля сражения"""
         fight_bg = self.ui.FightBG
         fight_bg.setPixmap(
@@ -284,7 +288,7 @@ class FightWindow(QMainWindow):
         self.hbox.addWidget(fight_bg)
         self.setLayout(self.hbox)
 
-    def update_bp(self):
+    def update_bp(self) -> None:
         """Обновление панели битвы"""
         fight_bp = self.ui.batPanel
         fight_bp.setPixmap(
@@ -295,7 +299,7 @@ class FightWindow(QMainWindow):
         self.hbox.addWidget(fight_bp)
         self.setLayout(self.hbox)
 
-    def update_log(self):
+    def update_log(self) -> None:
         """Обновление лога"""
         self.log_model = QStandardItemModel()
 
@@ -309,11 +313,11 @@ class FightWindow(QMainWindow):
         self.ui.battleLog.setStyleSheet(
             "background-color: rgb(65, 3, 2); color: white")
 
-    def back(self):
+    def back(self) -> None:
         """Кнопка возврата"""
         self.close()
 
-    def change_side(self):
+    def change_side(self) -> None:
         """Смена сторон"""
         if self.player_side == FRONT:
             self.player_side = REAR
@@ -328,13 +332,13 @@ class FightWindow(QMainWindow):
 
         self.unit_gifs_update()
         self.show_no_damaged()
-        self.show_no_frames(self.unit_icons_dict, self.show_no_frame)
-        self.show_no_frames(self.dung_icons_dict, self.show_no_frame)
+        self.show_no_frames(self.unit_icons_dict, show_no_frame)
+        self.show_no_frames(self.dung_icons_dict, show_no_frame)
         if not self.new_battle.battle_is_over:
             self.show_frame_attacked()
             self.show_frame_attacker()
 
-    def set_front_gif_player1_dict(self):
+    def set_front_gif_player1_dict(self) -> None:
         """Задание FRONT стороны для анимационных GIF игрока 1"""
         self.pl_slots_dict = self.front_slots_dict
         self.pl_slots_shad_dict = self.front_slots_shad_dict
@@ -348,7 +352,7 @@ class FightWindow(QMainWindow):
         self.en_slots_attacked_eff_dict = self.rear_slots_attacked_eff_dict
         self.en_hp_slots_dict = self.rear_hp_slots_dict
 
-    def set_front_gif_player2_dict(self):
+    def set_front_gif_player2_dict(self) -> None:
         """Задание FRONT стороны для анимационных GIF игрока 2"""
         self.pl_slots_dict = self.rear_slots_dict
         self.pl_slots_shad_dict = self.rear_slots_shad_dict
@@ -362,7 +366,7 @@ class FightWindow(QMainWindow):
         self.en_slots_attacked_eff_dict = self.front_slots_attacked_eff_dict
         self.en_hp_slots_dict = self.front_hp_slots_dict
 
-    def append_front(self):
+    def append_front(self) -> None:
         """Основные анимационные GIF юнитов FRONT стороны"""
         self.front_slots_dict = {
             1: self.ui.gifPlayerSlot_1,
@@ -373,7 +377,7 @@ class FightWindow(QMainWindow):
             6: self.ui.gifPlayerSlot_6,
         }
 
-    def append_front_shadows(self):
+    def append_front_shadows(self) -> None:
         """Анимационные GIF теней юнитов FRONT стороны"""
         self.front_slots_shad_dict = {
             1: self.ui.gifShadSlot_1,
@@ -384,7 +388,7 @@ class FightWindow(QMainWindow):
             6: self.ui.gifShadSlot_6,
         }
 
-    def append_front_effects(self):
+    def append_front_effects(self) -> None:
         """Анимационные GIF эффектов атакующий юнитов FRONT стороны"""
         self.front_slots_eff_dict = {
             1: self.ui.gifEffSlot_1,
@@ -395,7 +399,7 @@ class FightWindow(QMainWindow):
             6: self.ui.gifEffSlot_6,
         }
 
-    def append_front_attacked_eff(self):
+    def append_front_attacked_eff(self) -> None:
         """Анимационные GIF эффектов атакованных юнитов FRONT стороны"""
         self.front_slots_attacked_eff_dict = {
             1: self.ui.gifPlayerAttEffSlot_1,
@@ -406,7 +410,7 @@ class FightWindow(QMainWindow):
             6: self.ui.gifPlayerAttEffSlot_6,
         }
 
-    def append_front_hp(self):
+    def append_front_hp(self) -> None:
         """GIF очков здоровья юнитов FRONT стороны"""
         self.front_hp_slots_dict = {
             1: self.ui.hpSlot1,
@@ -417,7 +421,7 @@ class FightWindow(QMainWindow):
             6: self.ui.hpSlot6,
         }
 
-    def append_rear(self):
+    def append_rear(self) -> None:
         """Анимационные GIF теней юнитов REAR стороны"""
         self.rear_slots_dict = {
             1: self.ui.gifEnemySlot_1,
@@ -428,7 +432,7 @@ class FightWindow(QMainWindow):
             6: self.ui.gifEnemySlot_6,
         }
 
-    def append_rear_shadows(self):
+    def append_rear_shadows(self) -> None:
         """Анимационные GIF теней юнитов REAR стороны"""
         self.rear_slots_shad_dict = {
             1: self.ui.gifEnemyShadSlot_1,
@@ -439,7 +443,7 @@ class FightWindow(QMainWindow):
             6: self.ui.gifEnemyShadSlot_6,
         }
 
-    def append_rear_effects(self):
+    def append_rear_effects(self) -> None:
         """Анимационные GIF эффектов атакующий юнитов REAR стороны"""
         self.rear_slots_eff_dict = {
             1: self.ui.gifEnemyEffSlot_1,
@@ -450,7 +454,7 @@ class FightWindow(QMainWindow):
             6: self.ui.gifEnemyEffSlot_6,
         }
 
-    def append_rear_attacked_eff(self):
+    def append_rear_attacked_eff(self) -> None:
         """Анимационные GIF эффектов атакованных юнитов REAR стороны"""
         self.rear_slots_attacked_eff_dict = {
             1: self.ui.gifEnemyAttEffSlot_1,
@@ -461,7 +465,7 @@ class FightWindow(QMainWindow):
             6: self.ui.gifEnemyAttEffSlot_6,
         }
 
-    def append_rear_hp(self):
+    def append_rear_hp(self) -> None:
         """GIF очков здоровья юнитов REAR стороны"""
         self.rear_hp_slots_dict = {
             1: self.ui.enemyHPSlot1,
@@ -472,7 +476,7 @@ class FightWindow(QMainWindow):
             6: self.ui.enemyHPSlot6,
         }
 
-    def set_front_gif_player1(self):
+    def set_front_gif_player1(self) -> None:
         """Задание FRONT стороны для анимационных GIF игрока 1 (по умолчанию)"""
         self.player_side = FRONT
         self.enemy_side = REAR
@@ -507,7 +511,7 @@ class FightWindow(QMainWindow):
         # GIF очков здоровья юнитов REAR стороны
         self.append_rear_hp()
 
-    def append_front_icons(self):
+    def append_front_icons(self) -> None:
         """Иконки юнитов FRONT стороны"""
         self.front_icons_dict = {
             1: self.ui.slot1,
@@ -518,7 +522,7 @@ class FightWindow(QMainWindow):
             6: self.ui.slot6,
         }
 
-    def append_front_buttons(self):
+    def append_front_buttons(self) -> None:
         """Кнопки юнитов FRONT стороны"""
         self.front_buttons_dict = {
             1: self.ui.pushButtonSlot1,
@@ -529,7 +533,7 @@ class FightWindow(QMainWindow):
             6: self.ui.pushButtonSlot6,
         }
 
-    def append_front_damaged(self):
+    def append_front_damaged(self) -> None:
         """Иконки атакованных юнитов FRONT стороны"""
         self.front_damaged_dict = {
             1: self.ui.damPlayerSlot_1,
@@ -540,7 +544,7 @@ class FightWindow(QMainWindow):
             6: self.ui.damPlayerSlot_6,
         }
 
-    def append_rear_icons(self):
+    def append_rear_icons(self) -> None:
         """GIF иконок юнитов REAR стороны"""
         self.rear_icons_dict = {
             1: self.ui.enemySlot1,
@@ -551,7 +555,7 @@ class FightWindow(QMainWindow):
             6: self.ui.enemySlot6,
         }
 
-    def append_rear_buttons(self):
+    def append_rear_buttons(self) -> None:
         """GIF кнопок юнитов REAR стороны"""
         self.rear_buttons_dict = {
             1: self.ui.pushButtonEnemySlot1,
@@ -562,7 +566,7 @@ class FightWindow(QMainWindow):
             6: self.ui.pushButtonEnemySlot5,
         }
 
-    def append_rear_damaged(self):
+    def append_rear_damaged(self) -> None:
         """Иконки атакованных юнитов REAR стороны"""
         self.rear_damaged_dict = {
             1: self.ui.damEnemySlot_1,
@@ -573,55 +577,7 @@ class FightWindow(QMainWindow):
             6: self.ui.damEnemySlot_6,
         }
 
-    def show_gif_side(self, unit, gif_slot, action, side):
-        """Обновление GIF в слоте"""
-        if unit is None:
-            gif = QMovie(
-                os.path.join(
-                    UNIT_STAND,
-                    f"{side}/empty.gif"))
-
-        # анимация смерти
-        elif unit.curr_health == 0:
-            unit_faction = self.get_unit_faction(unit)
-            gif = QMovie(
-                os.path.join(
-                    action,
-                    f"{side}/{unit_faction}.gif"))
-        # if unit.curr_health == 0:
-        #     gif = QMovie(os.path.join(COMMON, "skull.png"))
-
-        # анимация действия
-        else:
-            gif = QMovie(
-                os.path.join(
-                    action,
-                    f"{side}{unit.name}.gif"))
-
-        gif_slot.setMovie(gif)
-        gif.start()
-
-    @staticmethod
-    def show_no_frame(gif_slot):
-        """Убрать рамки в слоте"""
-        gif_slot.setStyleSheet("border: 0px;")
-
-    @staticmethod
-    def show_green_frame(gif_slot):
-        """Обновление зеленой рамки в слоте"""
-        gif_slot.setStyleSheet("border: 4px solid green;")
-
-    @staticmethod
-    def show_blue_frame(gif_slot):
-        """Обновление зеленой рамки в слоте"""
-        gif_slot.setStyleSheet("border: 4px solid blue;")
-
-    @staticmethod
-    def show_red_frame(gif_slot):
-        """Обновление красной рамки в слоте"""
-        gif_slot.setStyleSheet("border: 4px solid darkred;")
-
-    def show_splash_area(self, unit, action):
+    def show_splash_area(self, unit: any, action: str) -> None:
         """Атака по площади"""
         if unit in self.new_battle.player1.units:
             side = self.player_side
@@ -641,20 +597,7 @@ class FightWindow(QMainWindow):
         gif_slot.setMovie(gif)
         gif.start()
 
-    @staticmethod
-    def get_unit_faction(unit):
-        """Получение фракции юнита"""
-        try:
-            for faction, f_building in FACTIONS.items():
-                for branch in f_building.values():
-                    for building in branch.values():
-                        if unit.name == building.unit_name:
-                            return faction
-            return 'is_dead'
-        except AttributeError:
-            return None
-
-    def are_units_in_round(self):
+    def are_units_in_round(self) -> None:
         """Проверка на наличие юнитов в раунде"""
         if self.new_battle.current_unit in self.new_battle.units_in_round:
             self.new_battle.units_in_round.remove(self.new_battle.current_unit)
@@ -665,9 +608,6 @@ class FightWindow(QMainWindow):
 
         # есть юниты, ожидающие лучшего момента
         elif self.new_battle.waiting_units:
-            for unit in self.new_battle.waiting_units:
-                print(unit.name)
-
             if self.new_battle.current_unit in self.new_battle.waiting_units:
                 # кнопка ожидания недоступна
                 self.ui.pushButtonWaiting.setEnabled(False)
@@ -688,26 +628,26 @@ class FightWindow(QMainWindow):
         self.show_frame_attacked()
         self.show_frame_attacker()
 
-    def unit_defence(self):
+    def unit_defence(self) -> None:
         """Встать в Защиту выбранным юнитом"""
         self.new_battle.current_unit.defence()
         self.update_log()
         self.show_no_damaged()
-        self.show_no_frames(self.unit_icons_dict, self.show_no_frame)
-        self.show_no_frames(self.dung_icons_dict, self.show_no_frame)
+        self.show_no_frames(self.unit_icons_dict, show_no_frame)
+        self.show_no_frames(self.dung_icons_dict, show_no_frame)
 
         self.are_units_in_round()
 
         self.update_log()
 
-    def unit_waiting(self):
+    def unit_waiting(self) -> None:
         """Ожидать выбранным юнитом"""
         self.new_battle.current_unit.waiting()
 
         self.update_log()
         self.show_no_damaged()
-        self.show_no_frames(self.unit_icons_dict, self.show_no_frame)
-        self.show_no_frames(self.dung_icons_dict, self.show_no_frame)
+        self.show_no_frames(self.unit_icons_dict, show_no_frame)
+        self.show_no_frames(self.dung_icons_dict, show_no_frame)
 
         # self.new_battle.units_deque.append(self.new_battle.current_unit)
 
@@ -717,7 +657,7 @@ class FightWindow(QMainWindow):
 
         self.update_log()
 
-    def show_attack_and_attacked(self):
+    def show_attack_and_attacked(self) -> None:
         """Анимация атакующей и атакованной стороны"""
         self.update_log()
 
@@ -732,7 +672,7 @@ class FightWindow(QMainWindow):
             self.worker.dataThread.connect(self.show_all_attacked)
             self.worker.start()
 
-    def autofight(self):
+    def autofight(self) -> None:
         """Автобой"""
         # пока битва не окончена
         if not self.new_battle.battle_is_over:
@@ -745,15 +685,15 @@ class FightWindow(QMainWindow):
             else:
                 self.unit_defence()
 
-    def show_all_attacked(self, text):
+    def show_all_attacked(self, text) -> None:
         """Метод обновляющий анимацию всех атакованных юнитов"""
         for target_slot in self.new_battle.attacked_slots:
             self.who_attacked(
                 target_slot,
                 self.new_battle.current_unit)
 
-        self.show_no_frames(self.unit_icons_dict, self.show_no_frame)
-        self.show_no_frames(self.dung_icons_dict, self.show_no_frame)
+        self.show_no_frames(self.unit_icons_dict, show_no_frame)
+        self.show_no_frames(self.dung_icons_dict, show_no_frame)
 
         # Очистка целей, чтобы в конце боя нельзя было атаковать повторно
         self.new_battle.target_slots = []
@@ -770,7 +710,6 @@ class FightWindow(QMainWindow):
         # битва закончена
         else:
             self.show_lvl_up_animations()
-            # print(self.new_battle.alive_units, 'self.new_battle.alive_units')
 
             self.worker = Thread(False)
             self.worker.dataThread.connect(self.unit_gifs_update)
@@ -779,7 +718,7 @@ class FightWindow(QMainWindow):
         self.update_log()
         self.new_battle.autofight = False
 
-    def add_gold(self, mission_number):
+    def add_gold(self, mission_number: int) -> None:
         """Добавление золота за победу"""
         gold_gradation = {
             "1": 100,
@@ -803,10 +742,10 @@ class FightWindow(QMainWindow):
             changed_gold)
 
     def add_upgraded_units(self,
-                           player,
-                           database,
-                           side,
-                           slots_dict):
+                           player: Player,
+                           database: any,
+                           side: str,
+                           slots_dict: dict) -> None:
         """Добавление в битву получивших опыт юнитов (из базы)"""
         for unit_slot in self.new_battle.alive_units:
             player.slots.remove(unit_slot)
@@ -821,9 +760,9 @@ class FightWindow(QMainWindow):
                 self.new_battle.add_dung_units()
             else:
                 self.new_battle.add_player_unit(
-                        unit_slot,
-                        player,
-                        database)
+                    unit_slot,
+                    player,
+                    database)
 
                 self.show_level_up(
                     self._unit_by_slot_and_side(
@@ -831,7 +770,7 @@ class FightWindow(QMainWindow):
                         side),
                     slots_dict)
 
-    def show_lvl_up_animations(self):
+    def show_lvl_up_animations(self) -> None:
         """Анимация всех получивших уровень юнитов"""
         # если юниты игрока1 мертвы
         if not self.new_battle.player1.slots:
@@ -852,11 +791,18 @@ class FightWindow(QMainWindow):
                 self.pl_slots_eff_dict
             )
 
-            mission_number = self.dungeon.split('_')[1]
             if self.new_battle.player2.name == 'Computer':
-                self.add_gold(mission_number)
+                try:
+                    mission_number = self.dungeon.split('_')[1]
+                    self.add_gold(mission_number)
+                except IndexError:
+                    pass
 
-    def show_gif_by_side(self, unit, action, slots_dict1, slots_dict2):
+    def show_gif_by_side(self,
+                         unit: Unit,
+                         action: str,
+                         slots_dict1: dict,
+                         slots_dict2: dict) -> None:
         """Отображает GIF в зависимости от стороны и действия"""
         slots_dict = {}
         side = self.player_side
@@ -871,13 +817,17 @@ class FightWindow(QMainWindow):
             side = self.enemy_side
             slots_dict = slots_dict2
 
-        self.show_gif_side(
+        show_gif_side(
             unit,
             slots_dict[unit.slot],
             action,
             side)
 
-    def show_frames_by_side(self, unit, slots_dict1, slots_dict2, func):
+    def show_frames_by_side(self,
+                            unit: Unit,
+                            slots_dict1: dict,
+                            slots_dict2: dict,
+                            func: Callable) -> None:
         """Отображает рамку в зависимости от стороны и действия"""
         if unit is None:
             pass
@@ -887,12 +837,12 @@ class FightWindow(QMainWindow):
             func(slots_dict2[unit.slot])
 
     @staticmethod
-    def show_no_frames(slots_dict, func):
+    def show_no_frames(slots_dict: dict, func: Callable) -> None:
         """Убирает все рамки"""
         for slot in range(1, 7):
             func(slots_dict[slot])
 
-    def show_level_up(self, unit, slots_dict):
+    def show_level_up(self, unit: Unit, slots_dict: dict) -> None:
         """Прорисовка модели юнита, получившего уровень"""
         if unit.slot in self.new_battle.alive_units and self.new_battle.battle_is_over:
             if unit.size == "Большой":
@@ -907,43 +857,43 @@ class FightWindow(QMainWindow):
             slots_dict[unit.slot].setMovie(gif)
             gif.start()
 
-    def show_attacker(self, unit):
+    def show_attacker(self, unit: Unit) -> None:
         """Прорисовка модели атакующего юнита"""
         self.show_gif_by_side(unit,
                               UNIT_ATTACK,
                               self.pl_slots_dict,
                               self.en_slots_dict)
 
-    def show_frame_attacker(self):
+    def show_frame_attacker(self) -> None:
         """Прорисовка рамки вокруг иконки атакующего юнита"""
         # QtCore.QTimer.singleShot(3000, lambda: print(1))
         self.show_frames_by_side(self.new_battle.current_unit,
                                  self.unit_icons_dict,
                                  self.dung_icons_dict,
-                                 self.show_green_frame)
+                                 show_green_frame)
 
-    def show_attacker_eff(self, unit):
+    def show_attacker_eff(self, unit: Unit) -> None:
         """Прорисовка эффектов атакующего юнита"""
         self.show_gif_by_side(unit,
                               UNIT_EFFECTS_ATTACK,
                               self.pl_slots_eff_dict,
                               self.en_slots_eff_dict)
 
-    def show_shadow_attacker(self, unit):
+    def show_shadow_attacker(self, unit: Unit) -> None:
         """Прорисовка тени атакующего юнита"""
         self.show_gif_by_side(unit,
                               UNIT_SHADOW_ATTACK,
                               self.pl_slots_shad_dict,
                               self.en_slots_shad_dict)
 
-    def show_attacked(self, target):
+    def show_attacked(self, target) -> None:
         """Прорисовка модели атакованного юнита"""
         self.show_gif_by_side(target,
                               UNIT_ATTACKED,
                               self.pl_slots_dict,
                               self.en_slots_dict)
 
-    def show_frame_attacked(self):
+    def show_frame_attacked(self) -> None:
         """Прорисовка рамки вокруг иконки атакованного юнита"""
         for target_slot in self.new_battle.target_slots:
             curr_target = self.get_curr_target(target_slot)
@@ -954,31 +904,30 @@ class FightWindow(QMainWindow):
                 self.show_frames_by_side(curr_target,
                                          self.unit_icons_dict,
                                          self.dung_icons_dict,
-                                         self.show_blue_frame)
+                                         show_blue_frame)
 
             else:
                 self.show_frames_by_side(curr_target,
                                          self.unit_icons_dict,
                                          self.dung_icons_dict,
-                                         self.show_red_frame)
+                                         show_red_frame)
 
-
-    def show_no_damaged(self):
+    def show_no_damaged(self) -> None:
         """Метод скрывающий нанесенный урон"""
         for icon_slot in self.unit_damaged_dict.values():
-            self._show_no_damage(icon_slot)
+            show_no_damage(icon_slot)
 
         for icon_slot in self.dung_damaged_dict.values():
-            self._show_no_damage(icon_slot)
+            show_no_damage(icon_slot)
 
-    def show_shadow_attacked(self, target):
+    def show_shadow_attacked(self, target: Unit) -> None:
         """Прорисовка тени атакованного юнита"""
         self.show_gif_by_side(target,
                               UNIT_SHADOW_ATTACKED,
                               self.pl_slots_shad_dict,
                               self.en_slots_shad_dict)
 
-    def get_curr_target(self, target_slot):
+    def get_curr_target(self, target_slot: int) -> Unit:
         """Получение текущей цели"""
         if self.new_battle.target_player == self.new_battle.player2:
             curr_target = self._unit_by_slot_and_side(
@@ -988,7 +937,7 @@ class FightWindow(QMainWindow):
                 target_slot, self.player_side)
         return curr_target
 
-    def show_life_drain(self):
+    def show_life_drain(self) -> None:
         """Прорисовка анимации высасывания жизни"""
         unit_gif = "life_drain.gif"
         gif = QMovie(
@@ -1001,7 +950,7 @@ class FightWindow(QMainWindow):
         ].setMovie(gif)
         gif.start()
 
-    def who_attack(self):
+    def who_attack(self) -> None:
         """Метод обновляющий анимацию атакующего юнита"""
         # получение текущего юнита
         curr_unit = self.new_battle.current_unit
@@ -1026,7 +975,7 @@ class FightWindow(QMainWindow):
                 curr_unit,
                 UNIT_EFFECTS_AREA)
 
-    def who_attacked(self, target_slot, current_unit):
+    def who_attacked(self, target_slot: int, current_unit: Unit) -> None:
         """Метод обновляющий анимацию атакованного юнита"""
         if target_slot is None:
             return
@@ -1049,7 +998,7 @@ class FightWindow(QMainWindow):
                     self.enemy_side)
 
                 # прорисовка эффекта на атакованном вражеском юните
-                self.show_gif_side(
+                show_gif_side(
                     current_unit,
                     self.en_slots_attacked_eff_dict[curr_target.slot],
                     UNIT_EFFECTS_TARGET,
@@ -1061,7 +1010,7 @@ class FightWindow(QMainWindow):
                     self.player_side)
 
                 # прорисовка эффекта на атакованном юните игрока
-                self.show_gif_side(
+                show_gif_side(
                     current_unit,
                     self.pl_slots_attacked_eff_dict[curr_target.slot],
                     UNIT_EFFECTS_TARGET,
@@ -1076,41 +1025,27 @@ class FightWindow(QMainWindow):
 
             if self.new_battle.target_player == self.new_battle.player2:
                 # прорисовка эффекта на атакованном вражеском юните
-                self.show_gif_side(
+                show_gif_side(
                     current_unit,
                     self.en_slots_attacked_eff_dict[curr_target.slot],
                     UNIT_EFFECTS_TARGET,
                     self.enemy_side)
 
                 # Показывает атакованный вражеский юнит
-                self._show_damage(
+                show_damage(
                     self.dung_damaged_dict[curr_target.slot])
-
-                # if curr_target.curr_health == 0:
-                #     self.show_gif_side(
-                #         curr_target,
-                #         self.en_slots_eff_dict[curr_target.slot],
-                #         UNIT_EFFECTS_ATTACK,
-                #         self.enemy_side)
 
             else:
                 # прорисовка эффекта на атакованном юните игрока
-                self.show_gif_side(
+                show_gif_side(
                     current_unit,
                     self.pl_slots_attacked_eff_dict[curr_target.slot],
                     UNIT_EFFECTS_TARGET,
                     self.player_side)
 
                 # Показывает атакованный юнит игрока
-                self._show_damage(
+                show_damage(
                     self.unit_damaged_dict[curr_target.slot])
-
-                # if curr_target.curr_health == 0:
-                #     self.show_gif_side(
-                #         curr_target,
-                #         self.pl_slots_eff_dict[curr_target.slot],
-                #         UNIT_EFFECTS_ATTACK,
-                #         self.player_side)
 
         # если атакованный юнит погиб, удаляем его
         if curr_target.curr_health == 0:
@@ -1121,23 +1056,10 @@ class FightWindow(QMainWindow):
                 self.new_battle.units_in_round.remove(
                     curr_target)
 
-    @staticmethod
-    def _show_damage(icon_slot):
-        """Метод показывающий нанесенный урон"""
-        icon_slot.setText("40")
-        # icon_slot.setPixmap(QPixmap(os.path.join(COMMON, "rose.png")))
-        icon_slot.setPixmap(QPixmap(os.path.join(COMMON, "fire.gif")))
-
-    @staticmethod
-    def _show_no_damage(icon_slot):
-        """Метод скрывающий нанесенный урон на иконке"""
-        # icon_slot.setText("0")
-        icon_slot.setPixmap(QPixmap(os.path.join(COMMON, "transparent.gif")))
-
     def update_icons(self,
-                     icons_dict,
-                     buttons_dict,
-                     side):
+                     icons_dict: dict,
+                     buttons_dict: dict,
+                     side: str) -> None:
         """Обновление иконок и кнопок юнитов"""
         for num, icon_slot in icons_dict.items():
             self._slot_update(
@@ -1149,7 +1071,7 @@ class FightWindow(QMainWindow):
                 self._unit_by_slot_and_side(num, side),
                 button_slot)
 
-    def set_unit_icons(self):
+    def set_unit_icons(self) -> None:
         """Заполнение временных словарей иконок и кнопок юнитов"""
         # Иконки юнитов FRONT стороны
         self.append_front_icons()
@@ -1191,7 +1113,7 @@ class FightWindow(QMainWindow):
                               self.dung_buttons_dict,
                               FRONT)
 
-    def set_unit_icons_player1(self):
+    def set_unit_icons_player1(self) -> None:
         """Заполнение словарей иконок и кнопок юнитов FRONT - игрок 1"""
         self.unit_icons_dict = self.front_icons_dict
         self.unit_damaged_dict = self.front_damaged_dict
@@ -1201,7 +1123,7 @@ class FightWindow(QMainWindow):
         self.dung_damaged_dict = self.rear_damaged_dict
         self.dung_buttons_dict = self.rear_buttons_dict
 
-    def set_unit_icons_player2(self):
+    def set_unit_icons_player2(self) -> None:
         """Заполнение словарей иконок и кнопок юнитов FRONT - игрок 2"""
         self.dung_icons_dict = self.front_icons_dict
         self.dung_damaged_dict = self.front_damaged_dict
@@ -1211,16 +1133,19 @@ class FightWindow(QMainWindow):
         self.unit_damaged_dict = self.rear_damaged_dict
         self.unit_buttons_dict = self.rear_buttons_dict
 
-    def animate_action_side(self, slots_dict, unit_action, side):
+    def animate_action_side(self,
+                            slots_dict: dict,
+                            unit_action: str,
+                            side: str) -> None:
         """Анимации юнитов игрока"""
         for num, gif_slot in slots_dict.items():
-            self.show_gif_side(
+            show_gif_side(
                 self._unit_by_slot_and_side(num, side),
                 gif_slot,
                 unit_action,
                 side)
 
-    def unit_gifs_update(self):
+    def unit_gifs_update(self) -> None:
         """Метод обновляющий анимацию юнитов"""
         # прорисовка модели бездействующего юнита игрока
         self.animate_action_side(
@@ -1249,30 +1174,22 @@ class FightWindow(QMainWindow):
         self._update_all_unit_health()
         self.unit_icons_update()
 
-    @staticmethod
-    def _update_unit_health(unit, slot):
-        """Обновление здоровья юнита"""
-        try:
-            slot.setText(f'{unit.curr_health}/{unit.health}')
-        except AttributeError:
-            slot.setText('')
-
-    def _update_all_unit_health(self):
+    def _update_all_unit_health(self) -> None:
         """Метод обновляющий текущее здоровье всех юнитов"""
 
         # прорисовка здоровья юнитов со стороны FRONT
         for num, hp_slot in self.pl_hp_slots_dict.items():
-            self._update_unit_health(
+            update_unit_health(
                 self._unit_by_slot_and_side(num, self.player_side),
                 hp_slot)
 
         # прорисовка здоровья юнитов со стороны REAR
         for num, hp_slot in self.en_hp_slots_dict.items():
-            self._update_unit_health(
+            update_unit_health(
                 self._unit_by_slot_and_side(num, self.enemy_side),
                 hp_slot)
 
-    def set_coords_double_slots(self, ui_obj):
+    def set_coords_double_slots(self, ui_obj) -> None:
         """Задание координат для 'двойных' слотов либо кнопок"""
         if ui_obj in [
             self.ui.slot2,
@@ -1293,7 +1210,7 @@ class FightWindow(QMainWindow):
             ui_obj.setFixedWidth(105)
             ui_obj.setFixedHeight(127)
 
-    def _set_size_by_unit(self, unit, ui_obj):
+    def _set_size_by_unit(self, unit: Unit, ui_obj: any) -> None:
         """Установка размера иконки по размеру самого юнита"""
         self.set_coords_double_slots(ui_obj)
 
@@ -1327,14 +1244,16 @@ class FightWindow(QMainWindow):
             ui_obj.setFixedWidth(105)
             ui_obj.setFixedHeight(127)
 
-    def _button_update(self, unit, button):
+    def _button_update(self,
+                       unit: Unit,
+                       button: QtWidgets.QPushButton) -> None:
         """Установка размера кнопки на иконке"""
         self._set_size_by_unit(unit, button)
 
         self.hbox.addWidget(button)
         self.setLayout(self.hbox)
 
-    def _slot_update(self, unit, slot):
+    def _slot_update(self, unit: Unit, slot: int) -> None:
         """Метод обновления иконки"""
         self._set_size_by_unit(unit, slot)
 
@@ -1344,7 +1263,7 @@ class FightWindow(QMainWindow):
         self.hbox.addWidget(slot)
         self.setLayout(self.hbox)
 
-    def _slot_detailed(self, unit, slot_dialog):
+    def _slot_detailed(self, unit: Unit, slot_dialog: any) -> None:
         """Метод создающий окно юнита игрока при нажатии на слот."""
         try:
             global DETAIL_WINDOW
@@ -1355,7 +1274,7 @@ class FightWindow(QMainWindow):
         except AttributeError:
             pass
 
-    def attack_enemy_by_slot(self, slot, side):
+    def attack_enemy_by_slot(self, slot: int, side: str) -> None:
         """Атака и анимация по выбранному слоту противника"""
         self.unit_gifs_update()
         target = self._unit_by_slot_and_side(slot, side)
@@ -1375,127 +1294,127 @@ class FightWindow(QMainWindow):
             self.new_battle.player_attack(target)
             self.show_attack_and_attacked()
 
-    def _attack_player_slot1(self):
+    def _attack_player_slot1(self) -> None:
         """Атаковать юнита игрока в слоте 1"""
         if 1 in self.new_battle.target_slots:
             self.attack_enemy_by_slot(1, FRONT)
 
-    def _attack_player_slot2(self):
+    def _attack_player_slot2(self) -> None:
         """Атаковать юнита игрока в слоте 2"""
         if 2 in self.new_battle.target_slots:
             self.attack_enemy_by_slot(2, FRONT)
 
-    def _attack_player_slot3(self):
+    def _attack_player_slot3(self) -> None:
         """Атаковать юнита игрока в слоте 3"""
         if 3 in self.new_battle.target_slots:
             self.attack_enemy_by_slot(3, FRONT)
 
-    def _attack_player_slot4(self):
+    def _attack_player_slot4(self) -> None:
         """Атаковать юнита игрока в слоте 4"""
         if 4 in self.new_battle.target_slots:
             self.attack_enemy_by_slot(4, FRONT)
 
-    def _attack_player_slot5(self):
+    def _attack_player_slot5(self) -> None:
         """Атаковать юнита игрока в слоте 5"""
         if 5 in self.new_battle.target_slots:
             self.attack_enemy_by_slot(5, FRONT)
 
-    def _attack_player_slot6(self):
+    def _attack_player_slot6(self) -> None:
         """Атаковать юнита игрока в слоте 6"""
         if 6 in self.new_battle.target_slots:
             self.attack_enemy_by_slot(6, FRONT)
 
-    def _attack_enemy_slot1(self):
+    def _attack_enemy_slot1(self) -> None:
         """Атаковать вражеского юнита в слоте 1"""
         if 1 in self.new_battle.target_slots:
             self.attack_enemy_by_slot(1, REAR)
 
-    def _attack_enemy_slot2(self):
+    def _attack_enemy_slot2(self) -> None:
         """Атаковать вражеского юнита в слоте 2"""
         if 2 in self.new_battle.target_slots:
             self.attack_enemy_by_slot(2, REAR)
 
-    def _attack_enemy_slot3(self):
+    def _attack_enemy_slot3(self) -> None:
         """Атаковать вражеского юнита в слоте 3"""
         if 3 in self.new_battle.target_slots:
             self.attack_enemy_by_slot(3, REAR)
 
-    def _attack_enemy_slot4(self):
+    def _attack_enemy_slot4(self) -> None:
         """Атаковать вражеского юнита в слоте 4"""
         if 4 in self.new_battle.target_slots:
             self.attack_enemy_by_slot(4, REAR)
 
-    def _attack_enemy_slot5(self):
+    def _attack_enemy_slot5(self) -> None:
         """Атаковать вражеского юнита в слоте 5"""
         if 5 in self.new_battle.target_slots:
             self.attack_enemy_by_slot(5, REAR)
 
-    def _attack_enemy_slot6(self):
+    def _attack_enemy_slot6(self) -> None:
         """Атаковать вражеского юнита в слоте 6"""
         if 6 in self.new_battle.target_slots:
             self.attack_enemy_by_slot(6, REAR)
 
-    def _slot1_detailed(self):
+    def _slot1_detailed(self) -> None:
         """Метод создающий окно юнита игрока (слот 1)."""
         unit = self._unit_by_slot_and_side(1, FRONT)
         self._slot_detailed(unit, UnitDialog)
 
-    def _slot2_detailed(self):
+    def _slot2_detailed(self) -> None:
         """Метод создающий окно юнита игрока (слот 2)."""
         unit = self._unit_by_slot_and_side(2, FRONT)
         self._slot_detailed(unit, UnitDialog)
 
-    def _slot3_detailed(self):
+    def _slot3_detailed(self) -> None:
         """Метод создающий окно юнита игрока (слот 3)."""
         unit = self._unit_by_slot_and_side(3, FRONT)
         self._slot_detailed(unit, UnitDialog)
 
-    def _slot4_detailed(self):
+    def _slot4_detailed(self) -> None:
         """Метод создающий окно юнита игрока (слот 4)."""
         unit = self._unit_by_slot_and_side(4, FRONT)
         self._slot_detailed(unit, UnitDialog)
 
-    def _slot5_detailed(self):
+    def _slot5_detailed(self) -> None:
         """Метод создающий окно юнита игрока (слот 5)."""
         unit = self._unit_by_slot_and_side(5, FRONT)
         self._slot_detailed(unit, UnitDialog)
 
-    def _slot6_detailed(self):
+    def _slot6_detailed(self) -> None:
         """Метод создающий окно юнита игрока (слот 6)."""
         unit = self._unit_by_slot_and_side(6, FRONT)
         self._slot_detailed(unit, UnitDialog)
 
-    def _enemy_slot1_detailed(self):
+    def _enemy_slot1_detailed(self) -> None:
         """Метод создающий окно юнита (слот 1)."""
         unit = self._unit_by_slot_and_side(1, REAR)
         self._slot_detailed(unit, UnitDialog)
 
-    def _enemy_slot2_detailed(self):
+    def _enemy_slot2_detailed(self) -> None:
         """Метод создающий окно юнита (слот 2)."""
         unit = self._unit_by_slot_and_side(2, REAR)
         self._slot_detailed(unit, UnitDialog)
 
-    def _enemy_slot3_detailed(self):
+    def _enemy_slot3_detailed(self) -> None:
         """Метод создающий окно юнита (слот 3)."""
         unit = self._unit_by_slot_and_side(3, REAR)
         self._slot_detailed(unit, UnitDialog)
 
-    def _enemy_slot4_detailed(self):
+    def _enemy_slot4_detailed(self) -> None:
         """Метод создающий окно юнита (слот 4)."""
         unit = self._unit_by_slot_and_side(4, REAR)
         self._slot_detailed(unit, UnitDialog)
 
-    def _enemy_slot5_detailed(self):
+    def _enemy_slot5_detailed(self) -> None:
         """Метод создающий окно юнита (слот 5)."""
         unit = self._unit_by_slot_and_side(5, REAR)
         self._slot_detailed(unit, UnitDialog)
 
-    def _enemy_slot6_detailed(self):
+    def _enemy_slot6_detailed(self) -> None:
         """Метод создающий окно юнита (слот 6)."""
         unit = self._unit_by_slot_and_side(6, REAR)
         self._slot_detailed(unit, UnitDialog)
 
-    def _unit_by_slot_and_side(self, slot, side):
+    def _unit_by_slot_and_side(self, slot: int, side: str) -> Optional[Unit]:
         """Метод получающий юнита игрока по слоту и стороне."""
         if side == self.player_side:
             for unit in self.new_battle.player1.units:

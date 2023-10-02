@@ -3,12 +3,15 @@
 import abc
 import math
 import random
+from collections import namedtuple
+from typing import Optional, Dict, List
+
 from battle_logging import logging
 
-from client_dir.settings import EM, UH, LD, MC, BATTLE_LOG
+from client_dir.settings import EM, UH, LD, MC
 from units_dir.buildings import FACTIONS, ELDER_FORMS
 from units_dir.units import main_db
-from units_dir.ranking import empire_fighter_lvls, empire_mage_lvls, \
+from units_dir.ranking import empire_mage_lvls, \
     empire_archer_lvls, empire_support_lvls, \
     hordes_fighter_lvls, hordes_mage_lvls, \
     hordes_archer_lvls, hordes_support_lvls, \
@@ -49,16 +52,12 @@ class EmpireFighter:
         main_db.update_unit('Сквайр', 70, 50)
 
     @staticmethod
-    def lvl_up(slot, new_form):
+    def lvl_up(slot):
         """Боец Империи. Повышение уровня"""
         unit = main_db.get_unit_by_slot(slot, main_db.PlayerUnits)
-        faction = main_db.current_game_faction
-        buildings = main_db.get_buildings(
-            main_db.current_user,
-            faction)._asdict()
-
-        print(unit.name, 'повысил уровень до', new_form)
-        main_db.replace_unit(slot, new_form)
+        new_unit = legions_fighter_lvls[unit.level + 1]
+        print(unit.name, 'повысил уровень до', new_unit)
+        main_db.replace_unit(slot, new_unit)
 
     @staticmethod
     def say():
@@ -876,7 +875,7 @@ class ClansFactory(AbstractFactory):
 class Unit:
     """Юнит"""
 
-    def __init__(self, unit: tuple):
+    def __init__(self, unit: namedtuple):
         self.unit = unit
 
         self.id = unit[0]
@@ -906,24 +905,24 @@ class Unit:
         self.slot = unit[24]
 
     @property
-    def is_dead(self):
+    def is_dead(self) -> bool:
         """Проверка на живость"""
         return False
 
     @property
-    def is_double(self):
+    def is_double(self) -> bool:
         """Проверка на двухслотовость"""
-        return True if self.size == "Большой" else False
+        return self.size == "Большой"
 
-    def skip_turn(self):
+    def skip_turn(self) -> None:
         """Пропуск хода юнита в битве"""
         print(self.name, 'пропускает ход')
 
-    def undefence(self):
+    def undefence(self) -> None:
         """Сброс защиты в битве"""
         self.armor = main_db.get_unit_by_name(self.name).armor
 
-    def defence(self):
+    def defence(self) -> None:
         """Пропуск хода и защита в битве"""
         # self.armor = round(self.armor / 2 + 50)
         self.armor = round(main_db.get_unit_by_name(self.name).armor / 2 + 50)
@@ -931,18 +930,18 @@ class Unit:
         line = f"{self.name} защищается\n"
         logging(line)
 
-    def waiting(self):
+    def waiting(self) -> None:
         """Ожидание в битве"""
 
         line = f"{self.name} ждет удачного момента\n"
         logging(line)
 
-    def add_to_band(self, slot):
+    def add_to_band(self, slot) -> None:
         """Найм в отряд игрока"""
         main_db.hire_unit(self.name, slot)
 
     @property
-    def building_name(self):
+    def building_name(self) -> Optional[str]:
         """Получение здания по юниту"""
         for f_building in FACTIONS.values():
             for branch in f_building.values():
@@ -951,7 +950,7 @@ class Unit:
                         return building.bname
         return None
 
-    def upgrade_stats(self):
+    def upgrade_stats(self) -> None:
         """Увеличение характеристик юнита"""
         # Уровень
         next_level = self.level + 1
@@ -966,18 +965,21 @@ class Unit:
             chance = int(self.attack_chance.split('/')[0])
             poison = int(self.attack_chance.split('/')[1])
             next_chance = f'{chance + 1}/{poison + 1}'
-        except BaseException:
+        except IndexError:
             chance = int(self.attack_chance)
             next_chance = chance + 1
 
         # Урон
         try:
             damage = int(self.attack_dmg.split('/')[0])
-            # Доделать увеличение доп. урона
+
+            # Добавить увеличение доп. урона
             additional = self.attack_dmg.split('/')[1]
+
             next_damage = int(damage * 1.10)
             next_damage = f'{min(next_damage, 300)}/{additional}'
-        except BaseException:
+        except AttributeError as err:  # IndexError
+            print(err)
             next_damage = int(self.attack_dmg * 1.10)
             next_damage = min(next_damage, 300)
 
@@ -998,11 +1000,14 @@ class Unit:
             next_damage)
 
     @property
-    def race_settings(self):
+    def race_settings(self) -> Dict[str, dict]:
         """Получение настроек фракции"""
         return FACTIONS.get(main_db.current_game_faction)
 
-    def get_building_graph(self, bname: str, branch: str, graph: list):
+    def get_building_graph(self,
+                           bname: str,
+                           branch: str,
+                           graph: list) -> None:
         """Рекурсивное создание словаря графов зданий/построек"""
         for building in self.race_settings[branch].values():
             if building.bname == bname and bname != '':
@@ -1012,7 +1017,30 @@ class Unit:
                 else:
                     return
 
-    def lvl_up(self):
+    def get_faction_units(self,
+                          faction: str,
+                          graph_dict: Dict[str, list]) -> List[str]:
+        """Получние всех фракционных юнитов"""
+        # Постройки
+        buildings = main_db.get_buildings(
+            main_db.current_user,
+            faction)._asdict()
+
+        for bld in buildings.values():
+            for branch in graph_dict:
+                self.get_building_graph(bld, branch, graph_dict[branch])
+
+        # фракционные юниты
+        faction_units = []
+        for branch, b_value in FACTIONS.get(
+                main_db.current_game_faction).items():
+            if branch != 'others':
+                for building in b_value.values():
+                    faction_units.append(building.unit_name)
+
+        return faction_units
+
+    def lvl_up(self) -> None:
         """Повышение уровня"""
         next_unit = ''
         # Фракция
@@ -1025,21 +1053,9 @@ class Unit:
             'support': [],
             'special': [],
         }
-        # Постройки
-        buildings = main_db.get_buildings(
-            main_db.current_user,
-            faction)._asdict()
 
-        for bld in buildings.values():
-            for branch in graph_dict:
-                self.get_building_graph(bld, branch, graph_dict[branch])
-
-        faction_units = []
-        for branch, b_value in FACTIONS.get(
-                main_db.current_game_faction).items():
-            if branch != 'others':
-                for building in b_value.values():
-                    faction_units.append(building.unit_name)
+        # юниты фракции
+        faction_units = self.get_faction_units(faction, graph_dict)
 
         if self.name in faction_units:
             # Следующая стадия юнита согласно постройкам в столице
@@ -1084,7 +1100,7 @@ class Unit:
             logging(line)
 
     @staticmethod
-    def say():
+    def say() -> None:
         """Боевой клич"""
         print('fight')
 
@@ -1092,15 +1108,19 @@ class Unit:
                              target: any,
                              attack_successful: bool,
                              immune_activated: bool,
-                             ward_activated: bool):
-        """Проверка успешности атаки"""
+                             ward_activated: bool) -> None:
+        """
+        Проверка успешности атаки. Проверка на иммуны, варды.
+        Расчет урона в случае успешной атаки.
+        Логирование.
+        """
 
         # Если атака успешна
         if attack_successful and not immune_activated and not ward_activated:
             # Вычисление урона с учетом брони
             try:
-                damage = int((int(self.attack_dmg.split(
-                    '/')[0]) + random.randrange(6)) * (1 - target.armor * 0.01))
+                damage = int((int(self.attack_dmg.split('/')[0]) +
+                              random.randrange(6)) * (1 - target.armor * 0.01))
             except AttributeError:
                 damage = int((self.attack_dmg + random.randrange(6)) *
                              (1 - target.armor * 0.01))
@@ -1135,7 +1155,7 @@ class Unit:
         elif not attack_successful:
             logging(f"{self.name} промахивается по {target.name}\n")
 
-    def attack(self, target):
+    def attack(self, target: any) -> bool:
         """Атака"""
         attack_successful = False
         immune_activated = False
@@ -1145,9 +1165,11 @@ class Unit:
         try:
             accuracy = int(self.attack_chance.split(
                 '/')[0]) / 100
-            poison = int(self.attack_chance.split(
-                '/')[1]) / 100
-        except BaseException:
+
+            # Добавить урон ядом / ожогом и т.п.
+            # poison = int(self.attack_chance.split(
+            #     '/')[1]) / 100
+        except IndexError:
             accuracy = int(self.attack_chance) / 100
 
         # иммунитеты и защиты
@@ -1157,12 +1179,9 @@ class Unit:
         # у цели нет иммунитета и защиты от источника атаки
         if self.attack_source not in target_immunes \
                 and self.attack_source not in target_wards:
-            # атака удачна
-            if random.random() <= accuracy:
-                attack_successful = True
-            # атака неудачна - промах
-            else:
-                attack_successful = False
+
+            # атака удачна или неудачна / промах
+            attack_successful = bool(random.random() <= accuracy)
 
         # у цели есть иммунитет от источника атаки
         elif self.attack_source in target_immunes:
@@ -1191,52 +1210,34 @@ class Unit:
 
         return attack_successful
 
-    def heal(self, target):
+    def heal(self, target: any) -> bool:
         """Лечение"""
-        hp = int(self.attack_dmg)
-        # target.curr_health += hp
+        health = int(self.attack_dmg)
 
         # если размер лечения больше, чем макс. здоровье цели,
-        if target.curr_health + hp > target.health:
-            hp = target.health - target.curr_health
+        if target.curr_health + health > target.health:
+            health = target.health - target.curr_health
 
-        target.curr_health += hp
+        target.curr_health += health
 
-        line = f"{self.name} лечит {hp} воину {target.name}. " \
+        line = f"{self.name} лечит {health} воину {target.name}. " \
                f"Стало ХП: {target.curr_health}\n"
         logging(line)
 
         return True
+
 
 # Отладка
 if __name__ == '__main__':
     # empire_factory = AbstractFactory.create_factory('Em')
 
     # fighter = empire_factory.create_fighter()
-    # archer = empire_factory.create_archer()
-    # mage = empire_factory.create_mage()
-    #
     # fighter.add_to_band(3)
-    # archer.add_to_band(6)
-    # mage.add_to_band(5)
 
-    # fighter.lvl_up(3)
-    # fighter.say()
-    # archer.say()
-
-    new_unit = Unit(main_db.get_unit_by_name('Берсерк'))
+    new_unit1 = Unit(main_db.get_unit_by_name('Антипаладин'))
     new_unit2 = Unit(main_db.get_unit_by_name('Мраморная гаргулья'))
 
-    new_unit.lvl_up()
+    new_unit1.lvl_up()
 
-    new_unit.attack(new_unit2)
-    # new_unit2.attack(new_unit)
-
-    # new_unit.attack(new_unit2)
-    # new_unit2.attack(new_unit)
-    #
-    # new_unit.attack(new_unit2)
-    # new_unit2.attack(new_unit)
-    #
-    # new_unit.attack(new_unit2)
-    # new_unit2.attack(new_unit)
+    new_unit1.attack(new_unit2)
+    # new_unit2.attack(new_unit1)

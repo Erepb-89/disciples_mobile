@@ -1,6 +1,7 @@
 """Battle"""
 import random
 from collections import deque
+from typing import List, Optional
 
 from client_dir.settings import ANY_UNIT, CLOSEST_UNIT
 from battle_logging import logging
@@ -13,7 +14,7 @@ PLAYER2_NAME = 'Computer'
 class Player:
     """Класс Игрок"""
 
-    def __init__(self, name):
+    def __init__(self, name: str):
         self.name = name
         self.units = []
         self.slots = []
@@ -22,7 +23,7 @@ class Player:
 class Battle:
     """Класс битвы"""
 
-    def __init__(self, database, dungeon):
+    def __init__(self, database: any, dungeon: str):
         # super().__init__()
         # основные переменные
         self.database = database
@@ -47,9 +48,6 @@ class Battle:
         # self.current_faction = self.database.current_game_faction
 
         self.dungeon_units = self.database.show_dungeon_units(dungeon)
-        # self.dungeon_units = self.database.show_dungeon_units('thieves')
-        # self.dungeon_units = self.database.show_dungeon_units('knight')
-        # self.dungeon_units = self.database.show_dungeon_units('mirror')
 
         if self.player2.name == "Computer":
             self.add_dung_units()
@@ -65,9 +63,9 @@ class Battle:
         self.next_turn()
 
     def add_player_unit(self,
-                        slot,
+                        slot: int,
                         player: Player,
-                        database):
+                        database: any):
         """
         Добавление юнита игрока в текущую битву.
         """
@@ -80,7 +78,7 @@ class Battle:
 
     def add_player_units(self,
                          player: Player,
-                         database):
+                         database: any) -> None:
         """
         Добавление юнитов игрока в текущую битву.
         Выполняется в начале каждой новой битвы.
@@ -95,7 +93,7 @@ class Battle:
                 if not unit.curr_health <= 0:
                     player.slots.append(unit.slot)
 
-    def add_dung_units(self):
+    def add_dung_units(self) -> None:
         """
         Добавление юнитов подземелья в текущую битву.
         Выполняется в начале новой битвы с компьютером.
@@ -103,10 +101,6 @@ class Battle:
         self.clear_dungeon()
         for unit_slot in range(6):
             try:
-                # unit = self.database.get_unit_by_id(
-                #     self.dungeon_units[unit_slot],
-                #     self.database.AllUnits)[:24]
-
                 unit = self.database.get_unit_by_name(
                     self.dungeon_units[unit_slot])[:24]
 
@@ -119,23 +113,24 @@ class Battle:
                     self.player2.units.append(Unit(unit))
                     if not unit.curr_health <= 0:
                         self.player2.slots.append(unit.slot)
-            except (TypeError, AttributeError) as err:
-                print(err)
+            except (TypeError, AttributeError):
+                pass
 
-    def dungeon_unit_by_slot(self, slot):
+    def dungeon_unit_by_slot(self, slot) -> Unit:
         """Метод получающий юнита подземелья по слоту."""
         return self.database.get_unit_by_slot(
             slot,
             self.database.CurrentDungeon)
 
-    def player_unit_by_slot(self, slot):
+    def player_unit_by_slot(self, slot: int) -> Unit:
         """Метод получающий юнита игрока по слоту."""
         return self.database.get_unit_by_slot(
             slot,
             self.database.PlayerUnits)
 
     @staticmethod
-    def get_unit_by_slot(slot, player_units):
+    def get_unit_by_slot(slot: int,
+                         player_units: List[Unit]) -> Optional[Unit]:
         """Метод получающий юнита по слоту."""
         for player_unit in player_units:
             if player_unit.slot == slot:
@@ -143,7 +138,7 @@ class Battle:
         return None
 
     @staticmethod
-    def sorting_units(all_units: list):
+    def sorting_units(all_units: list) -> List[Unit]:
         """Сортировка юнитов по инициативе"""
         units_ini = {}
         for unit in all_units:
@@ -154,7 +149,7 @@ class Battle:
             units_ini, key=units_ini.get, reverse=True)
         return sorted_units_by_ini
 
-    def waiting_round(self):
+    def waiting_round(self) -> None:
         """Раунд для ожидающих юнитов"""
         self.units_deque.clear()
 
@@ -166,15 +161,16 @@ class Battle:
 
         self.waiting_units = []
 
-    def new_round(self):
+    def new_round(self) -> None:
         """Высчитывание оставшихся выживших в новом раунде"""
-        print('Новый раунд')
         logging('Новый раунд\n')
 
         self.units_deque.clear()
 
-        units_pl1 = [unit for unit in self.player1.units if unit.curr_health != 0]
-        units_pl2 = [unit for unit in self.player2.units if unit.curr_health != 0]
+        units_pl1 = [
+            unit for unit in self.player1.units if unit.curr_health != 0]
+        units_pl2 = [
+            unit for unit in self.player2.units if unit.curr_health != 0]
 
         all_units = units_pl1 + units_pl2
         sorted_units_by_ini = self.sorting_units(all_units)
@@ -183,46 +179,38 @@ class Battle:
             self.units_deque.append(unit)
             self.units_in_round.append(unit)
 
-    def next_turn(self):
+    def next_turn(self) -> None:
         """Ход юнита"""
-        print(self.units_in_round)
-
-        for unit in self.units_deque:
-            print('deque:', unit.name)
-
         self.current_unit = self.units_deque.popleft()
         self.current_unit.undefence()
 
         if self.current_unit in self.player1.units:
             self.current_player = self.player1
             if self.current_unit.attack_type not in [
-                'Лечение', 'Лечение/Исцеление', 'Лечение/Воскрешение']:
+                    'Лечение', 'Лечение/Исцеление', 'Лечение/Воскрешение']:
                 self.target_player = self.player2
             else:
                 self.target_player = self.player1
         else:
             self.current_player = self.player2
             if self.current_unit.attack_type not in [
-                'Лечение', 'Лечение/Исцеление', 'Лечение/Воскрешение']:
+                    'Лечение', 'Лечение/Исцеление', 'Лечение/Воскрешение']:
                 self.target_player = self.player1
             else:
                 self.target_player = self.player2
-        print(
-            f'Ходит: {self.current_unit.name}, инициатива: {self.current_unit.attack_ini}')
         line = f'Ходит: {self.current_unit.name}\n'
         logging(line)
 
         self.target_slots = self.auto_choose_target(self.current_unit)
-        print(f'Цели: {self.target_slots}')
 
-    def _get_battle_unit_by_id(self, _id):
+    def _get_battle_unit_by_id(self, _id: int) -> Optional[Unit]:
         """Метод возвращает юнита из deque по id"""
         for unit in self.units_deque:
             if unit.id == _id:
                 return unit
         return None
 
-    def auto_fight(self):
+    def auto_fight(self) -> None:
         """Автобой"""
         self.autofight = True
         if self.units_in_round:
@@ -234,7 +222,10 @@ class Battle:
 
         self._alive_getting_experience()
 
-    def _getting_experience(self, player1, player2, pl_database):
+    def _getting_experience(self,
+                            player1: Player,
+                            player2: Player,
+                            pl_database: any) -> None:
         """Получение опыта юнитами"""
         self.alive_units = []
         killed_units = player1.units
@@ -273,7 +264,7 @@ class Battle:
                     alive_unit.lvl_up()
                     self.alive_units.append(alive_unit.slot)
 
-    def _alive_getting_experience(self):
+    def _alive_getting_experience(self) -> None:
         """Повышение опыта или уровня выжившим юнитам"""
         self.get_player_slots(self.player1)
         self.get_player_slots(self.player2)
@@ -291,7 +282,7 @@ class Battle:
                                      self.database.PlayerUnits)
             self.battle_is_over = True
 
-    def attack_6_units(self, player):
+    def attack_6_units(self, player: Player) -> None:
         """Если цели - 6 юнитов"""
         self.attacked_slots = []
         for target_slot in self.target_slots:
@@ -300,10 +291,12 @@ class Battle:
                 player.units)
             self.attack_1_unit(target)
 
-    def attack_1_unit(self, target):
+    def attack_1_unit(self, target: Unit) -> None:
         """Если цель - 1 юнит"""
         if self.current_unit.attack_type \
-                not in ['Лечение', 'Лечение/Исцеление', 'Лечение/Воскрешение']:
+                not in ['Лечение',
+                        'Лечение/Исцеление',
+                        'Лечение/Воскрешение']:
             success = self.current_unit.attack(target)
         else:
             # Если текущий юнит - лекарь
@@ -312,7 +305,7 @@ class Battle:
         if success:
             self.attacked_slots.append(target.slot)
 
-    def player_attack(self, curr_target):
+    def player_attack(self, curr_target: Unit) -> None:
         """Атака игрока по цели"""
         if self.units_in_round:
 
@@ -329,7 +322,7 @@ class Battle:
 
         self._alive_getting_experience()
 
-    def auto_attack(self):
+    def auto_attack(self) -> None:
         """Автоматическая атака игрока по противнику"""
         # if self.autofight:
 
@@ -348,7 +341,7 @@ class Battle:
                 self.target_player.units)
             self.attack_1_unit(target)
 
-    def clear_dungeon(self):
+    def clear_dungeon(self) -> None:
         """Очистка текущего подземелья от вражеских юнитов"""
         self.database.delete_dungeon_unit(1)
         self.database.delete_dungeon_unit(2)
@@ -357,7 +350,7 @@ class Battle:
         self.database.delete_dungeon_unit(5)
         self.database.delete_dungeon_unit(6)
 
-    def regen(self):
+    def regen(self) -> None:
         """Восстановление здоровья всех юнитов игрока"""
         # self.clear_dungeon()
         self.database.autoregen(1)
@@ -368,7 +361,10 @@ class Battle:
         self.database.autoregen(6)
 
     @staticmethod
-    def closest_side_slot(tg_slots, slot_a: int, slot_b: int, slot_c: int):
+    def closest_side_slot(tg_slots: List[int],
+                          slot_a: int,
+                          slot_b: int,
+                          slot_c: int) -> Optional[List[int]]:
         """Вычисление рандомной цели для крайних слотов"""
         if slot_a in tg_slots and slot_b in tg_slots:
             # return random.choice([slot_a, slot_b])
@@ -377,12 +373,16 @@ class Battle:
             return [slot_a]
         if slot_b in tg_slots:
             return [slot_b]
-        if slot_a not in tg_slots and slot_b not in tg_slots and slot_c in tg_slots:
+        if slot_a not in tg_slots and slot_b not in tg_slots \
+                and slot_c in tg_slots:
             return [slot_c]
-        return None
+        return [None]
 
     @staticmethod
-    def closest_middle_slot(tg_slots, slot_a: int, slot_b: int, slot_c: int):
+    def closest_middle_slot(tg_slots: List[int],
+                            slot_a: int,
+                            slot_b: int,
+                            slot_c: int) -> Optional[List[int]]:
         """Вычисление рандомной цели для среднего слота"""
         if slot_a in tg_slots and slot_b in tg_slots and slot_c in tg_slots:
             return [slot_a, slot_b, slot_c]
@@ -398,9 +398,12 @@ class Battle:
             return [slot_b]
         if slot_c in tg_slots:
             return [slot_c]
-        return None
+        return [None]
 
-    def define_closest_slots(self, unit, target_slots, alies_slots):
+    def define_closest_slots(self,
+                             unit: Unit,
+                             target_slots: List[int],
+                             alies_slots: List[int]) -> Optional[List[int]]:
         """Определение ближайшего слота для текущего юнита"""
         result = [None]
         vanguard_alies_died = 2 not in alies_slots and \
@@ -451,7 +454,10 @@ class Battle:
 
         return result
 
-    def choose_target(self, unit, attacker_slots, target_slots):
+    def choose_target(self,
+                      unit: Unit,
+                      attacker_slots: List[int],
+                      target_slots: List[int]) -> Optional[List[int]]:
         """Определение следующей цели для атаки"""
         # для контактных юнитов
         if unit.attack_radius == CLOSEST_UNIT:
@@ -466,7 +472,7 @@ class Battle:
 
         return [None]
 
-    def auto_choose_target(self, unit):
+    def auto_choose_target(self, unit: Unit):
         """Авто определение следующей цели для атаки"""
         self.get_player_slots(self.player1)
         self.get_player_slots(self.player2)

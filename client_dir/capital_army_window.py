@@ -1,15 +1,15 @@
 """Окно армии в столице"""
 
-import os.path
+from collections import namedtuple
 
-from PyQt5 import QtCore
+from PyQt5 import QtCore, QtWidgets
 from PyQt5.QtGui import QPixmap, QStandardItemModel, QStandardItem
 from PyQt5.QtWidgets import QMainWindow, QHBoxLayout
 
 from client_dir.capital_army_form import Ui_CapitalArmyWindow
 from client_dir.hire_menu_window import HireMenuWindow
-from client_dir.settings import TOWN_ARMY, ELVEN_PLUG, SCREEN_RECT
-from client_dir.ui_functions import get_unit_image, set_size_by_unit
+from client_dir.settings import TOWN_ARMY, SCREEN_RECT
+from client_dir.ui_functions import get_unit_image, update_unit_health, get_image
 from client_dir.unit_dialog import UnitDialog
 from units_dir.units_factory import AbstractFactory
 
@@ -22,7 +22,7 @@ class CapitalArmyWindow(QMainWindow):
     конвертированного файла capital_army_form.py
     """
 
-    def __init__(self, database):
+    def __init__(self, database: any):
         super().__init__()
         # основные переменные
         self.database = database
@@ -42,17 +42,17 @@ class CapitalArmyWindow(QMainWindow):
         self.hbox = QHBoxLayout(self)
 
         self.ui.pushButtonSlot1.clicked.connect(
-            self.slot1_detailed)
+            self._slot1_detailed)
         self.ui.pushButtonSlot2.clicked.connect(
-            self.slot2_detailed)
+            self._slot2_detailed)
         self.ui.pushButtonSlot3.clicked.connect(
-            self.slot3_detailed)
+            self._slot3_detailed)
         self.ui.pushButtonSlot4.clicked.connect(
-            self.slot4_detailed)
+            self._slot4_detailed)
         self.ui.pushButtonSlot5.clicked.connect(
-            self.slot5_detailed)
+            self._slot5_detailed)
         self.ui.pushButtonSlot6.clicked.connect(
-            self.slot6_detailed)
+            self._slot6_detailed)
 
         self.ui.pushButtonDelete.clicked.connect(
             self.delete_unit_action)
@@ -75,57 +75,41 @@ class CapitalArmyWindow(QMainWindow):
         self._update_all_unit_health()
         self.show()
 
-    def keyPressEvent(self, event):
+    def keyPressEvent(self, event) -> None:
         """Метод обработки нажатия клавиши D"""
         if event.key() == QtCore.Qt.Key_D:
             self.delete_unit_action()
 
-    def update_capital(self):
+    def update_capital(self) -> None:
         """Обновление лейбла, заполнение картинкой замка"""
         capital_army_bg = self.ui.capitalArmyBG
         capital_army_bg.setPixmap(
-            QPixmap(self.get_image(self.faction)))
+            QPixmap(get_image(TOWN_ARMY, self.faction)))
         capital_army_bg.setGeometry(SCREEN_RECT)
         self.hbox.addWidget(capital_army_bg)
         self.setLayout(self.hbox)
 
-    @staticmethod
-    def get_image(faction):
-        """Достаем картинку найма армии фракции"""
-        try:
-            return os.path.join(TOWN_ARMY, f"{faction}.png")
-        except BaseException:
-            return os.path.join(TOWN_ARMY, ELVEN_PLUG)
-
-    def _update_all_unit_health(self):
+    def _update_all_unit_health(self) -> None:
         """Метод обновляющий текущее здоровье всех юнитов"""
 
         # прорисовка здоровья юнитов игрока
         for num, hp_slot in self.pl_hp_slots_dict.items():
-            self._update_unit_health(
+            update_unit_health(
                 self.player_unit_by_slot(num),
                 hp_slot)
 
-    @staticmethod
-    def _update_unit_health(unit, slot):
-        """Обновление здоровья юнита"""
-        try:
-            slot.setText(f'{unit.curr_health}/{unit.health}')
-        except BaseException:
-            slot.setText('')
-
-    def back(self):
+    def back(self) -> None:
         """Кнопка возврата"""
         self.close()
 
-    def button_update(self, unit, button):
+    def button_update(self, unit, button: QtWidgets.QPushButton) -> None:
         """Установка размера кнопки на иконке"""
         self._set_size_by_unit(unit, button)
 
         self.hbox.addWidget(button)
         self.setLayout(self.hbox)
 
-    def slot_update(self, unit, slot):
+    def slot_update(self, unit: namedtuple, slot: QtWidgets.QLabel):
         """Установка gif'ки в иконку юнита"""
         self._set_size_by_unit(unit, slot)
 
@@ -135,15 +119,7 @@ class CapitalArmyWindow(QMainWindow):
         self.hbox.addWidget(slot)
         self.setLayout(self.hbox)
 
-    # @staticmethod
-    # def get_unit_image(unit):
-    #     """Метод получающий лицо юнита"""
-    #     try:
-    #         return os.path.join(UNIT_ICONS, f"{unit.name} {ICON}")
-    #     except BaseException:
-    #         return os.path.join(UNIT_ICONS, PLUG)
-
-    def player_slots_update(self):
+    def player_slots_update(self) -> None:
         """Метод обновляющий список слотов игрока."""
         player_slots = [1, 2, 3, 4, 5, 6]
         self.player_slots_model = QStandardItemModel()
@@ -153,7 +129,7 @@ class CapitalArmyWindow(QMainWindow):
             self.player_slots_model.appendRow(item)
         self.ui.listPlayerSlots.setModel(self.player_slots_model)
 
-    def player_list_update(self):
+    def player_list_update(self) -> None:
         """Метод обновляющий список юнитов игрока."""
         # player_units = self.database.show_player_units()
         player_units = self.database.show_db_units(self.database.PlayerUnits)
@@ -197,7 +173,7 @@ class CapitalArmyWindow(QMainWindow):
 
         self.ui.listPlayerUnits.setModel(self.player_units_model)
 
-    def units_list_update(self):
+    def units_list_update(self) -> None:
         """Метод обновляющий список юнитов."""
         all_units = self.database.show_all_units()
 
@@ -208,31 +184,26 @@ class CapitalArmyWindow(QMainWindow):
             self.units_model.appendRow(item)
         self.ui.listAllUnits.setModel(self.units_model)
 
-    def delete_unit_action(self):
+    def delete_unit_action(self) -> None:
         """Метод обработчик нажатия кнопки 'Уволить'"""
         try:
             selected_slot = self.ui.listPlayerSlots.currentIndex().data()
             self.database.delete_player_unit(int(selected_slot))
             self.player_list_update()
-        except Exception as err:
-            print(f'Error: {err}')
+        except TypeError:
+            print('Выберите слот, который хотите освободить')
 
-    def show_available_units(self, slot):
+    def show_available_units(self, slot: int) -> None:
         """Метод показывающий доступных для покупки
         юнитов данной фракции."""
-        try:
-            global HIRE_WINDOW
-            HIRE_WINDOW = HireMenuWindow(self.database, slot)
-            HIRE_WINDOW.show()
-            self.close()
-        except Exception as err:
-            print(err)
+        global HIRE_WINDOW
+        HIRE_WINDOW = HireMenuWindow(self.database, slot)
+        HIRE_WINDOW.show()
+        self.close()
 
         print('Доступные для покупки юниты данной фракции')
-        # print(self.fighter.add_to_band(5))
 
-
-    def set_coords_double_slots(self, ui_obj):
+    def set_coords_double_slots(self, ui_obj: any) -> None:
         """Задание координат для 'двойных' слотов либо кнопок"""
         if ui_obj in [
             self.ui.slot2,
@@ -250,7 +221,7 @@ class CapitalArmyWindow(QMainWindow):
             ui_obj.setFixedWidth(105)
             ui_obj.setFixedHeight(127)
 
-    def _set_size_by_unit(self, unit, ui_obj):
+    def _set_size_by_unit(self, unit: namedtuple, ui_obj: any) -> None:
         """Установка размера иконки по размеру самого юнита"""
         self.set_coords_double_slots(ui_obj)
 
@@ -281,7 +252,7 @@ class CapitalArmyWindow(QMainWindow):
             ui_obj.setFixedWidth(105)
             ui_obj.setFixedHeight(127)
 
-    def slot_detailed(self, database, slot):
+    def slot_detailed(self, database: any, slot: int) -> None:
         """Метод создающий окно юнита игрока при нажатии на слот."""
         try:
             unit = self.player_unit_by_slot(slot)
@@ -290,34 +261,34 @@ class CapitalArmyWindow(QMainWindow):
                 database,
                 unit)
             DETAIL_WINDOW.show()
-        except BaseException:
+        except AttributeError:
             self.show_available_units(slot)
 
-    def slot1_detailed(self):
+    def _slot1_detailed(self) -> None:
         """Метод создающий окно юнита игрока (слот 1)."""
         self.slot_detailed(self.database.PlayerUnits, 1)
 
-    def slot2_detailed(self):
+    def _slot2_detailed(self) -> None:
         """Метод создающий окно юнита игрока (слот 2)."""
         self.slot_detailed(self.database.PlayerUnits, 2)
 
-    def slot3_detailed(self):
+    def _slot3_detailed(self) -> None:
         """Метод создающий окно юнита игрока (слот 3)."""
         self.slot_detailed(self.database.PlayerUnits, 3)
 
-    def slot4_detailed(self):
+    def _slot4_detailed(self) -> None:
         """Метод создающий окно юнита игрока (слот 4)."""
         self.slot_detailed(self.database.PlayerUnits, 4)
 
-    def slot5_detailed(self):
+    def _slot5_detailed(self) -> None:
         """Метод создающий окно юнита игрока (слот 5)."""
         self.slot_detailed(self.database.PlayerUnits, 5)
 
-    def slot6_detailed(self):
+    def _slot6_detailed(self) -> None:
         """Метод создающий окно юнита игрока (слот 6)."""
         self.slot_detailed(self.database.PlayerUnits, 6)
 
-    def player_unit_by_slot(self, slot):
+    def player_unit_by_slot(self, slot: int) -> namedtuple:
         """Метод получающий юнита игрока по слоту."""
         return self.database.get_unit_by_slot(
             slot,

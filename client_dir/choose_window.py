@@ -1,12 +1,12 @@
-import os.path
+"""Окно выбора фракции"""
 
-from PyQt5 import QtCore
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QMainWindow, QHBoxLayout
 
 from client_dir.campaign_window import CampaignWindow
 from client_dir.choose_faction_form import Ui_FactionWindow
-from client_dir.settings import FACTIONS, EM, UH, LD, MC, ELVEN_PLUG, SCREEN_RECT
+from client_dir.settings import FACTIONS, EM, UH, LD, MC, SCREEN_RECT
+from client_dir.ui_functions import get_image
 
 
 class ChooseRaceWindow(QMainWindow):
@@ -33,7 +33,7 @@ class ChooseRaceWindow(QMainWindow):
         self.InitUI()
 
     def InitUI(self):
-        # Загружаем конфигурацию окна из дизайнера
+        """Загружаем конфигурацию окна из дизайнера"""
         self.ui = Ui_FactionWindow()
         self.ui.setupUi(self)
 
@@ -51,17 +51,10 @@ class ChooseRaceWindow(QMainWindow):
         """Обновление лейбла, заполнение картинкой фракции"""
         self.faction = self.factions.get(self.faction_number)
         faction = self.ui.faction
-        faction.setPixmap(QPixmap(self.get_image(self.faction)))
+        faction.setPixmap(QPixmap(get_image(FACTIONS, self.faction)))
         faction.setGeometry(SCREEN_RECT)
         self.hbox.addWidget(faction)
         self.setLayout(self.hbox)
-
-    def get_image(self, faction):
-        """Достаем картинку фракции"""
-        try:
-            return os.path.join(FACTIONS, f"{faction}.png")
-        except:
-            return os.path.join(FACTIONS, ELVEN_PLUG)
 
     def next_race(self):
         """Следующая фракция"""
@@ -81,18 +74,18 @@ class ChooseRaceWindow(QMainWindow):
 
     def choose_race(self):
         """Выбор фракции (нажатие кнопки ОК)"""
-        self.database.set_faction(self.database.current_player.id, self.faction)
+        self.database.set_faction(
+            self.database.current_player.id, self.faction)
         self.database.build_default(self.faction)
         # self.show_campaign_window()
         self.close()
 
     def show_campaign_window(self):
         """Метод создающий окно выбора миссий в Кампании."""
-        global campaign_window
-        campaign_window = CampaignWindow(self.database)
-        campaign_window.show()
+        global CAMPAIGN_WINDOW
+        CAMPAIGN_WINDOW = CampaignWindow(self.database)
+        CAMPAIGN_WINDOW.show()
 
     def back(self):
         """Кнопка возврата"""
         self.close()
-
