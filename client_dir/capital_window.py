@@ -7,7 +7,8 @@ from PyQt5.QtWidgets import QMainWindow, QHBoxLayout
 from client_dir.capital_army_window import CapitalArmyWindow
 from client_dir.capital_building_window import CapitalBuildingWindow
 from client_dir.capital_main_form import Ui_CapitalWindow
-from client_dir.settings import TOWNS, ELVEN_PLUG, SCREEN_RECT
+from client_dir.settings import TOWNS, SCREEN_RECT
+from client_dir.ui_functions import get_image
 
 
 class CapitalWindow(QMainWindow):
@@ -52,32 +53,22 @@ class CapitalWindow(QMainWindow):
         """Обновление лейбла, заполнение картинкой замка"""
         capital_bg = self.ui.capitalBG
         capital_bg.setPixmap(
-            QPixmap(self.get_image(self.faction)))
+            QPixmap(get_image(TOWNS, self.faction)))
         capital_bg.setGeometry(SCREEN_RECT)
         self.hbox.addWidget(capital_bg)
         self.setLayout(self.hbox)
 
-    def get_image(self, faction):
-        """Достаем картинку фракции"""
-        try:
-            return os.path.join(TOWNS, f"{faction}.png")
-        except:
-            return os.path.join(TOWNS, ELVEN_PLUG)
-
     def show_army(self):
         """Метод создающий окно армии."""
-        global capital_army_window
-        capital_army_window = CapitalArmyWindow(self.database)
-        capital_army_window.show()
+        global CAPITAL_ARMY_WINDOW
+        CAPITAL_ARMY_WINDOW = CapitalArmyWindow(self.database)
+        CAPITAL_ARMY_WINDOW.show()
 
     def show_building(self):
         """Метод создающий окно строительства."""
-        # try:
-        global capital_building_window
-        capital_building_window = CapitalBuildingWindow(self.database)
-        capital_building_window.show()
-        # except Exception as err:
-        #     print(err)
+        global CAPITAL_BUILDING_WINDOW
+        CAPITAL_BUILDING_WINDOW = CapitalBuildingWindow(self.database)
+        CAPITAL_BUILDING_WINDOW.show()
 
     def back(self):
         """Кнопка возврата"""

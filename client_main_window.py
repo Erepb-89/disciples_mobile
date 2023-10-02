@@ -2,11 +2,13 @@
 
 import os.path
 import sys
+from collections import namedtuple
+from typing import Callable, Optional
 
-from PyQt5 import QtCore
+from PyQt5 import QtCore, QtWidgets
 from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QPixmap, QStandardItemModel, QStandardItem, QMovie, QDrag
-from PyQt5.QtWidgets import QMainWindow, QApplication, QHBoxLayout, QPushButton
+from PyQt5.QtGui import QPixmap, QStandardItemModel, QStandardItem, QMovie
+from PyQt5.QtWidgets import QMainWindow, QApplication, QHBoxLayout
 
 from client_dir.capital_window import CapitalWindow
 from client_dir.choose_window import ChooseRaceWindow
@@ -14,7 +16,8 @@ from client_dir.fight_window import FightWindow
 from client_dir.campaign_window import CampaignWindow
 from client_dir.client_main_form import Ui_MainWindow
 from client_dir.hire_menu_window import HireMenuWindow
-from client_dir.settings import UNIT_ICONS, GIF_ANIMATIONS, TOWN_IMG, PLUG, ICON, COMMON, UNIT_ATTACK, FRONT, PORTRAITS
+from client_dir.settings import UNIT_ICONS, GIF_ANIMATIONS,\
+    TOWN_IMG, PLUG, ICON, COMMON, UNIT_ATTACK, FRONT, PORTRAITS
 from client_dir.ui_functions import get_unit_image
 from client_dir.unit_dialog import UnitDialog
 from units_dir.units import main_db
@@ -28,7 +31,7 @@ class ClientMainWindow(QMainWindow):
     конвертированного файла client_main_form.py
     """
 
-    def __init__(self, database):
+    def __init__(self, database: any):
         super().__init__()
         # основные переменные
         self.database = database
@@ -57,7 +60,7 @@ class ClientMainWindow(QMainWindow):
             self.ui.pushButtonSlot6,
         ]
 
-        self.ui.listAllUnits.clicked.connect(self.on_listView_clicked)
+        self.ui.listAllUnits.clicked.connect(self.on_list_clicked)
 
         self.ui.listAllUnits.setHorizontalScrollBarPolicy(
             Qt.ScrollBarAlwaysOn)
@@ -113,7 +116,8 @@ class ClientMainWindow(QMainWindow):
 
         self.ui.pushButtonAddPlayer.clicked.connect(self.add_player_action)
         self.ui.pushButtonDelPlayer.clicked.connect(self.delete_player_action)
-        self.ui.pushButtonChoosePlayer.clicked.connect(self.choose_player_action)
+        self.ui.pushButtonChoosePlayer.clicked.connect(
+            self.choose_player_action)
         self.ui.pushButtonReset.clicked.connect(self.reset)
 
         self.all_players_list_update()
@@ -129,11 +133,11 @@ class ClientMainWindow(QMainWindow):
         self.show()
 
     @staticmethod
-    def closeEvent(event):
+    def closeEvent(event) -> None:
         """Закрытие всех окон по выходу из главного"""
         os.sys.exit(0)
 
-    def reset(self):
+    def reset(self) -> None:
         """Обновить"""
         self.player_list_update()
         self.player_slots_update()
@@ -144,19 +148,7 @@ class ClientMainWindow(QMainWindow):
         self.enemy_list_update()
         self.enemy_slots_update()
 
-
-    # def mousePressEvent(self, event):
-    #     """re-implemented to suppress Right-Clicks from selecting items."""
-    #
-    #     if event.type() == QtCore.QEvent.MouseButtonPress:
-    #         if event.button() == QtCore.Qt.RightButton:
-    #             print('right click')
-    #             return
-    #
-    #         else:
-    #             super(ClientMainWindow, self).mousePressEvent(event)
-
-    def on_listView_clicked(self):
+    def on_list_clicked(self) -> None:
         """Показывает иконку и портрет выбранного из списка юнита"""
         selected = self.ui.listAllUnits.currentIndex().data()
         self.define_hire_active(selected)
@@ -175,7 +167,8 @@ class ClientMainWindow(QMainWindow):
         self.hbox.addWidget(lbl)
         self.setLayout(self.hbox)
 
-    def set_coords_for_slots(self, ui_obj):
+    def set_coords_for_slots(self, ui_obj: any) -> None:
+        """Установить координаты для правых слотов"""
         if ui_obj in self.right_slots:
             ui_coords = ui_obj.geometry().getCoords()
             new_coords = list(ui_coords)
@@ -185,7 +178,7 @@ class ClientMainWindow(QMainWindow):
             ui_obj.setFixedWidth(105)
             ui_obj.setFixedHeight(127)
 
-    def set_size_by_unit(self, unit, ui_obj):
+    def set_size_by_unit(self, unit, ui_obj: any) -> None:
         """Установка размера иконки по размеру самого юнита"""
         self.set_coords_for_slots(ui_obj)
 
@@ -205,18 +198,22 @@ class ClientMainWindow(QMainWindow):
             elif unit.size == "Обычный":
                 ui_obj.setFixedWidth(105)
                 ui_obj.setFixedHeight(127)
-        except BaseException:
+        except AttributeError:
             ui_obj.setFixedWidth(105)
             ui_obj.setFixedHeight(127)
 
-    def button_update(self, unit, button):
+    def button_update(self,
+                      unit: namedtuple,
+                      button: QtWidgets.QPushButton) -> None:
         """Установка размера кнопки на иконке"""
         self.set_size_by_unit(unit, button)
 
         self.hbox.addWidget(button)
         self.setLayout(self.hbox)
 
-    def slot_update(self, unit, slot):
+    def slot_update(self,
+                    unit: namedtuple,
+                    slot: QtWidgets.QLabel) -> None:
         """Установка gif'ки в иконку юнита"""
         self.set_size_by_unit(unit, slot)
 
@@ -226,11 +223,13 @@ class ClientMainWindow(QMainWindow):
         self.hbox.addWidget(slot)
         self.setLayout(self.hbox)
 
-    def get_current_faction(self):
+    def get_current_faction(self) -> None:
+        """Получение текущей фракции"""
         self.faction = self.database.current_game_faction
         self.ui.currentFaction.setText(self.faction)
 
-    def set_capital_image(self):
+    def set_capital_image(self) -> None:
+        """Установить картинку как в столице"""
         # self.ui.capital.setPixmap(QPixmap(
         #     self.get_capital_image(self.faction)))
         self.ui.capital.setPixmap(QPixmap(
@@ -239,15 +238,14 @@ class ClientMainWindow(QMainWindow):
         # self.ui.capital.setGeometry(QtCore.QRect(0, 0, 1380, 718))
 
     @staticmethod
-    def get_capital_image(faction):
+    def get_capital_image(faction: str) -> Optional[str]:
         """Отображение городского фона"""
         try:
             return os.path.join(TOWN_IMG, f"{faction}.png")
-        except AttributeError as err:
-            print(err)
+        except AttributeError:
             return None
 
-    def show_gif(self, unit_name):
+    def show_gif(self, unit_name: str) -> None:
         """Отображение gif-файла выбранного юнита"""
         gif_label = self.ui.gifLabel
         try:
@@ -258,7 +256,7 @@ class ClientMainWindow(QMainWindow):
             gif_label.setPixmap(QPixmap(os.path.join(
                 UNIT_ICONS, PLUG)))
 
-    def player_slots_update(self):
+    def player_slots_update(self) -> None:
         """Метод обновляющий список слотов игрока."""
         player_slots = [1, 2, 3, 4, 5, 6]
         self.player_slots_model = QStandardItemModel()
@@ -268,7 +266,7 @@ class ClientMainWindow(QMainWindow):
             self.player_slots_model.appendRow(item)
         self.ui.listPlayerSlots.setModel(self.player_slots_model)
 
-    def enemy_slots_update(self):
+    def enemy_slots_update(self) -> None:
         """Метод обновляющий список слотов противника."""
         enemy_slots = [1, 2, 3, 4, 5, 6]
         self.enemy_slots_model = QStandardItemModel()
@@ -278,7 +276,7 @@ class ClientMainWindow(QMainWindow):
             self.enemy_slots_model.appendRow(item)
         self.ui.listEnemySlots.setModel(self.enemy_slots_model)
 
-    def player_list_update(self):
+    def player_list_update(self) -> None:
         """Метод обновляющий список юнитов игрока."""
         self.universal_list_update(
             self.database.show_player_units,
@@ -314,7 +312,7 @@ class ClientMainWindow(QMainWindow):
 
         # self.ui.listPlayerUnits.setModel(self.player_units_model)
 
-    def enemy_list_update(self):
+    def enemy_list_update(self) -> None:
         """Метод обновляющий список юнитов противника."""
         self.universal_list_update(
             self.database.show_enemy_units,
@@ -350,22 +348,13 @@ class ClientMainWindow(QMainWindow):
 
         # self.ui.listEnemyUnits.setModel(self.enemy_units_model)
 
-    def units_list_update(self):
+    def units_list_update(self) -> None:
         """Метод обновляющий список юнитов."""
         self.universal_list_update(
             self.database.show_all_units,
             self.ui.listAllUnits)
 
-    # def copy_unit_action(self):
-    #     try:
-    #         selected_slot = self.ui.listPlayerSlots.currentIndex().data()
-    #         selected_slot_2 = self.ui.listEnemySlots.currentIndex().data()
-    #         self.database.copy_player_unit(int(selected_slot), int(selected_slot_2))
-    #         self.player_list_update()
-    #     except TypeError:
-    #         print('Выберите слот')
-
-    def swap_unit_action(self, slot1, slot2):
+    def swap_unit_action(self, slot1: int, slot2: int) -> None:
         """Меняет слоты двух юнитов игрока"""
         self.database.update_slot(
             slot1,
@@ -373,7 +362,7 @@ class ClientMainWindow(QMainWindow):
             self.database.PlayerUnits)
         self.player_list_update()
 
-    def swap_enemy_unit_action(self, slot1, slot2):
+    def swap_enemy_unit_action(self, slot1: int, slot2: int) -> None:
         """Меняет слоты двух юнитов подземелья"""
         self.database.update_slot(
             slot1,
@@ -381,63 +370,63 @@ class ClientMainWindow(QMainWindow):
             self.database.CurrentDungeon)
         self.enemy_list_update()
 
-    def swap_unit_action_12(self):
+    def swap_unit_action_12(self) -> None:
         """Меняет местами юнитов игрока в слотах 1 и 2"""
         self.swap_unit_action(1, 2)
 
-    def swap_unit_action_13(self):
+    def swap_unit_action_13(self) -> None:
         """Меняет местами юнитов игрока в слотах 1 и 3"""
         self.swap_unit_action(1, 3)
 
-    def swap_unit_action_24(self):
+    def swap_unit_action_24(self) -> None:
         """Меняет местами юнитов игрока в слотах 2 и 4"""
         self.swap_unit_action(2, 4)
 
-    def swap_unit_action_34(self):
+    def swap_unit_action_34(self) -> None:
         """Меняет местами юнитов игрока в слотах 3 и 4"""
         self.swap_unit_action(3, 4)
 
-    def swap_unit_action_35(self):
+    def swap_unit_action_35(self) -> None:
         """Меняет местами юнитов игрока в слотах 3 и 5"""
         self.swap_unit_action(3, 5)
 
-    def swap_unit_action_46(self):
+    def swap_unit_action_46(self) -> None:
         """Меняет местами юнитов игрока в слотах 4 и 6"""
         self.swap_unit_action(4, 6)
 
-    def swap_unit_action_56(self):
+    def swap_unit_action_56(self) -> None:
         """Меняет местами юнитов игрока в слотах 5 и 6"""
         self.swap_unit_action(5, 6)
 
-    def swap_enemy_action_12(self):
+    def swap_enemy_action_12(self) -> None:
         """Меняет местами юнитов подземелья в слотах 1 и 2"""
         self.swap_enemy_unit_action(1, 2)
 
-    def swap_enemy_action_13(self):
+    def swap_enemy_action_13(self) -> None:
         """Меняет местами юнитов подземелья в слотах 1 и 3"""
         self.swap_enemy_unit_action(1, 3)
 
-    def swap_enemy_action_24(self):
+    def swap_enemy_action_24(self) -> None:
         """Меняет местами юнитов подземелья в слотах 2 и 4"""
         self.swap_enemy_unit_action(2, 4)
 
-    def swap_enemy_action_34(self):
+    def swap_enemy_action_34(self) -> None:
         """Меняет местами юнитов подземелья в слотах 3 и 4"""
         self.swap_enemy_unit_action(3, 4)
 
-    def swap_enemy_action_35(self):
+    def swap_enemy_action_35(self) -> None:
         """Меняет местами юнитов подземелья в слотах 3 и 5"""
         self.swap_enemy_unit_action(3, 5)
 
-    def swap_enemy_action_46(self):
+    def swap_enemy_action_46(self) -> None:
         """Меняет местами юнитов подземелья в слотах 4 и 6"""
         self.swap_enemy_unit_action(4, 6)
 
-    def swap_enemy_action_56(self):
+    def swap_enemy_action_56(self) -> None:
         """Меняет местами юнитов подземелья в слотах 5 и 6"""
         self.swap_enemy_unit_action(5, 6)
 
-    def delete_unit_action(self):
+    def delete_unit_action(self) -> None:
         """Метод обработчик нажатия кнопки 'Уволить' у игрока"""
         try:
             selected_slot = self.ui.listPlayerSlots.currentIndex().data()
@@ -446,7 +435,7 @@ class ClientMainWindow(QMainWindow):
         except TypeError:
             print('Выберите слот, который хотите освободить')
 
-    def delete_enemy_unit_action(self):
+    def delete_enemy_unit_action(self) -> None:
         """Метод обработчик нажатия кнопки 'Уволить' у противника"""
         try:
             selected_slot = self.ui.listEnemySlots.currentIndex().data()
@@ -455,7 +444,7 @@ class ClientMainWindow(QMainWindow):
         except TypeError:
             print('Выберите слот, который хотите освободить')
 
-    def define_hire_active(self, selected):
+    def define_hire_active(self, selected: str) -> None:
         """Определение активности кнопок 'Нанять'"""
         active_units = os.listdir(f'{UNIT_ATTACK}{FRONT}')
 
@@ -466,7 +455,7 @@ class ClientMainWindow(QMainWindow):
             self.ui.pushButtonHire.setEnabled(True)
             self.ui.pushButtonHireEn.setEnabled(True)
 
-    def hire_unit_action(self):
+    def hire_unit_action(self) -> None:
         """Метод обработчик нажатия кнопки 'Нанять' для игрока"""
         try:
             selected_slot = self.ui.listPlayerSlots.currentIndex().data()
@@ -476,7 +465,7 @@ class ClientMainWindow(QMainWindow):
         except TypeError:
             print('Выберите номер слота для найма')
 
-    def hire_enemy_unit_action(self):
+    def hire_enemy_unit_action(self) -> None:
         """Метод обработчик нажатия кнопки 'Нанять' для противника"""
         try:
             selected_slot = self.ui.listEnemySlots.currentIndex().data()
@@ -486,59 +475,62 @@ class ClientMainWindow(QMainWindow):
         except TypeError:
             print('Выберите номер слота для найма')
 
-    def show_available_units(self):
+    def show_available_units(self, slot: int) -> None:
         """Метод показывающий доступных для покупки
         юнитов данной фракции."""
         global HIRE_WINDOW
-        HIRE_WINDOW = HireMenuWindow(self.database)
+        HIRE_WINDOW = HireMenuWindow(self.database, slot)
         HIRE_WINDOW.show()
 
         print('Показать доступных для покупки юнитов данной фракции')
 
-    def show_fight_window(self):
+    def show_fight_window(self) -> None:
         """Метод создающий окно Битвы."""
-        global fight_window
-        fight_window = FightWindow(self.database, 'darkest')
-        fight_window.show()
+        global FIGHT_WINDOW
+        FIGHT_WINDOW = FightWindow(self.database, 'darkest')
+        FIGHT_WINDOW.show()
 
-    def show_campaign_window(self):
+    def show_campaign_window(self) -> None:
         """Метод создающий окно выбора Кампаний."""
-        global campaign_window
-        campaign_window = CampaignWindow(self.database)
-        campaign_window.show()
+        global CAMPAIGN_WINDOW
+        CAMPAIGN_WINDOW = CampaignWindow(self.database)
+        CAMPAIGN_WINDOW.show()
 
-    def show_versus_window(self):
+    def show_versus_window(self) -> None:
         """Метод создающий окно Битвы."""
         self.database.transfer_units()
 
-        global fight_window
-        fight_window = FightWindow(self.database, 'versus')
-        fight_window.show()
+        global FIGHT_WINDOW
+        FIGHT_WINDOW = FightWindow(self.database, 'versus')
+        FIGHT_WINDOW.show()
 
-    def show_capital(self):
+    def show_capital(self) -> None:
         """Метод создающий окно Столицы игрока."""
         if self.database.current_player is not None:
-            global capital_window
-            capital_window = CapitalWindow(self.database)
-            capital_window.show()
+            global CAPITAL_WINDOW
+            CAPITAL_WINDOW = CapitalWindow(self.database)
+            CAPITAL_WINDOW.show()
         else:
             print('Сначала выберите игрока')
 
-    def show_choose_race(self):
+    def show_choose_race(self) -> None:
         """Метод создающий окно выбора фракции игрока."""
         if self.database.current_player is not None:
-            global choose_window
-            choose_window = ChooseRaceWindow(self.database)
-            choose_window.show()
+            global CHOOSE_WINDOW
+            CHOOSE_WINDOW = ChooseRaceWindow(self.database)
+            CHOOSE_WINDOW.show()
         else:
             print('Сначала выберите игрока')
 
-    def all_players_list_update(self):
+    def all_players_list_update(self) -> None:
+        """Обновление списка всех игроков"""
         self.universal_list_update(
             self.database.show_all_players,
             self.ui.PlayersList)
 
-    def universal_list_update(self, function, ui_items_list):
+    def universal_list_update(self,
+                              function: Callable,
+                              ui_items_list: QtWidgets.QListView) -> None:
         """Метод обновляющий список чего-нибудь."""
         all_items = function()
 
@@ -549,26 +541,26 @@ class ClientMainWindow(QMainWindow):
             self.items_model.appendRow(item)
         ui_items_list.setModel(self.items_model)
 
-    def add_player_action(self):
+    def add_player_action(self) -> None:
         """Метод обработчик нажатия кнопки 'Добавить игрока'"""
         self.database.create_player(
             self.ui.PlayerName.toPlainText(),
             self.ui.Email.toPlainText())
         self.all_players_list_update()
 
-    def delete_player_action(self):
+    def delete_player_action(self) -> None:
         """Метод обработчик нажатия кнопки 'Удалить игрока'"""
         selected = self.ui.PlayersList.currentIndex().data()
         self.database.delete_player(selected)
         self.all_players_list_update()
 
-    def choose_player_action(self):
+    def choose_player_action(self) -> None:
         """Метод обработчик нажатия кнопки 'Выбрать игрока'"""
         selected = self.ui.PlayersList.currentIndex().data()
         self.database.choose_player(selected)
         self.all_players_list_update()
 
-    def slot_detailed(self, unit, slot_dialog):
+    def slot_detailed(self, unit: namedtuple, slot_dialog: any) -> None:
         """Метод создающий окно юнита игрока при нажатии на слот."""
         try:
             global DETAIL_WINDOW
@@ -579,73 +571,73 @@ class ClientMainWindow(QMainWindow):
         except AttributeError:
             pass
 
-    def slot1_detailed(self):
+    def slot1_detailed(self) -> None:
         """Метод создающий окно юнита игрока (слот 1)."""
         unit = self.database.get_unit_by_slot(1, self.database.PlayerUnits)
         self.slot_detailed(unit, UnitDialog)
 
-    def slot2_detailed(self):
+    def slot2_detailed(self) -> None:
         """Метод создающий окно юнита игрока (слот 2)."""
         unit = self.database.get_unit_by_slot(2, self.database.PlayerUnits)
         self.slot_detailed(unit, UnitDialog)
 
-    def slot3_detailed(self):
+    def slot3_detailed(self) -> None:
         """Метод создающий окно юнита игрока (слот 3)."""
         unit = self.database.get_unit_by_slot(3, self.database.PlayerUnits)
         self.slot_detailed(unit, UnitDialog)
 
-    def slot4_detailed(self):
+    def slot4_detailed(self) -> None:
         """Метод создающий окно юнита игрока (слот 4)."""
         unit = self.database.get_unit_by_slot(4, self.database.PlayerUnits)
         self.slot_detailed(unit, UnitDialog)
 
-    def slot5_detailed(self):
+    def slot5_detailed(self) -> None:
         """Метод создающий окно юнита игрока (слот 5)."""
         unit = self.database.get_unit_by_slot(5, self.database.PlayerUnits)
         self.slot_detailed(unit, UnitDialog)
 
-    def slot6_detailed(self):
+    def slot6_detailed(self) -> None:
         """Метод создающий окно юнита игрока (слот 6)."""
         unit = self.database.get_unit_by_slot(6, self.database.PlayerUnits)
         self.slot_detailed(unit, UnitDialog)
 
-    def en_slot1_detailed(self):
+    def en_slot1_detailed(self) -> None:
         """Метод создающий окно вражеского юнита (слот 1)."""
         unit = self.database.get_unit_by_slot(1, self.database.CurrentDungeon)
         self.slot_detailed(unit, UnitDialog)
 
-    def en_slot2_detailed(self):
+    def en_slot2_detailed(self) -> None:
         """Метод создающий окно вражеского юнита (слот 2)."""
         unit = self.database.get_unit_by_slot(2, self.database.CurrentDungeon)
         self.slot_detailed(unit, UnitDialog)
 
-    def en_slot3_detailed(self):
+    def en_slot3_detailed(self) -> None:
         """Метод создающий окно вражеского юнита (слот 3)."""
         unit = self.database.get_unit_by_slot(3, self.database.CurrentDungeon)
         self.slot_detailed(unit, UnitDialog)
 
-    def en_slot4_detailed(self):
+    def en_slot4_detailed(self) -> None:
         """Метод создающий окно вражеского юнита (слот 4)."""
         unit = self.database.get_unit_by_slot(4, self.database.CurrentDungeon)
         self.slot_detailed(unit, UnitDialog)
 
-    def en_slot5_detailed(self):
+    def en_slot5_detailed(self) -> None:
         """Метод создающий окно вражеского юнита (слот 5)."""
         unit = self.database.get_unit_by_slot(5, self.database.CurrentDungeon)
         self.slot_detailed(unit, UnitDialog)
 
-    def en_slot6_detailed(self):
+    def en_slot6_detailed(self) -> None:
         """Метод создающий окно вражеского юнита (слот 6)."""
         unit = self.database.get_unit_by_slot(6, self.database.CurrentDungeon)
         self.slot_detailed(unit, UnitDialog)
 
-    def player_unit_by_slot(self, slot):
+    def player_unit_by_slot(self, slot: int) -> namedtuple:
         """Метод получающий юнита игрока по слоту."""
         return self.database.get_unit_by_slot(
             slot,
             self.database.PlayerUnits)
 
-    def enemy_unit_by_slot(self, slot):
+    def enemy_unit_by_slot(self, slot: int) -> namedtuple:
         """Метод получающий вражеского юнита по слоту."""
         return self.database.get_unit_by_slot(
             slot,

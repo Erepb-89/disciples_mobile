@@ -56,9 +56,16 @@ class Ui_FactionWindow(object):
 
     def retranslateUi(self, FactionWindow):
         _translate = QtCore.QCoreApplication.translate
-        FactionWindow.setWindowTitle(_translate("FactionWindow", "Выберите фракцию"))
+        FactionWindow.setWindowTitle(
+            _translate(
+                "FactionWindow",
+                "Выберите фракцию"))
         self.faction.setText(_translate("FactionWindow", "faction"))
-        self.pushButtonNext.setToolTip(_translate("FactionWindow", "Следующая раса"))
-        self.pushButtonPrev.setToolTip(_translate("FactionWindow", "Предыдущая раса"))
+        self.pushButtonNext.setToolTip(
+            _translate("FactionWindow", "Следующая раса"))
+        self.pushButtonPrev.setToolTip(
+            _translate(
+                "FactionWindow",
+                "Предыдущая раса"))
         self.pushButtonOK.setToolTip(_translate("FactionWindow", "Продолжить"))
         self.pushButtonBack.setToolTip(_translate("FactionWindow", "Назад"))

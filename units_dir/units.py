@@ -1,4 +1,6 @@
 """База. Классы юнитов"""
+from collections import namedtuple
+from typing import Callable, List
 
 from sqlalchemy import create_engine, Table, update, Column, Integer, \
     String, MetaData
@@ -188,7 +190,7 @@ class ServerStorage:
     class Players:
         """Класс - игроки."""
 
-        def __init__(self, name, email):
+        def __init__(self, name: str, email: str):
             self.id = None
             self.name = name
             self.email = email
@@ -235,7 +237,13 @@ class ServerStorage:
     class Dungeons:
         """Класс - подземелья."""
 
-        def __init__(self, name, unit1, unit2, unit3, unit4, unit5, unit6):
+        def __init__(self, name: str,
+                     unit1: str,
+                     unit2: str,
+                     unit3: str,
+                     unit4: str,
+                     unit5: str,
+                     unit6: str):
             self.id = None
             self.name = name
             self.unit1 = unit1
@@ -373,32 +381,32 @@ class ServerStorage:
                                    )
 
         player2_units_table = Table('player2_units', self.metadata,
-                                   Column('id', Integer, primary_key=True),
-                                   Column('name', String),
-                                   Column('level', Integer),
-                                   Column('size', String),
-                                   Column('price', Integer),
-                                   Column('exp', Integer),
-                                   Column('curr_exp', Integer),
-                                   Column('exp_per_kill', Integer),
-                                   Column('health', Integer),
-                                   Column('curr_health', Integer),
-                                   Column('armor', Integer),
-                                   Column('immune', String),
-                                   Column('ward', String),
-                                   Column('attack_type', String),
-                                   Column('attack_chance', String),
-                                   Column('attack_dmg', Integer),
-                                   Column('attack_source', String),
-                                   Column('attack_ini', Integer),
-                                   Column('attack_radius', String),
-                                   Column('attack_purpose', Integer),
-                                   Column('prev_level', String),
-                                   Column('desc', String),
-                                   Column('photo', String),
-                                   Column('gif', String),
-                                   Column('slot', Integer)
-                                   )
+                                    Column('id', Integer, primary_key=True),
+                                    Column('name', String),
+                                    Column('level', Integer),
+                                    Column('size', String),
+                                    Column('price', Integer),
+                                    Column('exp', Integer),
+                                    Column('curr_exp', Integer),
+                                    Column('exp_per_kill', Integer),
+                                    Column('health', Integer),
+                                    Column('curr_health', Integer),
+                                    Column('armor', Integer),
+                                    Column('immune', String),
+                                    Column('ward', String),
+                                    Column('attack_type', String),
+                                    Column('attack_chance', String),
+                                    Column('attack_dmg', Integer),
+                                    Column('attack_source', String),
+                                    Column('attack_ini', Integer),
+                                    Column('attack_radius', String),
+                                    Column('attack_purpose', Integer),
+                                    Column('prev_level', String),
+                                    Column('desc', String),
+                                    Column('photo', String),
+                                    Column('gif', String),
+                                    Column('slot', Integer)
+                                    )
 
         # Создаём таблицу игроков
         players_table = Table('players', self.metadata,
@@ -432,43 +440,43 @@ class ServerStorage:
 
         # Создаём таблицу всех подземелий
         dungeons_table = Table('dungeons', self.metadata,
-                         Column('id', Integer, primary_key=True),
-                         Column('name', String, unique=True),
-                         Column('unit1', String),
-                         Column('unit2', String),
-                         Column('unit3', String),
-                         Column('unit4', String),
-                         Column('unit5', String),
-                         Column('unit6', String)
-                         )
+                               Column('id', Integer, primary_key=True),
+                               Column('name', String, unique=True),
+                               Column('unit1', String),
+                               Column('unit2', String),
+                               Column('unit3', String),
+                               Column('unit4', String),
+                               Column('unit5', String),
+                               Column('unit6', String)
+                               )
 
         current_dungeon_table = Table('current_dungeon', self.metadata,
-                                Column('id', Integer, primary_key=True),
-                                Column('name', String),
-                                Column('level', Integer),
-                                Column('size', String),
-                                Column('price', Integer),
-                                Column('exp', Integer),
-                                Column('curr_exp', Integer),
-                                Column('exp_per_kill', Integer),
-                                Column('health', Integer),
-                                Column('curr_health', Integer),
-                                Column('armor', Integer),
-                                Column('immune', String),
-                                Column('ward', String),
-                                Column('attack_type', String),
-                                Column('attack_chance', String),
-                                Column('attack_dmg', Integer),
-                                Column('attack_source', String),
-                                Column('attack_ini', Integer),
-                                Column('attack_radius', String),
-                                Column('attack_purpose', Integer),
-                                Column('prev_level', String),
-                                Column('desc', String),
-                                Column('photo', String),
-                                Column('gif', String),
-                                Column('slot', Integer)
-                                )
+                                      Column('id', Integer, primary_key=True),
+                                      Column('name', String),
+                                      Column('level', Integer),
+                                      Column('size', String),
+                                      Column('price', Integer),
+                                      Column('exp', Integer),
+                                      Column('curr_exp', Integer),
+                                      Column('exp_per_kill', Integer),
+                                      Column('health', Integer),
+                                      Column('curr_health', Integer),
+                                      Column('armor', Integer),
+                                      Column('immune', String),
+                                      Column('ward', String),
+                                      Column('attack_type', String),
+                                      Column('attack_chance', String),
+                                      Column('attack_dmg', Integer),
+                                      Column('attack_source', String),
+                                      Column('attack_ini', Integer),
+                                      Column('attack_radius', String),
+                                      Column('attack_purpose', Integer),
+                                      Column('prev_level', String),
+                                      Column('desc', String),
+                                      Column('photo', String),
+                                      Column('gif', String),
+                                      Column('slot', Integer)
+                                      )
 
         # Создаём таблицы
         self.metadata.create_all(self.database_engine)
@@ -484,16 +492,38 @@ class ServerStorage:
         mapper(self.CurrentDungeon, current_dungeon_table)
 
         # Создаём сессию
-        Session = sessionmaker(bind=self.database_engine)
-        self.session = Session()
+        session = sessionmaker(bind=self.database_engine)
+        self.session = session()
 
         self.current_player = self.get_player('Erepb-89')
 
-    def add_dungeon_unit(self, id, name, level, size,
-                 price, exp, curr_exp, exp_per_kill, health, curr_health,
-                 armor, immune, ward, attack_type, attack_chance, attack_dmg,
-                 attack_source, attack_ini, attack_radius, attack_purpose,
-                 prev_level, desc, photo, gif, slot):
+    def add_dungeon_unit(
+            self,
+            id,
+            name,
+            level,
+            size,
+            price,
+            exp,
+            curr_exp,
+            exp_per_kill,
+            health,
+            curr_health,
+            armor,
+            immune,
+            ward,
+            attack_type,
+            attack_chance,
+            attack_dmg,
+            attack_source,
+            attack_ini,
+            attack_radius,
+            attack_purpose,
+            prev_level,
+            desc,
+            photo,
+            gif,
+            slot):
         """
         Метод регистрации юнита.
         Создаёт запись в таблице CurrentDungeon.
@@ -528,7 +558,7 @@ class ServerStorage:
         self.session.add(unit_row)
         self.session.commit()
 
-    def get_unit_by_name(self, name):
+    def get_unit_by_name(self, name: str) -> namedtuple:
         """Метод получающий юнита из общей базы по имени."""
         query = self.session.query(
             self.AllUnits.id,
@@ -561,34 +591,28 @@ class ServerStorage:
         return query.first()
 
     @property
-    def current_game_session(self):
+    def current_game_session(self) -> any:
         """Метод получающий текущую игровую сессию
         (последнюю запись из таблицы GameSessions)."""
-        try:
-            query = self.session.query(
-                self.GameSessions.id,
-                self.GameSessions.player_id,
-                self.GameSessions.faction,
-            )
-            # Возвращаем кортеж
-            return query[-1]
-        except BaseException:
-            return str(1)
+        query = self.session.query(
+            self.GameSessions.id,
+            self.GameSessions.player_id,
+            self.GameSessions.faction,
+        )
+        # Возвращаем кортеж
+        return query[-1]
 
     @property
-    def current_game_faction(self):
+    def current_game_faction(self) -> str:
         """Метод получающий текущую фракцию
         (последнюю запись из таблицы GameSessions)."""
-        try:
-            query = self.session.query(
-                self.GameSessions.faction).all()
-            # Возвращаем одну запись
-            return str(query[-1].faction)
-        except BaseException:
-            return str(1)
+        query = self.session.query(
+            self.GameSessions.faction).all()
+        # Возвращаем одну запись
+        return str(query[-1].faction)
 
     @property
-    def current_user(self):
+    def current_user(self) -> str:
         """Метод получающий текущего Пользователя-игрока
         (последнюю запись из таблицы GameSessions)."""
         try:
@@ -600,7 +624,7 @@ class ServerStorage:
         except BaseException:
             return str(1)
 
-    def get_unit_by_id(self, _id, database):
+    def get_unit_by_id(self, _id: int, database: any) -> namedtuple:
         """Метод получающий юнита из общей базы по id."""
         query = self.session.query(
             database.id,
@@ -632,7 +656,7 @@ class ServerStorage:
         # Возвращаем кортеж
         return query.first()
 
-    def get_unit_by_slot(self, slot, database):
+    def get_unit_by_slot(self, slot: int, database: any) -> namedtuple:
         """Метод получающий юнита из базы игрока по слоту."""
         query = self.session.query(
             database.id,
@@ -664,7 +688,7 @@ class ServerStorage:
         # Возвращаем кортеж
         return query.first()
 
-    def get_player_unit_by_slot(self, slot):
+    def get_player_unit_by_slot(self, slot: int) -> namedtuple:
         """Метод получающий юнита из базы игрока по слоту."""
         query = self.session.query(
             self.PlayerUnits.id,
@@ -692,9 +716,10 @@ class ServerStorage:
             self.PlayerUnits.slot
         ).filter_by(slot=slot)
         # Возвращаем кортеж
+        print(query.first())
         return query.first()
 
-    def show_player_units(self):
+    def show_player_units(self) -> List[namedtuple]:
         """Метод возвращающий список юнитов игрока."""
         query = self.session.query(
             self.PlayerUnits.id,
@@ -724,7 +749,7 @@ class ServerStorage:
         # Возвращаем список кортежей
         return query.all()
 
-    def show_enemy_units(self):
+    def show_enemy_units(self) -> List[namedtuple]:
         """Метод возвращающий список юнитов игрока."""
         query = self.session.query(
             self.CurrentDungeon.id,
@@ -754,17 +779,12 @@ class ServerStorage:
         # Возвращаем список кортежей
         return query.all()
 
-    def choose_player(self, player_name):
-        """
-        Метод выбора текущего игрока.
-        """
+    def choose_player(self, player_name: str) -> None:
+        """Метод выбора текущего игрока."""
         self.current_player = self.get_player(player_name)
 
-    def get_player(self, player_name):
-        """
-        Метод получения записи конкретного игрока.
-        """
-
+    def get_player(self, player_name: str) -> namedtuple:
+        """Метод получения записи конкретного игрока."""
         query = self.session.query(
             self.Players.id,
             self.Players.name,
@@ -773,7 +793,7 @@ class ServerStorage:
         # Возвращаем кортеж
         return query.first()
 
-    def get_player_by_id(self, player_id):
+    def get_player_by_id(self, player_id: int) -> str:
         """
         Метод получения имени игрока по его id.
         """
@@ -784,7 +804,7 @@ class ServerStorage:
         # Возвращаем число
         return query.first()[-1]
 
-    def show_all_players(self):
+    def show_all_players(self) -> List[namedtuple]:
         """
         Метод получения всех игроков.
         """
@@ -798,7 +818,7 @@ class ServerStorage:
 
     def create_player(self,
                       name: str,
-                      email: str):
+                      email: str) -> None:
         """
         Метод регистрации игрока.
         Создаёт запись в таблице Players.
@@ -810,7 +830,7 @@ class ServerStorage:
         self.session.add(unit_row)
         self.session.commit()
 
-    def delete_player(self, name):
+    def delete_player(self, name: str) -> None:
         """Метод удаляющий игрока из таблицы Players."""
         if name != 'Erepb-89':
             self.session.query(self.Players).filter_by(name=name).delete()
@@ -821,7 +841,7 @@ class ServerStorage:
     def update_player(self,
                       player_id: int,
                       player_name: str,
-                      email: str):
+                      email: str) -> None:
         """
         Метод изменения имени, либо e-mail игрока.
         Изменяет запись в таблице Players.
@@ -837,34 +857,11 @@ class ServerStorage:
         self.session.execute(changes)
         self.session.commit()
 
-    def update_player_slot(self, slot, new_slot):
-        """ """
-
-        changed_unit = self.get_player_unit_by_slot(slot)
-        if changed_unit is not None:
-            changed_unit_id = changed_unit.id
-
-        second_unit = self.get_player_unit_by_slot(new_slot)
-        if second_unit is not None:
-            second_unit_id = second_unit.id
-
-        changes = update(
-            self.PlayerUnits).where(
-            self.PlayerUnits.id == changed_unit_id).values(
-            slot=new_slot).execution_options(
-            synchronize_session="fetch")
-        self.session.execute(changes)
-        self.session.commit()
-
-        second_changes = update(
-            self.PlayerUnits).where(
-            self.PlayerUnits.id == second_unit_id).values(
-            slot=slot).execution_options(
-            synchronize_session="fetch")
-        self.session.execute(second_changes)
-        self.session.commit()
-
-    def set_unit_slot(self, new_slot, unit, database):
+    def set_unit_slot(self,
+                      new_slot: int,
+                      unit: namedtuple,
+                      database: any) -> None:
+        """Установить новый номер слота юниту"""
         changes = update(
             database).where(
             database.id == unit.id).values(
@@ -873,7 +870,10 @@ class ServerStorage:
         self.session.execute(changes)
         self.session.commit()
 
-    def update_slot(self, slot, new_slot, database):
+    def update_slot(self,
+                    slot: int,
+                    new_slot: int,
+                    database: any) -> None:
         """Обновление слота у юнита"""
         changed_unit = self.get_unit_by_slot(slot, database)
         second_unit = self.get_unit_by_slot(new_slot, database)
@@ -885,8 +885,8 @@ class ServerStorage:
             self.set_unit_slot(slot, second_unit, database)
 
     def get_gold(self,
-                      player_name: str,
-                      faction: str):
+                 player_name: str,
+                 faction: str) -> int:
         """
         Метод получения построек в столице игрока (уровень).
         """
@@ -899,9 +899,9 @@ class ServerStorage:
 
     def get_buildings(self,
                       player_name: str,
-                      faction: str):
+                      faction: str) -> namedtuple:
         """
-        Метод получения построек в столице игрока (уровень).
+        Метод получения построек в столице игрока.
         """
 
         query = self.session.query(
@@ -919,9 +919,9 @@ class ServerStorage:
 
     def clear_buildings(self,
                         player_name: str,
-                        faction: str):
+                        faction: str) -> None:
         """
-        Метод получения построек в столице игрока (уровень).
+        Метод удаления построек в столице игрока.
         """
 
         self.session.query(
@@ -932,7 +932,8 @@ class ServerStorage:
 
     def get_fighter_branch(self,
                            player_name: str,
-                           faction: str):
+                           faction: str
+                           ) -> list:
         """
         Метод получения построек ветви бойцов в столице игрока.
         """
@@ -944,7 +945,10 @@ class ServerStorage:
         # Возвращаем список
         return temp_graph
 
-    def get_building_graph(self, bname, graph, branch):
+    def get_building_graph(self,
+                           bname: str,
+                           graph: list,
+                           branch: str) -> None:
         """Рекурсивное создание графа зданий/построек"""
         for val in FACTIONS.get(self.current_game_faction)[branch]:
             if val.bname == bname:
@@ -958,7 +962,7 @@ class ServerStorage:
                          player_name: str,
                          faction: str,
                          gold: int,
-                         buildings: list):
+                         buildings: list) -> None:
         """
         Метод добавления здания 0 уровня в столице игрока.
         Создаёт запись в таблице PlayerBuildings.
@@ -982,7 +986,7 @@ class ServerStorage:
     def update_buildings(self,
                          player_name: str,
                          faction: str,
-                         buildings: list):
+                         buildings: list) -> None:
         """
         Метод постройки здания в столице игрока (+ уровень).
         Изменяет запись в таблице PlayerBuildings.
@@ -1006,7 +1010,7 @@ class ServerStorage:
     def update_gold(self,
                     player_name: str,
                     faction: str,
-                    gold: int):
+                    gold: int) -> None:
         """
         Изменяет запись Gold в таблице PlayerBuildings.
         """
@@ -1019,7 +1023,7 @@ class ServerStorage:
         self.session.execute(changes)
         self.session.commit()
 
-    def transfer_units(self):
+    def transfer_units(self) -> None:
         """Перенос юнитов из CurrentDungeon в запись versus"""
         names_list = []
 
@@ -1029,7 +1033,7 @@ class ServerStorage:
             try:
                 unit_name = self.get_unit_by_slot(
                     slot, self.CurrentDungeon).name
-            except BaseException:
+            except AttributeError:
                 unit_name = None
 
             if unit_name is not None:
@@ -1046,17 +1050,17 @@ class ServerStorage:
         self.session.add(enemy_unit)
         self.session.commit()
 
-    def delete_player_unit(self, slot):
+    def delete_player_unit(self, slot: int) -> None:
         """Метод удаляющий юнита из базы игрока по слоту."""
         self.session.query(self.PlayerUnits).filter_by(slot=slot).delete()
         self.session.commit()
 
-    def delete_dungeon_unit(self, slot):
+    def delete_dungeon_unit(self, slot: int) -> None:
         """Метод удаляющий юнита из базы текущего подземелья по слоту."""
         self.session.query(self.CurrentDungeon).filter_by(slot=slot).delete()
         self.session.commit()
 
-    def hire_unit(self, unit, slot):
+    def hire_unit(self, unit: namedtuple, slot: int) -> None:
         """Метод добавления юнита в базу игрока."""
         if self.check_slot(
                 unit,
@@ -1065,6 +1069,7 @@ class ServerStorage:
             print('Данный слот занят')
         else:
             unit_row = self.get_unit_by_name(unit)
+            print(type(unit_row))
             # print(unit_row._asdict())
             if self.is_double(unit_row.name) and slot % 2 == 1:
                 slot += 1
@@ -1073,7 +1078,7 @@ class ServerStorage:
             self.session.add(player_unit)
             self.session.commit()
 
-    def hire_enemy_unit(self, unit, slot):
+    def hire_enemy_unit(self, unit: namedtuple, slot: int) -> None:
         """Метод добавления юнита в базу противника."""
         if self.check_slot(
                 unit,
@@ -1081,7 +1086,6 @@ class ServerStorage:
                 self.get_dungeon_unit_by_slot) is True:  # Нужно заменить на get_unit_by_slot
             print('Данный слот занят')
         else:
-            # unit_row = self.get_unit_by_name(unit).id
             unit_row = self.get_unit_by_name(unit)
             # print(unit_row._asdict())
             if self.is_double(unit) and slot % 2 == 1:
@@ -1092,43 +1096,50 @@ class ServerStorage:
             self.session.add(enemy_unit)
             self.session.commit()
 
-    def check_slot(self, unit, slot, func):
-        if func(slot) is not None:
-            return True
+    def check_slot(self,
+                   unit: namedtuple,
+                   slot: int,
+                   func: Callable[[int], any]
+                   ) -> bool:
+        """Проверка свободен ли слот для юнита"""
+        result = func(slot) is not None
 
         # Если слот четный и сам юнит двойной
         if slot % 2 == 0 and self.is_double(unit):
             if func(slot - 1) is not None:
-                return True
+                result = True
 
         # Если слот нечетный и сам юнит двойной
         elif slot % 2 == 1 and self.is_double(unit):
             if func(slot + 1) is not None:
-                return True
+                result = True
 
         # Если (номер слота + 1) - уже занят двойным юнитом
         elif func(slot + 1) is not None and self.is_double(func(slot + 1).name):
-            return True
+            result = True
 
         # Если (номер слота - 1) - уже занят двойным юнитом
         elif slot % 2 == 0 and func(slot - 1) is not None and \
                 self.is_double(func(slot - 1).name):
-            return True
+            result = True
         else:
-            return False
+            result = False
 
-    def is_double(self, unit):
+        return result
+
+    def is_double(self, unit: namedtuple) -> bool:
+        """Проверка размера юнита"""
         return self.get_unit_by_name(unit).size == "Большой"
 
     def update_unit(self,
-                    unit_id,
-                    level,
-                    health,
-                    curr_health,
-                    curr_exp,
-                    exp_per_kill,
-                    attack_chance,
-                    attack_dmg):
+                    unit_id: int,
+                    level: int,
+                    health: int,
+                    curr_health: int,
+                    curr_exp: int,
+                    exp_per_kill: int,
+                    attack_chance: str,
+                    attack_dmg: int) -> None:
         """
         Метод изменения юнита игрока (здоровье и опыт).
         Изменяет запись в таблице PlayerUnits.
@@ -1150,7 +1161,10 @@ class ServerStorage:
         self.session.execute(changes)
         self.session.commit()
 
-    def update_unit_hp(self, slot, curr_health, database):
+    def update_unit_hp(self,
+                       slot: int,
+                       curr_health: int,
+                       database: any) -> None:
         """
         Метод изменения здоровья юнита.
         Изменяет запись в таблице player_units либо в current_dungeon.
@@ -1163,7 +1177,10 @@ class ServerStorage:
         self.session.execute(changes)
         self.session.commit()
 
-    def update_unit_exp(self, slot, curr_exp, database):
+    def update_unit_exp(self,
+                        slot: int,
+                        curr_exp: int,
+                        database: any) -> None:
         """
         Метод изменения здоровья юнита.
         Изменяет запись в таблице player_units либо в current_dungeon.
@@ -1176,7 +1193,7 @@ class ServerStorage:
         self.session.execute(changes)
         self.session.commit()
 
-    def autoregen(self, slot):
+    def autoregen(self, slot: int) -> None:
         """
         Метод изменения юнита (здоровье).
         Изменяет запись в таблице player_units.
@@ -1192,7 +1209,7 @@ class ServerStorage:
         self.session.execute(changes)
         self.session.commit()
 
-    def replace_unit(self, slot, new_name):
+    def replace_unit(self, slot: int, new_name: str) -> None:
         """
         Метод замены юнита на другой юнит.
         Изменяет запись в таблице AllUnits.
@@ -1200,7 +1217,7 @@ class ServerStorage:
         self.delete_player_unit(slot)
         self.hire_unit(new_name, slot)
 
-    def show_dungeon_units(self, name):
+    def show_dungeon_units(self, name: str) -> namedtuple:
         """Метод возвращающий список юнитов подземелья."""
         query = self.session.query(
             self.Dungeons.unit1,
@@ -1210,10 +1227,10 @@ class ServerStorage:
             self.Dungeons.unit5,
             self.Dungeons.unit6
         ).filter_by(name=name)
-        # Возвращаем список кортежей
+        # Возвращаем кортеж
         return query.first()
 
-    def get_dungeon_unit_by_slot(self, slot):
+    def get_dungeon_unit_by_slot(self, slot: int) -> namedtuple:
         """Метод получающий юнита из базы подземелья по слоту."""
         query = self.session.query(
             self.CurrentDungeon.id,
@@ -1243,7 +1260,7 @@ class ServerStorage:
         # Возвращаем кортеж
         return query.first()
 
-    def show_db_units(self, database):
+    def show_db_units(self, database: any) -> List[namedtuple]:
         """
         Метод возвращающий список юнитов
         игрока либо юнитов противника.
@@ -1276,7 +1293,7 @@ class ServerStorage:
         # Возвращаем список кортежей
         return query.all()
 
-    def show_all_units(self):
+    def show_all_units(self) -> List[namedtuple]:
         """Метод возвращающий список всех известных юнитов."""
         query = self.session.query(
             self.AllUnits.id,
@@ -1308,10 +1325,8 @@ class ServerStorage:
         # Возвращаем список кортежей
         return query.all()
 
-    def set_faction(self, player_id, faction):
-        """
-        Метод сохранения выбранной фракции для текущей игровой сессии.
-        """
+    def set_faction(self, player_id: int, faction: str) -> None:
+        """Метод сохранения выбранной фракции для текущей игровой сессии"""
         game_session_row = self.GameSessions(
             player_id,
             faction
@@ -1319,7 +1334,7 @@ class ServerStorage:
         self.session.add(game_session_row)
         self.session.commit()
 
-    def build_default(self, faction):
+    def build_default(self, faction: str) -> None:
         """Базовая постройка зданий 1 уровня в выбранной столице"""
         building_levels = [
             FACTIONS[faction]['fighter'][0].bname,
@@ -1332,7 +1347,11 @@ class ServerStorage:
             0
         ]
 
-        self.create_buildings(self.current_user, faction, 5000, building_levels)
+        self.create_buildings(
+            self.current_user,
+            faction,
+            5000,
+            building_levels)
 
 
 main_db = ServerStorage('../disc2.db')
@@ -1407,4 +1426,3 @@ if __name__ == '__main__':
 
     # for New Game
     # main_db.clear_buildings('Erepb-89', 'Empire')
-

@@ -3,12 +3,18 @@
 import os.path
 
 # import pymorphy2
+from collections import namedtuple
+from typing import Optional, List
+
+from PyQt5 import QtWidgets
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QMainWindow, QHBoxLayout, QMessageBox
 
 from client_dir.capital_building_form import Ui_CapitalBuildingWindow
-from client_dir.settings import CAPITAL_BUILDING, UNIT_ICONS, TOWN_ICONS, \
-    SCREEN_RECT, DECLINATIONS, INTERF, ICON, COMMON, OTHERS
+from client_dir.settings import CAPITAL_BUILDING, UNIT_ICONS, TOWN_ICONS,\
+    SCREEN_RECT, DECLINATIONS, INTERF, ICON, COMMON, OTHERS, ALREADY_BUILT,\
+    POSSIBLE_TO_BUILD, NEED_TO_BUILD_PREV, \
+    ANOTHER_BRANCH
 from client_dir.ui_functions import set_size_by_unit, get_unit_image, \
     slot_frame_update
 from client_dir.unit_dialog import UnitDialog
@@ -40,7 +46,7 @@ class CapitalBuildingWindow(QMainWindow):
 
         self.InitUI()
 
-        self.get_all_branch_units()
+        self.show_all_branch_icons()
         self.slot_update(self.unit, self.ui.slot)
         self.button_update(self.unit, self.ui.pushButtonSlot)
         self.player_gold = self.database.get_gold(
@@ -48,7 +54,7 @@ class CapitalBuildingWindow(QMainWindow):
         self.ui.gold.setText(str(self.player_gold))
 
     def InitUI(self):
-        # Загружаем конфигурацию окна из дизайнера
+        """Загружаем конфигурацию окна из дизайнера"""
         self.ui = Ui_CapitalBuildingWindow()
         self.ui.setupUi(self)
 
@@ -139,7 +145,7 @@ class CapitalBuildingWindow(QMainWindow):
         self.ui.pushButtonBuy.clicked.connect(self.buy_building)
         self.show()
 
-    def update_capital(self):
+    def update_capital(self) -> None:
         """Обновление картинки замка (фон)"""
         capital_building_bg = self.ui.capitalBuildingBG
         capital_building_bg.setPixmap(
@@ -149,17 +155,17 @@ class CapitalBuildingWindow(QMainWindow):
         self.hbox.addWidget(capital_building_bg)
         self.setLayout(self.hbox)
 
-    def get_image(self, faction):
+    def get_image(self, faction: str) -> str:
         """Достаем картинку строительства текущей фракции"""
         return os.path.join(
             CAPITAL_BUILDING,
             f"{self.branch}/{faction}.png")
 
-    def back(self):
+    def back(self) -> None:
         """Кнопка возврата"""
         self.close()
 
-    def change_branch(self, branch):
+    def change_branch(self, branch: str) -> None:
         """Смена ветви"""
         self.branch = branch
         self.update_capital()
@@ -168,8 +174,8 @@ class CapitalBuildingWindow(QMainWindow):
         self.button_update(self.unit, self.ui.pushButtonSlot)
         self.ui.pushButtonSlot.setEnabled(True)
 
-        # Получение всех юнитов ветви
-        self.get_all_branch_units()
+        # Прорисовка всех иконок и кнопок ветви
+        self.show_all_branch_icons()
 
         # Получение параметров постройки
         self.get_building_params(1)
@@ -187,23 +193,23 @@ class CapitalBuildingWindow(QMainWindow):
         self.reverse_update()
         self.icons = True
 
-    def change_branch_fighters(self):
+    def change_branch_fighters(self) -> None:
         """Смена ветви на fighter"""
         self.change_branch('fighter')
 
-    def change_branch_mages(self):
+    def change_branch_mages(self) -> None:
         """Смена ветви на mage"""
         self.change_branch('mage')
 
-    def change_branch_archers(self):
+    def change_branch_archers(self) -> None:
         """Смена ветви на archer"""
         self.change_branch('archer')
 
-    def change_branch_support(self):
+    def change_branch_support(self) -> None:
         """Смена ветви на support"""
         self.change_branch('support')
 
-    def change_branch_others(self):
+    def change_branch_others(self) -> None:
         """Смена ветви на others"""
         self.branch = OTHERS
         self.update_capital()
@@ -227,24 +233,26 @@ class CapitalBuildingWindow(QMainWindow):
         self.reverse_update()
 
     @property
-    def branch_settings(self):
+    def branch_settings(self) -> dict:
         """Получение настроек ветви"""
         return FACTIONS.get(self.faction)[self.branch]
 
-    def get_all_branch_units(self):
-        """Получение всех юнитов ветви"""
-        # получаем картинку здания по слоту
+    def show_all_branch_icons(self) -> None:
+        """Прорисовка всех иконок и кнопок ветви"""
+        # прорисовка картинок зданий по слоту
         for num, icon_slot in self.town_icons_dict.items():
             self.get_icon_by_slot(num, icon_slot)
 
-        # получаем координаты кнопок
+        # установка координат кнопок
         for num, icon_button in self.icon_buttons_dict.items():
             icon_button.setGeometry(*self.get_coords(num))
 
-    def get_icon_by_slot(self, num, icon_slot):
+    def get_icon_by_slot(self,
+                         num: int,
+                         icon_slot: QtWidgets.QLabel) -> None:
         """
         Получение картинки здания по слоту.
-        Задание координат
+        Задание координат.
         """
         icon = self.get_icon_image(num)
 
@@ -257,7 +265,7 @@ class CapitalBuildingWindow(QMainWindow):
         else:
             icon_slot.setGeometry(0, 0)
 
-    def get_coords(self, num):
+    def get_coords(self, num: int) -> List[int]:
         """Получение координат"""
         try:
             coords = self.branch_settings[num].coords
@@ -265,7 +273,7 @@ class CapitalBuildingWindow(QMainWindow):
         except KeyError:
             return [0, 0, 0, 0]
 
-    def get_building_params(self, b_slot):
+    def get_building_params(self, b_slot: int) -> None:
         """Получение параметров постройки"""
         self.graph = []
         self.building_name = self.branch_settings[b_slot].bname
@@ -306,9 +314,9 @@ class CapitalBuildingWindow(QMainWindow):
         self.get_building_graph(self.building_name, self.graph)
 
         # Метод определения возможности постройки
-        self.building_possibility()
+        self.set_building_possibility()
 
-    def set_text_and_buy_slot(self, text, possibility):
+    def set_text_and_buy_slot(self, text: str, possibility: bool) -> None:
         """
         Задание текста о возможности постройки.
         Вывод рисунка кнопки.
@@ -336,7 +344,7 @@ class CapitalBuildingWindow(QMainWindow):
         self.hbox.addWidget(self.ui.slotBuy)
         self.setLayout(self.hbox)
 
-    def get_building_slot_by_name(self, b_name):
+    def get_building_slot_by_name(self, b_name: str) -> int:
         """Получение слота постройки по имени"""
         branch = FACTIONS.get(self.faction)[self.branch]
 
@@ -345,7 +353,7 @@ class CapitalBuildingWindow(QMainWindow):
                 return num
         return 0
 
-    def show_already_built(self):
+    def show_already_built(self) -> None:
         """Отметить уже построенные здания"""
         self.no_built()
         temp_graph = []
@@ -380,7 +388,7 @@ class CapitalBuildingWindow(QMainWindow):
                     self.builded_dict[b_slot].setGeometry(
                         *self.get_coords(b_slot))
 
-    def building_possibility(self):
+    def set_building_possibility(self) -> None:
         """Метод определения возможности постройки"""
         temp_graph = []
 
@@ -393,54 +401,40 @@ class CapitalBuildingWindow(QMainWindow):
             # рекурсивное создание графа уже построенных зданий
             self.get_building_graph(buildings[self.branch], temp_graph)
 
-            # print('self.graph', self.graph)
-            # print('temp_graph', temp_graph)
-
             # если здание входит в граф построенных
             if self.building_name in temp_graph:
-                text = 'Это здание уже построено'
-                self.set_text_and_buy_slot(text, False)
+                self.set_text_and_buy_slot(ALREADY_BUILT, False)
 
             # если граф построенных входит в текущий граф и длина текущего
             # графа отличается от графа построенных более, чем на 1
             elif len(self.graph) - len(temp_graph) > 1 \
                     and set(temp_graph).issubset(self.graph)\
                     and '' not in temp_graph:
-                text = 'Сначала нужно построить здание, ' \
-                       'предшествующее этому'
-                self.set_text_and_buy_slot(text, False)
+                self.set_text_and_buy_slot(NEED_TO_BUILD_PREV, False)
 
             elif '' in temp_graph and len(self.graph) < 2:
-                text = 'Это здание можно построить'
-                self.set_text_and_buy_slot(text, True)
+                self.set_text_and_buy_slot(POSSIBLE_TO_BUILD, True)
 
             elif '' in temp_graph and len(self.graph) >= 2:
-                text = 'Сначала нужно построить здание, ' \
-                       'предшествующее этому'
-                self.set_text_and_buy_slot(text, False)
+                self.set_text_and_buy_slot(NEED_TO_BUILD_PREV, False)
 
             # если граф построенных не входит в текущий граф
             elif not set(temp_graph).issubset(self.graph) \
                     and '' not in temp_graph:
-                text = 'Это здание нельзя построить, поскольку ' \
-                       'была выбрана другая ветвь развития'
-                self.set_text_and_buy_slot(text, False)
+                self.set_text_and_buy_slot(ANOTHER_BRANCH, False)
 
             else:
-                text = 'Это здание можно построить'
-                self.set_text_and_buy_slot(text, True)
+                self.set_text_and_buy_slot(POSSIBLE_TO_BUILD, True)
 
         elif self.branch == OTHERS:
             # если текущее здание уже в построенных
             if self.building_name in buildings.values():
-                text = 'Это здание уже построено'
-                self.set_text_and_buy_slot(text, False)
+                self.set_text_and_buy_slot(ALREADY_BUILT, False)
 
             else:
-                text = 'Это здание можно построить'
-                self.set_text_and_buy_slot(text, True)
+                self.set_text_and_buy_slot(POSSIBLE_TO_BUILD, True)
 
-    def decline(self, unit_name):
+    def decline(self, unit_name: str) -> None:
         """Склонение имен юнитов по падежам"""
         if unit_name in DECLINATIONS.keys():
             declined = DECLINATIONS[unit_name]
@@ -464,7 +458,7 @@ class CapitalBuildingWindow(QMainWindow):
             declined = name.inflect({'ablt'}).word.capitalize()
         return declined
 
-    def get_building_graph(self, bname, graph):
+    def get_building_graph(self, bname: str, graph: list) -> None:
         """Рекурсивное создание графа зданий/построек"""
         for val in self.branch_settings.values():
             if val.bname == bname:
@@ -474,21 +468,23 @@ class CapitalBuildingWindow(QMainWindow):
                 else:
                     return
 
-    def no_built(self):
+    def no_built(self) -> None:
         """Снятие отметок о постройке зданий"""
         for slot in self.builded_dict.values():
             slot.setGeometry(0, 0, 0, 0)
 
-    def unlight_all_buildings(self):
+    def unlight_all_buildings(self) -> None:
         """Снятие подсветки зданий"""
         self.ui.labelSelected1.setStyleSheet("border: 0px;")
 
-    def highlight_selected_building(self, num, ui_slot):
+    def highlight_selected_building(self,
+                                    num: int,
+                                    ui_slot: QtWidgets.QLabel) -> None:
         """Подсветка выбранной постройки"""
         ui_slot.setGeometry(*self.get_coords(num))
         ui_slot.setStyleSheet("border: 5px solid yellow;")
 
-    def get_unit_by_b_slot(self, b_slot):
+    def get_unit_by_b_slot(self, b_slot: int) -> Optional[namedtuple]:
         """Получение юнита по слоту постройки"""
         try:
             unit = self.database.get_unit_by_name(
@@ -497,7 +493,7 @@ class CapitalBuildingWindow(QMainWindow):
         except KeyError:
             return None
 
-    def get_unit_by_b_name(self, b_name):
+    def get_unit_by_b_name(self, b_name: str) -> str:
         """Получение юнита по названию постройки"""
         branch = FACTIONS.get(self.faction)[self.branch]
         for val in branch.values():
@@ -505,7 +501,7 @@ class CapitalBuildingWindow(QMainWindow):
                 return val.unit_name
         return ''
 
-    def update_unit_by_b_slot(self, b_slot):
+    def update_unit_by_b_slot(self, b_slot: int) -> None:
         """Обновление юнита согласно выбранному зданию"""
         self.unit = self.get_unit_by_b_slot(b_slot)
         self.slot_update(self.unit, self.ui.slot)
@@ -517,53 +513,55 @@ class CapitalBuildingWindow(QMainWindow):
         # подсветка выбранного здания
         self.highlight_selected_building(b_slot, self.ui.labelSelected1)
 
-    def update_unit_by_b_slot1(self):
+    def update_unit_by_b_slot1(self) -> None:
         """Обновление юнита согласно зданию 1"""
         self.update_unit_by_b_slot(1)
 
-    def update_unit_by_b_slot2(self):
+    def update_unit_by_b_slot2(self) -> None:
         """Обновление юнита согласно зданию 2"""
         self.update_unit_by_b_slot(2)
 
-    def update_unit_by_b_slot3(self):
+    def update_unit_by_b_slot3(self) -> None:
         """Обновление юнита согласно зданию 3"""
         self.update_unit_by_b_slot(3)
 
-    def update_unit_by_b_slot4(self):
+    def update_unit_by_b_slot4(self) -> None:
         """Обновление юнита согласно зданию 4"""
         self.update_unit_by_b_slot(4)
 
-    def update_unit_by_b_slot5(self):
+    def update_unit_by_b_slot5(self) -> None:
         """Обновление юнита согласно зданию 5"""
         self.update_unit_by_b_slot(5)
 
-    def update_unit_by_b_slot6(self):
+    def update_unit_by_b_slot6(self) -> None:
         """Обновление юнита согласно зданию 6"""
         self.update_unit_by_b_slot(6)
 
-    def update_unit_by_b_slot7(self):
+    def update_unit_by_b_slot7(self) -> None:
         """Обновление юнита согласно зданию 7"""
         self.update_unit_by_b_slot(7)
 
-    def update_unit_by_b_slot8(self):
+    def update_unit_by_b_slot8(self) -> None:
         """Обновление юнита согласно зданию 8"""
         self.update_unit_by_b_slot(8)
 
-    def update_unit_by_b_slot9(self):
+    def update_unit_by_b_slot9(self) -> None:
         """Обновление юнита согласно зданию 9"""
         self.update_unit_by_b_slot(9)
 
-    def slot_update(self, unit, slot):
+    def slot_update(self,
+                    unit: namedtuple,
+                    ui_slot: QtWidgets.QLabel) -> None:
         """Обновление слота юнита"""
-        set_size_by_unit(unit, slot)
+        set_size_by_unit(unit, ui_slot)
 
-        slot.setPixmap(QPixmap(
+        ui_slot.setPixmap(QPixmap(
             get_unit_image(unit)).scaled(
-            slot.width(), slot.height()))
-        self.hbox.addWidget(slot)
+            ui_slot.width(), ui_slot.height()))
+        self.hbox.addWidget(ui_slot)
         self.setLayout(self.hbox)
 
-    def building_face_update(self, unit, slot):
+    def building_face_update(self, unit: namedtuple, slot: int) -> None:
         """Обновление лица юнита соответствующего постройке"""
         if unit is not None:
             slot.setPixmap(QPixmap(
@@ -574,14 +572,16 @@ class CapitalBuildingWindow(QMainWindow):
         else:
             slot.setFixedSize(0, 0)
 
-    def button_update(self, unit, button):
+    def button_update(self,
+                      unit: namedtuple,
+                      button: QtWidgets.QPushButton) -> None:
         """Обновление кнопки"""
         set_size_by_unit(unit, button)
 
         self.hbox.addWidget(button)
         self.setLayout(self.hbox)
 
-    def reverse_icons(self):
+    def reverse_icons(self) -> None:
         """Смена картинки постройки на лицо юнита"""
         if self.icons:
             for num, icon_slot in self.town_icons_dict.items():
@@ -591,10 +591,10 @@ class CapitalBuildingWindow(QMainWindow):
                 self.set_size_by_slot(icon_slot)
             self.icons = False
         else:
-            self.get_all_branch_units()
+            self.show_all_branch_icons()
             self.icons = True
 
-    def reverse_update(self):
+    def reverse_update(self) -> None:
         """Обновление доступности реверса иконок"""
         if self.branch == OTHERS:
             self.ui.pushButtonReverse.setEnabled(False)
@@ -603,7 +603,7 @@ class CapitalBuildingWindow(QMainWindow):
             self.ui.pushButtonReverse.setEnabled(True)
             self.ui.slotReverse.setFixedSize(46, 46)
 
-    def buy_building(self):
+    def buy_building(self) -> None:
         """Метод постройки зданий в столице"""
         if self.player_gold < self.building_cost:
 
@@ -645,10 +645,10 @@ class CapitalBuildingWindow(QMainWindow):
                 changed_gold)
             self.ui.gold.setText(str(changed_gold))
 
-        self.building_possibility()
+        self.set_building_possibility()
         self.show_already_built()
 
-    def slot_detailed(self):
+    def slot_detailed(self) -> None:
         """Метод создающий окно юнита (слот)."""
         global DETAIL_WINDOW
         DETAIL_WINDOW = UnitDialog(
@@ -657,11 +657,11 @@ class CapitalBuildingWindow(QMainWindow):
         DETAIL_WINDOW.show()
 
     @staticmethod
-    def get_unit_face(unit):
+    def get_unit_face(unit: namedtuple) -> str:
         """Получение лица юнита"""
         return os.path.join(UNIT_ICONS, f"{unit.name} {ICON}")
 
-    def get_icon_image(self, num):
+    def get_icon_image(self, num: int) -> str:
         """Получение иконки здания"""
         icon_path = f"{self.faction}/{self.branch}/{num}.png"
         return os.path.join(TOWN_ICONS, icon_path)

@@ -7,9 +7,9 @@ from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QMainWindow, QHBoxLayout
 
 from client_dir.hire_menu_form import Ui_HireMenu
-from client_dir.settings import HIRE_SCREEN, ELVEN_PLUG
-from client_dir.ui_functions import get_unit_image, \
-    set_size_by_unit, show_gif, slot_frame_update
+from client_dir.settings import HIRE_SCREEN
+from client_dir.ui_functions import show_gif,\
+    slot_frame_update, slot_update, button_update
 from client_dir.unit_dialog import UnitNameDialog
 from units_dir.units_factory import AbstractFactory
 
@@ -22,7 +22,7 @@ class HireMenuWindow(QMainWindow):
     конвертированного файла hire_menu_form.py
     """
 
-    def __init__(self, database, slot):
+    def __init__(self, database: any, slot: int):
         super().__init__()
         # основные переменные
         self.database = database
@@ -40,7 +40,7 @@ class HireMenuWindow(QMainWindow):
         self.InitUI()
 
     def InitUI(self):
-        # Загружаем конфигурацию окна из дизайнера
+        """Загружаем конфигурацию окна из дизайнера"""
         self.ui = Ui_HireMenu()
         self.ui.setupUi(self)
 
@@ -87,7 +87,7 @@ class HireMenuWindow(QMainWindow):
 
         self.show()
 
-    def unlight_all_units(self):
+    def unlight_all_units(self) -> None:
         """Снятие подсветки юнитов"""
         self.ui.labelSelected1.setLineWidth(0)
         self.ui.labelSelected2.setLineWidth(0)
@@ -95,37 +95,37 @@ class HireMenuWindow(QMainWindow):
         self.ui.labelSelected4.setLineWidth(0)
         self.ui.labelSelected5.setLineWidth(0)
 
-    def highlight_selected_unit1(self):
+    def highlight_selected_unit1(self) -> None:
         """Подсветка выбранного юнита"""
         self.unlight_all_units()
         self.ui.labelSelected1.setLineWidth(2)
         self.highlighted_unit = self.fighter
 
-    def highlight_selected_unit2(self):
+    def highlight_selected_unit2(self) -> None:
         """Подсветка выбранного юнита"""
         self.unlight_all_units()
         self.ui.labelSelected2.setLineWidth(2)
         self.highlighted_unit = self.archer
 
-    def highlight_selected_unit3(self):
+    def highlight_selected_unit3(self) -> None:
         """Подсветка выбранного юнита"""
         self.unlight_all_units()
         self.ui.labelSelected3.setLineWidth(2)
         self.highlighted_unit = self.mage
 
-    def highlight_selected_unit4(self):
+    def highlight_selected_unit4(self) -> None:
         """Подсветка выбранного юнита"""
         self.unlight_all_units()
         self.ui.labelSelected4.setLineWidth(2)
         self.highlighted_unit = self.support
 
-    def highlight_selected_unit5(self):
+    def highlight_selected_unit5(self) -> None:
         """Подсветка выбранного юнита"""
         self.unlight_all_units()
         self.ui.labelSelected5.setLineWidth(2)
         self.highlighted_unit = self.special
 
-    def update_bg(self):
+    def update_bg(self) -> None:
         """Обновление бэкграунда, заполнение картинкой найма"""
         hire_menu_bg = self.ui.hireMenuBG
         hire_menu_bg.setPixmap(
@@ -137,37 +137,29 @@ class HireMenuWindow(QMainWindow):
         self.hbox.addWidget(hire_menu_bg)
         self.setLayout(self.hbox)
 
-    @staticmethod
-    def get_image(faction):
-        """Достаем картинку найма армии фракции"""
-        try:
-            return os.path.join(HIRE_SCREEN, f"{faction}.png")
-        except BaseException:
-            return os.path.join(HIRE_SCREEN, ELVEN_PLUG)
-
-    def back(self):
+    def back(self) -> None:
         """Кнопка возврата"""
         self.close()
 
-    def buy(self):
+    def buy(self) -> None:
         """Кнопка найма"""
         print(f'Вы купили воина: {self.highlighted_unit.name}')
         self.hire_unit_action(self.unit_slot)
         self.close()
 
-    def unit_list_update(self):
+    def unit_list_update(self) -> None:
         """Метод обновляющий список юнитов."""
-        self.slot_update(self.fighter, self.ui.slot1)
-        self.slot_update(self.archer, self.ui.slot2)
-        self.slot_update(self.mage, self.ui.slot3)
-        self.slot_update(self.support, self.ui.slot4)
-        self.slot_update(self.special, self.ui.slot5)
+        slot_update(self.fighter, self.ui.slot1)
+        slot_update(self.archer, self.ui.slot2)
+        slot_update(self.mage, self.ui.slot3)
+        slot_update(self.support, self.ui.slot4)
+        slot_update(self.special, self.ui.slot5)
 
-        self.button_update(self.fighter, self.ui.pushButtonSlot1)
-        self.button_update(self.archer, self.ui.pushButtonSlot2)
-        self.button_update(self.mage, self.ui.pushButtonSlot3)
-        self.button_update(self.support, self.ui.pushButtonSlot4)
-        self.button_update(self.special, self.ui.pushButtonSlot5)
+        button_update(self.fighter, self.ui.pushButtonSlot1)
+        button_update(self.archer, self.ui.pushButtonSlot2)
+        button_update(self.mage, self.ui.pushButtonSlot3)
+        button_update(self.support, self.ui.pushButtonSlot4)
+        button_update(self.special, self.ui.pushButtonSlot5)
 
         slot_frame_update(self.fighter, self.ui.slotFrame1)
         slot_frame_update(self.archer, self.ui.slotFrame2)
@@ -175,56 +167,34 @@ class HireMenuWindow(QMainWindow):
         slot_frame_update(self.support, self.ui.slotFrame4)
         slot_frame_update(self.special, self.ui.slotFrame5)
 
-    def button_update(self, unit, button):
-        """Установка размера кнопки на иконке"""
-        set_size_by_unit(unit, button)
-
-        self.hbox.addWidget(button)
-        self.setLayout(self.hbox)
-
-    def slot_update(self, unit, slot):
-        """Установка gif'ки в иконку юнита"""
-        set_size_by_unit(unit, slot)
-
-        slot.setPixmap(QPixmap(
-            get_unit_image(unit)).scaled(
-            slot.width(), slot.height()))
-        self.hbox.addWidget(slot)
-        self.setLayout(self.hbox)
-
-    def hire_unit_action(self, slot):
+    def hire_unit_action(self, slot: int) -> None:
         """Метод обработчик нажатия кнопки 'Нанять' для игрока"""
-        # self.database.hire_unit(
-        # self.highlighted_unit.name, int(slot))
         self.highlighted_unit.add_to_band(int(slot))
 
-    def hire_slot_detailed(self, unit_type):
+    def hire_slot_detailed(self, unit_type: any) -> None:
         """Метод создающий окно юнита."""
-        try:
-            global DETAIL_WINDOW
-            DETAIL_WINDOW = UnitNameDialog(
-                self.database,
-                unit_type.name)
-            DETAIL_WINDOW.show()
-        except Exception as err:
-            print(err)
+        global DETAIL_WINDOW
+        DETAIL_WINDOW = UnitNameDialog(
+            self.database,
+            unit_type.name)
+        DETAIL_WINDOW.show()
 
-    def hire_slot1_detailed(self):
+    def hire_slot1_detailed(self) -> None:
         """Метод создающий окно юнита (слот 1)."""
         self.hire_slot_detailed(self.fighter)
 
-    def hire_slot2_detailed(self):
+    def hire_slot2_detailed(self) -> None:
         """Метод создающий окно юнита (слот 2)."""
         self.hire_slot_detailed(self.archer)
 
-    def hire_slot3_detailed(self):
+    def hire_slot3_detailed(self) -> None:
         """Метод создающий окно юнита (слот 3)."""
         self.hire_slot_detailed(self.mage)
 
-    def hire_slot4_detailed(self):
+    def hire_slot4_detailed(self) -> None:
         """Метод создающий окно юнита (слот 4)."""
         self.hire_slot_detailed(self.support)
 
-    def hire_slot5_detailed(self):
+    def hire_slot5_detailed(self) -> None:
         """Метод создающий окно юнита (слот 5)."""
         self.hire_slot_detailed(self.special)
