@@ -493,7 +493,7 @@ class ClientMainWindow(QMainWindow):
     def show_campaign_window(self) -> None:
         """Метод создающий окно выбора Кампаний."""
         global CAMPAIGN_WINDOW
-        CAMPAIGN_WINDOW = CampaignWindow(self.database)
+        CAMPAIGN_WINDOW = CampaignWindow(self.database, self)
         CAMPAIGN_WINDOW.show()
 
     def show_versus_window(self) -> None:

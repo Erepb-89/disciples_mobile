@@ -13,10 +13,9 @@ from client_dir.ui_functions import get_image
 
 class CapitalWindow(QMainWindow):
     """
-    Класс - окно выбора фракции.
-    Содержит всю основную логику работы клиентского модуля.
+    Класс - окно столицы.
     Конфигурация окна создана в QTDesigner и загружается из
-    конвертированного файла choose_faction_form.py
+    конвертированного файла capital_main_form.py
     """
 
     def __init__(self, database: any, main: any):

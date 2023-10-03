@@ -21,10 +21,12 @@ class CampaignWindow(QMainWindow):
     конвертированного файла campaign_form.py
     """
 
-    def __init__(self, database: any):
+    def __init__(self, database: any, instance: any):
         super().__init__()
         # основные переменные
+        self.name = 'CampaignWindow'
         self.database = database
+        self.main = instance
         self.current_faction = self.database.current_game_faction
         self.dungeon = None
         self.campaign_buttons_dict = {}

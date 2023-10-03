@@ -24,6 +24,8 @@ from units_dir.buildings import FACTIONS, BRANCHES
 class CapitalBuildingWindow(QMainWindow):
     """
     Класс - окно стройки в столице.
+    Конфигурация окна создана в QTDesigner и загружается из
+    конвертированного файла capital_building_form.py
     """
 
     def __init__(self, database):

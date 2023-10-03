@@ -16,13 +16,12 @@ from units_dir.units_factory import AbstractFactory
 
 class CapitalArmyWindow(QMainWindow):
     """
-    Класс - окно выбора фракции.
-    Содержит всю основную логику работы клиентского модуля.
+    Класс - окно армии столицы.
     Конфигурация окна создана в QTDesigner и загружается из
     конвертированного файла capital_army_form.py
     """
 
-    def __init__(self, database: any, instance):
+    def __init__(self, database: any, instance: any):
         super().__init__()
         # основные переменные
         self.database = database

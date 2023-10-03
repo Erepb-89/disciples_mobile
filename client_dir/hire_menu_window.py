@@ -16,13 +16,12 @@ from units_dir.units_factory import AbstractFactory
 
 class HireMenuWindow(QMainWindow):
     """
-    Класс - окно выбора фракции.
-    Содержит всю основную логику работы клиентского модуля.
+    Класс - окно найма юнитов фракции.
     Конфигурация окна создана в QTDesigner и загружается из
     конвертированного файла hire_menu_form.py
     """
 
-    def __init__(self, database: any, slot: int, instance):
+    def __init__(self, database: any, slot: int, instance: any):
         super().__init__()
         # основные переменные
         self.database = database

@@ -30,7 +30,11 @@ class Player:
 
 
 class Battle:
-    """Класс битвы"""
+    """
+    Класс - битва.
+    Содержит всю основную логику битвы,
+    очередность ходов, действия игроков и т.д.
+    """
 
     def __init__(self, database: any, dungeon: str):
         # super().__init__()
@@ -196,14 +200,14 @@ class Battle:
         if self.current_unit in self.player1.units:
             self.current_player = self.player1
             if self.current_unit.attack_type not in [
-                'Лечение', 'Лечение/Исцеление', 'Лечение/Воскрешение']:
+                    'Лечение', 'Лечение/Исцеление', 'Лечение/Воскрешение']:
                 self.target_player = self.player2
             else:
                 self.target_player = self.player1
         else:
             self.current_player = self.player2
             if self.current_unit.attack_type not in [
-                'Лечение', 'Лечение/Исцеление', 'Лечение/Воскрешение']:
+                    'Лечение', 'Лечение/Исцеление', 'Лечение/Воскрешение']:
                 self.target_player = self.player1
             else:
                 self.target_player = self.player2
@@ -416,11 +420,11 @@ class Battle:
         """Определение ближайшего слота для текущего юнита"""
         result = [None]
         vanguard_alies_died = 2 not in alies_slots and \
-                              4 not in alies_slots and \
-                              6 not in alies_slots
+            4 not in alies_slots and \
+            6 not in alies_slots
         vanguard_enemies_died = 2 not in target_slots and \
-                                4 not in target_slots and \
-                                6 not in target_slots
+            4 not in target_slots and \
+            6 not in target_slots
 
         targets_dict = {
             1: self._closest_side_slot(
