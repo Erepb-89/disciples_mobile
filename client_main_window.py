@@ -487,7 +487,7 @@ class ClientMainWindow(QMainWindow):
     def show_fight_window(self) -> None:
         """Метод создающий окно Битвы."""
         global FIGHT_WINDOW
-        FIGHT_WINDOW = FightWindow(self.database, 'darkest')
+        FIGHT_WINDOW = FightWindow(self.database, 'darkest', self)
         FIGHT_WINDOW.show()
 
     def show_campaign_window(self) -> None:
@@ -501,14 +501,14 @@ class ClientMainWindow(QMainWindow):
         self.database.transfer_units()
 
         global FIGHT_WINDOW
-        FIGHT_WINDOW = FightWindow(self.database, 'versus')
+        FIGHT_WINDOW = FightWindow(self.database, 'versus', self)
         FIGHT_WINDOW.show()
 
     def show_capital(self) -> None:
         """Метод создающий окно Столицы игрока."""
         if self.database.current_player is not None:
             global CAPITAL_WINDOW
-            CAPITAL_WINDOW = CapitalWindow(self.database)
+            CAPITAL_WINDOW = CapitalWindow(self.database, self)
             CAPITAL_WINDOW.show()
         else:
             print('Сначала выберите игрока')

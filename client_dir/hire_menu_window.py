@@ -4,7 +4,7 @@ import os.path
 
 from PyQt5 import QtCore
 from PyQt5.QtGui import QPixmap
-from PyQt5.QtWidgets import QMainWindow, QHBoxLayout
+from PyQt5.QtWidgets import QMainWindow, QHBoxLayout, QMessageBox
 
 from client_dir.hire_menu_form import Ui_HireMenu
 from client_dir.settings import HIRE_SCREEN
@@ -22,10 +22,11 @@ class HireMenuWindow(QMainWindow):
     конвертированного файла hire_menu_form.py
     """
 
-    def __init__(self, database: any, slot: int):
+    def __init__(self, database: any, slot: int, instance):
         super().__init__()
         # основные переменные
         self.database = database
+        self.capital_army = instance
         self.faction = self.database.current_game_faction
         self.factory = AbstractFactory.create_factory(
             self.faction)
@@ -36,6 +37,7 @@ class HireMenuWindow(QMainWindow):
         self.special = self.factory.create_special()
         self.highlighted_unit = None
         self.unit_slot = slot
+        self.player_gold = 0
 
         self.InitUI()
 
@@ -85,6 +87,11 @@ class HireMenuWindow(QMainWindow):
         show_gif(self.support, self.ui.gifLabel4)
         show_gif(self.special, self.ui.gifLabel5)
 
+        self.player_gold = self.database.get_gold(
+            self.database.current_user, self.faction)
+        self.ui.gold.setText(str(self.player_gold))
+        self.ui.pushButtonBuy.setEnabled(False)
+
         self.show()
 
     def unlight_all_units(self) -> None:
@@ -100,30 +107,35 @@ class HireMenuWindow(QMainWindow):
         self.unlight_all_units()
         self.ui.labelSelected1.setLineWidth(2)
         self.highlighted_unit = self.fighter
+        self.ui.pushButtonBuy.setEnabled(True)
 
     def highlight_selected_unit2(self) -> None:
         """Подсветка выбранного юнита"""
         self.unlight_all_units()
         self.ui.labelSelected2.setLineWidth(2)
         self.highlighted_unit = self.archer
+        self.ui.pushButtonBuy.setEnabled(True)
 
     def highlight_selected_unit3(self) -> None:
         """Подсветка выбранного юнита"""
         self.unlight_all_units()
         self.ui.labelSelected3.setLineWidth(2)
         self.highlighted_unit = self.mage
+        self.ui.pushButtonBuy.setEnabled(True)
 
     def highlight_selected_unit4(self) -> None:
         """Подсветка выбранного юнита"""
         self.unlight_all_units()
         self.ui.labelSelected4.setLineWidth(2)
         self.highlighted_unit = self.support
+        self.ui.pushButtonBuy.setEnabled(True)
 
     def highlight_selected_unit5(self) -> None:
         """Подсветка выбранного юнита"""
         self.unlight_all_units()
         self.ui.labelSelected5.setLineWidth(2)
         self.highlighted_unit = self.special
+        self.ui.pushButtonBuy.setEnabled(True)
 
     def update_bg(self) -> None:
         """Обновление бэкграунда, заполнение картинкой найма"""
@@ -145,6 +157,8 @@ class HireMenuWindow(QMainWindow):
         """Кнопка найма"""
         print(f'Вы купили воина: {self.highlighted_unit.name}')
         self.hire_unit_action(self.unit_slot)
+        self.capital_army.reset()
+        self.capital_army.capital.main.reset()
         self.close()
 
     def unit_list_update(self) -> None:
@@ -169,7 +183,26 @@ class HireMenuWindow(QMainWindow):
 
     def hire_unit_action(self, slot: int) -> None:
         """Метод обработчик нажатия кнопки 'Нанять' для игрока"""
-        self.highlighted_unit.add_to_band(int(slot))
+        if self.player_gold < int(self.highlighted_unit.cost):
+
+            msg = QMessageBox()
+            msg.setWindowTitle("Предупреждение")
+            msg.setText("Недостаточно золота")
+            msg.setIcon(QMessageBox.Warning)
+
+            msg.exec_()
+        else:
+        # if self.player_gold >= int(self.highlighted_unit.cost):
+            changed_gold = self.player_gold - int(self.highlighted_unit.cost)
+
+            # обновление золота в базе
+            self.database.update_gold(
+                self.database.current_user,
+                self.faction,
+                changed_gold)
+            self.highlighted_unit.add_to_band(int(slot))
+
+            self.capital_army.ui.gold.setText(str(changed_gold))
 
     def hire_slot_detailed(self, unit_type: any) -> None:
         """Метод создающий окно юнита."""

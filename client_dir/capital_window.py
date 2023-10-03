@@ -19,10 +19,11 @@ class CapitalWindow(QMainWindow):
     конвертированного файла choose_faction_form.py
     """
 
-    def __init__(self, database):
+    def __init__(self, database: any, main: any):
         super().__init__()
         # основные переменные
         self.database = database
+        self.main = main
         self.faction = self.database.current_game_faction
 
         self.InitUI()
@@ -61,7 +62,7 @@ class CapitalWindow(QMainWindow):
     def show_army(self):
         """Метод создающий окно армии."""
         global CAPITAL_ARMY_WINDOW
-        CAPITAL_ARMY_WINDOW = CapitalArmyWindow(self.database)
+        CAPITAL_ARMY_WINDOW = CapitalArmyWindow(self.database, self)
         CAPITAL_ARMY_WINDOW.show()
 
     def show_building(self):

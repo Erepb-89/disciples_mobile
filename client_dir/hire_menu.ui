@@ -857,6 +857,27 @@
      <bool>true</bool>
     </property>
    </widget>
+   <widget class="QLabel" name="gold">
+    <property name="geometry">
+     <rect>
+      <x>390</x>
+      <y>780</y>
+      <width>71</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Arial</family>
+      <pointsize>11</pointsize>
+      <weight>50</weight>
+      <bold>false</bold>
+     </font>
+    </property>
+    <property name="text">
+     <string>gold</string>
+    </property>
+   </widget>
    <zorder>hireMenuBG</zorder>
    <zorder>gifLabel5</zorder>
    <zorder>gifLabel4</zorder>
@@ -895,6 +916,7 @@
    <zorder>pushButtonSlot1</zorder>
    <zorder>pushButtonSlot2</zorder>
    <zorder>pushButtonBuy</zorder>
+   <zorder>gold</zorder>
   </widget>
  </widget>
  <resources/>

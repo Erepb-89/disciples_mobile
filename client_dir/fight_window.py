@@ -53,10 +53,11 @@ class FightWindow(QMainWindow):
     конвертированного файла fight_menu_form.py
     """
 
-    def __init__(self, database: any, dungeon: str):
+    def __init__(self, database: any, dungeon: str, instance):
         super().__init__()
         # основные переменные
         self.database = database
+        self.instance = instance
         self.new_battle = Battle(self.database, dungeon)
         self.dungeon = dungeon
         self.player_side = FRONT
@@ -714,6 +715,8 @@ class FightWindow(QMainWindow):
             self.worker = Thread(False)
             self.worker.dataThread.connect(self.unit_gifs_update)
             self.worker.start()
+
+            self.instance.reset()
 
         self.update_log()
         self.new_battle.autofight = False
