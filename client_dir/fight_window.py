@@ -47,16 +47,20 @@ class Thread(QThread):
 
 class FightWindow(QMainWindow):
     """
-    Класс - окно выбора фракции.
-    Содержит всю основную логику работы клиентского модуля.
+    Класс - окно битвы.
+    Содержит всю основную логику отображения боевой анимации.
     Конфигурация окна создана в QTDesigner и загружается из
-    конвертированного файла fight_menu_form.py
+    конвертированного файла fight_form.py
     """
 
-    def __init__(self, database: any, dungeon: str):
+    def __init__(self,
+                 database: any,
+                 dungeon: str,
+                 instance: any):
         super().__init__()
         # основные переменные
         self.database = database
+        self.instance = instance
         self.new_battle = Battle(self.database, dungeon)
         self.dungeon = dungeon
         self.player_side = FRONT
@@ -714,6 +718,11 @@ class FightWindow(QMainWindow):
             self.worker = Thread(False)
             self.worker.dataThread.connect(self.unit_gifs_update)
             self.worker.start()
+
+            self.instance.reset()
+            if self.instance.name == 'CampaignWindow':
+                self.instance.main.player_list_update()
+                self.instance.main.player_slots_update()
 
         self.update_log()
         self.new_battle.autofight = False

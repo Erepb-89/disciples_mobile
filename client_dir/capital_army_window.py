@@ -16,22 +16,23 @@ from units_dir.units_factory import AbstractFactory
 
 class CapitalArmyWindow(QMainWindow):
     """
-    Класс - окно выбора фракции.
-    Содержит всю основную логику работы клиентского модуля.
+    Класс - окно армии столицы.
     Конфигурация окна создана в QTDesigner и загружается из
     конвертированного файла capital_army_form.py
     """
 
-    def __init__(self, database: any):
+    def __init__(self, database: any, instance: any):
         super().__init__()
         # основные переменные
         self.database = database
+        self.capital = instance
         self.faction = self.database.current_game_faction
         self.factory = AbstractFactory.create_factory(
             self.faction)
         self.support = self.factory.create_support()
         self.special = self.factory.create_special()
         self.setAttribute(QtCore.Qt.WA_DeleteOnClose)
+        self.player_gold = 0
 
         self.InitUI()
 
@@ -74,6 +75,11 @@ class CapitalArmyWindow(QMainWindow):
         }
 
         self._update_all_unit_health()
+
+        self.player_gold = self.database.get_gold(
+            self.database.current_user, self.faction)
+        self.ui.gold.setText(str(self.player_gold))
+
         self.show()
 
     def keyPressEvent(self, event) -> None:
@@ -174,6 +180,12 @@ class CapitalArmyWindow(QMainWindow):
 
         self.ui.listPlayerUnits.setModel(self.player_units_model)
 
+    def reset(self) -> None:
+        """Обновить"""
+        self._update_all_unit_health()
+        self.player_list_update()
+        self.player_slots_update()
+
     def units_list_update(self) -> None:
         """Метод обновляющий список юнитов."""
         all_units = self.database.show_all_units()
@@ -191,6 +203,8 @@ class CapitalArmyWindow(QMainWindow):
             selected_slot = self.ui.listPlayerSlots.currentIndex().data()
             self.database.delete_player_unit(int(selected_slot))
             self.player_list_update()
+            self._update_all_unit_health()
+            self.capital.main.reset()
         except TypeError:
             print('Выберите слот, который хотите освободить')
 
@@ -198,9 +212,8 @@ class CapitalArmyWindow(QMainWindow):
         """Метод показывающий доступных для покупки
         юнитов данной фракции."""
         global HIRE_WINDOW
-        HIRE_WINDOW = HireMenuWindow(self.database, slot)
+        HIRE_WINDOW = HireMenuWindow(self.database, slot, self)
         HIRE_WINDOW.show()
-        self.close()
 
         print('Доступные для покупки юниты данной фракции')
 

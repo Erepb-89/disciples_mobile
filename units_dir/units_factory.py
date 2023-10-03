@@ -1109,7 +1109,8 @@ class Unit:
                              target: any,
                              attack_successful: bool,
                              immune_activated: bool,
-                             ward_activated: bool) -> None:
+                             ward_activated: bool,
+                             attack_source: str) -> None:
         """
         Проверка успешности атаки. Проверка на иммуны, варды.
         Расчет урона в случае успешной атаки.
@@ -1150,11 +1151,11 @@ class Unit:
 
         elif immune_activated:
             logging(
-                f"{target.name} имеет иммунитет к {self.attack_source} \n")
+                f"{target.name} имеет иммунитет к {attack_source} \n")
 
         elif ward_activated:
             logging(
-                f"{target.name} имеет защиту от {self.attack_source} \n")
+                f"{target.name} имеет защиту от {attack_source} \n")
 
         elif not attack_successful:
             logging(f"{self.name} промахивается по {target.name}\n")
@@ -1176,26 +1177,34 @@ class Unit:
         except IndexError:
             accuracy = int(self.attack_chance) / 100
 
+        # источник атаки
+        try:
+            attack_source = self.attack_source.split('/')[0]
+            # Добавить урон ядом / ожогом и т.п.
+
+        except IndexError:
+            attack_source = self.attack_source
+
         # иммунитеты и защиты
         target_immunes = target.immune.split(', ')
         target_wards = target.ward.split(', ')
 
         # у цели нет иммунитета и защиты от источника атаки
-        if self.attack_source not in target_immunes \
-                and self.attack_source not in target_wards:
+        if attack_source not in target_immunes \
+                and attack_source not in target_wards:
 
             # атака удачна или неудачна / промах
             attack_successful = bool(random.random() <= accuracy)
 
         # у цели есть иммунитет от источника атаки
-        elif self.attack_source in target_immunes:
+        elif attack_source in target_immunes:
             # иммунитет остается всегда
             immune_activated = True
 
         # у цели есть защита от источника атаки
-        elif self.attack_source in target_wards:
+        elif attack_source in target_wards:
             # -1 защита из списка
-            target_wards.remove(self.attack_source)
+            target_wards.remove(attack_source)
             target.ward = ''
 
             for ward in target_wards:
@@ -1210,7 +1219,8 @@ class Unit:
         self.is_attack_successful(target,
                                   attack_successful,
                                   immune_activated,
-                                  ward_activated)
+                                  ward_activated,
+                                  attack_source)
 
         return attack_successful
 
