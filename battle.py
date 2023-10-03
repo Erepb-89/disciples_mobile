@@ -19,6 +19,15 @@ class Player:
         self.units = []
         self.slots = []
 
+    def __repr__(self):
+        return (f'{self.__class__.__name__}('
+                f'{self.name!r},'
+                f' units: {self.units!r},'
+                f' slots: {self.slots!r})')
+
+    def __str__(self):
+        return f'Игрок: {self.name}'
+
 
 class Battle:
     """Класс битвы"""
@@ -27,7 +36,7 @@ class Battle:
         # super().__init__()
         # основные переменные
         self.database = database
-        # self.autofight = False
+        self.autofight = False
         self.units_deque = deque()
         self.waiting_units = []
         self.target_slots = []
@@ -65,7 +74,7 @@ class Battle:
     def add_player_unit(self,
                         slot: int,
                         player: Player,
-                        database: any):
+                        database: any) -> None:
         """
         Добавление юнита игрока в текущую битву.
         """
@@ -187,21 +196,21 @@ class Battle:
         if self.current_unit in self.player1.units:
             self.current_player = self.player1
             if self.current_unit.attack_type not in [
-                    'Лечение', 'Лечение/Исцеление', 'Лечение/Воскрешение']:
+                'Лечение', 'Лечение/Исцеление', 'Лечение/Воскрешение']:
                 self.target_player = self.player2
             else:
                 self.target_player = self.player1
         else:
             self.current_player = self.player2
             if self.current_unit.attack_type not in [
-                    'Лечение', 'Лечение/Исцеление', 'Лечение/Воскрешение']:
+                'Лечение', 'Лечение/Исцеление', 'Лечение/Воскрешение']:
                 self.target_player = self.player1
             else:
                 self.target_player = self.player2
         line = f'Ходит: {self.current_unit.name}\n'
         logging(line)
 
-        self.target_slots = self.auto_choose_target(self.current_unit)
+        self.target_slots = self._auto_choose_targets(self.current_unit)
 
     def _get_battle_unit_by_id(self, _id: int) -> Optional[Unit]:
         """Метод возвращает юнита из deque по id"""
@@ -361,10 +370,10 @@ class Battle:
         self.database.autoregen(6)
 
     @staticmethod
-    def closest_side_slot(tg_slots: List[int],
-                          slot_a: int,
-                          slot_b: int,
-                          slot_c: int) -> Optional[List[int]]:
+    def _closest_side_slot(tg_slots: List[int],
+                           slot_a: int,
+                           slot_b: int,
+                           slot_c: int) -> Optional[List[int]]:
         """Вычисление рандомной цели для крайних слотов"""
         if slot_a in tg_slots and slot_b in tg_slots:
             # return random.choice([slot_a, slot_b])
@@ -379,10 +388,10 @@ class Battle:
         return [None]
 
     @staticmethod
-    def closest_middle_slot(tg_slots: List[int],
-                            slot_a: int,
-                            slot_b: int,
-                            slot_c: int) -> Optional[List[int]]:
+    def _closest_middle_slot(tg_slots: List[int],
+                             slot_a: int,
+                             slot_b: int,
+                             slot_c: int) -> Optional[List[int]]:
         """Вычисление рандомной цели для среднего слота"""
         if slot_a in tg_slots and slot_b in tg_slots and slot_c in tg_slots:
             return [slot_a, slot_b, slot_c]
@@ -400,36 +409,36 @@ class Battle:
             return [slot_c]
         return [None]
 
-    def define_closest_slots(self,
-                             unit: Unit,
-                             target_slots: List[int],
-                             alies_slots: List[int]) -> Optional[List[int]]:
+    def _define_closest_slots(self,
+                              unit: Unit,
+                              target_slots: List[int],
+                              alies_slots: List[int]) -> Optional[List[int]]:
         """Определение ближайшего слота для текущего юнита"""
         result = [None]
         vanguard_alies_died = 2 not in alies_slots and \
-            4 not in alies_slots and \
-            6 not in alies_slots
+                              4 not in alies_slots and \
+                              6 not in alies_slots
         vanguard_enemies_died = 2 not in target_slots and \
-            4 not in target_slots and \
-            6 not in target_slots
+                                4 not in target_slots and \
+                                6 not in target_slots
 
         targets_dict = {
-            1: self.closest_side_slot(
+            1: self._closest_side_slot(
                 target_slots,
                 1, 3, 5),
-            2: self.closest_side_slot(
+            2: self._closest_side_slot(
                 target_slots,
                 2, 4, 6),
-            3: self.closest_middle_slot(
+            3: self._closest_middle_slot(
                 target_slots,
                 3, 1, 5),
-            4: self.closest_middle_slot(
+            4: self._closest_middle_slot(
                 target_slots,
                 4, 2, 6),
-            5: self.closest_side_slot(
+            5: self._closest_side_slot(
                 target_slots,
                 5, 3, 1),
-            6: self.closest_side_slot(
+            6: self._closest_side_slot(
                 target_slots,
                 6, 4, 2),
         }
@@ -454,14 +463,14 @@ class Battle:
 
         return result
 
-    def choose_target(self,
-                      unit: Unit,
-                      attacker_slots: List[int],
-                      target_slots: List[int]) -> Optional[List[int]]:
-        """Определение следующей цели для атаки"""
+    def _choose_targets(self,
+                        unit: Unit,
+                        attacker_slots: List[int],
+                        target_slots: List[int]) -> Optional[List[int]]:
+        """Определение следующих целей для атаки"""
         # для контактных юнитов
         if unit.attack_radius == CLOSEST_UNIT:
-            targets = self.define_closest_slots(
+            targets = self._define_closest_slots(
                 unit, target_slots, attacker_slots)
             if targets != [None]:
                 return targets
@@ -472,16 +481,16 @@ class Battle:
 
         return [None]
 
-    def auto_choose_target(self, unit: Unit):
-        """Авто определение следующей цели для атаки"""
+    def _auto_choose_targets(self, unit: Unit) -> Optional[List[int]]:
+        """Авто определение следующих целей для атаки"""
         self.get_player_slots(self.player1)
         self.get_player_slots(self.player2)
 
-        return self.choose_target(
+        return self._choose_targets(
             unit, self.current_player.slots, self.target_player.slots)
 
     @staticmethod
-    def get_player_slots(player: Player):
+    def get_player_slots(player: Player) -> None:
         """Получение слотов с живыми юнитами игрока"""
         player.slots = []
         for unit in player.units:

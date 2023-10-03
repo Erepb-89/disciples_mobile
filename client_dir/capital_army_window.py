@@ -31,6 +31,7 @@ class CapitalArmyWindow(QMainWindow):
             self.faction)
         self.support = self.factory.create_support()
         self.special = self.factory.create_special()
+        self.setAttribute(QtCore.Qt.WA_DeleteOnClose)
 
         self.InitUI()
 
@@ -109,7 +110,7 @@ class CapitalArmyWindow(QMainWindow):
         self.hbox.addWidget(button)
         self.setLayout(self.hbox)
 
-    def slot_update(self, unit: namedtuple, slot: QtWidgets.QLabel):
+    def slot_update(self, unit: namedtuple, slot: QtWidgets.QLabel) -> None:
         """Установка gif'ки в иконку юнита"""
         self._set_size_by_unit(unit, slot)
 

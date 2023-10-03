@@ -716,7 +716,6 @@ class ServerStorage:
             self.PlayerUnits.slot
         ).filter_by(slot=slot)
         # Возвращаем кортеж
-        print(query.first())
         return query.first()
 
     def show_player_units(self) -> List[namedtuple]:
@@ -1069,7 +1068,6 @@ class ServerStorage:
             print('Данный слот занят')
         else:
             unit_row = self.get_unit_by_name(unit)
-            print(type(unit_row))
             # print(unit_row._asdict())
             if self.is_double(unit_row.name) and slot % 2 == 1:
                 slot += 1
@@ -1197,7 +1195,7 @@ class ServerStorage:
         """
         Метод изменения юнита (здоровье).
         Изменяет запись в таблице player_units.
-        Пока сделано автолечение после каждой битвы
+        Пока сделано автолечение после каждой битвы.
         """
 
         changes = update(
@@ -1381,48 +1379,6 @@ if __name__ == '__main__':
     #
     # main_db.create_buildings('Erepb-89', 'Empire', 5000, building_levels)
 
-    # базовая постройка зданий 0 уровня Mountain Clans
-    # building_levels = [
-    #     FACTIONS['Mountain Clans']['fighter'][1].bname,
-    #     FACTIONS['Mountain Clans']['mage'][1].bname,
-    #     FACTIONS['Mountain Clans']['archer'][1].bname,
-    #     FACTIONS['Mountain Clans']['support'][1].bname,
-    #     FACTIONS['Mountain Clans']['special'][1].bname,
-    #     0,
-    #     0,
-    #     0
-    # ]
-
-    # main_db.create_buildings('Erepb-89', 'Mountain Clans', 5000, building_levels)
-
-    # print(main_db.get_buildings('Erepb-89', 'Empire'))
-
-    # building_levels_2 = [
-    #     FACTIONS['Empire']['fighter'][2].bname,
-    #     FACTIONS['Empire']['mage'][1].bname,
-    #     FACTIONS['Empire']['archer'][1].bname,
-    #     FACTIONS['Empire']['support'][1].bname,
-    #     FACTIONS['Empire']['special'][1].bname,
-    #     0,
-    #     0,
-    #     0
-    # ]
-
     all_buildings = main_db.get_buildings('Erepb-89', 'Undead Hordes')
     print(all_buildings._asdict())
 
-    #
-    # changed_buildings = list(all_buildings)
-    # print(changed_buildings)
-    # changed_buildings[1] = factions.get('Empire')['fighter'][3].bname
-    #
-    # player_gold = main_db.get_gold('Erepb-89', 'Empire')
-    # changed_gold = player_gold - factions.get('Empire')['fighter'][3].cost
-
-    # main_db.update_buildings('Erepb-89', 'Empire', changed_buildings)
-    # main_db.update_gold('Erepb-89', 'Empire', changed_gold)
-
-    # fighter_branch = main_db.get_fighter_branch('Erepb-89', 'Empire')
-
-    # for New Game
-    # main_db.clear_buildings('Erepb-89', 'Empire')

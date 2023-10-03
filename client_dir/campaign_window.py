@@ -1,13 +1,15 @@
+import os
 from typing import Callable, Dict
 
-from PyQt5 import QtWidgets
+from PyQt5 import QtWidgets, QtCore
+from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QMainWindow, QHBoxLayout
 
 from client_dir.campaign_form import Ui_CampaignWindow
 from client_dir.fight_window import FightWindow
 from client_dir.army_dialog import EnemyArmyDialog
-from client_dir.settings import MISSION_UNITS
-from client_dir.ui_functions import slot_update
+from client_dir.settings import MISSION_UNITS, COMMON
+from client_dir.ui_functions import slot_update, button_update
 from units_dir.units_factory import Unit
 
 
@@ -53,14 +55,23 @@ class CampaignWindow(QMainWindow):
         self.ui.pushButtonSlot_6.clicked.connect(
             self.highlight_selected_6)
 
+        self.set_campaign_image()
         self.append_campaign_buttons()
         self.append_campaign_icons()
         self.show_red_frame(self.ui.pushButtonSlot_1)
         self.dungeon = f'{self.current_faction}_{1}'
 
         self.mission_list_update()
+        self.mission_buttons_update()
 
         self.show()
+
+    def set_campaign_image(self) -> None:
+        """Установить картинку кампании"""
+        self.ui.campaignBG.setPixmap(QPixmap(
+            os.path.join(COMMON, 'breathing.png')))
+        self.ui.campaignBG.setGeometry(QtCore.QRect(0, 0, 4, 4))
+        # self.ui.campaignBG.setGeometry(QtCore.QRect(0, 0, 790, 690))
 
     def show_fight_window(self) -> None:
         """Метод создающий окно Битвы."""
@@ -154,8 +165,8 @@ class CampaignWindow(QMainWindow):
         self.dungeon = f'{self.current_faction}_{number}'
 
     def highlight_selected_4(self) -> None:
-        number = 4
         """Подсветка выбранной миссии"""
+        number = 4
         self.unlight_all()
         self.show_red_frame(self.ui.pushButtonSlot_4)
 
@@ -189,6 +200,16 @@ class CampaignWindow(QMainWindow):
             slot_update(
                 unit,
                 icon_slot)
+
+    def mission_buttons_update(self) -> None:
+        """Обновление кнопок миссий кампании"""
+        for num, button in self.campaign_buttons_dict.items():
+            unit = self.database.get_unit_by_name(
+                MISSION_UNITS[self.current_faction][num])
+
+            button_update(
+                unit,
+                button)
 
     def back(self) -> None:
         """Кнопка возврата"""

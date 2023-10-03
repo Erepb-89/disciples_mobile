@@ -38,34 +38,6 @@
     <string>slot_4</string>
    </property>
   </widget>
-  <widget class="QPushButton" name="pushButtonEnSlot5">
-   <property name="geometry">
-    <rect>
-     <x>170</x>
-     <y>320</y>
-     <width>104</width>
-     <height>127</height>
-    </rect>
-   </property>
-   <property name="minimumSize">
-    <size>
-     <width>104</width>
-     <height>127</height>
-    </size>
-   </property>
-   <property name="maximumSize">
-    <size>
-     <width>224</width>
-     <height>127</height>
-    </size>
-   </property>
-   <property name="text">
-    <string/>
-   </property>
-   <property name="flat">
-    <bool>true</bool>
-   </property>
-  </widget>
   <widget class="QLabel" name="EnemySlot2">
    <property name="geometry">
     <rect>
@@ -120,22 +92,6 @@
    </property>
    <property name="text">
     <string>slot_1</string>
-   </property>
-  </widget>
-  <widget class="QPushButton" name="pushButtonEnSlot3">
-   <property name="geometry">
-    <rect>
-     <x>170</x>
-     <y>180</y>
-     <width>104</width>
-     <height>127</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string/>
-   </property>
-   <property name="flat">
-    <bool>true</bool>
    </property>
   </widget>
   <widget class="QLabel" name="EnemySlot5">
@@ -225,22 +181,6 @@
     <string>slot_3</string>
    </property>
   </widget>
-  <widget class="QPushButton" name="pushButtonEnSlot6">
-   <property name="geometry">
-    <rect>
-     <x>50</x>
-     <y>320</y>
-     <width>104</width>
-     <height>127</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string/>
-   </property>
-   <property name="flat">
-    <bool>true</bool>
-   </property>
-  </widget>
   <widget class="QLabel" name="armyBG">
    <property name="geometry">
     <rect>
@@ -261,15 +201,12 @@
    </property>
   </widget>
   <zorder>armyBG</zorder>
-  <zorder>EnemySlot4</zorder>
-  <zorder>pushButtonEnSlot5</zorder>
-  <zorder>EnemySlot2</zorder>
   <zorder>EnemySlot1</zorder>
-  <zorder>pushButtonEnSlot3</zorder>
   <zorder>EnemySlot5</zorder>
-  <zorder>EnemySlot6</zorder>
   <zorder>EnemySlot3</zorder>
-  <zorder>pushButtonEnSlot6</zorder>
+  <zorder>EnemySlot2</zorder>
+  <zorder>EnemySlot4</zorder>
+  <zorder>EnemySlot6</zorder>
  </widget>
  <resources/>
  <connections/>

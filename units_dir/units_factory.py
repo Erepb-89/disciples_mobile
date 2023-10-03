@@ -925,7 +925,8 @@ class Unit:
     def defence(self) -> None:
         """Пропуск хода и защита в битве"""
         # self.armor = round(self.armor / 2 + 50)
-        self.armor = round(main_db.get_unit_by_name(self.name).armor / 2 + 50)
+        self.armor = round(
+            main_db.get_unit_by_name(self.name).armor / 2 + 50)
 
         line = f"{self.name} защищается\n"
         logging(line)
@@ -978,8 +979,7 @@ class Unit:
 
             next_damage = int(damage * 1.10)
             next_damage = f'{min(next_damage, 300)}/{additional}'
-        except AttributeError as err:  # IndexError
-            print(err)
+        except AttributeError:  # IndexError
             next_damage = int(self.attack_dmg * 1.10)
             next_damage = min(next_damage, 300)
 
@@ -1084,7 +1084,8 @@ class Unit:
                     self.slot, self.exp - 1, main_db.PlayerUnits)
 
             elif next_unit != '':
-                # Меняем юнит на следующую стадию согласно постройкам в столице
+                # Меняем юнит на следующую стадию согласно постройкам
+                # в столице
                 main_db.replace_unit(self.slot, next_unit)
                 line = f"{self.name} повысил уровень до {next_unit}\n"
                 logging(line)
@@ -1119,8 +1120,9 @@ class Unit:
         if attack_successful and not immune_activated and not ward_activated:
             # Вычисление урона с учетом брони
             try:
-                damage = int((int(self.attack_dmg.split('/')[0]) +
-                              random.randrange(6)) * (1 - target.armor * 0.01))
+                damage = int(
+                    (int(self.attack_dmg.split('/')[0]) +
+                     random.randrange(6)) * (1 - target.armor * 0.01))
             except AttributeError:
                 damage = int((self.attack_dmg + random.randrange(6)) *
                              (1 - target.armor * 0.01))
@@ -1142,15 +1144,17 @@ class Unit:
                 # main_db.update_unit_hp(
                 #     self.slot, self.curr_health, main_db.attacker_db)
 
-            line = f"{self.name} наносит урон {damage} воину {target.name}. " \
-                   f"Осталось ХП: {target.curr_health}\n"
+            line = f"{self.name} наносит урон {damage} воину " \
+                   f"{target.name}. Осталось ХП: {target.curr_health}\n"
             logging(line)
 
         elif immune_activated:
-            logging(f"{target.name} имеет иммунитет к {self.attack_source} \n")
+            logging(
+                f"{target.name} имеет иммунитет к {self.attack_source} \n")
 
         elif ward_activated:
-            logging(f"{target.name} имеет защиту от {self.attack_source} \n")
+            logging(
+                f"{target.name} имеет защиту от {self.attack_source} \n")
 
         elif not attack_successful:
             logging(f"{self.name} промахивается по {target.name}\n")
