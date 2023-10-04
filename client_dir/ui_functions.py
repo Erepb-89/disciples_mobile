@@ -164,3 +164,17 @@ def show_gif_side(unit: any,
 
     gif_slot.setMovie(gif)
     gif.start()
+
+
+def set_beige_colour(button: QtWidgets.QPushButton):
+    """Подкраска элементов в бежевый цвет"""
+    button.setStyleSheet("background-color: rgb(181, 172, 155)")
+
+
+def set_borders(ui_obj: QtWidgets.QPushButton):
+    """Стиль и цвет рамок (коричневый с бежевым)"""
+    ui_obj.setStyleSheet("border: 3px solid;"
+                         "border-top-color: rgb(65, 3, 2);"
+                         "border-left-color: rgb(65, 3, 2);"
+                         "border-right-color: rgb(181, 172, 155);"
+                         "border-bottom-color: rgb(181, 172, 155)")

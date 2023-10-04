@@ -12,14 +12,14 @@ from client_dir.ui_functions import get_image
 class ChooseRaceWindow(QMainWindow):
     """
     Класс - окно выбора фракции.
-    Содержит всю основную логику работы клиентского модуля.
     Конфигурация окна создана в QTDesigner и загружается из
     конвертированного файла choose_faction_form.py
     """
 
-    def __init__(self, database):
+    def __init__(self, database: any, instance: any):
         super().__init__()
         # основные переменные
+        self.main = instance
         self.database = database
         self.faction_number = 1
         self.faction = EM
@@ -77,7 +77,8 @@ class ChooseRaceWindow(QMainWindow):
         self.database.set_faction(
             self.database.current_player.id, self.faction)
         self.database.build_default(self.faction)
-        # self.show_campaign_window()
+        self.main.reset()
+
         self.close()
 
     def show_campaign_window(self):

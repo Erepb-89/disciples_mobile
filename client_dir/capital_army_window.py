@@ -9,7 +9,8 @@ from PyQt5.QtWidgets import QMainWindow, QHBoxLayout
 from client_dir.capital_army_form import Ui_CapitalArmyWindow
 from client_dir.hire_menu_window import HireMenuWindow
 from client_dir.settings import TOWN_ARMY, SCREEN_RECT
-from client_dir.ui_functions import get_unit_image, update_unit_health, get_image
+from client_dir.ui_functions import get_unit_image, update_unit_health, \
+    get_image, set_beige_colour
 from client_dir.unit_dialog import UnitDialog
 from units_dir.units_factory import AbstractFactory
 
@@ -43,18 +44,32 @@ class CapitalArmyWindow(QMainWindow):
 
         self.hbox = QHBoxLayout(self)
 
-        self.ui.pushButtonSlot1.clicked.connect(
-            self._slot1_detailed)
-        self.ui.pushButtonSlot2.clicked.connect(
-            self._slot2_detailed)
-        self.ui.pushButtonSlot3.clicked.connect(
-            self._slot3_detailed)
-        self.ui.pushButtonSlot4.clicked.connect(
-            self._slot4_detailed)
-        self.ui.pushButtonSlot5.clicked.connect(
-            self._slot5_detailed)
-        self.ui.pushButtonSlot6.clicked.connect(
-            self._slot6_detailed)
+        self.ui.pushButtonSlot1.clicked.connect(self._slot1_detailed)
+        self.ui.pushButtonSlot2.clicked.connect(self._slot2_detailed)
+        self.ui.pushButtonSlot3.clicked.connect(self._slot3_detailed)
+        self.ui.pushButtonSlot4.clicked.connect(self._slot4_detailed)
+        self.ui.pushButtonSlot5.clicked.connect(self._slot5_detailed)
+        self.ui.pushButtonSlot6.clicked.connect(self._slot6_detailed)
+
+        self.ui.swap12.clicked.connect(self.swap_unit_action_12)
+        self.ui.swap13.clicked.connect(self.swap_unit_action_13)
+        self.ui.swap24.clicked.connect(self.swap_unit_action_24)
+        self.ui.swap34.clicked.connect(self.swap_unit_action_34)
+        self.ui.swap35.clicked.connect(self.swap_unit_action_35)
+        self.ui.swap46.clicked.connect(self.swap_unit_action_46)
+        self.ui.swap56.clicked.connect(self.swap_unit_action_56)
+
+        # подкраска элементов
+        set_beige_colour(self.ui.swap12)
+        set_beige_colour(self.ui.swap13)
+        set_beige_colour(self.ui.swap24)
+        set_beige_colour(self.ui.swap34)
+        set_beige_colour(self.ui.swap35)
+        set_beige_colour(self.ui.swap46)
+        set_beige_colour(self.ui.swap56)
+
+        set_beige_colour(self.ui.listPlayerUnits)
+        set_beige_colour(self.ui.listPlayerSlots)
 
         self.ui.pushButtonDelete.clicked.connect(
             self.delete_unit_action)
@@ -265,6 +280,42 @@ class CapitalArmyWindow(QMainWindow):
         except AttributeError:
             ui_obj.setFixedWidth(105)
             ui_obj.setFixedHeight(127)
+
+    def swap_unit_action(self, slot1: int, slot2: int) -> None:
+        """Меняет слоты двух юнитов игрока"""
+        self.database.update_slot(
+            slot1,
+            slot2,
+            self.database.PlayerUnits)
+        self.player_list_update()
+
+    def swap_unit_action_12(self) -> None:
+        """Меняет местами юнитов игрока в слотах 1 и 2"""
+        self.swap_unit_action(1, 2)
+
+    def swap_unit_action_13(self) -> None:
+        """Меняет местами юнитов игрока в слотах 1 и 3"""
+        self.swap_unit_action(1, 3)
+
+    def swap_unit_action_24(self) -> None:
+        """Меняет местами юнитов игрока в слотах 2 и 4"""
+        self.swap_unit_action(2, 4)
+
+    def swap_unit_action_34(self) -> None:
+        """Меняет местами юнитов игрока в слотах 3 и 4"""
+        self.swap_unit_action(3, 4)
+
+    def swap_unit_action_35(self) -> None:
+        """Меняет местами юнитов игрока в слотах 3 и 5"""
+        self.swap_unit_action(3, 5)
+
+    def swap_unit_action_46(self) -> None:
+        """Меняет местами юнитов игрока в слотах 4 и 6"""
+        self.swap_unit_action(4, 6)
+
+    def swap_unit_action_56(self) -> None:
+        """Меняет местами юнитов игрока в слотах 5 и 6"""
+        self.swap_unit_action(5, 6)
 
     def slot_detailed(self, database: any, slot: int) -> None:
         """Метод создающий окно юнита игрока при нажатии на слот."""

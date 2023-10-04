@@ -52,6 +52,11 @@
       <height>133</height>
      </size>
     </property>
+    <property name="font">
+     <font>
+      <pointsize>1</pointsize>
+     </font>
+    </property>
     <property name="frameShape">
      <enum>QFrame::Panel</enum>
     </property>
@@ -397,29 +402,9 @@
     <property name="alignment">
      <set>Qt::AlignCenter</set>
     </property>
-   </widget>
-   <widget class="QSplitter" name="splitter">
-    <property name="geometry">
-     <rect>
-      <x>60</x>
-      <y>190</y>
-      <width>186</width>
-      <height>28</height>
-     </rect>
+    <property name="indent">
+     <number>-1</number>
     </property>
-    <property name="orientation">
-     <enum>Qt::Horizontal</enum>
-    </property>
-    <widget class="QPushButton" name="pushButtonHire">
-     <property name="text">
-      <string>Нанять</string>
-     </property>
-    </widget>
-    <widget class="QPushButton" name="pushButtonDelete">
-     <property name="text">
-      <string>Уволить</string>
-     </property>
-    </widget>
    </widget>
    <widget class="QPushButton" name="pushButtonChooseRace">
     <property name="geometry">
@@ -437,11 +422,18 @@
    <widget class="QLabel" name="currentFaction">
     <property name="geometry">
      <rect>
-      <x>130</x>
-      <y>10</y>
+      <x>115</x>
+      <y>7</y>
       <width>151</width>
       <height>16</height>
      </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>8</pointsize>
+      <weight>75</weight>
+      <bold>true</bold>
+     </font>
     </property>
     <property name="text">
      <string>currentFaction</string>
@@ -471,6 +463,9 @@
     <property name="scaledContents">
      <bool>true</bool>
     </property>
+    <property name="alignment">
+     <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+    </property>
    </widget>
    <widget class="QPushButton" name="swap12">
     <property name="geometry">
@@ -491,7 +486,7 @@
     </property>
     <property name="geometry">
      <rect>
-      <x>860</x>
+      <x>880</x>
       <y>0</y>
       <width>90</width>
       <height>28</height>
@@ -803,29 +798,6 @@
      <bool>true</bool>
     </property>
    </widget>
-   <widget class="QSplitter" name="splitter_2">
-    <property name="geometry">
-     <rect>
-      <x>900</x>
-      <y>190</y>
-      <width>186</width>
-      <height>28</height>
-     </rect>
-    </property>
-    <property name="orientation">
-     <enum>Qt::Horizontal</enum>
-    </property>
-    <widget class="QPushButton" name="pushButtonHireEn">
-     <property name="text">
-      <string>Нанять</string>
-     </property>
-    </widget>
-    <widget class="QPushButton" name="pushButtonDeleteEn">
-     <property name="text">
-      <string>Уволить</string>
-     </property>
-    </widget>
-   </widget>
    <widget class="QPushButton" name="pushButtonVersus">
     <property name="geometry">
      <rect>
@@ -891,6 +863,13 @@
       <height>16</height>
      </rect>
     </property>
+    <property name="font">
+     <font>
+      <pointsize>8</pointsize>
+      <weight>75</weight>
+      <bold>true</bold>
+     </font>
+    </property>
     <property name="text">
      <string>Имя</string>
     </property>
@@ -904,27 +883,15 @@
       <height>16</height>
      </rect>
     </property>
-    <property name="text">
-     <string>e-mail</string>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="copyUnit">
-    <property name="enabled">
-     <bool>false</bool>
-    </property>
-    <property name="geometry">
-     <rect>
-      <x>340</x>
-      <y>690</y>
-      <width>71</width>
-      <height>28</height>
-     </rect>
+    <property name="font">
+     <font>
+      <pointsize>8</pointsize>
+      <weight>75</weight>
+      <bold>true</bold>
+     </font>
     </property>
     <property name="text">
-     <string>Copy</string>
-    </property>
-    <property name="flat">
-     <bool>false</bool>
+     <string>E-mail</string>
     </property>
    </widget>
    <widget class="QPushButton" name="swap56">
@@ -1099,7 +1066,7 @@
    <widget class="QPushButton" name="pushButtonFight">
     <property name="geometry">
      <rect>
-      <x>740</x>
+      <x>727</x>
       <y>0</y>
       <width>90</width>
       <height>28</height>
@@ -1403,27 +1370,65 @@
      <set>Qt::AlignCenter</set>
     </property>
    </widget>
-   <widget class="QPushButton" name="pushButtonReset">
+   <widget class="QPushButton" name="pushButtonDeleteEn">
     <property name="geometry">
      <rect>
-      <x>260</x>
-      <y>0</y>
-      <width>90</width>
+      <x>1000</x>
+      <y>190</y>
+      <width>104</width>
       <height>28</height>
      </rect>
     </property>
     <property name="text">
-     <string>Обновить</string>
+     <string>Уволить</string>
     </property>
    </widget>
-   <zorder>gifLabel</zorder>
+   <widget class="QPushButton" name="pushButtonHireEn">
+    <property name="geometry">
+     <rect>
+      <x>880</x>
+      <y>190</y>
+      <width>104</width>
+      <height>28</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Нанять</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButtonHire">
+    <property name="geometry">
+     <rect>
+      <x>40</x>
+      <y>190</y>
+      <width>104</width>
+      <height>28</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Нанять</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButtonDelete">
+    <property name="geometry">
+     <rect>
+      <x>160</x>
+      <y>190</y>
+      <width>104</width>
+      <height>28</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Уволить</string>
+    </property>
+   </widget>
    <zorder>capital</zorder>
+   <zorder>gifLabel</zorder>
    <zorder>listAllUnits</zorder>
    <zorder>listPlayerUnits</zorder>
    <zorder>iconLabel</zorder>
    <zorder>listPlayerSlots</zorder>
    <zorder>pushButtonCapital</zorder>
-   <zorder>splitter</zorder>
    <zorder>pushButtonChooseRace</zorder>
    <zorder>currentFaction</zorder>
    <zorder>slot5</zorder>
@@ -1436,7 +1441,6 @@
    <zorder>EnemySlot3</zorder>
    <zorder>listEnemyUnits</zorder>
    <zorder>listEnemySlots</zorder>
-   <zorder>splitter_2</zorder>
    <zorder>pushButtonVersus</zorder>
    <zorder>pushButtonSlot5</zorder>
    <zorder>pushButtonSlot3</zorder>
@@ -1447,7 +1451,6 @@
    <zorder>Email</zorder>
    <zorder>PlayerNameTxt</zorder>
    <zorder>EmailTxt</zorder>
-   <zorder>copyUnit</zorder>
    <zorder>swap56</zorder>
    <zorder>swap34</zorder>
    <zorder>swap13</zorder>
@@ -1492,7 +1495,10 @@
    <zorder>EnemySlotTxt_2</zorder>
    <zorder>EnemySlotTxt_4</zorder>
    <zorder>portraitLabel</zorder>
-   <zorder>pushButtonReset</zorder>
+   <zorder>pushButtonDeleteEn</zorder>
+   <zorder>pushButtonHireEn</zorder>
+   <zorder>pushButtonHire</zorder>
+   <zorder>pushButtonDelete</zorder>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
  </widget>

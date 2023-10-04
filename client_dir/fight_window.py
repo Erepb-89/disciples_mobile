@@ -19,7 +19,8 @@ from client_dir.settings import UNIT_STAND, UNIT_ATTACK, \
     BATTLE_ANIM
 from client_dir.ui_functions import show_no_frame, \
     show_damage, show_no_damage, show_green_frame, \
-    show_red_frame, show_blue_frame, update_unit_health, show_gif_side, get_unit_image
+    show_red_frame, show_blue_frame, update_unit_health, show_gif_side,\
+    get_unit_image
 from client_dir.unit_dialog import UnitDialog
 from units_dir.units_factory import Unit
 
@@ -278,6 +279,8 @@ class FightWindow(QMainWindow):
         self.show_frame_attacked()
         self.show_frame_attacker()
         self.update_log()
+        self.setWindowFlag(QtCore.Qt.WindowCloseButtonHint, False)
+        self.setWindowFlag(QtCore.Qt.MSWindowsFixedSizeDialogHint)
         self.show()
 
     def update_bg(self) -> None:
@@ -319,6 +322,9 @@ class FightWindow(QMainWindow):
 
     def back(self) -> None:
         """Кнопка возврата"""
+        self.instance.reset()
+        if self.instance.name == 'CampaignWindow':
+            self.instance.main.reset()
         self.close()
 
     def change_side(self) -> None:
@@ -604,7 +610,8 @@ class FightWindow(QMainWindow):
     def are_units_in_round(self) -> None:
         """Проверка на наличие юнитов в раунде"""
         if self.new_battle.current_unit in self.new_battle.units_in_round:
-            self.new_battle.units_in_round.remove(self.new_battle.current_unit)
+            self.new_battle.units_in_round.remove(
+                self.new_battle.current_unit)
 
         # есть не ходившие юниты в текущем раунде
         if self.new_battle.units_in_round:
@@ -715,14 +722,14 @@ class FightWindow(QMainWindow):
         else:
             self.show_lvl_up_animations()
 
-            self.worker = Thread(False)
-            self.worker.dataThread.connect(self.unit_gifs_update)
-            self.worker.start()
-
             self.instance.reset()
             if self.instance.name == 'CampaignWindow':
                 self.instance.main.player_list_update()
                 self.instance.main.player_slots_update()
+
+            self.worker = Thread(False)
+            self.worker.dataThread.connect(self.unit_gifs_update)
+            self.worker.start()
 
         self.update_log()
         self.new_battle.autofight = False

@@ -8,7 +8,7 @@ from PyQt5.QtWidgets import QMainWindow, QHBoxLayout
 from client_dir.campaign_form import Ui_CampaignWindow
 from client_dir.fight_window import FightWindow
 from client_dir.army_dialog import EnemyArmyDialog
-from client_dir.settings import MISSION_UNITS, COMMON, UNIT_FRAME
+from client_dir.settings import MISSION_UNITS, BACKGROUND
 from client_dir.ui_functions import slot_update, button_update
 from units_dir.units_factory import Unit
 
@@ -74,11 +74,9 @@ class CampaignWindow(QMainWindow):
 
     def set_campaign_image(self) -> None:
         """Установить картинку кампании"""
-        self.ui.campaignBG.setPixmap(QPixmap(
-            os.path.join(COMMON, 'breathing.png')))
-        # self.ui.campaignBG.setPixmap(QPixmap(UNIT_FRAME))
-        self.ui.campaignBG.setGeometry(QtCore.QRect(0, 0, 4, 4))
-        # self.ui.campaignBG.setGeometry(QtCore.QRect(0, 0, 790, 690))
+        self.ui.campaignBG.setPixmap(QPixmap(BACKGROUND))
+        # self.ui.campaignBG.setGeometry(QtCore.QRect(0, 0, 4, 4))
+        self.ui.campaignBG.setGeometry(QtCore.QRect(0, 0, 790, 690))
 
     def show_fight_window(self) -> None:
         """Метод создающий окно Битвы."""
