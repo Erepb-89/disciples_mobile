@@ -638,6 +638,97 @@
      <string>gold</string>
     </property>
    </widget>
+   <widget class="QPushButton" name="swap12">
+    <property name="geometry">
+     <rect>
+      <x>578</x>
+      <y>67</y>
+      <width>41</width>
+      <height>28</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>&lt;&gt;</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="swap24">
+    <property name="geometry">
+     <rect>
+      <x>715</x>
+      <y>227</y>
+      <width>31</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>&lt;&gt;</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="swap35">
+    <property name="geometry">
+     <rect>
+      <x>450</x>
+      <y>387</y>
+      <width>31</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>&lt;&gt;</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="swap34">
+    <property name="geometry">
+     <rect>
+      <x>578</x>
+      <y>230</y>
+      <width>41</width>
+      <height>28</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>&lt;&gt;</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="swap46">
+    <property name="geometry">
+     <rect>
+      <x>715</x>
+      <y>387</y>
+      <width>31</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>&lt;&gt;</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="swap13">
+    <property name="geometry">
+     <rect>
+      <x>450</x>
+      <y>227</y>
+      <width>31</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>&lt;&gt;</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="swap56">
+    <property name="geometry">
+     <rect>
+      <x>578</x>
+      <y>550</y>
+      <width>41</width>
+      <height>28</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>&lt;&gt;</string>
+    </property>
+   </widget>
    <zorder>capitalArmyBG</zorder>
    <zorder>pushButtonBack</zorder>
    <zorder>pushButtonDelete</zorder>
@@ -663,6 +754,13 @@
    <zorder>pushButtonSlot6</zorder>
    <zorder>pushButtonSlot2</zorder>
    <zorder>gold</zorder>
+   <zorder>swap12</zorder>
+   <zorder>swap24</zorder>
+   <zorder>swap35</zorder>
+   <zorder>swap34</zorder>
+   <zorder>swap46</zorder>
+   <zorder>swap13</zorder>
+   <zorder>swap56</zorder>
   </widget>
  </widget>
  <resources/>

@@ -16,9 +16,10 @@ from client_dir.fight_window import FightWindow
 from client_dir.campaign_window import CampaignWindow
 from client_dir.client_main_form import Ui_MainWindow
 from client_dir.hire_menu_window import HireMenuWindow
-from client_dir.settings import UNIT_ICONS, GIF_ANIMATIONS,\
-    TOWN_IMG, PLUG, ICON, COMMON, UNIT_ATTACK, FRONT, PORTRAITS
-from client_dir.ui_functions import get_unit_image
+from client_dir.settings import UNIT_ICONS, GIF_ANIMATIONS, \
+    TOWN_IMG, PLUG, ICON, UNIT_ATTACK, FRONT, PORTRAITS, BACKGROUND
+from client_dir.ui_functions import get_unit_image, set_beige_colour,\
+    set_borders
 from client_dir.unit_dialog import UnitDialog
 from units_dir.units import main_db
 
@@ -34,6 +35,7 @@ class ClientMainWindow(QMainWindow):
     def __init__(self, database: any):
         super().__init__()
         # основные переменные
+        self.name = 'ClientMainWindow'
         self.database = database
 
         self.player_units_model = None
@@ -78,7 +80,8 @@ class ClientMainWindow(QMainWindow):
         self.ui.pushButtonVersus.clicked.connect(self.show_versus_window)
 
         self.ui.pushButtonHireEn.clicked.connect(self.hire_enemy_unit_action)
-        self.ui.pushButtonHireEn.setStatusTip('Выберите номер слота для найма')
+        self.ui.pushButtonHireEn.setStatusTip(
+            'Выберите номер слота для найма')
         self.ui.pushButtonDeleteEn.clicked.connect(
             self.delete_enemy_unit_action)
         self.ui.pushButtonDeleteEn.setStatusTip(
@@ -118,7 +121,49 @@ class ClientMainWindow(QMainWindow):
         self.ui.pushButtonDelPlayer.clicked.connect(self.delete_player_action)
         self.ui.pushButtonChoosePlayer.clicked.connect(
             self.choose_player_action)
-        self.ui.pushButtonReset.clicked.connect(self.reset)
+
+        # подкраска элементов
+        set_beige_colour(self.ui.swap12)
+        set_beige_colour(self.ui.swap13)
+        set_beige_colour(self.ui.swap24)
+        set_beige_colour(self.ui.swap34)
+        set_beige_colour(self.ui.swap35)
+        set_beige_colour(self.ui.swap46)
+        set_beige_colour(self.ui.swap56)
+
+        set_beige_colour(self.ui.enSwap12)
+        set_beige_colour(self.ui.enSwap13)
+        set_beige_colour(self.ui.enSwap24)
+        set_beige_colour(self.ui.enSwap34)
+        set_beige_colour(self.ui.enSwap35)
+        set_beige_colour(self.ui.enSwap46)
+        set_beige_colour(self.ui.enSwap56)
+
+        set_beige_colour(self.ui.pushButtonAddPlayer)
+        set_beige_colour(self.ui.pushButtonDelPlayer)
+        set_beige_colour(self.ui.pushButtonChoosePlayer)
+        set_beige_colour(self.ui.pushButtonHire)
+        set_beige_colour(self.ui.pushButtonHireEn)
+        set_beige_colour(self.ui.pushButtonDelete)
+        set_beige_colour(self.ui.pushButtonDeleteEn)
+        set_beige_colour(self.ui.pushButtonCapital)
+        set_beige_colour(self.ui.pushButtonChooseRace)
+        set_beige_colour(self.ui.pushButtonFight)
+        set_beige_colour(self.ui.pushButtonCampaign)
+        set_beige_colour(self.ui.pushButtonVersus)
+
+        set_beige_colour(self.ui.listAllUnits)
+        set_beige_colour(self.ui.listPlayerUnits)
+        set_beige_colour(self.ui.listPlayerSlots)
+        set_beige_colour(self.ui.listEnemyUnits)
+        set_beige_colour(self.ui.listEnemySlots)
+        set_beige_colour(self.ui.PlayerName)
+        set_beige_colour(self.ui.Email)
+        set_beige_colour(self.ui.PlayersList)
+
+        set_borders(self.ui.gifLabel)
+        set_borders(self.ui.iconLabel)
+        set_borders(self.ui.portraitLabel)
 
         self.all_players_list_update()
         self.units_list_update()
@@ -227,15 +272,13 @@ class ClientMainWindow(QMainWindow):
         """Получение текущей фракции"""
         self.faction = self.database.current_game_faction
         self.ui.currentFaction.setText(self.faction)
+        self.ui.currentFaction.setStyleSheet('color: white')
 
     def set_capital_image(self) -> None:
         """Установить картинку как в столице"""
-        # self.ui.capital.setPixmap(QPixmap(
-        #     self.get_capital_image(self.faction)))
-        self.ui.capital.setPixmap(QPixmap(
-            os.path.join(COMMON, 'breathing.png')))
-        self.ui.capital.setGeometry(QtCore.QRect(0, 0, 4, 4))
-        # self.ui.capital.setGeometry(QtCore.QRect(0, 0, 1380, 718))
+        self.ui.capital.setPixmap(QPixmap(BACKGROUND))
+        # self.ui.capital.setGeometry(QtCore.QRect(0, 0, 4, 4))
+        self.ui.capital.setGeometry(QtCore.QRect(0, 0, 1380, 742))
 
     @staticmethod
     def get_capital_image(faction: str) -> Optional[str]:
@@ -499,6 +542,7 @@ class ClientMainWindow(QMainWindow):
     def show_versus_window(self) -> None:
         """Метод создающий окно Битвы."""
         self.database.transfer_units()
+        self.reset()
 
         global FIGHT_WINDOW
         FIGHT_WINDOW = FightWindow(self.database, 'versus', self)
@@ -517,7 +561,7 @@ class ClientMainWindow(QMainWindow):
         """Метод создающий окно выбора фракции игрока."""
         if self.database.current_player is not None:
             global CHOOSE_WINDOW
-            CHOOSE_WINDOW = ChooseRaceWindow(self.database)
+            CHOOSE_WINDOW = ChooseRaceWindow(self.database, self)
             CHOOSE_WINDOW.show()
         else:
             print('Сначала выберите игрока')

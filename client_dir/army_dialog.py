@@ -4,7 +4,7 @@ from PyQt5 import QtCore, QtWidgets
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QDialog
 
-from client_dir.settings import UNIT_FRAME
+from client_dir.settings import BACKGROUND
 from client_dir.ui_functions import slot_update
 
 
@@ -76,8 +76,7 @@ class EnemyArmyDialog(QDialog):
         self.EnemySlot6.setMidLineWidth(0)
         self.EnemySlot6.setObjectName("EnemySlot6")
 
-        unit_frame = QPixmap(UNIT_FRAME)
-        self.armyBG.setPixmap(unit_frame)
+        self.armyBG.setPixmap(QPixmap(BACKGROUND))
 
         self.faction = self.database.current_game_faction
         self.dungeon = f'{self.faction}_{slot}'
