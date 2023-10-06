@@ -2392,7 +2392,7 @@
     <property name="geometry">
      <rect>
       <x>670</x>
-      <y>9</y>
+      <y>29</y>
       <width>600</width>
       <height>741</height>
      </rect>
@@ -3179,17 +3179,345 @@
      <string>Ожидание</string>
     </property>
    </widget>
+   <widget class="QLabel" name="gifCiircleSlot_6">
+    <property name="geometry">
+     <rect>
+      <x>300</x>
+      <y>280</y>
+      <width>600</width>
+      <height>350</height>
+     </rect>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::Panel</enum>
+    </property>
+    <property name="frameShadow">
+     <enum>QFrame::Raised</enum>
+    </property>
+    <property name="lineWidth">
+     <number>0</number>
+    </property>
+    <property name="midLineWidth">
+     <number>0</number>
+    </property>
+    <property name="text">
+     <string>slot_6</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignBottom|Qt::AlignHCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="gifCiircleSlot_2">
+    <property name="geometry">
+     <rect>
+      <x>600</x>
+      <y>130</y>
+      <width>600</width>
+      <height>350</height>
+     </rect>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::Panel</enum>
+    </property>
+    <property name="frameShadow">
+     <enum>QFrame::Raised</enum>
+    </property>
+    <property name="lineWidth">
+     <number>0</number>
+    </property>
+    <property name="midLineWidth">
+     <number>0</number>
+    </property>
+    <property name="text">
+     <string>slot_2</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignBottom|Qt::AlignHCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="gifCiircleSlot_4">
+    <property name="geometry">
+     <rect>
+      <x>450</x>
+      <y>210</y>
+      <width>600</width>
+      <height>350</height>
+     </rect>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::Panel</enum>
+    </property>
+    <property name="frameShadow">
+     <enum>QFrame::Raised</enum>
+    </property>
+    <property name="lineWidth">
+     <number>0</number>
+    </property>
+    <property name="midLineWidth">
+     <number>0</number>
+    </property>
+    <property name="text">
+     <string>slot_4</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignBottom|Qt::AlignHCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="gifCiircleSlot_1">
+    <property name="geometry">
+     <rect>
+      <x>480</x>
+      <y>30</y>
+      <width>600</width>
+      <height>350</height>
+     </rect>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::Panel</enum>
+    </property>
+    <property name="frameShadow">
+     <enum>QFrame::Raised</enum>
+    </property>
+    <property name="lineWidth">
+     <number>0</number>
+    </property>
+    <property name="midLineWidth">
+     <number>0</number>
+    </property>
+    <property name="text">
+     <string>slot_1</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignBottom|Qt::AlignHCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="gifCiircleSlot_5">
+    <property name="geometry">
+     <rect>
+      <x>180</x>
+      <y>180</y>
+      <width>600</width>
+      <height>350</height>
+     </rect>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::Panel</enum>
+    </property>
+    <property name="frameShadow">
+     <enum>QFrame::Raised</enum>
+    </property>
+    <property name="lineWidth">
+     <number>0</number>
+    </property>
+    <property name="midLineWidth">
+     <number>0</number>
+    </property>
+    <property name="text">
+     <string>slot_5</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignBottom|Qt::AlignHCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="gifCiircleSlot_3">
+    <property name="geometry">
+     <rect>
+      <x>330</x>
+      <y>110</y>
+      <width>600</width>
+      <height>350</height>
+     </rect>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::Panel</enum>
+    </property>
+    <property name="frameShadow">
+     <enum>QFrame::Raised</enum>
+    </property>
+    <property name="lineWidth">
+     <number>0</number>
+    </property>
+    <property name="midLineWidth">
+     <number>0</number>
+    </property>
+    <property name="text">
+     <string>slot_3</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignBottom|Qt::AlignHCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="gifEnemyCircleSlot_2">
+    <property name="geometry">
+     <rect>
+      <x>770</x>
+      <y>240</y>
+      <width>599</width>
+      <height>350</height>
+     </rect>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::Panel</enum>
+    </property>
+    <property name="frameShadow">
+     <enum>QFrame::Raised</enum>
+    </property>
+    <property name="lineWidth">
+     <number>0</number>
+    </property>
+    <property name="midLineWidth">
+     <number>0</number>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignBottom|Qt::AlignHCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="gifEnemyCircleSlot_4">
+    <property name="geometry">
+     <rect>
+      <x>620</x>
+      <y>320</y>
+      <width>600</width>
+      <height>350</height>
+     </rect>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::Panel</enum>
+    </property>
+    <property name="frameShadow">
+     <enum>QFrame::Raised</enum>
+    </property>
+    <property name="lineWidth">
+     <number>0</number>
+    </property>
+    <property name="midLineWidth">
+     <number>0</number>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignBottom|Qt::AlignHCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="gifEnemyCircleSlot_6">
+    <property name="geometry">
+     <rect>
+      <x>470</x>
+      <y>390</y>
+      <width>600</width>
+      <height>350</height>
+     </rect>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::Panel</enum>
+    </property>
+    <property name="frameShadow">
+     <enum>QFrame::Raised</enum>
+    </property>
+    <property name="lineWidth">
+     <number>0</number>
+    </property>
+    <property name="midLineWidth">
+     <number>0</number>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignBottom|Qt::AlignHCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="gifEnemyCircleSlot_1">
+    <property name="geometry">
+     <rect>
+      <x>880</x>
+      <y>350</y>
+      <width>600</width>
+      <height>350</height>
+     </rect>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::Panel</enum>
+    </property>
+    <property name="frameShadow">
+     <enum>QFrame::Raised</enum>
+    </property>
+    <property name="lineWidth">
+     <number>0</number>
+    </property>
+    <property name="midLineWidth">
+     <number>0</number>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignBottom|Qt::AlignHCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="gifEnemyCircleSlot_3">
+    <property name="geometry">
+     <rect>
+      <x>730</x>
+      <y>430</y>
+      <width>600</width>
+      <height>350</height>
+     </rect>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::Panel</enum>
+    </property>
+    <property name="frameShadow">
+     <enum>QFrame::Raised</enum>
+    </property>
+    <property name="lineWidth">
+     <number>0</number>
+    </property>
+    <property name="midLineWidth">
+     <number>0</number>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignBottom|Qt::AlignHCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="gifEnemyCircleSlot_5">
+    <property name="geometry">
+     <rect>
+      <x>580</x>
+      <y>500</y>
+      <width>600</width>
+      <height>350</height>
+     </rect>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::Panel</enum>
+    </property>
+    <property name="frameShadow">
+     <enum>QFrame::Raised</enum>
+    </property>
+    <property name="lineWidth">
+     <number>0</number>
+    </property>
+    <property name="midLineWidth">
+     <number>0</number>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignBottom|Qt::AlignHCenter</set>
+    </property>
+   </widget>
    <zorder>FightBG</zorder>
-   <zorder>rightIcons</zorder>
    <zorder>leftIcons</zorder>
-   <zorder>pushButtonClear</zorder>
-   <zorder>pushButtonAutoFight</zorder>
-   <zorder>hpSlot1</zorder>
-   <zorder>hpSlot2</zorder>
-   <zorder>hpSlot3</zorder>
-   <zorder>hpSlot4</zorder>
-   <zorder>hpSlot5</zorder>
-   <zorder>hpSlot6</zorder>
+   <zorder>rightIcons</zorder>
    <zorder>gifShadSlot_1</zorder>
    <zorder>gifShadSlot_3</zorder>
    <zorder>gifShadSlot_5</zorder>
@@ -3203,93 +3531,113 @@
    <zorder>gifEnemyShadSlot_3</zorder>
    <zorder>gifEnemyShadSlot_5</zorder>
    <zorder>gifEffSlot_1</zorder>
-   <zorder>gifPlayerSlot_1</zorder>
    <zorder>gifEffSlot_3</zorder>
-   <zorder>gifPlayerSlot_3</zorder>
    <zorder>gifEffSlot_5</zorder>
-   <zorder>gifPlayerSlot_5</zorder>
    <zorder>gifEffSlot_2</zorder>
    <zorder>gifEffSlot_4</zorder>
    <zorder>gifEffSlot_6</zorder>
-   <zorder>gifEnemyEffSlot_2</zorder>
-   <zorder>gifEnemySlot_2</zorder>
-   <zorder>gifEnemyEffSlot_4</zorder>
-   <zorder>gifEnemySlot_4</zorder>
-   <zorder>gifEnemyEffSlot_6</zorder>
-   <zorder>gifEnemySlot_6</zorder>
-   <zorder>gifEnemyEffSlot_1</zorder>
-   <zorder>gifEnemyEffSlot_3</zorder>
-   <zorder>gifEnemyEffSlot_5</zorder>
-   <zorder>enemyHPSlot6</zorder>
-   <zorder>enemyHPSlot4</zorder>
-   <zorder>enemyHPSlot3</zorder>
-   <zorder>enemyHPSlot1</zorder>
-   <zorder>enemyHPSlot2</zorder>
-   <zorder>enemyHPSlot5</zorder>
-   <zorder>gifEnemyAreaAttack</zorder>
-   <zorder>gifPlayerSlot_2</zorder>
-   <zorder>gifPlayerSlot_4</zorder>
-   <zorder>gifPlayerSlot_6</zorder>
-   <zorder>gifPlayerAreaAttack</zorder>
-   <zorder>gifEnemySlot_1</zorder>
-   <zorder>gifEnemySlot_3</zorder>
-   <zorder>gifEnemySlot_5</zorder>
    <zorder>gifEnemyAttEffSlot_2</zorder>
    <zorder>gifEnemyAttEffSlot_4</zorder>
    <zorder>gifEnemyAttEffSlot_6</zorder>
    <zorder>gifEnemyAttEffSlot_1</zorder>
    <zorder>gifEnemyAttEffSlot_3</zorder>
    <zorder>gifEnemyAttEffSlot_5</zorder>
-   <zorder>gifPlayerAttEffSlot_6</zorder>
+   <zorder>gifCiircleSlot_1</zorder>
+   <zorder>gifCiircleSlot_3</zorder>
+   <zorder>gifCiircleSlot_5</zorder>
+   <zorder>gifCiircleSlot_2</zorder>
+   <zorder>gifCiircleSlot_4</zorder>
+   <zorder>gifCiircleSlot_6</zorder>
+   <zorder>gifPlayerSlot_1</zorder>
+   <zorder>gifPlayerSlot_3</zorder>
+   <zorder>gifPlayerSlot_5</zorder>
    <zorder>gifPlayerAttEffSlot_1</zorder>
-   <zorder>gifPlayerAttEffSlot_5</zorder>
    <zorder>gifPlayerAttEffSlot_3</zorder>
+   <zorder>gifPlayerAttEffSlot_5</zorder>
+   <zorder>gifEnemyAreaAttack</zorder>
+   <zorder>gifPlayerSlot_2</zorder>
+   <zorder>gifPlayerSlot_4</zorder>
+   <zorder>gifPlayerSlot_6</zorder>
    <zorder>gifPlayerAttEffSlot_2</zorder>
    <zorder>gifPlayerAttEffSlot_4</zorder>
+   <zorder>gifPlayerAttEffSlot_6</zorder>
+   <zorder>gifEnemyCircleSlot_2</zorder>
+   <zorder>gifEnemyCircleSlot_4</zorder>
+   <zorder>gifEnemyCircleSlot_6</zorder>
+   <zorder>gifEnemyCircleSlot_1</zorder>
+   <zorder>gifEnemyCircleSlot_3</zorder>
+   <zorder>gifEnemyCircleSlot_5</zorder>
+   <zorder>gifEnemySlot_2</zorder>
+   <zorder>gifEnemyEffSlot_2</zorder>
+   <zorder>gifEnemySlot_4</zorder>
+   <zorder>gifEnemyEffSlot_4</zorder>
+   <zorder>gifEnemySlot_6</zorder>
+   <zorder>gifEnemyEffSlot_6</zorder>
+   <zorder>gifPlayerAreaAttack</zorder>
+   <zorder>gifEnemySlot_1</zorder>
+   <zorder>gifEnemyEffSlot_1</zorder>
+   <zorder>gifEnemySlot_3</zorder>
+   <zorder>gifEnemyEffSlot_3</zorder>
+   <zorder>gifEnemySlot_5</zorder>
+   <zorder>gifEnemyEffSlot_5</zorder>
+   <zorder>battleLog</zorder>
    <zorder>ChangeSideSlot</zorder>
-   <zorder>pushButtonChange</zorder>
    <zorder>EscapeSlot</zorder>
    <zorder>pushButtonBack</zorder>
+   <zorder>pushButtonChange</zorder>
+   <zorder>pushButtonDefence</zorder>
+   <zorder>pushButtonWaiting</zorder>
    <zorder>batPanel</zorder>
-   <zorder>battleLog</zorder>
-   <zorder>slot5</zorder>
-   <zorder>slot1</zorder>
-   <zorder>slot3</zorder>
-   <zorder>slot2</zorder>
-   <zorder>slot4</zorder>
-   <zorder>slot6</zorder>
-   <zorder>damPlayerSlot_5</zorder>
-   <zorder>damPlayerSlot_3</zorder>
-   <zorder>damPlayerSlot_1</zorder>
-   <zorder>damPlayerSlot_2</zorder>
-   <zorder>damPlayerSlot_4</zorder>
-   <zorder>damPlayerSlot_6</zorder>
-   <zorder>pushButtonSlot5</zorder>
-   <zorder>pushButtonSlot3</zorder>
-   <zorder>pushButtonSlot1</zorder>
-   <zorder>pushButtonSlot4</zorder>
-   <zorder>pushButtonSlot2</zorder>
-   <zorder>pushButtonSlot6</zorder>
+   <zorder>pushButtonClear</zorder>
+   <zorder>pushButtonAutoFight</zorder>
+   <zorder>enemyHPSlot3</zorder>
+   <zorder>enemyHPSlot1</zorder>
+   <zorder>enemyHPSlot5</zorder>
+   <zorder>enemyHPSlot2</zorder>
+   <zorder>enemyHPSlot4</zorder>
+   <zorder>enemyHPSlot6</zorder>
    <zorder>enemySlot1</zorder>
    <zorder>enemySlot3</zorder>
    <zorder>enemySlot5</zorder>
    <zorder>enemySlot4</zorder>
-   <zorder>enemySlot2</zorder>
    <zorder>enemySlot6</zorder>
+   <zorder>enemySlot2</zorder>
+   <zorder>damEnemySlot_3</zorder>
    <zorder>damEnemySlot_5</zorder>
    <zorder>damEnemySlot_1</zorder>
-   <zorder>damEnemySlot_3</zorder>
    <zorder>damEnemySlot_2</zorder>
    <zorder>damEnemySlot_4</zorder>
    <zorder>damEnemySlot_6</zorder>
-   <zorder>pushButtonEnemySlot3</zorder>
    <zorder>pushButtonEnemySlot5</zorder>
+   <zorder>pushButtonEnemySlot3</zorder>
    <zorder>pushButtonEnemySlot1</zorder>
-   <zorder>pushButtonEnemySlot4</zorder>
-   <zorder>pushButtonEnemySlot2</zorder>
    <zorder>pushButtonEnemySlot6</zorder>
-   <zorder>pushButtonDefence</zorder>
-   <zorder>pushButtonWaiting</zorder>
+   <zorder>pushButtonEnemySlot2</zorder>
+   <zorder>pushButtonEnemySlot4</zorder>
+   <zorder>hpSlot3</zorder>
+   <zorder>hpSlot5</zorder>
+   <zorder>hpSlot1</zorder>
+   <zorder>hpSlot6</zorder>
+   <zorder>hpSlot2</zorder>
+   <zorder>hpSlot4</zorder>
+   <zorder>slot1</zorder>
+   <zorder>slot3</zorder>
+   <zorder>slot5</zorder>
+   <zorder>slot2</zorder>
+   <zorder>slot6</zorder>
+   <zorder>slot4</zorder>
+   <zorder>damPlayerSlot_5</zorder>
+   <zorder>damPlayerSlot_3</zorder>
+   <zorder>damPlayerSlot_1</zorder>
+   <zorder>damPlayerSlot_4</zorder>
+   <zorder>damPlayerSlot_2</zorder>
+   <zorder>damPlayerSlot_6</zorder>
+   <zorder>pushButtonSlot3</zorder>
+   <zorder>pushButtonSlot1</zorder>
+   <zorder>pushButtonSlot5</zorder>
+   <zorder>pushButtonSlot6</zorder>
+   <zorder>pushButtonSlot2</zorder>
+   <zorder>pushButtonSlot4</zorder>
   </widget>
  </widget>
  <resources/>
