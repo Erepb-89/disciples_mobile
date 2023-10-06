@@ -2,7 +2,7 @@
 
 import os.path
 
-from PyQt5 import QtCore
+from PyQt5 import QtCore, QtWidgets
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QMainWindow, QHBoxLayout, QMessageBox
 
@@ -101,40 +101,40 @@ class HireMenuWindow(QMainWindow):
         self.ui.labelSelected4.setLineWidth(0)
         self.ui.labelSelected5.setLineWidth(0)
 
-    def highlight_selected_unit1(self) -> None:
+    def highlight_selected_unit(self,
+                                ui_obj: QtWidgets.QLabel,
+                                unit_type: any) -> None:
         """Подсветка выбранного юнита"""
         self.unlight_all_units()
-        self.ui.labelSelected1.setLineWidth(2)
-        self.highlighted_unit = self.fighter
+        ui_obj.setLineWidth(2)
+        ui_obj.setStyleSheet("color: rgb(65, 3, 2)")
+        self.highlighted_unit = unit_type
         self.ui.pushButtonBuy.setEnabled(True)
+
+    def highlight_selected_unit1(self) -> None:
+        """Подсветка выбранного юнита"""
+        self.highlight_selected_unit(self.ui.labelSelected1,
+                                     self.fighter)
 
     def highlight_selected_unit2(self) -> None:
         """Подсветка выбранного юнита"""
-        self.unlight_all_units()
-        self.ui.labelSelected2.setLineWidth(2)
-        self.highlighted_unit = self.archer
-        self.ui.pushButtonBuy.setEnabled(True)
+        self.highlight_selected_unit(self.ui.labelSelected2,
+                                     self.archer)
 
     def highlight_selected_unit3(self) -> None:
         """Подсветка выбранного юнита"""
-        self.unlight_all_units()
-        self.ui.labelSelected3.setLineWidth(2)
-        self.highlighted_unit = self.mage
-        self.ui.pushButtonBuy.setEnabled(True)
+        self.highlight_selected_unit(self.ui.labelSelected3,
+                                     self.mage)
 
     def highlight_selected_unit4(self) -> None:
         """Подсветка выбранного юнита"""
-        self.unlight_all_units()
-        self.ui.labelSelected4.setLineWidth(2)
-        self.highlighted_unit = self.support
-        self.ui.pushButtonBuy.setEnabled(True)
+        self.highlight_selected_unit(self.ui.labelSelected4,
+                                     self.support)
 
     def highlight_selected_unit5(self) -> None:
         """Подсветка выбранного юнита"""
-        self.unlight_all_units()
-        self.ui.labelSelected5.setLineWidth(2)
-        self.highlighted_unit = self.special
-        self.ui.pushButtonBuy.setEnabled(True)
+        self.highlight_selected_unit(self.ui.labelSelected5,
+                                     self.special)
 
     def update_bg(self) -> None:
         """Обновление бэкграунда, заполнение картинкой найма"""
