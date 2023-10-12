@@ -1071,6 +1071,9 @@ class FightWindow(QMainWindow):
             if curr_target in self.new_battle.units_in_round:
                 self.new_battle.units_in_round.remove(
                     curr_target)
+            if curr_target in self.new_battle.waiting_units:
+                self.new_battle.waiting_units.remove(
+                    curr_target)
 
     def update_icons(self,
                      icons_dict: dict,
