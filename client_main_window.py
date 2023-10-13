@@ -169,10 +169,7 @@ class ClientMainWindow(QMainWindow):
         self.units_list_update()
         self.player_slots_update()
         self.reset()
-
-        self.button_enabled(self.ui.enSwap12, self.database.CurrentDungeon, 2)
-        self.button_enabled(self.ui.enSwap34, self.database.CurrentDungeon, 4)
-        self.button_enabled(self.ui.enSwap56, self.database.CurrentDungeon, 6)
+        self.reset_enemy_buttons()
 
         self.show()
 
@@ -191,9 +188,19 @@ class ClientMainWindow(QMainWindow):
         self.enemy_list_update()
         self.enemy_slots_update()
 
+        self.reset_player_buttons()
+
+    def reset_player_buttons(self):
+        """Обновление доступности кнопок игрока"""
         self.button_enabled(self.ui.swap12, self.database.PlayerUnits, 2)
         self.button_enabled(self.ui.swap34, self.database.PlayerUnits, 4)
         self.button_enabled(self.ui.swap56, self.database.PlayerUnits, 6)
+
+    def reset_enemy_buttons(self):
+        """Обновление доступности кнопок противника"""
+        self.button_enabled(self.ui.enSwap12, self.database.CurrentDungeon, 2)
+        self.button_enabled(self.ui.enSwap34, self.database.CurrentDungeon, 4)
+        self.button_enabled(self.ui.enSwap56, self.database.CurrentDungeon, 6)
 
     def button_enabled(self, button, database, num2):
         """Определяет доступность кнопки по юнитам в слотах"""
@@ -410,24 +417,28 @@ class ClientMainWindow(QMainWindow):
             self.database.show_all_units,
             self.ui.listAllUnits)
 
-    def check_and_swap(self, num1: int, num2: int) -> bool:
+    def check_and_swap(self, num1: int, num2: int, database: any) -> bool:
         """
         Проверить юниты в слотах на наличие и размер.
         Поменять местами вместе с парным юнитом (соседний слот)
         """
-        unit1 = self.database.get_unit_by_slot(num1, self.database.PlayerUnits)
-        unit2 = self.database.get_unit_by_slot(num2, self.database.PlayerUnits)
+        unit1 = self.database.get_unit_by_slot(num1, database)
+        unit2 = self.database.get_unit_by_slot(num2, database)
+        func = self.swap_unit_action
+        if database == self.database.CurrentDungeon:
+            func = self.swap_enemy_action
+
         if unit1 is not None and unit2 is not None \
                 and unit1.size == 'Большой' and unit2.size == 'Большой':
-            self.swap_unit_action(num1, num2)
+            func(num1, num2)
             return True
         if unit1 is not None and unit1.size == 'Большой':
-            self.swap_unit_action(num1 - 1, num2 - 1)
-            self.swap_unit_action(num1, num2)
+            func(num1 - 1, num2 - 1)
+            func(num1, num2)
             return True
         if unit2 is not None and unit2.size == 'Большой':
-            self.swap_unit_action(num1 - 1, num2 - 1)
-            self.swap_unit_action(num1, num2)
+            func(num1 - 1, num2 - 1)
+            func(num1, num2)
             return True
         return False
 
@@ -438,14 +449,16 @@ class ClientMainWindow(QMainWindow):
             slot2,
             self.database.PlayerUnits)
         self.player_list_update()
+        self.reset_player_buttons()
 
-    def swap_enemy_unit_action(self, slot1: int, slot2: int) -> None:
+    def swap_enemy_action(self, slot1: int, slot2: int) -> None:
         """Меняет слоты двух юнитов подземелья"""
         self.database.update_slot(
             slot1,
             slot2,
             self.database.CurrentDungeon)
         self.enemy_list_update()
+        self.reset_enemy_buttons()
 
     def swap_unit_action_12(self) -> None:
         """Меняет местами юнитов игрока в слотах 1 и 2"""
@@ -453,12 +466,12 @@ class ClientMainWindow(QMainWindow):
 
     def swap_unit_action_13(self) -> None:
         """Меняет местами юнитов игрока в слотах 1 и 3"""
-        if not self.check_and_swap(2, 4):
+        if not self.check_and_swap(2, 4, self.database.PlayerUnits):
             self.swap_unit_action(1, 3)
 
     def swap_unit_action_24(self) -> None:
         """Меняет местами юнитов игрока в слотах 2 и 4"""
-        if not self.check_and_swap(2, 4):
+        if not self.check_and_swap(2, 4, self.database.PlayerUnits):
             self.swap_unit_action(2, 4)
 
     def swap_unit_action_34(self) -> None:
@@ -467,12 +480,12 @@ class ClientMainWindow(QMainWindow):
 
     def swap_unit_action_35(self) -> None:
         """Меняет местами юнитов игрока в слотах 3 и 5"""
-        if not self.check_and_swap(4, 6):
+        if not self.check_and_swap(4, 6, self.database.PlayerUnits):
             self.swap_unit_action(3, 5)
 
     def swap_unit_action_46(self) -> None:
         """Меняет местами юнитов игрока в слотах 4 и 6"""
-        if not self.check_and_swap(4, 6):
+        if not self.check_and_swap(4, 6, self.database.PlayerUnits):
             self.swap_unit_action(4, 6)
 
     def swap_unit_action_56(self) -> None:
@@ -481,31 +494,35 @@ class ClientMainWindow(QMainWindow):
 
     def swap_enemy_action_12(self) -> None:
         """Меняет местами юнитов подземелья в слотах 1 и 2"""
-        self.swap_enemy_unit_action(1, 2)
+        self.swap_enemy_action(1, 2)
 
     def swap_enemy_action_13(self) -> None:
         """Меняет местами юнитов подземелья в слотах 1 и 3"""
-        self.swap_enemy_unit_action(1, 3)
+        if not self.check_and_swap(2, 4, self.database.CurrentDungeon):
+            self.swap_enemy_action(1, 3)
 
     def swap_enemy_action_24(self) -> None:
         """Меняет местами юнитов подземелья в слотах 2 и 4"""
-        self.swap_enemy_unit_action(2, 4)
+        if not self.check_and_swap(2, 4, self.database.CurrentDungeon):
+            self.swap_enemy_action(2, 4)
 
     def swap_enemy_action_34(self) -> None:
         """Меняет местами юнитов подземелья в слотах 3 и 4"""
-        self.swap_enemy_unit_action(3, 4)
+        self.swap_enemy_action(3, 4)
 
     def swap_enemy_action_35(self) -> None:
         """Меняет местами юнитов подземелья в слотах 3 и 5"""
-        self.swap_enemy_unit_action(3, 5)
+        if not self.check_and_swap(4, 6, self.database.CurrentDungeon):
+            self.swap_enemy_action(3, 5)
 
     def swap_enemy_action_46(self) -> None:
         """Меняет местами юнитов подземелья в слотах 4 и 6"""
-        self.swap_enemy_unit_action(4, 6)
+        if not self.check_and_swap(4, 6, self.database.CurrentDungeon):
+            self.swap_enemy_action(4, 6)
 
     def swap_enemy_action_56(self) -> None:
         """Меняет местами юнитов подземелья в слотах 5 и 6"""
-        self.swap_enemy_unit_action(5, 6)
+        self.swap_enemy_action(5, 6)
 
     def delete_unit_action(self) -> None:
         """Метод обработчик нажатия кнопки 'Уволить' у игрока"""
