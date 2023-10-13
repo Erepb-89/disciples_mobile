@@ -167,13 +167,12 @@ class ClientMainWindow(QMainWindow):
 
         self.all_players_list_update()
         self.units_list_update()
-        self.player_list_update()
         self.player_slots_update()
-        self.get_current_faction()
-        self.set_capital_image()
+        self.reset()
 
-        self.enemy_list_update()
-        self.enemy_slots_update()
+        self.button_enabled(self.ui.enSwap12, self.database.CurrentDungeon, 2)
+        self.button_enabled(self.ui.enSwap34, self.database.CurrentDungeon, 4)
+        self.button_enabled(self.ui.enSwap56, self.database.CurrentDungeon, 6)
 
         self.show()
 
@@ -185,13 +184,27 @@ class ClientMainWindow(QMainWindow):
     def reset(self) -> None:
         """Обновить"""
         self.player_list_update()
-        self.player_slots_update()
 
         self.get_current_faction()
         self.set_capital_image()
 
         self.enemy_list_update()
         self.enemy_slots_update()
+
+        self.button_enabled(self.ui.swap12, self.database.PlayerUnits, 2)
+        self.button_enabled(self.ui.swap34, self.database.PlayerUnits, 4)
+        self.button_enabled(self.ui.swap56, self.database.PlayerUnits, 6)
+
+    def button_enabled(self, button, database, num2):
+        """Определяет доступность кнопки по юнитам в слотах"""
+        try:
+            if self.database.get_unit_by_slot(
+                    num2, database).size == 'Большой':
+                button.setEnabled(False)
+            else:
+                button.setEnabled(True)
+        except AttributeError:
+            button.setEnabled(True)
 
     def on_list_clicked(self) -> None:
         """Показывает иконку и портрет выбранного из списка юнита"""
@@ -397,6 +410,27 @@ class ClientMainWindow(QMainWindow):
             self.database.show_all_units,
             self.ui.listAllUnits)
 
+    def check_and_swap(self, num1: int, num2: int) -> bool:
+        """
+        Проверить юниты в слотах на наличие и размер.
+        Поменять местами вместе с парным юнитом (соседний слот)
+        """
+        unit1 = self.database.get_unit_by_slot(num1, self.database.PlayerUnits)
+        unit2 = self.database.get_unit_by_slot(num2, self.database.PlayerUnits)
+        if unit1 is not None and unit2 is not None \
+                and unit1.size == 'Большой' and unit2.size == 'Большой':
+            self.swap_unit_action(num1, num2)
+            return True
+        if unit1 is not None and unit1.size == 'Большой':
+            self.swap_unit_action(num1 - 1, num2 - 1)
+            self.swap_unit_action(num1, num2)
+            return True
+        if unit2 is not None and unit2.size == 'Большой':
+            self.swap_unit_action(num1 - 1, num2 - 1)
+            self.swap_unit_action(num1, num2)
+            return True
+        return False
+
     def swap_unit_action(self, slot1: int, slot2: int) -> None:
         """Меняет слоты двух юнитов игрока"""
         self.database.update_slot(
@@ -419,11 +453,13 @@ class ClientMainWindow(QMainWindow):
 
     def swap_unit_action_13(self) -> None:
         """Меняет местами юнитов игрока в слотах 1 и 3"""
-        self.swap_unit_action(1, 3)
+        if not self.check_and_swap(2, 4):
+            self.swap_unit_action(1, 3)
 
     def swap_unit_action_24(self) -> None:
         """Меняет местами юнитов игрока в слотах 2 и 4"""
-        self.swap_unit_action(2, 4)
+        if not self.check_and_swap(2, 4):
+            self.swap_unit_action(2, 4)
 
     def swap_unit_action_34(self) -> None:
         """Меняет местами юнитов игрока в слотах 3 и 4"""
@@ -431,11 +467,13 @@ class ClientMainWindow(QMainWindow):
 
     def swap_unit_action_35(self) -> None:
         """Меняет местами юнитов игрока в слотах 3 и 5"""
-        self.swap_unit_action(3, 5)
+        if not self.check_and_swap(4, 6):
+            self.swap_unit_action(3, 5)
 
     def swap_unit_action_46(self) -> None:
         """Меняет местами юнитов игрока в слотах 4 и 6"""
-        self.swap_unit_action(4, 6)
+        if not self.check_and_swap(4, 6):
+            self.swap_unit_action(4, 6)
 
     def swap_unit_action_56(self) -> None:
         """Меняет местами юнитов игрока в слотах 5 и 6"""
