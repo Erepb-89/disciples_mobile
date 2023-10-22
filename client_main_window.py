@@ -530,6 +530,7 @@ class ClientMainWindow(QMainWindow):
             selected_slot = self.ui.listPlayerSlots.currentIndex().data()
             self.database.delete_player_unit(int(selected_slot))
             self.player_list_update()
+            self.reset_player_buttons()
         except TypeError:
             print('Выберите слот, который хотите освободить')
 
@@ -539,6 +540,7 @@ class ClientMainWindow(QMainWindow):
             selected_slot = self.ui.listEnemySlots.currentIndex().data()
             self.database.delete_dungeon_unit(int(selected_slot))
             self.enemy_list_update()
+            self.reset_enemy_buttons()
         except TypeError:
             print('Выберите слот, который хотите освободить')
 

@@ -19,7 +19,7 @@ from client_dir.settings import UNIT_STAND, UNIT_ATTACK, \
     BATTLE_ANIM
 from client_dir.ui_functions import show_no_frame, \
     show_damage, show_no_damage, show_green_frame, \
-    show_red_frame, show_blue_frame, update_unit_health, show_gif_side,\
+    show_red_frame, show_blue_frame, update_unit_health, show_gif_side, \
     get_unit_image
 from client_dir.unit_dialog import UnitDialog
 from units_dir.units_factory import Unit
@@ -131,6 +131,18 @@ class FightWindow(QMainWindow):
         self.hbox = QHBoxLayout(self)
         self.update_bg()
         self.update_bp()
+
+        self.right_slots = [
+            self.ui.slot2,
+            self.ui.slot4,
+            self.ui.slot6,
+            self.ui.damPlayerSlot_2,
+            self.ui.damPlayerSlot_4,
+            self.ui.damPlayerSlot_6,
+            self.ui.pushButtonSlot2,
+            self.ui.pushButtonSlot4,
+            self.ui.pushButtonSlot6,
+        ]
 
         self.ui.leftIcons.setPixmap(
             QPixmap(LEFT_ICONS))
@@ -573,7 +585,7 @@ class FightWindow(QMainWindow):
             3: self.ui.pushButtonEnemySlot3,
             4: self.ui.pushButtonEnemySlot4,
             5: self.ui.pushButtonEnemySlot5,
-            6: self.ui.pushButtonEnemySlot5,
+            6: self.ui.pushButtonEnemySlot6,
         }
 
     def append_rear_damaged(self) -> None:
@@ -1081,14 +1093,18 @@ class FightWindow(QMainWindow):
                      side: str) -> None:
         """Обновление иконок и кнопок юнитов"""
         for num, icon_slot in icons_dict.items():
+            unit = self._unit_by_slot_and_side(num, side)
             self._slot_update(
-                self._unit_by_slot_and_side(num, side),
-                icon_slot)
+                unit,
+                icon_slot,
+                side)
 
         for num, button_slot in buttons_dict.items():
+            unit = self._unit_by_slot_and_side(num, side)
             self._button_update(
-                self._unit_by_slot_and_side(num, side),
-                button_slot)
+                unit,
+                button_slot,
+                side)
 
     def set_unit_icons(self) -> None:
         """Заполнение временных словарей иконок и кнопок юнитов"""
@@ -1210,17 +1226,7 @@ class FightWindow(QMainWindow):
 
     def set_coords_double_slots(self, ui_obj) -> None:
         """Задание координат для 'двойных' слотов либо кнопок"""
-        if ui_obj in [
-            self.ui.slot2,
-            self.ui.slot4,
-            self.ui.slot6,
-            self.ui.damPlayerSlot_2,
-            self.ui.damPlayerSlot_4,
-            self.ui.damPlayerSlot_6,
-            self.ui.pushButtonSlot2,
-            self.ui.pushButtonSlot4,
-            self.ui.pushButtonSlot6,
-        ]:
+        if ui_obj in self.right_slots:
             ui_coords = ui_obj.geometry().getCoords()
             new_coords = list(ui_coords)
             new_coords[0] = 147
@@ -1229,22 +1235,14 @@ class FightWindow(QMainWindow):
             ui_obj.setFixedWidth(105)
             ui_obj.setFixedHeight(127)
 
-    def _set_size_by_unit(self, unit: Unit, ui_obj: any) -> None:
+    def _set_size_by_unit(self, unit: Unit, ui_obj: any, side: str) -> None:
         """Установка размера иконки по размеру самого юнита"""
         self.set_coords_double_slots(ui_obj)
 
         try:
-            if unit.size == "Большой" and ui_obj in [
-                self.ui.slot2,
-                self.ui.slot4,
-                self.ui.slot6,
-                self.ui.damPlayerSlot_2,
-                self.ui.damPlayerSlot_4,
-                self.ui.damPlayerSlot_6,
-                self.ui.pushButtonSlot2,
-                self.ui.pushButtonSlot4,
-                self.ui.pushButtonSlot6,
-            ]:
+            if unit.size == "Большой" \
+                    and ui_obj in self.right_slots \
+                    and side == FRONT:
                 ui_coords = ui_obj.geometry().getCoords()
                 new_coords = list(ui_coords)
                 new_coords[0] -= 117
@@ -1265,16 +1263,17 @@ class FightWindow(QMainWindow):
 
     def _button_update(self,
                        unit: Unit,
-                       button: QtWidgets.QPushButton) -> None:
+                       button: QtWidgets.QPushButton,
+                       side: str) -> None:
         """Установка размера кнопки на иконке"""
-        self._set_size_by_unit(unit, button)
+        self._set_size_by_unit(unit, button, side)
 
         self.hbox.addWidget(button)
         self.setLayout(self.hbox)
 
-    def _slot_update(self, unit: Unit, slot: int) -> None:
+    def _slot_update(self, unit: Unit, slot: int, side: str) -> None:
         """Метод обновления иконки"""
-        self._set_size_by_unit(unit, slot)
+        self._set_size_by_unit(unit, slot, side)
 
         slot.setPixmap(QPixmap(
             get_unit_image(unit)).scaled(
@@ -1298,20 +1297,21 @@ class FightWindow(QMainWindow):
         self.unit_gifs_update()
         target = self._unit_by_slot_and_side(slot, side)
         # невозможность атаковать своих
-        if target not in self.new_battle.current_player.units \
-                and self.new_battle.current_unit.attack_type not in [
-                'Лечение', 'Лечение/Исцеление', 'Лечение/Воскрешение']:
+        if target is not None:
+            if target not in self.new_battle.current_player.units \
+                    and self.new_battle.current_unit.attack_type not in [
+                    'Лечение', 'Лечение/Исцеление', 'Лечение/Воскрешение']:
 
-            self.new_battle.player_attack(target)
-            self.show_attack_and_attacked()
+                self.new_battle.player_attack(target)
+                self.show_attack_and_attacked()
 
-        # если текущий юнит лекарь - можно выбрать целью свой юнит
-        elif target in self.new_battle.current_player.units \
-                and self.new_battle.current_unit.attack_type in [
-                'Лечение', 'Лечение/Исцеление', 'Лечение/Воскрешение']:
+            # если текущий юнит лекарь - можно выбрать целью свой юнит
+            elif target in self.new_battle.current_player.units \
+                    and self.new_battle.current_unit.attack_type in [
+                    'Лечение', 'Лечение/Исцеление', 'Лечение/Воскрешение']:
 
-            self.new_battle.player_attack(target)
-            self.show_attack_and_attacked()
+                self.new_battle.player_attack(target)
+                self.show_attack_and_attacked()
 
     def _attack_player_slot1(self) -> None:
         """Атаковать юнита игрока в слоте 1"""
