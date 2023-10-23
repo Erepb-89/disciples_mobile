@@ -16,7 +16,7 @@ from client_dir.settings import UNIT_STAND, UNIT_ATTACK, \
     COMMON, BATTLE_GROUNDS, UNIT_SHADOW_ATTACK, UNIT_SHADOW_STAND, \
     UNIT_SHADOW_ATTACKED, UNIT_EFFECTS_AREA, UNIT_EFFECTS_TARGET, \
     RIGHT_ICONS, LEFT_ICONS, SCREEN_RECT, PANEL_RECT, BATTLE_LOG, \
-    BATTLE_ANIM
+    BATTLE_ANIM, BIG
 from client_dir.ui_functions import show_no_frame, \
     show_damage, show_no_damage, show_green_frame, \
     show_red_frame, show_blue_frame, update_unit_health, show_gif_side, \
@@ -873,7 +873,7 @@ class FightWindow(QMainWindow):
     def show_level_up(self, unit: Unit, slots_dict: dict) -> None:
         """Прорисовка модели юнита, получившего уровень"""
         if unit.slot in self.new_battle.alive_units and self.new_battle.battle_is_over:
-            if unit.size == "Большой":
+            if unit.size == BIG:
                 unit_gif = "lvl_up_big.gif"
             else:
                 unit_gif = "lvl_up.gif"
@@ -1240,7 +1240,7 @@ class FightWindow(QMainWindow):
         self.set_coords_double_slots(ui_obj)
 
         try:
-            if unit.size == "Большой" \
+            if unit.size == BIG \
                     and ui_obj in self.right_slots \
                     and side == FRONT:
                 ui_coords = ui_obj.geometry().getCoords()
@@ -1250,11 +1250,11 @@ class FightWindow(QMainWindow):
                 new_coords[3] = 126
                 ui_obj.setGeometry(*new_coords)
 
-            if unit.size == "Большой":
+            if unit.size == BIG:
                 ui_obj.setFixedWidth(225)
                 ui_obj.setFixedHeight(127)
 
-            elif unit.size == "Обычный":
+            else:
                 ui_obj.setFixedWidth(105)
                 ui_obj.setFixedHeight(127)
         except AttributeError:

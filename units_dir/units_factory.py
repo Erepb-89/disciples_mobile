@@ -8,7 +8,7 @@ from typing import Optional, Dict, List
 
 from battle_logging import logging
 
-from client_dir.settings import EM, UH, LD, MC
+from client_dir.settings import EM, UH, LD, MC, BIG
 from units_dir.buildings import FACTIONS, ELDER_FORMS
 from units_dir.units import main_db
 from units_dir.ranking import empire_mage_lvls, \
@@ -912,7 +912,7 @@ class Unit:
     @property
     def is_double(self) -> bool:
         """Проверка на двухслотовость"""
-        return self.size == "Большой"
+        return self.size == BIG
 
     def skip_turn(self) -> None:
         """Пропуск хода юнита в битве"""

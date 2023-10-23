@@ -8,7 +8,7 @@ from PyQt5.QtWidgets import QMainWindow, QHBoxLayout
 
 from client_dir.capital_army_form import Ui_CapitalArmyWindow
 from client_dir.hire_menu_window import HireMenuWindow
-from client_dir.settings import TOWN_ARMY, SCREEN_RECT
+from client_dir.settings import TOWN_ARMY, SCREEN_RECT, BIG
 from client_dir.ui_functions import get_unit_image, update_unit_health, \
     get_image, set_beige_colour
 from client_dir.unit_dialog import UnitDialog
@@ -112,7 +112,7 @@ class CapitalArmyWindow(QMainWindow):
         """Определяет доступность кнопки по юнитам в слотах"""
         try:
             if self.database.get_unit_by_slot(
-                    num2, database).size == 'Большой':
+                    num2, database).size == BIG:
                 button.setEnabled(False)
             else:
                 button.setEnabled(True)
@@ -275,7 +275,7 @@ class CapitalArmyWindow(QMainWindow):
         self.set_coords_double_slots(ui_obj)
 
         try:
-            if unit.size == "Большой" and ui_obj in [
+            if unit.size == BIG and ui_obj in [
                 self.ui.slot2,
                 self.ui.slot4,
                 self.ui.slot6,
@@ -290,11 +290,11 @@ class CapitalArmyWindow(QMainWindow):
                 new_coords[3] = 126
                 ui_obj.setGeometry(*new_coords)
 
-            if unit.size == "Большой":
+            if unit.size == BIG:
                 ui_obj.setFixedWidth(225)
                 ui_obj.setFixedHeight(127)
 
-            elif unit.size == "Обычный":
+            else:
                 ui_obj.setFixedWidth(105)
                 ui_obj.setFixedHeight(127)
         except AttributeError:
@@ -308,15 +308,16 @@ class CapitalArmyWindow(QMainWindow):
         """
         unit1 = self.database.get_unit_by_slot(num1, self.database.PlayerUnits)
         unit2 = self.database.get_unit_by_slot(num2, self.database.PlayerUnits)
+
         if unit1 is not None and unit2 is not None \
-                and unit1.size == 'Большой' and unit2.size == 'Большой':
+                and unit1.size == BIG and unit2.size == BIG:
             self.swap_unit_action(num1, num2)
             return True
-        if unit1 is not None and unit1.size == 'Большой':
+        if unit1 is not None and unit1.size == BIG:
             self.swap_unit_action(num1 - 1, num2 - 1)
             self.swap_unit_action(num1, num2)
             return True
-        if unit2 is not None and unit2.size == 'Большой':
+        if unit2 is not None and unit2.size == BIG:
             self.swap_unit_action(num1 - 1, num2 - 1)
             self.swap_unit_action(num1, num2)
             return True

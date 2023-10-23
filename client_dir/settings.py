@@ -63,11 +63,17 @@ FRONT = 'front/'
 REAR = 'rear/'
 OTHERS = 'others'
 
+BIG = 'Большой'
+SMALL = 'Обычный'
+
 # races
 EM = 'Empire'
 UH = 'Undead Hordes'
 LD = 'Legions of the Damned'
 MC = 'Mountain Clans'
+
+# active units
+ACTIVE_UNITS = os.listdir(f'{UNIT_ATTACK}{FRONT}')
 
 # coordinates
 X_COORD_1 = 40
