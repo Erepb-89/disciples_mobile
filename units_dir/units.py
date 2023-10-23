@@ -6,6 +6,7 @@ from sqlalchemy import create_engine, Table, update, Column, Integer, \
     String, MetaData
 from sqlalchemy.orm import mapper, sessionmaker
 
+from client_dir.settings import BIG
 from units_dir.buildings import FACTIONS
 
 
@@ -688,6 +689,38 @@ class ServerStorage:
         # Возвращаем кортеж
         return query.first()
 
+    def get_units_by_level(self, level: int) -> namedtuple:
+        """Метод получения всех юнитов заданного уровня."""
+        query = self.session.query(
+            self.AllUnits.id,
+            self.AllUnits.name,
+            self.AllUnits.level,
+            self.AllUnits.size,
+            self.AllUnits.price,
+            self.AllUnits.exp,
+            self.AllUnits.curr_exp,
+            self.AllUnits.exp_per_kill,
+            self.AllUnits.health,
+            self.AllUnits.curr_health,
+            self.AllUnits.armor,
+            self.AllUnits.immune,
+            self.AllUnits.ward,
+            self.AllUnits.attack_type,
+            self.AllUnits.attack_chance,
+            self.AllUnits.attack_dmg,
+            self.AllUnits.attack_source,
+            self.AllUnits.attack_ini,
+            self.AllUnits.attack_radius,
+            self.AllUnits.attack_purpose,
+            self.AllUnits.prev_level,
+            self.AllUnits.desc,
+            self.AllUnits.photo,
+            self.AllUnits.gif,
+            self.AllUnits.slot
+        ).filter_by(level=level)
+        # Возвращаем список кортежей
+        return query.all()
+
     def get_player_unit_by_slot(self, slot: int) -> namedtuple:
         """Метод получающий юнита из базы игрока по слоту."""
         query = self.session.query(
@@ -1127,7 +1160,7 @@ class ServerStorage:
 
     def is_double(self, unit: namedtuple) -> bool:
         """Проверка размера юнита"""
-        return self.get_unit_by_name(unit).size == "Большой"
+        return self.get_unit_by_name(unit).size == BIG
 
     def update_unit(self,
                     unit_id: int,

@@ -5,8 +5,8 @@ import os
 from PyQt5 import QtWidgets
 from PyQt5.QtGui import QMovie, QPixmap
 
-from client_dir.settings import UNIT_ICONS, PLUG, ICON, GIF_ANIMATIONS,\
-    HIRE_SCREEN, COMMON, UNIT_STAND
+from client_dir.settings import UNIT_ICONS, PLUG, ICON, GIF_ANIMATIONS, \
+    HIRE_SCREEN, COMMON, UNIT_STAND, BIG
 from units_dir.buildings import FACTIONS
 
 
@@ -18,7 +18,7 @@ def get_image(folder: str, faction: str):
 def set_size_by_unit(unit: any, ui_obj: any):
     """Установка размера иконки по размеру самого юнита"""
     try:
-        if unit.size == "Большой":
+        if unit.size == BIG:
             ui_obj.setFixedWidth(225)
             ui_obj.setFixedHeight(127)
         else:
@@ -50,7 +50,7 @@ def show_gif(unit: any, gif_label: QtWidgets.QLabel):
 
 def slot_frame_update(unit: any, slot_frame: QtWidgets.QLabel) -> None:
     """Метод выравнивания рамки под размер иконки юнита"""
-    if unit.size == "Большой":
+    if unit.size == BIG:
         slot_frame.setPixmap(
             QPixmap(
                 os.path.join(

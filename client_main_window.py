@@ -17,7 +17,7 @@ from client_dir.campaign_window import CampaignWindow
 from client_dir.client_main_form import Ui_MainWindow
 from client_dir.hire_menu_window import HireMenuWindow
 from client_dir.settings import UNIT_ICONS, GIF_ANIMATIONS, \
-    TOWN_IMG, PLUG, ICON, UNIT_ATTACK, FRONT, PORTRAITS, BACKGROUND
+    TOWN_IMG, PLUG, ICON, UNIT_ATTACK, FRONT, PORTRAITS, BACKGROUND, BIG, ACTIVE_UNITS
 from client_dir.ui_functions import get_unit_image, set_beige_colour,\
     set_borders
 from client_dir.unit_dialog import UnitDialog
@@ -206,7 +206,7 @@ class ClientMainWindow(QMainWindow):
         """Определяет доступность кнопки по юнитам в слотах"""
         try:
             if self.database.get_unit_by_slot(
-                    num2, database).size == 'Большой':
+                    num2, database).size == BIG:
                 button.setEnabled(False)
             else:
                 button.setEnabled(True)
@@ -248,7 +248,7 @@ class ClientMainWindow(QMainWindow):
         self.set_coords_for_slots(ui_obj)
 
         try:
-            if unit.size == "Большой" and ui_obj in self.right_slots:
+            if unit.size == BIG and ui_obj in self.right_slots:
                 ui_coords = ui_obj.geometry().getCoords()
                 new_coords = list(ui_coords)
                 new_coords[0] -= 120
@@ -256,11 +256,11 @@ class ClientMainWindow(QMainWindow):
                 new_coords[3] = 126
                 ui_obj.setGeometry(*new_coords)
 
-            if unit.size == "Большой":
+            if unit.size == BIG:
                 ui_obj.setFixedWidth(225)
                 ui_obj.setFixedHeight(127)
 
-            elif unit.size == "Обычный":
+            else:
                 ui_obj.setFixedWidth(105)
                 ui_obj.setFixedHeight(127)
         except AttributeError:
@@ -429,14 +429,14 @@ class ClientMainWindow(QMainWindow):
             func = self.swap_enemy_action
 
         if unit1 is not None and unit2 is not None \
-                and unit1.size == 'Большой' and unit2.size == 'Большой':
+                and unit1.size == BIG and unit2.size == BIG:
             func(num1, num2)
             return True
-        if unit1 is not None and unit1.size == 'Большой':
+        if unit1 is not None and unit1.size == BIG:
             func(num1 - 1, num2 - 1)
             func(num1, num2)
             return True
-        if unit2 is not None and unit2.size == 'Большой':
+        if unit2 is not None and unit2.size == BIG:
             func(num1 - 1, num2 - 1)
             func(num1, num2)
             return True
@@ -546,9 +546,7 @@ class ClientMainWindow(QMainWindow):
 
     def define_hire_active(self, selected: str) -> None:
         """Определение активности кнопок 'Нанять'"""
-        active_units = os.listdir(f'{UNIT_ATTACK}{FRONT}')
-
-        if f'{selected}.gif' not in active_units:
+        if f'{selected}.gif' not in ACTIVE_UNITS:
             self.ui.pushButtonHire.setEnabled(False)
             self.ui.pushButtonHireEn.setEnabled(False)
         else:
