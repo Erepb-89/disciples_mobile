@@ -200,6 +200,102 @@
     <string>bg</string>
    </property>
   </widget>
+  <widget class="QPushButton" name="pushButtonSlot_2">
+   <property name="geometry">
+    <rect>
+     <x>50</x>
+     <y>40</y>
+     <width>104</width>
+     <height>127</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+   <property name="flat">
+    <bool>true</bool>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="pushButtonSlot_3">
+   <property name="geometry">
+    <rect>
+     <x>170</x>
+     <y>180</y>
+     <width>104</width>
+     <height>127</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+   <property name="flat">
+    <bool>true</bool>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="pushButtonSlot_4">
+   <property name="geometry">
+    <rect>
+     <x>50</x>
+     <y>180</y>
+     <width>104</width>
+     <height>127</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+   <property name="flat">
+    <bool>true</bool>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="pushButtonSlot_5">
+   <property name="geometry">
+    <rect>
+     <x>170</x>
+     <y>320</y>
+     <width>104</width>
+     <height>127</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+   <property name="flat">
+    <bool>true</bool>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="pushButtonSlot_6">
+   <property name="geometry">
+    <rect>
+     <x>50</x>
+     <y>320</y>
+     <width>104</width>
+     <height>127</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+   <property name="flat">
+    <bool>true</bool>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="pushButtonSlot_1">
+   <property name="geometry">
+    <rect>
+     <x>170</x>
+     <y>40</y>
+     <width>104</width>
+     <height>127</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+   <property name="flat">
+    <bool>true</bool>
+   </property>
+  </widget>
   <zorder>armyBG</zorder>
   <zorder>EnemySlot1</zorder>
   <zorder>EnemySlot5</zorder>
@@ -207,6 +303,12 @@
   <zorder>EnemySlot2</zorder>
   <zorder>EnemySlot4</zorder>
   <zorder>EnemySlot6</zorder>
+  <zorder>pushButtonSlot_2</zorder>
+  <zorder>pushButtonSlot_3</zorder>
+  <zorder>pushButtonSlot_4</zorder>
+  <zorder>pushButtonSlot_5</zorder>
+  <zorder>pushButtonSlot_6</zorder>
+  <zorder>pushButtonSlot_1</zorder>
  </widget>
  <resources/>
  <connections/>
