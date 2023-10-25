@@ -296,6 +296,126 @@
     <bool>true</bool>
    </property>
   </widget>
+  <widget class="QLabel" name="EnemySlotTxt_1">
+   <property name="geometry">
+    <rect>
+     <x>280</x>
+     <y>40</y>
+     <width>16</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>10</pointsize>
+     <weight>75</weight>
+     <bold>true</bold>
+    </font>
+   </property>
+   <property name="text">
+    <string>1</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="EnemySlotTxt_3">
+   <property name="geometry">
+    <rect>
+     <x>280</x>
+     <y>230</y>
+     <width>16</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>10</pointsize>
+     <weight>75</weight>
+     <bold>true</bold>
+    </font>
+   </property>
+   <property name="text">
+    <string>3</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="EnemySlotTxt_6">
+   <property name="geometry">
+    <rect>
+     <x>30</x>
+     <y>430</y>
+     <width>16</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>10</pointsize>
+     <weight>75</weight>
+     <bold>true</bold>
+    </font>
+   </property>
+   <property name="text">
+    <string>6</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="EnemySlotTxt_4">
+   <property name="geometry">
+    <rect>
+     <x>30</x>
+     <y>230</y>
+     <width>16</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>10</pointsize>
+     <weight>75</weight>
+     <bold>true</bold>
+    </font>
+   </property>
+   <property name="text">
+    <string>4</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="EnemySlotTxt_2">
+   <property name="geometry">
+    <rect>
+     <x>30</x>
+     <y>40</y>
+     <width>16</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>10</pointsize>
+     <weight>75</weight>
+     <bold>true</bold>
+    </font>
+   </property>
+   <property name="text">
+    <string>2</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="EnemySlotTxt_5">
+   <property name="geometry">
+    <rect>
+     <x>280</x>
+     <y>430</y>
+     <width>16</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>10</pointsize>
+     <weight>75</weight>
+     <bold>true</bold>
+    </font>
+   </property>
+   <property name="text">
+    <string>5</string>
+   </property>
+  </widget>
   <zorder>armyBG</zorder>
   <zorder>EnemySlot1</zorder>
   <zorder>EnemySlot5</zorder>
@@ -303,12 +423,18 @@
   <zorder>EnemySlot2</zorder>
   <zorder>EnemySlot4</zorder>
   <zorder>EnemySlot6</zorder>
+  <zorder>EnemySlotTxt_1</zorder>
+  <zorder>EnemySlotTxt_3</zorder>
+  <zorder>EnemySlotTxt_6</zorder>
+  <zorder>EnemySlotTxt_4</zorder>
+  <zorder>EnemySlotTxt_2</zorder>
+  <zorder>EnemySlotTxt_5</zorder>
+  <zorder>pushButtonSlot_1</zorder>
   <zorder>pushButtonSlot_2</zorder>
   <zorder>pushButtonSlot_3</zorder>
   <zorder>pushButtonSlot_4</zorder>
   <zorder>pushButtonSlot_5</zorder>
   <zorder>pushButtonSlot_6</zorder>
-  <zorder>pushButtonSlot_1</zorder>
  </widget>
  <resources/>
  <connections/>

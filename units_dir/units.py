@@ -1078,8 +1078,24 @@ class ServerStorage:
 
         # добавляем запись 'versus' в таблицу Dungeons,
         # заполненную именами текущих юнитов
-        enemy_unit = self.Dungeons('versus', *names_list)
-        self.session.add(enemy_unit)
+        enemy_units = self.Dungeons('versus', *names_list)
+        self.session.add(enemy_units)
+        self.session.commit()
+
+    def add_dungeons(self, dungeons: dict):
+        """Добавление подземелий в таблицу Dungeons"""
+        for dungeon in dungeons.values():
+            for num, units in dungeon.items():
+                dungeon_row = self.Dungeons(
+                    num,
+                    units[0],
+                    units[1],
+                    units[2],
+                    units[3],
+                    units[4],
+                    units[5],
+                )
+                self.session.add(dungeon_row)
         self.session.commit()
 
     def delete_player_unit(self, slot: int) -> None:
