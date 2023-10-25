@@ -234,6 +234,13 @@ setup_2 = [
         5: None, 6: SMALL,
     },
 ]
+boss_setup = [
+    {
+        1: None, 2: None,
+        3: None, 4: BIG,
+        5: None, 6: None,
+    }
+]
 
 
 def get_big(units: list) -> list:
@@ -381,8 +388,8 @@ def unit_selector(level: int, setup: list) -> dict:
 
                     result_dict[slot] = unit
         # если None
-        else:
-            result_dict[slot] = None
+        # else:
+        #     result_dict[slot] = None
 
     return result_dict
 
