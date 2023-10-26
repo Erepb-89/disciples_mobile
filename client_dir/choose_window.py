@@ -21,6 +21,7 @@ class ChooseRaceWindow(QMainWindow):
         # основные переменные
         self.main = instance
         self.database = database
+        self.new_game = True
         self.faction_number = 1
         self.faction = EM
         self.factions = {
@@ -74,9 +75,22 @@ class ChooseRaceWindow(QMainWindow):
 
     def choose_race(self):
         """Выбор фракции (нажатие кнопки ОК)"""
-        self.database.set_faction(
-            self.database.current_player.id, self.faction)
-        self.database.build_default(self.faction)
+        self.new_game = False
+
+        if self.new_game:
+            self.database.set_faction(
+                self.database.current_player.id, self.faction)
+            self.database.build_default(self.faction)
+        else:
+            # buildings = self.database.get_saved_session(
+            #     self.database.current_player.id,
+            #     self.faction,
+            #     self.database.current_player.name,
+            # )
+            # print(buildings)
+            self.database.current_faction = self.faction
+            self.database.set_faction(
+                self.database.current_player.id, self.faction)
         self.main.reset()
 
         self.close()

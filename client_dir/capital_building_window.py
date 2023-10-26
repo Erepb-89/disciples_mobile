@@ -32,7 +32,7 @@ class CapitalBuildingWindow(QMainWindow):
         super().__init__()
         # основные переменные
         self.database = database
-        self.faction = self.database.current_game_faction
+        self.faction = self.database.current_faction
         self.branch = 'archer'
         self.building_name = ''
         self.building_cost = 0
@@ -52,7 +52,7 @@ class CapitalBuildingWindow(QMainWindow):
         self.slot_update(self.unit, self.ui.slot)
         self.button_update(self.unit, self.ui.pushButtonSlot)
         self.player_gold = self.database.get_gold(
-            self.database.current_user, self.faction)
+            self.database.current_player.name, self.faction)
         self.ui.gold.setText(str(self.player_gold))
 
     def InitUI(self):
@@ -362,7 +362,7 @@ class CapitalBuildingWindow(QMainWindow):
 
         # получение всех построенных зданий игрока
         buildings = self.database.get_buildings(
-            self.database.current_user,
+            self.database.current_player.name,
             self.faction)._asdict()
 
         if self.branch != OTHERS:
@@ -396,7 +396,7 @@ class CapitalBuildingWindow(QMainWindow):
 
         # получение всех построенных зданий игрока
         buildings = self.database.get_buildings(
-            self.database.current_user,
+            self.database.current_player.name,
             self.faction)._asdict()
 
         if self.branch != OTHERS:
@@ -618,7 +618,7 @@ class CapitalBuildingWindow(QMainWindow):
         else:
             changed_buildings = list(
                 self.database.get_buildings(
-                    self.database.current_user,
+                    self.database.current_player.name,
                     self.faction))
 
             # обновление построек в текущей сессии
@@ -632,17 +632,17 @@ class CapitalBuildingWindow(QMainWindow):
                 changed_buildings[BRANCHES[self.branch]] = self.building_name
 
             self.database.update_buildings(
-                self.database.current_user,
+                self.database.current_player.name,
                 self.faction,
                 changed_buildings)
 
             self.player_gold = self.database.get_gold(
-                self.database.current_user, self.faction)
+                self.database.current_player.name, self.faction)
             changed_gold = self.player_gold - self.building_cost
 
             # обновление золота в базе
             self.database.update_gold(
-                self.database.current_user,
+                self.database.current_player.name,
                 self.faction,
                 changed_gold)
             self.ui.gold.setText(str(changed_gold))

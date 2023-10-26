@@ -1422,6 +1422,32 @@
      <string>Уволить</string>
     </property>
    </widget>
+   <widget class="QLabel" name="currentPlayer">
+    <property name="geometry">
+     <rect>
+      <x>990</x>
+      <y>7</y>
+      <width>149</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>8</pointsize>
+      <weight>75</weight>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="layoutDirection">
+     <enum>Qt::LeftToRight</enum>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+    </property>
+   </widget>
    <zorder>capital</zorder>
    <zorder>gifLabel</zorder>
    <zorder>listAllUnits</zorder>
@@ -1499,6 +1525,7 @@
    <zorder>pushButtonHireEn</zorder>
    <zorder>pushButtonHire</zorder>
    <zorder>pushButtonDelete</zorder>
+   <zorder>currentPlayer</zorder>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
  </widget>

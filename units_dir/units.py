@@ -497,6 +497,9 @@ class ServerStorage:
         self.session = session()
 
         self.current_player = self.get_player('Erepb-89')
+        # self.current_faction = 'Empire'
+        self.current_faction = self.current_game_session(
+            self.current_player.id).faction
 
     def add_dungeon_unit(
             self,
@@ -591,39 +594,16 @@ class ServerStorage:
         # Возвращаем кортеж
         return query.first()
 
-    @property
-    def current_game_session(self) -> any:
+    def current_game_session(self, player_id: int) -> any:
         """Метод получающий текущую игровую сессию
         (последнюю запись из таблицы GameSessions)."""
         query = self.session.query(
-            self.GameSessions.id,
+            self.GameSessions.session_id,
             self.GameSessions.player_id,
             self.GameSessions.faction,
-        )
+        ).filter_by(player_id=player_id)
         # Возвращаем кортеж
         return query[-1]
-
-    @property
-    def current_game_faction(self) -> str:
-        """Метод получающий текущую фракцию
-        (последнюю запись из таблицы GameSessions)."""
-        query = self.session.query(
-            self.GameSessions.faction).all()
-        # Возвращаем одну запись
-        return str(query[-1].faction)
-
-    @property
-    def current_user(self) -> str:
-        """Метод получающий текущего Пользователя-игрока
-        (последнюю запись из таблицы GameSessions)."""
-        try:
-            query = self.session.query(
-                self.GameSessions.player_id).all()[-1]
-            user_name = self.get_player_by_id(query.player_id)
-            # Возвращаем одну запись
-            return user_name
-        except BaseException:
-            return str(1)
 
     def get_unit_by_id(self, _id: int, database: any) -> namedtuple:
         """Метод получающий юнита из общей базы по id."""
@@ -919,9 +899,7 @@ class ServerStorage:
     def get_gold(self,
                  player_name: str,
                  faction: str) -> int:
-        """
-        Метод получения построек в столице игрока (уровень).
-        """
+        """Метод получения количества золота у игрока."""
 
         query = self.session.query(
             self.PlayerBuildings.gold
@@ -982,7 +960,7 @@ class ServerStorage:
                            graph: list,
                            branch: str) -> None:
         """Рекурсивное создание графа зданий/построек"""
-        for val in FACTIONS.get(self.current_game_faction)[branch]:
+        for val in FACTIONS.get(self.current_faction)[branch]:
             if val.bname == bname:
                 graph.append(bname)
                 if val.prev not in ('', 0):
@@ -1378,8 +1356,34 @@ class ServerStorage:
             player_id,
             faction
         )
+        self.current_faction = faction
         self.session.add(game_session_row)
         self.session.commit()
+
+    def get_saved_session(self,
+                          player_id: str,
+                          faction: int,
+                          player_name: str) -> tuple:
+        """Метод получения последней сессии игрока за выбранную расу."""
+        if self.GameSessions(
+                player_id,
+                faction
+        ):
+            query = self.session.query(
+                self.PlayerBuildings.gold,
+                self.PlayerBuildings.fighter,
+                self.PlayerBuildings.mage,
+                self.PlayerBuildings.archer,
+                self.PlayerBuildings.support,
+                self.PlayerBuildings.special,
+                self.PlayerBuildings.thieves_guild,
+                self.PlayerBuildings.temple,
+                self.PlayerBuildings.magic_guild
+            ).filter_by(name=player_name, faction=faction)
+            # Возвращаем кортеж
+            return query.order_by(self.PlayerBuildings.id.desc()).first()
+        return ()
+
 
     def build_default(self, faction: str) -> None:
         """Базовая постройка зданий 1 уровня в выбранной столице"""
@@ -1395,7 +1399,7 @@ class ServerStorage:
         ]
 
         self.create_buildings(
-            self.current_user,
+            self.current_player.name,
             faction,
             5000,
             building_levels)

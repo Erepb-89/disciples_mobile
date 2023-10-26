@@ -23,7 +23,7 @@ class CapitalWindow(QMainWindow):
         # основные переменные
         self.database = database
         self.main = main
-        self.faction = self.database.current_game_faction
+        self.faction = self.database.current_faction
 
         self.InitUI()
 

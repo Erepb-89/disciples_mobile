@@ -165,6 +165,9 @@ class ClientMainWindow(QMainWindow):
         set_borders(self.ui.iconLabel)
         set_borders(self.ui.portraitLabel)
 
+        self.ui.currentPlayer.setText(self.database.current_player.name)
+        self.ui.currentPlayer.setStyleSheet('color: white')
+
         self.all_players_list_update()
         self.units_list_update()
         self.player_slots_update()
@@ -290,7 +293,7 @@ class ClientMainWindow(QMainWindow):
 
     def get_current_faction(self) -> None:
         """Получение текущей фракции"""
-        self.faction = self.database.current_game_faction
+        self.faction = self.database.current_faction
         self.ui.currentFaction.setText(self.faction)
         self.ui.currentFaction.setStyleSheet('color: white')
 
@@ -657,6 +660,9 @@ class ClientMainWindow(QMainWindow):
         """Метод обработчик нажатия кнопки 'Выбрать игрока'"""
         selected = self.ui.PlayersList.currentIndex().data()
         self.database.choose_player(selected)
+
+        self.ui.currentPlayer.setText(selected)
+        self.ui.currentPlayer.setStyleSheet('color: white')
         self.all_players_list_update()
 
     def slot_detailed(self, unit: namedtuple, slot_dialog: any) -> None:
