@@ -58,8 +58,6 @@ class Battle:
         self.player1 = Player(PLAYER1_NAME)
         self.player2 = Player(PLAYER2_NAME)
 
-        # self.current_faction = self.database.current_game_faction
-
         self.dungeon_units = self.database.show_dungeon_units(dungeon)
 
         if self.player2.name == "Computer":

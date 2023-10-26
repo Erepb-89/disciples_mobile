@@ -1002,7 +1002,7 @@ class Unit:
     @property
     def race_settings(self) -> Dict[str, dict]:
         """Получение настроек фракции"""
-        return FACTIONS.get(main_db.current_game_faction)
+        return FACTIONS.get(main_db.current_faction)
 
     def get_building_graph(self,
                            bname: str,
@@ -1023,7 +1023,7 @@ class Unit:
         """Получние всех фракционных юнитов"""
         # Постройки
         buildings = main_db.get_buildings(
-            main_db.current_user,
+            main_db.current_player.name,
             faction)._asdict()
 
         for bld in buildings.values():
@@ -1033,7 +1033,7 @@ class Unit:
         # фракционные юниты
         faction_units = []
         for branch, b_value in FACTIONS.get(
-                main_db.current_game_faction).items():
+                main_db.current_faction).items():
             if branch != 'others':
                 for building in b_value.values():
                     faction_units.append(building.unit_name)
@@ -1044,7 +1044,7 @@ class Unit:
         """Повышение уровня"""
         next_unit = ''
         # Фракция
-        faction = main_db.current_game_faction
+        faction = main_db.current_faction
         # словарь графов построек
         graph_dict = {
             'fighter': [],

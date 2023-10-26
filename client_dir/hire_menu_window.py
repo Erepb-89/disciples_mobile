@@ -26,7 +26,7 @@ class HireMenuWindow(QMainWindow):
         # основные переменные
         self.database = database
         self.capital_army = instance
-        self.faction = self.database.current_game_faction
+        self.faction = self.database.current_faction
         self.factory = AbstractFactory.create_factory(
             self.faction)
         self.fighter = self.factory.create_fighter()
@@ -87,7 +87,7 @@ class HireMenuWindow(QMainWindow):
         show_gif(self.special, self.ui.gifLabel5)
 
         self.player_gold = self.database.get_gold(
-            self.database.current_user, self.faction)
+            self.database.current_player.name, self.faction)
         self.ui.gold.setText(str(self.player_gold))
         self.ui.pushButtonBuy.setEnabled(False)
 
@@ -196,7 +196,7 @@ class HireMenuWindow(QMainWindow):
 
             # обновление золота в базе
             self.database.update_gold(
-                self.database.current_user,
+                self.database.current_player.name,
                 self.faction,
                 changed_gold)
             self.highlighted_unit.add_to_band(int(slot))

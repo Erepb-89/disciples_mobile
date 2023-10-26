@@ -758,15 +758,15 @@ class FightWindow(QMainWindow):
         }
 
         player_gold = self.database.get_gold(
-            self.database.current_user,
-            self.database.current_game_faction)
+            self.database.current_player.name,
+            self.database.current_faction)
 
         changed_gold = player_gold + gold_gradation[mission_number]
 
         # обновление золота в базе
         self.database.update_gold(
-            self.database.current_user,
-            self.database.current_game_faction,
+            self.database.current_player.name,
+            self.database.current_faction,
             changed_gold)
 
     def add_upgraded_units(self,

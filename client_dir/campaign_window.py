@@ -29,7 +29,7 @@ class CampaignWindow(QMainWindow):
         self.name = 'CampaignWindow'
         self.database = database
         self.main = instance
-        self.current_faction = self.database.current_game_faction
+        self.current_faction = self.database.current_faction
         self.dungeon = ''
         self.dungeon_num = 1
         self.campaign_buttons_dict = {}

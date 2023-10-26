@@ -172,7 +172,7 @@ class EnemyArmyDialog(QDialog):
         self.pushButtonSlot_5.clicked.connect(self.en_slot5_detailed)
         self.pushButtonSlot_6.clicked.connect(self.en_slot6_detailed)
 
-        self.faction = self.database.current_game_faction
+        self.faction = self.database.current_faction
 
         self.dung_buttons_dict = {
             1: self.pushButtonSlot_1,

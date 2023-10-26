@@ -27,7 +27,7 @@ class CapitalArmyWindow(QMainWindow):
         # основные переменные
         self.database = database
         self.capital = instance
-        self.faction = self.database.current_game_faction
+        self.faction = self.database.current_faction
         self.factory = AbstractFactory.create_factory(
             self.faction)
         self.support = self.factory.create_support()
@@ -92,7 +92,7 @@ class CapitalArmyWindow(QMainWindow):
         self._update_all_unit_health()
 
         self.player_gold = self.database.get_gold(
-            self.database.current_user, self.faction)
+            self.database.current_player.name, self.faction)
         self.ui.gold.setText(str(self.player_gold))
 
         self.reset()
