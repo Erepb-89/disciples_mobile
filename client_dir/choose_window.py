@@ -7,6 +7,7 @@ from client_dir.campaign_window import CampaignWindow
 from client_dir.choose_faction_form import Ui_FactionWindow
 from client_dir.settings import FACTIONS, EM, UH, LD, MC, SCREEN_RECT
 from client_dir.ui_functions import get_image
+from units_dir.units import main_db
 
 
 class ChooseRaceWindow(QMainWindow):
@@ -16,11 +17,10 @@ class ChooseRaceWindow(QMainWindow):
     конвертированного файла choose_faction_form.py
     """
 
-    def __init__(self, database: any, instance: any):
+    def __init__(self, instance: any):
         super().__init__()
         # основные переменные
         self.main = instance
-        self.database = database
         self.new_game = True
         self.faction_number = 1
         self.faction = EM
@@ -78,19 +78,19 @@ class ChooseRaceWindow(QMainWindow):
         self.new_game = False
 
         if self.new_game:
-            self.database.set_faction(
-                self.database.current_player.id, self.faction)
-            self.database.build_default(self.faction)
+            main_db.set_faction(
+                main_db.current_player.id, self.faction)
+            main_db.build_default(self.faction)
         else:
-            # buildings = self.database.get_saved_session(
-            #     self.database.current_player.id,
+            # buildings = main_db.get_saved_session(
+            #     main_db.current_player.id,
             #     self.faction,
-            #     self.database.current_player.name,
+            #     main_db.current_player.name,
             # )
             # print(buildings)
-            self.database.current_faction = self.faction
-            self.database.set_faction(
-                self.database.current_player.id, self.faction)
+            main_db.current_faction = self.faction
+            main_db.set_faction(
+                main_db.current_player.id, self.faction)
         self.main.reset()
 
         self.close()
@@ -98,7 +98,7 @@ class ChooseRaceWindow(QMainWindow):
     def show_campaign_window(self):
         """Метод создающий окно выбора миссий в Кампании."""
         global CAMPAIGN_WINDOW
-        CAMPAIGN_WINDOW = CampaignWindow(self.database)
+        CAMPAIGN_WINDOW = CampaignWindow(main_db)
         CAMPAIGN_WINDOW.show()
 
     def back(self):

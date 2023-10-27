@@ -19,6 +19,7 @@ from client_dir.ui_functions import set_size_by_unit, get_unit_image, \
     slot_frame_update
 from client_dir.unit_dialog import UnitDialog
 from units_dir.buildings import FACTIONS, BRANCHES
+from units_dir.units import main_db
 
 
 class CapitalBuildingWindow(QMainWindow):
@@ -28,11 +29,10 @@ class CapitalBuildingWindow(QMainWindow):
     конвертированного файла capital_building_form.py
     """
 
-    def __init__(self, database):
+    def __init__(self):
         super().__init__()
         # основные переменные
-        self.database = database
-        self.faction = self.database.current_faction
+        self.faction = main_db.current_faction
         self.branch = 'archer'
         self.building_name = ''
         self.building_cost = 0
@@ -51,8 +51,8 @@ class CapitalBuildingWindow(QMainWindow):
         self.show_all_branch_icons()
         self.slot_update(self.unit, self.ui.slot)
         self.button_update(self.unit, self.ui.pushButtonSlot)
-        self.player_gold = self.database.get_gold(
-            self.database.current_player.name, self.faction)
+        self.player_gold = main_db.get_gold(
+            main_db.current_player.name, self.faction)
         self.ui.gold.setText(str(self.player_gold))
 
     def InitUI(self):
@@ -361,8 +361,8 @@ class CapitalBuildingWindow(QMainWindow):
         temp_graph = []
 
         # получение всех построенных зданий игрока
-        buildings = self.database.get_buildings(
-            self.database.current_player.name,
+        buildings = main_db.get_buildings(
+            main_db.current_player.name,
             self.faction)._asdict()
 
         if self.branch != OTHERS:
@@ -395,8 +395,8 @@ class CapitalBuildingWindow(QMainWindow):
         temp_graph = []
 
         # получение всех построенных зданий игрока
-        buildings = self.database.get_buildings(
-            self.database.current_player.name,
+        buildings = main_db.get_buildings(
+            main_db.current_player.name,
             self.faction)._asdict()
 
         if self.branch != OTHERS:
@@ -489,7 +489,7 @@ class CapitalBuildingWindow(QMainWindow):
     def get_unit_by_b_slot(self, b_slot: int) -> Optional[namedtuple]:
         """Получение юнита по слоту постройки"""
         try:
-            unit = self.database.get_unit_by_name(
+            unit = main_db.get_unit_by_name(
                 self.branch_settings[b_slot].unit_name)
             return unit
         except KeyError:
@@ -617,8 +617,8 @@ class CapitalBuildingWindow(QMainWindow):
             msg.exec_()
         else:
             changed_buildings = list(
-                self.database.get_buildings(
-                    self.database.current_player.name,
+                main_db.get_buildings(
+                    main_db.current_player.name,
                     self.faction))
 
             # обновление построек в текущей сессии
@@ -631,18 +631,18 @@ class CapitalBuildingWindow(QMainWindow):
             else:
                 changed_buildings[BRANCHES[self.branch]] = self.building_name
 
-            self.database.update_buildings(
-                self.database.current_player.name,
+            main_db.update_buildings(
+                main_db.current_player.name,
                 self.faction,
                 changed_buildings)
 
-            self.player_gold = self.database.get_gold(
-                self.database.current_player.name, self.faction)
+            self.player_gold = main_db.get_gold(
+                main_db.current_player.name, self.faction)
             changed_gold = self.player_gold - self.building_cost
 
             # обновление золота в базе
-            self.database.update_gold(
-                self.database.current_player.name,
+            main_db.update_gold(
+                main_db.current_player.name,
                 self.faction,
                 changed_gold)
             self.ui.gold.setText(str(changed_gold))
@@ -654,7 +654,6 @@ class CapitalBuildingWindow(QMainWindow):
         """Метод создающий окно юнита (слот)."""
         global DETAIL_WINDOW
         DETAIL_WINDOW = UnitDialog(
-            self.database,
             self.unit)
         DETAIL_WINDOW.show()
 

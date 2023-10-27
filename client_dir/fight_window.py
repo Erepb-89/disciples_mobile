@@ -22,6 +22,7 @@ from client_dir.ui_functions import show_no_frame, \
     show_red_frame, show_blue_frame, update_unit_health, show_gif_side, \
     get_unit_image
 from client_dir.unit_dialog import UnitDialog
+from units_dir.units import main_db
 from units_dir.units_factory import Unit
 
 
@@ -55,14 +56,12 @@ class FightWindow(QMainWindow):
     """
 
     def __init__(self,
-                 database: any,
                  dungeon: str,
                  instance: any):
         super().__init__()
         # основные переменные
-        self.database = database
         self.instance = instance
-        self.new_battle = Battle(self.database, dungeon)
+        self.new_battle = Battle(dungeon)
         self.dungeon = dungeon
         self.player_side = FRONT
         self.enemy_side = REAR
@@ -757,16 +756,16 @@ class FightWindow(QMainWindow):
             "6": 350,
         }
 
-        player_gold = self.database.get_gold(
-            self.database.current_player.name,
-            self.database.current_faction)
+        player_gold = main_db.get_gold(
+            main_db.current_player.name,
+            main_db.current_faction)
 
         changed_gold = player_gold + gold_gradation[mission_number]
 
         # обновление золота в базе
-        self.database.update_gold(
-            self.database.current_player.name,
-            self.database.current_faction,
+        main_db.update_gold(
+            main_db.current_player.name,
+            main_db.current_faction,
             changed_gold)
 
     def add_upgraded_units(self,
@@ -804,7 +803,7 @@ class FightWindow(QMainWindow):
         if not self.new_battle.player1.slots:
             self.add_upgraded_units(
                 self.new_battle.player2,
-                self.database.Player2Units,
+                main_db.Player2Units,
                 self.enemy_side,
                 self.en_slots_eff_dict
             )
@@ -814,7 +813,7 @@ class FightWindow(QMainWindow):
 
             self.add_upgraded_units(
                 self.new_battle.player1,
-                self.database.PlayerUnits,
+                main_db.PlayerUnits,
                 self.player_side,
                 self.pl_slots_eff_dict
             )
@@ -822,7 +821,7 @@ class FightWindow(QMainWindow):
             if self.new_battle.player2.name == 'Computer':
                 try:
                     mission_number = self.dungeon.split('_')[1]
-                    self.add_gold(mission_number)
+                    self.add_gold(int(mission_number))
                 except IndexError:
                     pass
 
@@ -1281,12 +1280,12 @@ class FightWindow(QMainWindow):
         self.hbox.addWidget(slot)
         self.setLayout(self.hbox)
 
-    def _slot_detailed(self, unit: Unit, slot_dialog: any) -> None:
+    @staticmethod
+    def _slot_detailed(unit: Unit, slot_dialog: any) -> None:
         """Метод создающий окно юнита игрока при нажатии на слот."""
         try:
             global DETAIL_WINDOW
             DETAIL_WINDOW = slot_dialog(
-                self.database,
                 unit)
             DETAIL_WINDOW.show()
         except AttributeError:

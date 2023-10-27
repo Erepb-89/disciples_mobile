@@ -5,6 +5,7 @@ from typing import List, Optional
 
 from client_dir.settings import ANY_UNIT, CLOSEST_UNIT
 from battle_logging import logging
+from units_dir.units import main_db
 from units_dir.units_factory import Unit
 
 PLAYER1_NAME = 'Erepb-89'
@@ -36,10 +37,9 @@ class Battle:
     очередность ходов, действия игроков и т.д.
     """
 
-    def __init__(self, database: any, dungeon: str):
+    def __init__(self, dungeon: str):
         # super().__init__()
         # основные переменные
-        self.database = database
         self.autofight = False
         self.units_deque = deque()
         self.waiting_units = []
@@ -58,18 +58,18 @@ class Battle:
         self.player1 = Player(PLAYER1_NAME)
         self.player2 = Player(PLAYER2_NAME)
 
-        self.dungeon_units = self.database.show_dungeon_units(dungeon)
+        self.dungeon_units = main_db.show_dungeon_units(dungeon)
 
         if self.player2.name == "Computer":
             self.add_dung_units()
         else:
             self.add_player_units(
                 self.player2,
-                self.database.Player2Units)
+                main_db.Player2Units)
 
         self.add_player_units(
             self.player1,
-            self.database.PlayerUnits)
+            main_db.PlayerUnits)
         self.new_round()
         self.next_turn()
 
@@ -80,7 +80,7 @@ class Battle:
         """
         Добавление юнита игрока в текущую битву.
         """
-        unit = self.database.get_unit_by_slot(
+        unit = main_db.get_unit_by_slot(
             slot,
             database)
 
@@ -96,7 +96,7 @@ class Battle:
         """
         player.units = []
         for pl_slot in range(1, 7):
-            unit = self.database.get_unit_by_slot(
+            unit = main_db.get_unit_by_slot(
                 pl_slot,
                 database)
             if unit is not None:
@@ -112,10 +112,10 @@ class Battle:
         self.clear_dungeon()
         for unit_slot in range(6):
             try:
-                unit = self.database.get_unit_by_name(
+                unit = main_db.get_unit_by_name(
                     self.dungeon_units[unit_slot])[:24]
 
-                self.database.add_dungeon_unit(
+                main_db.add_dungeon_unit(
                     *unit,
                     unit_slot + 1)
 
@@ -129,15 +129,15 @@ class Battle:
 
     def dungeon_unit_by_slot(self, slot) -> Unit:
         """Метод получающий юнита подземелья по слоту."""
-        return self.database.get_unit_by_slot(
+        return main_db.get_unit_by_slot(
             slot,
-            self.database.CurrentDungeon)
+            main_db.CurrentDungeon)
 
     def player_unit_by_slot(self, slot: int) -> Unit:
         """Метод получающий юнита игрока по слоту."""
-        return self.database.get_unit_by_slot(
+        return main_db.get_unit_by_slot(
             slot,
-            self.database.PlayerUnits)
+            main_db.PlayerUnits)
 
     @staticmethod
     def get_unit_by_slot(slot: int,
@@ -260,13 +260,13 @@ class Battle:
 
                         # if player2.name == 'Computer':
                         #     print('player Computer')
-                        #     self.database.update_unit_exp(
+                        #     main_db.update_unit_exp(
                         #         alive_unit.slot,
                         #         alive_unit.curr_exp,
-                        #         self.database.CurrentDungeon
+                        #         main_db.CurrentDungeon
                         #     )
                         if player2.name != 'Computer':
-                            self.database.update_unit_exp(
+                            main_db.update_unit_exp(
                                 alive_unit.slot,
                                 alive_unit.curr_exp,
                                 pl_database
@@ -283,14 +283,14 @@ class Battle:
             logging('Вы проиграли!\n')
 
             self._getting_experience(self.player1, self.player2,
-                                     self.database.Player2Units)
+                                     main_db.Player2Units)
             self.battle_is_over = True
 
         if not self.player2.slots:
             logging('Вы победили!\n')
 
             self._getting_experience(self.player2, self.player1,
-                                     self.database.PlayerUnits)
+                                     main_db.PlayerUnits)
             self.battle_is_over = True
 
     def attack_6_units(self, player: Player) -> None:
@@ -354,22 +354,22 @@ class Battle:
 
     def clear_dungeon(self) -> None:
         """Очистка текущего подземелья от вражеских юнитов"""
-        self.database.delete_dungeon_unit(1)
-        self.database.delete_dungeon_unit(2)
-        self.database.delete_dungeon_unit(3)
-        self.database.delete_dungeon_unit(4)
-        self.database.delete_dungeon_unit(5)
-        self.database.delete_dungeon_unit(6)
+        main_db.delete_dungeon_unit(1)
+        main_db.delete_dungeon_unit(2)
+        main_db.delete_dungeon_unit(3)
+        main_db.delete_dungeon_unit(4)
+        main_db.delete_dungeon_unit(5)
+        main_db.delete_dungeon_unit(6)
 
     def regen(self) -> None:
         """Восстановление здоровья всех юнитов игрока"""
         # self.clear_dungeon()
-        self.database.autoregen(1)
-        self.database.autoregen(2)
-        self.database.autoregen(3)
-        self.database.autoregen(4)
-        self.database.autoregen(5)
-        self.database.autoregen(6)
+        main_db.autoregen(1)
+        main_db.autoregen(2)
+        main_db.autoregen(3)
+        main_db.autoregen(4)
+        main_db.autoregen(5)
+        main_db.autoregen(6)
 
     @staticmethod
     def _closest_side_slot(tg_slots: List[int],
