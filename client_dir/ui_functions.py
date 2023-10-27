@@ -6,7 +6,7 @@ from PyQt5 import QtWidgets
 from PyQt5.QtGui import QMovie, QPixmap
 
 from client_dir.settings import UNIT_ICONS, PLUG, ICON, GIF_ANIMATIONS, \
-    HIRE_SCREEN, COMMON, UNIT_STAND, BIG, SPEED
+    HIRE_SCREEN, COMMON, UNIT_STAND, BIG
 from units_dir.buildings import FACTIONS
 
 
@@ -132,41 +132,6 @@ def get_unit_faction(unit: any) -> str:
         return 'is_dead'
     except AttributeError:
         return ''
-
-
-def show_gif_side(unit: any,
-                  gif_slot: QtWidgets.QLabel,
-                  action: str,
-                  side: str) -> None:
-    """Обновление GIF в слоте"""
-    if unit is None:
-        gif = QMovie(
-            os.path.join(
-                UNIT_STAND,
-                f"{side}/empty.gif"))
-        gif.setSpeed(SPEED)
-
-    # анимация смерти
-    elif unit.curr_health == 0:
-        unit_faction = get_unit_faction(unit)
-        gif = QMovie(
-            os.path.join(
-                action,
-                f"{side}/{unit_faction}.gif"))
-        gif.setSpeed(SPEED)
-    # if unit.curr_health == 0:
-    #     gif = QMovie(os.path.join(COMMON, "skull.png"))
-
-    # анимация действия
-    else:
-        gif = QMovie(
-            os.path.join(
-                action,
-                f"{side}{unit.name}.gif"))
-        gif.setSpeed(SPEED)
-
-    gif_slot.setMovie(gif)
-    gif.start()
 
 
 def set_beige_colour(button: QtWidgets.QPushButton):

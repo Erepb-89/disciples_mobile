@@ -19,8 +19,8 @@ from client_dir.settings import UNIT_STAND, UNIT_ATTACK, \
     BATTLE_ANIM, BIG
 from client_dir.ui_functions import show_no_frame, \
     show_damage, show_no_damage, show_green_frame, \
-    show_red_frame, show_blue_frame, update_unit_health, show_gif_side, \
-    get_unit_image
+    show_red_frame, show_blue_frame, update_unit_health, \
+    get_unit_image, get_unit_faction
 from client_dir.unit_dialog import UnitDialog
 from units_dir.units import main_db
 from units_dir.units_factory import Unit
@@ -66,6 +66,7 @@ class FightWindow(QMainWindow):
         self.computer_name = 'Computer'
         self.player_side = FRONT
         self.enemy_side = REAR
+        self.speed = 100
 
         # временные словари иконок и кнопок на них
         self.front_icons_dict = {}
@@ -288,6 +289,7 @@ class FightWindow(QMainWindow):
             self.ui.damEnemySlot_6,
         ]
 
+        self.update_speed_checkbox()
         self.show_frame_attacked()
         self.show_frame_attacker()
         self.update_log()
@@ -317,6 +319,30 @@ class FightWindow(QMainWindow):
         fight_bp.setGeometry(PANEL_RECT)
         self.hbox.addWidget(fight_bp)
         self.setLayout(self.hbox)
+
+    def update_speed_checkbox(self) -> None:
+        """
+        Метод заполнения выпадающего списка доступных скоростей
+        анимации.
+        """
+        self.ui.speedText.setStyleSheet('color: white')
+
+        speed_slots = [0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5]
+        self.speed_model = QStandardItemModel()
+        for slot in speed_slots:
+            item = QStandardItem(str(slot))
+            item.setEditable(False)
+            self.speed_model.appendRow(item)
+        self.ui.comboSpeed.setModel(self.speed_model)
+
+        self.ui.comboSpeed.setCurrentIndex(5)
+        self.ui.comboSpeed.currentIndexChanged.connect(self.check_speed)
+
+    def check_speed(self) -> None:
+        """Устанавливает выбранную скорость анимации"""
+        multiplier = self.ui.comboSpeed.currentText()
+        self.speed = 100 * float(multiplier)
+        self.unit_gifs_update()
 
     def update_log(self) -> None:
         """Обновление лога"""
@@ -836,6 +862,41 @@ class FightWindow(QMainWindow):
                 except IndexError:
                     pass
 
+    def show_gif_side(self,
+                      unit: any,
+                      gif_slot: QtWidgets.QLabel,
+                      action: str,
+                      side: str) -> None:
+        """Обновление GIF в слоте"""
+        if unit is None:
+            gif = QMovie(
+                os.path.join(
+                    UNIT_STAND,
+                    f"{side}/empty.gif"))
+            gif.setSpeed(self.speed)
+
+        # анимация смерти
+        elif unit.curr_health == 0:
+            unit_faction = get_unit_faction(unit)
+            gif = QMovie(
+                os.path.join(
+                    action,
+                    f"{side}/{unit_faction}.gif"))
+            gif.setSpeed(self.speed)
+        # if unit.curr_health == 0:
+        #     gif = QMovie(os.path.join(COMMON, "skull.png"))
+
+        # анимация действия
+        else:
+            gif = QMovie(
+                os.path.join(
+                    action,
+                    f"{side}{unit.name}.gif"))
+            gif.setSpeed(self.speed)
+
+        gif_slot.setMovie(gif)
+        gif.start()
+
     def show_gif_by_side(self,
                          unit: Unit,
                          action: str,
@@ -855,7 +916,7 @@ class FightWindow(QMainWindow):
             side = self.enemy_side
             slots_dict = slots_dict2
 
-        show_gif_side(
+        self.show_gif_side(
             unit,
             slots_dict[unit.slot],
             action,
@@ -1036,7 +1097,7 @@ class FightWindow(QMainWindow):
                     self.enemy_side)
 
                 # прорисовка эффекта на атакованном вражеском юните
-                show_gif_side(
+                self.show_gif_side(
                     current_unit,
                     self.en_slots_attacked_eff_dict[curr_target.slot],
                     UNIT_EFFECTS_TARGET,
@@ -1048,7 +1109,7 @@ class FightWindow(QMainWindow):
                     self.player_side)
 
                 # прорисовка эффекта на атакованном юните игрока
-                show_gif_side(
+                self.show_gif_side(
                     current_unit,
                     self.pl_slots_attacked_eff_dict[curr_target.slot],
                     UNIT_EFFECTS_TARGET,
@@ -1063,7 +1124,7 @@ class FightWindow(QMainWindow):
 
             if self.new_battle.target_player == self.new_battle.player2:
                 # прорисовка эффекта на атакованном вражеском юните
-                show_gif_side(
+                self.show_gif_side(
                     current_unit,
                     self.en_slots_attacked_eff_dict[curr_target.slot],
                     UNIT_EFFECTS_TARGET,
@@ -1075,7 +1136,7 @@ class FightWindow(QMainWindow):
 
             else:
                 # прорисовка эффекта на атакованном юните игрока
-                show_gif_side(
+                self.show_gif_side(
                     current_unit,
                     self.pl_slots_attacked_eff_dict[curr_target.slot],
                     UNIT_EFFECTS_TARGET,
@@ -1184,7 +1245,7 @@ class FightWindow(QMainWindow):
                             side: str) -> None:
         """Анимации юнитов игрока"""
         for num, gif_slot in slots_dict.items():
-            show_gif_side(
+            self.show_gif_side(
                 self._unit_by_slot_and_side(num, side),
                 gif_slot,
                 unit_action,
