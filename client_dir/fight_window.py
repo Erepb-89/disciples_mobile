@@ -63,6 +63,7 @@ class FightWindow(QMainWindow):
         self.instance = instance
         self.new_battle = Battle(dungeon)
         self.dungeon = dungeon
+        self.computer_name = 'Computer'
         self.player_side = FRONT
         self.enemy_side = REAR
 
@@ -745,15 +746,25 @@ class FightWindow(QMainWindow):
         self.update_log()
         self.new_battle.autofight = False
 
-    def add_gold(self, mission_number: int) -> None:
+    @staticmethod
+    def add_gold(mission_number: int) -> None:
         """Добавление золота за победу"""
         gold_gradation = {
-            "1": 100,
-            "2": 150,
-            "3": 200,
-            "4": 250,
-            "5": 300,
-            "6": 350,
+            1: 50,
+            2: 50,
+            3: 100,
+            4: 100,
+            5: 100,
+            6: 150,
+            7: 150,
+            8: 150,
+            9: 150,
+            10: 200,
+            11: 200,
+            12: 200,
+            13: 250,
+            14: 250,
+            15: 500,
         }
 
         player_gold = main_db.get_gold(
