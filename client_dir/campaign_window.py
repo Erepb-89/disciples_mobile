@@ -12,6 +12,7 @@ from client_dir.settings import MISSION_UNITS, BACKGROUND
 from client_dir.ui_functions import slot_update, button_update
 from units_dir.mission_generator import unit_selector, \
     setup_6, setup_5, setup_4, setup_3, setup_2, boss_setup
+from units_dir.units import main_db
 from units_dir.units_factory import Unit
 
 
@@ -23,13 +24,12 @@ class CampaignWindow(QMainWindow):
     конвертированного файла campaign_form.py
     """
 
-    def __init__(self, database: any, instance: any):
+    def __init__(self, instance: any):
         super().__init__()
         # основные переменные
         self.name = 'CampaignWindow'
-        self.database = database
         self.main = instance
-        self.current_faction = self.database.current_faction
+        self.current_faction = main_db.current_faction
         self.dungeon = ''
         self.dungeon_num = 1
         self.campaign_buttons_dict = {}
@@ -140,14 +140,14 @@ class CampaignWindow(QMainWindow):
             15: self.mission_15,
         }
 
-        # self.database.add_dungeons(self.all_missions)
+        # main_db.add_dungeons(self.all_missions)
 
     def show_fight_window(self) -> None:
         """Метод создающий окно Битвы."""
         # curr_dungeon = self.all_missions[self.dungeon_num]
 
         global FIGHT_WINDOW
-        FIGHT_WINDOW = FightWindow(self.database, self.dungeon, self)
+        FIGHT_WINDOW = FightWindow(self.dungeon, self)
         FIGHT_WINDOW.show()
 
     @staticmethod
@@ -156,15 +156,14 @@ class CampaignWindow(QMainWindow):
         """Метод создающий окно просмотра армии."""
         global DETAIL_WINDOW
         DETAIL_WINDOW = EnemyArmyDialog(
-            database,
             dungeon_units)
         DETAIL_WINDOW.show()
 
     def dungeon_unit_by_slot(self, slot: int) -> Unit:
         """Метод получающий юнита подземелья по слоту."""
-        return self.database.get_unit_by_slot(
+        return main_db.get_unit_by_slot(
             slot,
-            self.database.CurrentDungeon)
+            main_db.CurrentDungeon)
 
     def append_campaign_buttons(self) -> None:
         """Кнопки миссий в кампании"""
@@ -212,7 +211,7 @@ class CampaignWindow(QMainWindow):
             # сделать добавление миссий в базу в таблицу dungeons
             # f'{self.current_faction}_{number}'
 
-            units = [self.database.get_unit_by_name(unit)
+            units = [main_db.get_unit_by_name(unit)
                      for unit in mission.values()]
 
             # определяем сильнейшее существо в отряде по опыту
@@ -230,7 +229,7 @@ class CampaignWindow(QMainWindow):
     def mission_buttons_update(self) -> None:
         """Обновление кнопок миссий кампании"""
         for num, button in self.campaign_buttons_dict.items():
-            unit = self.database.get_unit_by_name(
+            unit = main_db.get_unit_by_name(
                 MISSION_UNITS[self.current_faction][num])
 
             button_update(
@@ -265,7 +264,7 @@ class CampaignWindow(QMainWindow):
         for num, button in self.campaign_buttons_dict.items():
             if num == number:
                 self.show_red_frame(button)
-                self.mission_slot_detailed(self.database, self.all_missions[num])
+                self.mission_slot_detailed(main_db, self.all_missions[num])
 
         self.dungeon = f'{self.current_faction}_{number}'
         self.dungeon_num = number

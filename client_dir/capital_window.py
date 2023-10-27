@@ -9,6 +9,7 @@ from client_dir.capital_building_window import CapitalBuildingWindow
 from client_dir.capital_main_form import Ui_CapitalWindow
 from client_dir.settings import TOWNS, SCREEN_RECT
 from client_dir.ui_functions import get_image
+from units_dir.units import main_db
 
 
 class CapitalWindow(QMainWindow):
@@ -18,12 +19,11 @@ class CapitalWindow(QMainWindow):
     конвертированного файла capital_main_form.py
     """
 
-    def __init__(self, database: any, main: any):
+    def __init__(self, main: any):
         super().__init__()
         # основные переменные
-        self.database = database
         self.main = main
-        self.faction = self.database.current_faction
+        self.faction = main_db.current_faction
 
         self.InitUI()
 
@@ -61,13 +61,13 @@ class CapitalWindow(QMainWindow):
     def show_army(self):
         """Метод создающий окно армии."""
         global CAPITAL_ARMY_WINDOW
-        CAPITAL_ARMY_WINDOW = CapitalArmyWindow(self.database, self)
+        CAPITAL_ARMY_WINDOW = CapitalArmyWindow(self)
         CAPITAL_ARMY_WINDOW.show()
 
     def show_building(self):
         """Метод создающий окно строительства."""
         global CAPITAL_BUILDING_WINDOW
-        CAPITAL_BUILDING_WINDOW = CapitalBuildingWindow(self.database)
+        CAPITAL_BUILDING_WINDOW = CapitalBuildingWindow()
         CAPITAL_BUILDING_WINDOW.show()
 
     def back(self):

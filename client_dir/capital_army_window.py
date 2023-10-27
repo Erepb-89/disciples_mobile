@@ -12,6 +12,7 @@ from client_dir.settings import TOWN_ARMY, SCREEN_RECT, BIG
 from client_dir.ui_functions import get_unit_image, update_unit_health, \
     get_image, set_beige_colour
 from client_dir.unit_dialog import UnitDialog
+from units_dir.units import main_db
 from units_dir.units_factory import AbstractFactory
 
 
@@ -22,12 +23,11 @@ class CapitalArmyWindow(QMainWindow):
     конвертированного файла capital_army_form.py
     """
 
-    def __init__(self, database: any, instance: any):
+    def __init__(self, instance: any):
         super().__init__()
         # основные переменные
-        self.database = database
         self.capital = instance
-        self.faction = self.database.current_faction
+        self.faction = main_db.current_faction
         self.factory = AbstractFactory.create_factory(
             self.faction)
         self.support = self.factory.create_support()
@@ -91,15 +91,15 @@ class CapitalArmyWindow(QMainWindow):
 
         self._update_all_unit_health()
 
-        self.player_gold = self.database.get_gold(
-            self.database.current_player.name, self.faction)
+        self.player_gold = main_db.get_gold(
+            main_db.current_player.name, self.faction)
         self.ui.gold.setText(str(self.player_gold))
 
         self.reset()
 
-        self.button_enabled(self.ui.swap12, self.database.PlayerUnits, 2)
-        self.button_enabled(self.ui.swap34, self.database.PlayerUnits, 4)
-        self.button_enabled(self.ui.swap56, self.database.PlayerUnits, 6)
+        self.button_enabled(self.ui.swap12, main_db.PlayerUnits, 2)
+        self.button_enabled(self.ui.swap34, main_db.PlayerUnits, 4)
+        self.button_enabled(self.ui.swap56, main_db.PlayerUnits, 6)
 
         self.show()
 
@@ -111,7 +111,7 @@ class CapitalArmyWindow(QMainWindow):
     def button_enabled(self, button, database, num2):
         """Определяет доступность кнопки по юнитам в слотах"""
         try:
-            if self.database.get_unit_by_slot(
+            if main_db.get_unit_by_slot(
                     num2, database).size == BIG:
                 button.setEnabled(False)
             else:
@@ -170,8 +170,8 @@ class CapitalArmyWindow(QMainWindow):
 
     def player_list_update(self) -> None:
         """Метод обновляющий список юнитов игрока."""
-        # player_units = self.database.show_player_units()
-        player_units = self.database.show_db_units(self.database.PlayerUnits)
+        # player_units = main_db.show_player_units()
+        player_units = main_db.show_db_units(main_db.PlayerUnits)
         self.player_units_model = QStandardItemModel()
         for i in player_units:
             item = QStandardItem(i.name)
@@ -218,13 +218,13 @@ class CapitalArmyWindow(QMainWindow):
         self.player_list_update()
         # self.player_slots_update()
 
-        self.button_enabled(self.ui.swap12, self.database.PlayerUnits, 2)
-        self.button_enabled(self.ui.swap34, self.database.PlayerUnits, 4)
-        self.button_enabled(self.ui.swap56, self.database.PlayerUnits, 6)
+        self.button_enabled(self.ui.swap12, main_db.PlayerUnits, 2)
+        self.button_enabled(self.ui.swap34, main_db.PlayerUnits, 4)
+        self.button_enabled(self.ui.swap56, main_db.PlayerUnits, 6)
 
     def units_list_update(self) -> None:
         """Метод обновляющий список юнитов."""
-        all_units = self.database.show_all_units()
+        all_units = main_db.show_all_units()
 
         self.units_model = QStandardItemModel()
         for i in all_units:
@@ -237,7 +237,7 @@ class CapitalArmyWindow(QMainWindow):
         """Метод обработчик нажатия кнопки 'Уволить'"""
         try:
             selected_slot = self.ui.listPlayerSlots.currentIndex().data()
-            self.database.delete_player_unit(int(selected_slot))
+            main_db.delete_player_unit(int(selected_slot))
             self.reset()
             self.capital.main.reset()
         except TypeError:
@@ -247,7 +247,7 @@ class CapitalArmyWindow(QMainWindow):
         """Метод показывающий доступных для покупки
         юнитов данной фракции."""
         global HIRE_WINDOW
-        HIRE_WINDOW = HireMenuWindow(self.database, slot, self)
+        HIRE_WINDOW = HireMenuWindow(slot, self)
         HIRE_WINDOW.show()
 
         print('Доступные для покупки юниты данной фракции')
@@ -306,8 +306,8 @@ class CapitalArmyWindow(QMainWindow):
         Проверить юниты в слотах на наличие и размер.
         Поменять местами вместе с парным юнитом (соседний слот)
         """
-        unit1 = self.database.get_unit_by_slot(num1, self.database.PlayerUnits)
-        unit2 = self.database.get_unit_by_slot(num2, self.database.PlayerUnits)
+        unit1 = main_db.get_unit_by_slot(num1, main_db.PlayerUnits)
+        unit2 = main_db.get_unit_by_slot(num2, main_db.PlayerUnits)
 
         if unit1 is not None and unit2 is not None \
                 and unit1.size == BIG and unit2.size == BIG:
@@ -325,10 +325,10 @@ class CapitalArmyWindow(QMainWindow):
 
     def swap_unit_action(self, slot1: int, slot2: int) -> None:
         """Меняет слоты двух юнитов игрока"""
-        self.database.update_slot(
+        main_db.update_slot(
             slot1,
             slot2,
-            self.database.PlayerUnits)
+            main_db.PlayerUnits)
         self.player_list_update()
         self._update_all_unit_health()
 
@@ -364,13 +364,12 @@ class CapitalArmyWindow(QMainWindow):
         """Меняет местами юнитов игрока в слотах 5 и 6"""
         self.swap_unit_action(5, 6)
 
-    def slot_detailed(self, database: any, slot: int) -> None:
+    def slot_detailed(self, slot: int) -> None:
         """Метод создающий окно юнита игрока при нажатии на слот."""
         try:
             unit = self.player_unit_by_slot(slot)
             global DETAIL_WINDOW
             DETAIL_WINDOW = UnitDialog(
-                database,
                 unit)
             DETAIL_WINDOW.show()
         except AttributeError:
@@ -378,30 +377,30 @@ class CapitalArmyWindow(QMainWindow):
 
     def _slot1_detailed(self) -> None:
         """Метод создающий окно юнита игрока (слот 1)."""
-        self.slot_detailed(self.database.PlayerUnits, 1)
+        self.slot_detailed(1)
 
     def _slot2_detailed(self) -> None:
         """Метод создающий окно юнита игрока (слот 2)."""
-        self.slot_detailed(self.database.PlayerUnits, 2)
+        self.slot_detailed(2)
 
     def _slot3_detailed(self) -> None:
         """Метод создающий окно юнита игрока (слот 3)."""
-        self.slot_detailed(self.database.PlayerUnits, 3)
+        self.slot_detailed(3)
 
     def _slot4_detailed(self) -> None:
         """Метод создающий окно юнита игрока (слот 4)."""
-        self.slot_detailed(self.database.PlayerUnits, 4)
+        self.slot_detailed(4)
 
     def _slot5_detailed(self) -> None:
         """Метод создающий окно юнита игрока (слот 5)."""
-        self.slot_detailed(self.database.PlayerUnits, 5)
+        self.slot_detailed(5)
 
     def _slot6_detailed(self) -> None:
         """Метод создающий окно юнита игрока (слот 6)."""
-        self.slot_detailed(self.database.PlayerUnits, 6)
+        self.slot_detailed(6)
 
     def player_unit_by_slot(self, slot: int) -> namedtuple:
         """Метод получающий юнита игрока по слоту."""
-        return self.database.get_unit_by_slot(
+        return main_db.get_unit_by_slot(
             slot,
-            self.database.PlayerUnits)
+            main_db.PlayerUnits)

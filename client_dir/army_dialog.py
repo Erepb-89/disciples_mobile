@@ -8,13 +8,12 @@ from PyQt5.QtWidgets import QDialog
 from client_dir.settings import BACKGROUND
 from client_dir.ui_functions import slot_update, button_update, get_unit_image
 from client_dir.unit_dialog import UnitDialog
-from units_dir.mission_generator import unit_selector, setup_6
+from units_dir.units import main_db
 
 
 class EnemyArmyDialog(QDialog):
-    def __init__(self, database: any, dungeon_units: dict):
+    def __init__(self, dungeon_units: dict):
         super().__init__()
-        self.database = database
         self.dungeon_units = dungeon_units
 
         self.setFixedSize(320, 490)
@@ -172,7 +171,7 @@ class EnemyArmyDialog(QDialog):
         self.pushButtonSlot_5.clicked.connect(self.en_slot5_detailed)
         self.pushButtonSlot_6.clicked.connect(self.en_slot6_detailed)
 
-        self.faction = self.database.current_faction
+        self.faction = main_db.current_faction
 
         self.dung_buttons_dict = {
             1: self.pushButtonSlot_1,
@@ -201,7 +200,7 @@ class EnemyArmyDialog(QDialog):
 
         units_dict = {}
         for num, unit_name in enumerate(self.dungeon_units):
-            unit = self.database.get_unit_by_name(unit_name)
+            unit = main_db.get_unit_by_name(unit_name)
             units_dict[num + 1] = unit
 
         for num, icon_slot in dung_icons_dict.items():
@@ -213,7 +212,7 @@ class EnemyArmyDialog(QDialog):
         """Метод обновляющий кнопки юнитов подземелья"""
         for num, icon_slot in self.dung_buttons_dict.items():
             button_update(
-                self.database.get_unit_by_name(self.dungeon_units[num]),
+                main_db.get_unit_by_name(self.dungeon_units[num]),
                 icon_slot)
 
     def _dungeon_buttons_update(self) -> None:
@@ -221,7 +220,7 @@ class EnemyArmyDialog(QDialog):
         for num, unit in self.dungeon_units.items():
             if unit is not None:
                 button_update(
-                    self.database.get_unit_by_name(unit),
+                    main_db.get_unit_by_name(unit),
                     self.dung_buttons_dict[num])
 
     def _dungeon_list_update(self) -> None:
@@ -237,7 +236,7 @@ class EnemyArmyDialog(QDialog):
 
         for num, icon_slot in dung_icons_dict.items():
             if num in self.dungeon_units.keys():
-                unit = self.database.get_unit_by_name(self.dungeon_units[num])
+                unit = main_db.get_unit_by_name(self.dungeon_units[num])
                 slot_update(
                     unit,
                     icon_slot)
@@ -253,7 +252,6 @@ class EnemyArmyDialog(QDialog):
         try:
             global DETAIL_WINDOW
             DETAIL_WINDOW = slot_dialog(
-                self.database,
                 unit)
             DETAIL_WINDOW.show()
         except AttributeError:
@@ -261,30 +259,30 @@ class EnemyArmyDialog(QDialog):
 
     def en_slot1_detailed(self) -> None:
         """Метод создающий окно вражеского юнита (слот 1)."""
-        unit = self.database.get_unit_by_name(self.dungeon_units[1])
+        unit = main_db.get_unit_by_name(self.dungeon_units[1])
         self.slot_detailed(unit, UnitDialog)
 
     def en_slot2_detailed(self) -> None:
         """Метод создающий окно вражеского юнита (слот 2)."""
-        unit = self.database.get_unit_by_name(self.dungeon_units[2])
+        unit = main_db.get_unit_by_name(self.dungeon_units[2])
         self.slot_detailed(unit, UnitDialog)
 
     def en_slot3_detailed(self) -> None:
         """Метод создающий окно вражеского юнита (слот 3)."""
-        unit = self.database.get_unit_by_name(self.dungeon_units[3])
+        unit = main_db.get_unit_by_name(self.dungeon_units[3])
         self.slot_detailed(unit, UnitDialog)
 
     def en_slot4_detailed(self) -> None:
         """Метод создающий окно вражеского юнита (слот 4)."""
-        unit = self.database.get_unit_by_name(self.dungeon_units[4])
+        unit = main_db.get_unit_by_name(self.dungeon_units[4])
         self.slot_detailed(unit, UnitDialog)
 
     def en_slot5_detailed(self) -> None:
         """Метод создающий окно вражеского юнита (слот 5)."""
-        unit = self.database.get_unit_by_name(self.dungeon_units[5])
+        unit = main_db.get_unit_by_name(self.dungeon_units[5])
         self.slot_detailed(unit, UnitDialog)
 
     def en_slot6_detailed(self) -> None:
         """Метод создающий окно вражеского юнита (слот 6)."""
-        unit = self.database.get_unit_by_name(self.dungeon_units[6])
+        unit = main_db.get_unit_by_name(self.dungeon_units[6])
         self.slot_detailed(unit, UnitDialog)

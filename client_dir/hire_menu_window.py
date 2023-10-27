@@ -11,6 +11,7 @@ from client_dir.settings import HIRE_SCREEN
 from client_dir.ui_functions import show_gif,\
     slot_frame_update, slot_update, button_update
 from client_dir.unit_dialog import UnitNameDialog
+from units_dir.units import main_db
 from units_dir.units_factory import AbstractFactory
 
 
@@ -21,12 +22,11 @@ class HireMenuWindow(QMainWindow):
     конвертированного файла hire_menu_form.py
     """
 
-    def __init__(self, database: any, slot: int, instance: any):
+    def __init__(self, slot: int, instance: any):
         super().__init__()
         # основные переменные
-        self.database = database
         self.capital_army = instance
-        self.faction = self.database.current_faction
+        self.faction = main_db.current_faction
         self.factory = AbstractFactory.create_factory(
             self.faction)
         self.fighter = self.factory.create_fighter()
@@ -86,8 +86,8 @@ class HireMenuWindow(QMainWindow):
         show_gif(self.support, self.ui.gifLabel4)
         show_gif(self.special, self.ui.gifLabel5)
 
-        self.player_gold = self.database.get_gold(
-            self.database.current_player.name, self.faction)
+        self.player_gold = main_db.get_gold(
+            main_db.current_player.name, self.faction)
         self.ui.gold.setText(str(self.player_gold))
         self.ui.pushButtonBuy.setEnabled(False)
 
@@ -195,8 +195,8 @@ class HireMenuWindow(QMainWindow):
             changed_gold = self.player_gold - int(self.highlighted_unit.cost)
 
             # обновление золота в базе
-            self.database.update_gold(
-                self.database.current_player.name,
+            main_db.update_gold(
+                main_db.current_player.name,
                 self.faction,
                 changed_gold)
             self.highlighted_unit.add_to_band(int(slot))
@@ -207,7 +207,6 @@ class HireMenuWindow(QMainWindow):
         """Метод создающий окно юнита."""
         global DETAIL_WINDOW
         DETAIL_WINDOW = UnitNameDialog(
-            self.database,
             unit_type.name)
         DETAIL_WINDOW.show()
 

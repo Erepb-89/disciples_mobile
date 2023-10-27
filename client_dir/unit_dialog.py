@@ -13,13 +13,13 @@ from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QDialog
 
 from client_dir.settings import UNIT_FRAME, PORTRAITS
+from units_dir.units import main_db
 
 
 class UnitDialog(QDialog):
 
-    def __init__(self, database, unit):
+    def __init__(self, unit: any):
         super().__init__()
-        self.database = database
 
         self.setFixedSize(914, 826)
         self.setWindowTitle('Характеристики')
@@ -214,9 +214,8 @@ class UnitDialog(QDialog):
 
 class UnitNameDialog(QDialog):
 
-    def __init__(self, database, unit):
+    def __init__(self, unit):
         super().__init__()
-        self.database = database
 
         self.setFixedSize(914, 826)
         self.setWindowTitle('Характеристики')
@@ -380,7 +379,7 @@ class UnitNameDialog(QDialog):
         self.description.setWordWrap(True)
         self.description.setObjectName("description")
 
-        unit = self.database.get_unit_by_name(unit)
+        unit = main_db.get_unit_by_name(unit)
         unit_frame = QPixmap(UNIT_FRAME)
         portrait_img = QPixmap(f"{PORTRAITS}{unit.name}.gif")
         self.background.setPixmap(unit_frame)
