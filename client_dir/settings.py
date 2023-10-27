@@ -75,6 +75,9 @@ MC = 'Mountain Clans'
 # active units
 ACTIVE_UNITS = os.listdir(f'{UNIT_ATTACK}{FRONT}')
 
+# animation speed
+SPEED = 200
+
 # coordinates
 X_COORD_1 = 40
 X_COORD_2 = 160

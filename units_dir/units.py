@@ -1062,18 +1062,19 @@ class ServerStorage:
 
     def add_dungeons(self, dungeons: dict):
         """Добавление подземелий в таблицу Dungeons"""
+        mission_num = 1
         for dungeon in dungeons.values():
-            for num, units in dungeon.items():
-                dungeon_row = self.Dungeons(
-                    num,
-                    units[0],
-                    units[1],
-                    units[2],
-                    units[3],
-                    units[4],
-                    units[5],
-                )
-                self.session.add(dungeon_row)
+            dungeon_row = self.Dungeons(
+                f'{self.current_faction}_{mission_num}',
+                dungeon[1],
+                dungeon[2],
+                dungeon[3],
+                dungeon[4],
+                dungeon[5],
+                dungeon[6],
+            )
+            self.session.add(dungeon_row)
+            mission_num += 1
         self.session.commit()
 
     def delete_player_unit(self, slot: int) -> None:

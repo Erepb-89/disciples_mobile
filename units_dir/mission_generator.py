@@ -388,8 +388,8 @@ def unit_selector(level: int, setup: list) -> dict:
 
                     result_dict[slot] = unit
         # если None
-        # else:
-        #     result_dict[slot] = None
+        else:
+            result_dict[slot] = None
 
     return result_dict
 

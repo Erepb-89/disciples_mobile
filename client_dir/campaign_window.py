@@ -8,7 +8,7 @@ from PyQt5.QtWidgets import QMainWindow, QHBoxLayout
 from client_dir.campaign_form import Ui_CampaignWindow
 from client_dir.fight_window import FightWindow
 from client_dir.army_dialog import EnemyArmyDialog
-from client_dir.settings import MISSION_UNITS, BACKGROUND
+from client_dir.settings import BACKGROUND
 from client_dir.ui_functions import slot_update, button_update
 from units_dir.mission_generator import unit_selector, \
     setup_6, setup_5, setup_4, setup_3, setup_2, boss_setup
@@ -29,11 +29,11 @@ class CampaignWindow(QMainWindow):
         # основные переменные
         self.name = 'CampaignWindow'
         self.main = instance
-        self.current_faction = main_db.current_faction
+        self.faction = main_db.current_faction
         self.dungeon = ''
-        self.dungeon_num = 1
         self.campaign_buttons_dict = {}
         self.campaign_icons_dict = {}
+        self.all_missions = {}
 
         self.InitUI()
 
@@ -82,12 +82,27 @@ class CampaignWindow(QMainWindow):
         self.append_campaign_buttons()
         self.append_campaign_icons()
         self.show_red_frame(self.ui.pushButtonSlot_1)
-        self.dungeon = f'{self.current_faction}_{1}'
 
-        self.update_all_missions()
+        # если в базе нет готовых миссий
+        if not main_db.show_dungeon_units(f'{self.faction}_1'):
+            # генерируем их
+            self.update_all_missions()
+        else:
+            # иначе берем из базы готовые
+            for mission_num in range(1, 16):
+                units = main_db.show_dungeon_units(f'{self.faction}_{mission_num}')
+                self.all_missions[
+                    f'{self.faction}_{mission_num}'] = {
+                    1: units[0],
+                    2: units[1],
+                    3: units[2],
+                    4: units[3],
+                    5: units[4],
+                    6: units[5]
+                }
 
+        # обновляем иконки миссий кампании
         self.mission_list_update()
-        # self.mission_buttons_update()
 
         self.show()
 
@@ -98,7 +113,6 @@ class CampaignWindow(QMainWindow):
     def set_campaign_image(self) -> None:
         """Установить картинку кампании"""
         self.ui.campaignBG.setPixmap(QPixmap(BACKGROUND))
-        # self.ui.campaignBG.setGeometry(QtCore.QRect(0, 0, 4, 4))
         self.ui.campaignBG.setGeometry(QtCore.QRect(0, 0, 1500, 827))
 
     def update_all_missions(self) -> None:
@@ -106,46 +120,29 @@ class CampaignWindow(QMainWindow):
         start_level = 1
         mid_level = 2
 
-        self.mission_1 = unit_selector(start_level, setup_4)
-        self.mission_2 = unit_selector(start_level, setup_4)
-        self.mission_3 = unit_selector(start_level, setup_5)
-        self.mission_4 = unit_selector(start_level, setup_5)
-        self.mission_5 = unit_selector(start_level, setup_5)
-        self.mission_6 = unit_selector(mid_level, setup_3)
-        self.mission_7 = unit_selector(mid_level, setup_3)
-        self.mission_8 = unit_selector(mid_level, setup_3)
-        self.mission_9 = unit_selector(mid_level, setup_3)
-        self.mission_10 = unit_selector(mid_level, setup_4)
-        self.mission_11 = unit_selector(mid_level, setup_4)
-        self.mission_12 = unit_selector(mid_level, setup_4)
-        self.mission_13 = unit_selector(mid_level, setup_5)
-        self.mission_14 = unit_selector(mid_level, setup_5)
-        self.mission_15 = unit_selector(6, boss_setup)
-
+        # миссии с 1 по 15 (сгенерированные рандомно)
         self.all_missions = {
-            1: self.mission_1,
-            2: self.mission_2,
-            3: self.mission_3,
-            4: self.mission_4,
-            5: self.mission_5,
-            6: self.mission_6,
-            7: self.mission_7,
-            8: self.mission_8,
-            9: self.mission_9,
-            10: self.mission_10,
-            11: self.mission_11,
-            12: self.mission_12,
-            13: self.mission_13,
-            14: self.mission_14,
-            15: self.mission_15,
+            f'{self.faction}_1': unit_selector(start_level, setup_4),
+            f'{self.faction}_2': unit_selector(start_level, setup_4),
+            f'{self.faction}_3': unit_selector(start_level, setup_5),
+            f'{self.faction}_4': unit_selector(start_level, setup_5),
+            f'{self.faction}_5': unit_selector(start_level, setup_5),
+            f'{self.faction}_6': unit_selector(mid_level, setup_3),
+            f'{self.faction}_7': unit_selector(mid_level, setup_3),
+            f'{self.faction}_8': unit_selector(mid_level, setup_3),
+            f'{self.faction}_9': unit_selector(mid_level, setup_3),
+            f'{self.faction}_10': unit_selector(mid_level, setup_4),
+            f'{self.faction}_11': unit_selector(mid_level, setup_4),
+            f'{self.faction}_12': unit_selector(mid_level, setup_4),
+            f'{self.faction}_13': unit_selector(mid_level, setup_5),
+            f'{self.faction}_14': unit_selector(mid_level, setup_5),
+            f'{self.faction}_15': unit_selector(5, boss_setup)
         }
 
-        # main_db.add_dungeons(self.all_missions)
+        main_db.add_dungeons(self.all_missions)
 
     def show_fight_window(self) -> None:
         """Метод создающий окно Битвы."""
-        # curr_dungeon = self.all_missions[self.dungeon_num]
-
         global FIGHT_WINDOW
         FIGHT_WINDOW = FightWindow(self.dungeon, self)
         FIGHT_WINDOW.show()
@@ -207,12 +204,10 @@ class CampaignWindow(QMainWindow):
 
     def mission_list_update(self) -> None:
         """Обновление иконок миссий кампании"""
-        for num, mission in self.all_missions.items():
-            # сделать добавление миссий в базу в таблицу dungeons
-            # f'{self.current_faction}_{number}'
-
+        for number, mission in self.all_missions.items():
+            num = int(number.split('_')[1])
             units = [main_db.get_unit_by_name(unit)
-                     for unit in mission.values()]
+                     for unit in mission.values() if unit is not None]
 
             # определяем сильнейшее существо в отряде по опыту
             units.sort(key=lambda x: x['exp_per_kill'], reverse=True)
@@ -225,16 +220,6 @@ class CampaignWindow(QMainWindow):
             button_update(
                 strongest_unit,
                 self.campaign_buttons_dict[num])
-
-    def mission_buttons_update(self) -> None:
-        """Обновление кнопок миссий кампании"""
-        for num, button in self.campaign_buttons_dict.items():
-            unit = main_db.get_unit_by_name(
-                MISSION_UNITS[self.current_faction][num])
-
-            button_update(
-                unit,
-                button)
 
     @staticmethod
     def show_red_frame(gif_slot: QtWidgets.QPushButton) -> None:
@@ -264,10 +249,11 @@ class CampaignWindow(QMainWindow):
         for num, button in self.campaign_buttons_dict.items():
             if num == number:
                 self.show_red_frame(button)
-                self.mission_slot_detailed(main_db, self.all_missions[num])
+                self.mission_slot_detailed(
+                    main_db, self.all_missions[f'{self.faction}_{num}'])
 
-        self.dungeon = f'{self.current_faction}_{number}'
-        self.dungeon_num = number
+        self.dungeon = f'{self.faction}_{number}'
+        # self.dungeon = number
 
     def highlight_selected_1(self) -> None:
         """Подсветка миссии 1"""
