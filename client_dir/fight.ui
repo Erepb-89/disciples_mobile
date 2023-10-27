@@ -3515,6 +3515,39 @@
      <set>Qt::AlignBottom|Qt::AlignHCenter</set>
     </property>
    </widget>
+   <widget class="QLabel" name="speedText">
+    <property name="geometry">
+     <rect>
+      <x>40</x>
+      <y>10</y>
+      <width>81</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>8</pointsize>
+      <weight>75</weight>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="text">
+     <string>Скорость X</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+    </property>
+   </widget>
+   <widget class="QComboBox" name="comboSpeed">
+    <property name="geometry">
+     <rect>
+      <x>130</x>
+      <y>8</y>
+      <width>51</width>
+      <height>22</height>
+     </rect>
+    </property>
+   </widget>
    <zorder>FightBG</zorder>
    <zorder>leftIcons</zorder>
    <zorder>rightIcons</zorder>
@@ -3638,6 +3671,8 @@
    <zorder>pushButtonSlot6</zorder>
    <zorder>pushButtonSlot2</zorder>
    <zorder>pushButtonSlot4</zorder>
+   <zorder>speedText</zorder>
+   <zorder>comboSpeed</zorder>
   </widget>
  </widget>
  <resources/>
