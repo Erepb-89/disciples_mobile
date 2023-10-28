@@ -47,6 +47,7 @@ TESTING_UNIT_SHADOW_STAND = '../images/testing/unit_shadow_stand/'
 BATTLE_GROUND = '../images/grounds/'
 BATTLE_GROUNDS = os.listdir(BATTLE_GROUND)
 COMMON = '../images/common/'
+INTERF = '../images/interf/'
 ORIGINAL_GIFS = '../images/gif/original/'
 TOWN_ICONS = '../images/towns/capital_building/town_icons/'
 ORIGINAL_PNGS = '../images/towns/capital_building/town_icons_original/'

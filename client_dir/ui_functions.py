@@ -6,7 +6,7 @@ from PyQt5 import QtWidgets
 from PyQt5.QtGui import QMovie, QPixmap
 
 from client_dir.settings import UNIT_ICONS, PLUG, ICON, GIF_ANIMATIONS, \
-    HIRE_SCREEN, COMMON, UNIT_STAND, BIG
+    HIRE_SCREEN, COMMON, UNIT_STAND, BIG, INTERF
 from units_dir.buildings import FACTIONS
 
 
@@ -44,6 +44,16 @@ def show_gif(unit: any, gif_label: QtWidgets.QLabel):
     """Установка gif'ки общего вида юнита"""
     gif = QMovie(os.path.join(
         GIF_ANIMATIONS, f"{unit.name}.gif"))
+    gif_label.setMovie(gif)
+    gif.start()
+
+
+def show_no_circle(gif_label: QtWidgets.QLabel):
+    """Убирает круг под юнитом"""
+    gif = QMovie(
+        os.path.join(
+            UNIT_STAND,
+            "FRONT/empty.gif"))
     gif_label.setMovie(gif)
     gif.start()
 
