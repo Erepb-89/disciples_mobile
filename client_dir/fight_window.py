@@ -857,6 +857,9 @@ class FightWindow(QMainWindow):
         else:
             self.show_lvl_up_animations()
 
+            self.show_no_frames(self.unit_circles_dict, show_no_circle)
+            self.show_no_frames(self.dung_circles_dict, show_no_circle)
+
             self.instance.reset()
             if self.instance.name == 'CampaignWindow':
                 self.instance.main.player_list_update()

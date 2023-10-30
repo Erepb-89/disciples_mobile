@@ -44,7 +44,25 @@ class ServerStorage:
                      desc: str,
                      photo: str,
                      gif: str,
-                     slot: int
+                     slot: int,
+                     subrace: str,
+                     branch: str,
+                     attack_twice: int,
+                     regen: int,
+                     dyn_upd_level: int,
+                     upgrade_b: str,
+                     leadership: int,
+                     leader_cat: str,
+                     nat_armor: int,
+                     might: int,
+                     weapon_master: int,
+                     endurance: int,
+                     first_strike: int,
+                     accuracy: int,
+                     water_resist: int,
+                     air_resist: int,
+                     fire_resist: int,
+                     earth_resist: int
                      ):
             self.id = None
             self.name = name
@@ -71,6 +89,24 @@ class ServerStorage:
             self.photo = photo
             self.gif = gif
             self.slot = slot
+            self.subrace = subrace
+            self.branch = branch
+            self.attack_twice = attack_twice
+            self.regen = regen
+            self.dyn_upd_level = dyn_upd_level
+            self.upgrade_b = upgrade_b
+            self.leadership = leadership
+            self.leader_cat = leader_cat
+            self.nat_armor = nat_armor
+            self.might = might
+            self.weapon_master = weapon_master
+            self.endurance = endurance
+            self.first_strike = first_strike
+            self.accuracy = accuracy
+            self.water_resist = water_resist
+            self.air_resist = air_resist
+            self.fire_resist = fire_resist
+            self.earth_resist = earth_resist
 
     class PlayerUnits(AllUnits):
         """Класс - отображение таблицы юнитов игрока."""
@@ -101,7 +137,25 @@ class ServerStorage:
                 desc,
                 photo,
                 gif,
-                slot
+                slot,
+                subrace,
+                branch,
+                attack_twice,
+                regen,
+                dyn_upd_level,
+                upgrade_b,
+                leadership,
+                leader_cat,
+                nat_armor,
+                might,
+                weapon_master,
+                endurance,
+                first_strike,
+                accuracy,
+                water_resist,
+                air_resist,
+                fire_resist,
+                earth_resist
         ):
             super().__init__(
                 name,
@@ -127,7 +181,25 @@ class ServerStorage:
                 desc,
                 photo,
                 gif,
-                slot
+                slot,
+                subrace,
+                branch,
+                attack_twice,
+                regen,
+                dyn_upd_level,
+                upgrade_b,
+                leadership,
+                leader_cat,
+                nat_armor,
+                might,
+                weapon_master,
+                endurance,
+                first_strike,
+                accuracy,
+                water_resist,
+                air_resist,
+                fire_resist,
+                earth_resist
             )
 
     class Player2Units(AllUnits):
@@ -159,7 +231,25 @@ class ServerStorage:
                 desc,
                 photo,
                 gif,
-                slot
+                slot,
+                subrace,
+                branch,
+                attack_twice,
+                regen,
+                dyn_upd_level,
+                upgrade_b,
+                leadership,
+                leader_cat,
+                nat_armor,
+                might,
+                weapon_master,
+                endurance,
+                first_strike,
+                accuracy,
+                water_resist,
+                air_resist,
+                fire_resist,
+                earth_resist
         ):
             super().__init__(
                 name,
@@ -185,7 +275,25 @@ class ServerStorage:
                 desc,
                 photo,
                 gif,
-                slot
+                slot,
+                subrace,
+                branch,
+                attack_twice,
+                regen,
+                dyn_upd_level,
+                upgrade_b,
+                leadership,
+                leader_cat,
+                nat_armor,
+                might,
+                weapon_master,
+                endurance,
+                first_strike,
+                accuracy,
+                water_resist,
+                air_resist,
+                fire_resist,
+                earth_resist
             )
 
     class Players:
@@ -283,7 +391,25 @@ class ServerStorage:
                 desc,
                 photo,
                 gif,
-                slot
+                slot,
+                subrace,
+                branch,
+                attack_twice,
+                regen,
+                dyn_upd_level,
+                upgrade_b,
+                leadership,
+                leader_cat,
+                nat_armor,
+                might,
+                weapon_master,
+                endurance,
+                first_strike,
+                accuracy,
+                water_resist,
+                air_resist,
+                fire_resist,
+                earth_resist
         ):
             super().__init__(
                 name,
@@ -309,7 +435,25 @@ class ServerStorage:
                 desc,
                 photo,
                 gif,
-                slot
+                slot,
+                subrace,
+                branch,
+                attack_twice,
+                regen,
+                dyn_upd_level,
+                upgrade_b,
+                leadership,
+                leader_cat,
+                nat_armor,
+                might,
+                weapon_master,
+                endurance,
+                first_strike,
+                accuracy,
+                water_resist,
+                air_resist,
+                fire_resist,
+                earth_resist
             )
 
     def __init__(self, path):
@@ -350,7 +494,25 @@ class ServerStorage:
                             Column('desc', String),
                             Column('photo', String),
                             Column('gif', String),
-                            Column('slot', Integer)
+                            Column('slot', Integer),
+                            Column('subrace', Integer),
+                            Column('branch', Integer),
+                            Column('attack_twice', Integer),
+                            Column('regen', Integer),
+                            Column('dyn_upd_level', Integer),
+                            Column('upgrade_b', Integer),
+                            Column('leadership', Integer),
+                            Column('leader_cat', Integer),
+                            Column('nat_armor', Integer),
+                            Column('might', Integer),
+                            Column('weapon_master', Integer),
+                            Column('endurance', Integer),
+                            Column('first_strike', Integer),
+                            Column('accuracy', Integer),
+                            Column('water_resist', Integer),
+                            Column('air_resist', Integer),
+                            Column('fire_resist', Integer),
+                            Column('earth_resist', Integer),
                             )
 
         player_units_table = Table('player_units', self.metadata,
@@ -378,7 +540,25 @@ class ServerStorage:
                                    Column('desc', String),
                                    Column('photo', String),
                                    Column('gif', String),
-                                   Column('slot', Integer)
+                                   Column('slot', Integer),
+                                   Column('subrace', Integer),
+                                   Column('branch', Integer),
+                                   Column('attack_twice', Integer),
+                                   Column('regen', Integer),
+                                   Column('dyn_upd_level', Integer),
+                                   Column('upgrade_b', Integer),
+                                   Column('leadership', Integer),
+                                   Column('leader_cat', Integer),
+                                   Column('nat_armor', Integer),
+                                   Column('might', Integer),
+                                   Column('weapon_master', Integer),
+                                   Column('endurance', Integer),
+                                   Column('first_strike', Integer),
+                                   Column('accuracy', Integer),
+                                   Column('water_resist', Integer),
+                                   Column('air_resist', Integer),
+                                   Column('fire_resist', Integer),
+                                   Column('earth_resist', Integer),
                                    )
 
         player2_units_table = Table('player2_units', self.metadata,
@@ -406,7 +586,25 @@ class ServerStorage:
                                     Column('desc', String),
                                     Column('photo', String),
                                     Column('gif', String),
-                                    Column('slot', Integer)
+                                    Column('slot', Integer),
+                                    Column('subrace', Integer),
+                                    Column('branch', Integer),
+                                    Column('attack_twice', Integer),
+                                    Column('regen', Integer),
+                                    Column('dyn_upd_level', Integer),
+                                    Column('upgrade_b', Integer),
+                                    Column('leadership', Integer),
+                                    Column('leader_cat', Integer),
+                                    Column('nat_armor', Integer),
+                                    Column('might', Integer),
+                                    Column('weapon_master', Integer),
+                                    Column('endurance', Integer),
+                                    Column('first_strike', Integer),
+                                    Column('accuracy', Integer),
+                                    Column('water_resist', Integer),
+                                    Column('air_resist', Integer),
+                                    Column('fire_resist', Integer),
+                                    Column('earth_resist', Integer),
                                     )
 
         # Создаём таблицу игроков
@@ -476,7 +674,25 @@ class ServerStorage:
                                       Column('desc', String),
                                       Column('photo', String),
                                       Column('gif', String),
-                                      Column('slot', Integer)
+                                      Column('slot', Integer),
+                                      Column('subrace', Integer),
+                                      Column('branch', Integer),
+                                      Column('attack_twice', Integer),
+                                      Column('regen', Integer),
+                                      Column('dyn_upd_level', Integer),
+                                      Column('upgrade_b', Integer),
+                                      Column('leadership', Integer),
+                                      Column('leader_cat', Integer),
+                                      Column('nat_armor', Integer),
+                                      Column('might', Integer),
+                                      Column('weapon_master', Integer),
+                                      Column('endurance', Integer),
+                                      Column('first_strike', Integer),
+                                      Column('accuracy', Integer),
+                                      Column('water_resist', Integer),
+                                      Column('air_resist', Integer),
+                                      Column('fire_resist', Integer),
+                                      Column('earth_resist', Integer),
                                       )
 
         # Создаём таблицы
@@ -527,7 +743,25 @@ class ServerStorage:
             desc,
             photo,
             gif,
-            slot):
+            slot,
+            subrace,
+            branch,
+            attack_twice,
+            regen,
+            dyn_upd_level,
+            upgrade_b,
+            leadership,
+            leader_cat,
+            nat_armor,
+            might,
+            weapon_master,
+            endurance,
+            first_strike,
+            accuracy,
+            water_resist,
+            air_resist,
+            fire_resist,
+            earth_resist):
         """
         Метод регистрации юнита.
         Создаёт запись в таблице CurrentDungeon.
@@ -557,7 +791,25 @@ class ServerStorage:
             desc,
             photo,
             gif,
-            slot
+            slot,
+            subrace,
+            branch,
+            attack_twice,
+            regen,
+            dyn_upd_level,
+            upgrade_b,
+            leadership,
+            leader_cat,
+            nat_armor,
+            might,
+            weapon_master,
+            endurance,
+            first_strike,
+            accuracy,
+            water_resist,
+            air_resist,
+            fire_resist,
+            earth_resist
         )
         self.session.add(unit_row)
         self.session.commit()
@@ -589,7 +841,25 @@ class ServerStorage:
             self.AllUnits.desc,
             self.AllUnits.photo,
             self.AllUnits.gif,
-            self.AllUnits.slot
+            self.AllUnits.slot,
+            self.AllUnits.subrace,
+            self.AllUnits.branch,
+            self.AllUnits.attack_twice,
+            self.AllUnits.regen,
+            self.AllUnits.dyn_upd_level,
+            self.AllUnits.upgrade_b,
+            self.AllUnits.leadership,
+            self.AllUnits.leader_cat,
+            self.AllUnits.nat_armor,
+            self.AllUnits.might,
+            self.AllUnits.weapon_master,
+            self.AllUnits.endurance,
+            self.AllUnits.first_strike,
+            self.AllUnits.accuracy,
+            self.AllUnits.water_resist,
+            self.AllUnits.air_resist,
+            self.AllUnits.fire_resist,
+            self.AllUnits.earth_resist
         ).filter_by(name=name)
         # Возвращаем кортеж
         return query.first()
@@ -632,7 +902,25 @@ class ServerStorage:
             database.desc,
             database.photo,
             database.gif,
-            database.slot
+            database.slot,
+            database.subrace,
+            database.branch,
+            database.attack_twice,
+            database.regen,
+            database.dyn_upd_level,
+            database.upgrade_b,
+            database.leadership,
+            database.leader_cat,
+            database.nat_armor,
+            database.might,
+            database.weapon_master,
+            database.endurance,
+            database.first_strike,
+            database.accuracy,
+            database.water_resist,
+            database.air_resist,
+            database.fire_resist,
+            database.earth_resist
         ).filter_by(id=_id)
         # Возвращаем кортеж
         return query.first()
@@ -664,7 +952,25 @@ class ServerStorage:
             database.desc,
             database.photo,
             database.gif,
-            database.slot
+            database.slot,
+            database.subrace,
+            database.branch,
+            database.attack_twice,
+            database.regen,
+            database.dyn_upd_level,
+            database.upgrade_b,
+            database.leadership,
+            database.leader_cat,
+            database.nat_armor,
+            database.might,
+            database.weapon_master,
+            database.endurance,
+            database.first_strike,
+            database.accuracy,
+            database.water_resist,
+            database.air_resist,
+            database.fire_resist,
+            database.earth_resist
         ).filter_by(slot=slot)
         # Возвращаем кортеж
         return query.first()
@@ -696,7 +1002,25 @@ class ServerStorage:
             self.AllUnits.desc,
             self.AllUnits.photo,
             self.AllUnits.gif,
-            self.AllUnits.slot
+            self.AllUnits.slot,
+            self.AllUnits.subrace,
+            self.AllUnits.branch,
+            self.AllUnits.attack_twice,
+            self.AllUnits.regen,
+            self.AllUnits.dyn_upd_level,
+            self.AllUnits.upgrade_b,
+            self.AllUnits.leadership,
+            self.AllUnits.leader_cat,
+            self.AllUnits.nat_armor,
+            self.AllUnits.might,
+            self.AllUnits.weapon_master,
+            self.AllUnits.endurance,
+            self.AllUnits.first_strike,
+            self.AllUnits.accuracy,
+            self.AllUnits.water_resist,
+            self.AllUnits.air_resist,
+            self.AllUnits.fire_resist,
+            self.AllUnits.earth_resist
         ).filter_by(level=level)
         # Возвращаем список кортежей
         return query.all()
@@ -726,7 +1050,25 @@ class ServerStorage:
             self.PlayerUnits.attack_purpose,
             self.PlayerUnits.prev_level,
             self.PlayerUnits.desc,
-            self.PlayerUnits.slot
+            self.PlayerUnits.slot,
+            self.PlayerUnits.subrace,
+            self.PlayerUnits.branch,
+            self.PlayerUnits.attack_twice,
+            self.PlayerUnits.regen,
+            self.PlayerUnits.dyn_upd_level,
+            self.PlayerUnits.upgrade_b,
+            self.PlayerUnits.leadership,
+            self.PlayerUnits.leader_cat,
+            self.PlayerUnits.nat_armor,
+            self.PlayerUnits.might,
+            self.PlayerUnits.weapon_master,
+            self.PlayerUnits.endurance,
+            self.PlayerUnits.first_strike,
+            self.PlayerUnits.accuracy,
+            self.PlayerUnits.water_resist,
+            self.PlayerUnits.air_resist,
+            self.PlayerUnits.fire_resist,
+            self.PlayerUnits.earth_resist
         ).filter_by(slot=slot)
         # Возвращаем кортеж
         return query.first()
@@ -756,7 +1098,25 @@ class ServerStorage:
             self.PlayerUnits.attack_purpose,
             self.PlayerUnits.prev_level,
             self.PlayerUnits.desc,
-            self.PlayerUnits.slot
+            self.PlayerUnits.slot,
+            self.PlayerUnits.subrace,
+            self.PlayerUnits.branch,
+            self.PlayerUnits.attack_twice,
+            self.PlayerUnits.regen,
+            self.PlayerUnits.dyn_upd_level,
+            self.PlayerUnits.upgrade_b,
+            self.PlayerUnits.leadership,
+            self.PlayerUnits.leader_cat,
+            self.PlayerUnits.nat_armor,
+            self.PlayerUnits.might,
+            self.PlayerUnits.weapon_master,
+            self.PlayerUnits.endurance,
+            self.PlayerUnits.first_strike,
+            self.PlayerUnits.accuracy,
+            self.PlayerUnits.water_resist,
+            self.PlayerUnits.air_resist,
+            self.PlayerUnits.fire_resist,
+            self.PlayerUnits.earth_resist
         ).order_by(self.PlayerUnits.slot)
         # Возвращаем список кортежей
         return query.all()
@@ -786,7 +1146,25 @@ class ServerStorage:
             self.CurrentDungeon.attack_purpose,
             self.CurrentDungeon.prev_level,
             self.CurrentDungeon.desc,
-            self.CurrentDungeon.slot
+            self.CurrentDungeon.slot,
+            self.CurrentDungeon.subrace,
+            self.CurrentDungeon.branch,
+            self.CurrentDungeon.attack_twice,
+            self.CurrentDungeon.regen,
+            self.CurrentDungeon.dyn_upd_level,
+            self.CurrentDungeon.upgrade_b,
+            self.CurrentDungeon.leadership,
+            self.CurrentDungeon.leader_cat,
+            self.CurrentDungeon.nat_armor,
+            self.CurrentDungeon.might,
+            self.CurrentDungeon.weapon_master,
+            self.CurrentDungeon.endurance,
+            self.CurrentDungeon.first_strike,
+            self.CurrentDungeon.accuracy,
+            self.CurrentDungeon.water_resist,
+            self.CurrentDungeon.air_resist,
+            self.CurrentDungeon.fire_resist,
+            self.CurrentDungeon.earth_resist
         ).order_by(self.CurrentDungeon.slot)
         # Возвращаем список кортежей
         return query.all()
@@ -1096,11 +1474,17 @@ class ServerStorage:
             print('Данный слот занят')
         else:
             unit_row = self.get_unit_by_name(unit)
+            unit_cols_after_slot = main_db.get_unit_by_name(
+                unit)[25:43]
+
             # print(unit_row._asdict())
             if self.is_double(unit_row.name) and slot % 2 == 1:
                 slot += 1
 
-            player_unit = self.PlayerUnits(*unit_row[:24], slot)
+            player_unit = self.PlayerUnits(
+                *unit_row[:24],
+                slot,
+                *unit_cols_after_slot)
             self.session.add(player_unit)
             self.session.commit()
 
@@ -1113,11 +1497,17 @@ class ServerStorage:
             print('Данный слот занят')
         else:
             unit_row = self.get_unit_by_name(unit)
+            unit_cols_after_slot = main_db.get_unit_by_name(
+                unit)[25:43]
+
             # print(unit_row._asdict())
             if self.is_double(unit) and slot % 2 == 1:
                 slot += 1
 
-            enemy_unit = self.CurrentDungeon(*unit_row[:24], slot)
+            enemy_unit = self.CurrentDungeon(
+                *unit_row[:24],
+                slot,
+                *unit_cols_after_slot)
             # enemy_unit = self.Dungeons(unit_id)
             self.session.add(enemy_unit)
             self.session.commit()
@@ -1281,7 +1671,25 @@ class ServerStorage:
             self.CurrentDungeon.attack_purpose,
             self.CurrentDungeon.prev_level,
             self.CurrentDungeon.desc,
-            self.CurrentDungeon.slot
+            self.CurrentDungeon.slot,
+            self.CurrentDungeon.subrace,
+            self.CurrentDungeon.branch,
+            self.CurrentDungeon.attack_twice,
+            self.CurrentDungeon.regen,
+            self.CurrentDungeon.dyn_upd_level,
+            self.CurrentDungeon.upgrade_b,
+            self.CurrentDungeon.leadership,
+            self.CurrentDungeon.leader_cat,
+            self.CurrentDungeon.nat_armor,
+            self.CurrentDungeon.might,
+            self.CurrentDungeon.weapon_master,
+            self.CurrentDungeon.endurance,
+            self.CurrentDungeon.first_strike,
+            self.CurrentDungeon.accuracy,
+            self.CurrentDungeon.water_resist,
+            self.CurrentDungeon.air_resist,
+            self.CurrentDungeon.fire_resist,
+            self.CurrentDungeon.earth_resist
         ).filter_by(slot=slot)
         # Возвращаем кортеж
         return query.first()
@@ -1314,7 +1722,25 @@ class ServerStorage:
             database.attack_purpose,
             database.prev_level,
             database.desc,
-            database.slot
+            database.slot,
+            database.subrace,
+            database.branch,
+            database.attack_twice,
+            database.regen,
+            database.dyn_upd_level,
+            database.upgrade_b,
+            database.leadership,
+            database.leader_cat,
+            database.nat_armor,
+            database.might,
+            database.weapon_master,
+            database.endurance,
+            database.first_strike,
+            database.accuracy,
+            database.water_resist,
+            database.air_resist,
+            database.fire_resist,
+            database.earth_resist
         ).order_by(database.slot)
         # Возвращаем список кортежей
         return query.all()
@@ -1346,7 +1772,25 @@ class ServerStorage:
             self.AllUnits.desc,
             self.AllUnits.photo,
             self.AllUnits.gif,
-            self.AllUnits.slot
+            self.AllUnits.slot,
+            self.AllUnits.subrace,
+            self.AllUnits.branch,
+            self.AllUnits.attack_twice,
+            self.AllUnits.regen,
+            self.AllUnits.dyn_upd_level,
+            self.AllUnits.upgrade_b,
+            self.AllUnits.leadership,
+            self.AllUnits.leader_cat,
+            self.AllUnits.nat_armor,
+            self.AllUnits.might,
+            self.AllUnits.weapon_master,
+            self.AllUnits.endurance,
+            self.AllUnits.first_strike,
+            self.AllUnits.accuracy,
+            self.AllUnits.water_resist,
+            self.AllUnits.air_resist,
+            self.AllUnits.fire_resist,
+            self.AllUnits.earth_resist
         )
         # Возвращаем список кортежей
         return query.all()
@@ -1384,7 +1828,6 @@ class ServerStorage:
             # Возвращаем кортеж
             return query.order_by(self.PlayerBuildings.id.desc()).first()
         return ()
-
 
     def build_default(self, faction: str) -> None:
         """Базовая постройка зданий 1 уровня в выбранной столице"""
@@ -1435,4 +1878,3 @@ if __name__ == '__main__':
 
     all_buildings = main_db.get_buildings('Erepb-89', 'Undead Hordes')
     print(all_buildings._asdict())
-
