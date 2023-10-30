@@ -114,10 +114,13 @@ class Battle:
             try:
                 unit = main_db.get_unit_by_name(
                     self.dungeon_units[unit_slot])[:24]
+                unit_cols_after_slot = main_db.get_unit_by_name(
+                    self.dungeon_units[unit_slot])[25:43]
 
                 main_db.add_dungeon_unit(
                     *unit,
-                    unit_slot + 1)
+                    unit_slot + 1,
+                    *unit_cols_after_slot)
 
                 unit = self.dungeon_unit_by_slot(unit_slot + 1)
                 if unit is not None:
