@@ -4,12 +4,12 @@ import abc
 import math
 import random
 from collections import namedtuple
-from typing import Optional, Dict, List
+from typing import Dict, List
 
 from battle_logging import logging
 
 from client_dir.settings import EM, UH, LD, MC, BIG
-from units_dir.buildings import FACTIONS, ELDER_FORMS
+from units_dir.buildings import FACTIONS
 from units_dir.units import main_db
 from units_dir.ranking import empire_mage_lvls, \
     empire_archer_lvls, empire_support_lvls, \
@@ -959,16 +959,6 @@ class Unit:
         """Найм в отряд игрока"""
         main_db.hire_unit(self.name, slot)
 
-    @property
-    def building_name(self) -> Optional[str]:
-        """Получение здания по юниту"""
-        for f_building in FACTIONS.values():
-            for branch in f_building.values():
-                for building in branch.values():
-                    if self.name == building.unit_name:
-                        return building.bname
-        return None
-
     def upgrade_stats(self) -> None:
         """Увеличение характеристик юнита"""
         # Уровень
@@ -1007,6 +997,9 @@ class Unit:
         else:
             next_killed_exp = math.ceil(self.exp_per_kill * 1.05)
 
+        # Осталось возможных повышений уровня
+        updates_left = self.dyn_upd_level - 1
+
         main_db.update_unit(
             self.id,
             next_level,
@@ -1015,7 +1008,8 @@ class Unit:
             0,
             next_killed_exp,
             next_chance,
-            next_damage)
+            next_damage,
+            updates_left)
 
     @property
     def race_settings(self) -> Dict[str, dict]:
@@ -1061,62 +1055,71 @@ class Unit:
     def lvl_up(self) -> None:
         """Повышение уровня"""
         next_unit = ''
-        # Фракция
-        faction = main_db.current_faction
-        # словарь графов построек
-        graph_dict = {
-            'fighter': [],
-            'archer': [],
-            'mage': [],
-            'support': [],
-            'special': [],
-        }
+        branch_buildings = []
 
-        # юниты фракции
-        faction_units = self.get_faction_units(faction, graph_dict)
-
-        if self.name in faction_units:
-            # Следующая стадия юнита согласно постройкам в столице
-            for graph in graph_dict.values():
-                # print(graph, 'graph')
-                for graph_item in graph:
-                    # print(graph_item, 'graph_item')
-                    if self.building_name == graph_item.prev:
-                        # Следующая стадия
-                        next_unit = graph_item.unit_name
-
-            # уже является старшей формой ветви
-            if self.name in ELDER_FORMS:
-                next_unit = ''
-
-            elif next_unit == '' and \
-                    self.curr_exp == self.exp - 1 and \
-                    self.name not in ELDER_FORMS:
-                # ожидает апгрейда, опыт равен (exp - 1)
-                next_unit = self.name
-
-            elif next_unit == '' and self.curr_exp != self.exp - 1:
-                # ожидает апгрейда, поднять опыт до (exp - 1)
-                next_unit = self.name
-                main_db.update_unit_exp(
-                    self.slot, self.exp - 1, main_db.PlayerUnits)
-
-            elif next_unit != '':
-                # Меняем юнит на следующую стадию согласно постройкам
-                # в столице
-                main_db.replace_unit(self.slot, next_unit)
-                line = f"{self.name} повысил уровень до {next_unit}\n"
-                logging(line)
-
-            else:
-                self.upgrade_stats()
-
-        # Апгрейд юнита по характеристикам
-        if next_unit == '':
+        if self.branch == 'hero' and self.dyn_upd_level != 0:
             self.upgrade_stats()
 
             line = f"{self.name} повысил свой уровень\n"
             logging(line)
+
+        if self.branch == 'fighter':
+            branch_buildings = main_db.get_fighter_branch()
+
+        elif self.branch == 'mage':
+            branch_buildings = main_db.get_mage_branch()
+
+        elif self.branch == 'archer':
+            branch_buildings = main_db.get_archer_branch()
+
+        elif self.branch == 'support':
+            branch_buildings = main_db.get_support_branch()
+
+        # находим следующую стадию юнита, если здание для апгрейда построено
+        for building in \
+                FACTIONS[main_db.current_faction][self.branch].values():
+            if building.prev == self.upgrade_b and \
+                    building.bname in branch_buildings:
+                # Следующая стадия
+                next_unit = building.unit_name
+
+        self.upgrade_unit(next_unit, branch_buildings)
+
+    def upgrade_unit(self, next_unit: str, branch_buildings: List[str]):
+        """Метод апгрейда юнита"""
+        # здание для апгрейда еще не построено
+        if next_unit == '' and self.curr_exp != self.exp - 1 and \
+                self.upgrade_b in branch_buildings:
+            # ожидает апгрейда, поднять опыт до (exp - 1)
+            main_db.update_unit_exp(
+                self.slot, self.exp - 1, main_db.PlayerUnits)
+            line = f"{self.name} ожидает повышения в столице\n"
+            logging(line)
+
+        # здание для апгрейда еще не построено
+        elif next_unit == '' and self.curr_exp == self.exp - 1 and \
+                self.upgrade_b in branch_buildings:
+            # ожидает апгрейда
+            line = f"{self.name} ожидает повышения в столице\n"
+            logging(line)
+
+        # если следующая стадия найдена
+        elif next_unit != '':
+            # Меняем юнит на следующую стадию согласно постройкам
+            # в столице
+            main_db.replace_unit(self.slot, next_unit)
+
+            line = f"{self.name} повысил уровень до {next_unit}\n"
+            logging(line)
+
+        # если следующей стадии нет
+        else:
+            # Апгрейд юнита по характеристикам
+            if self.dyn_upd_level != 0:
+                self.upgrade_stats()
+
+                line = f"{self.name} повысил свой уровень\n"
+                logging(line)
 
     @staticmethod
     def say() -> None:
