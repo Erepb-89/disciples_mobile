@@ -1318,18 +1318,63 @@ class ServerStorage:
             faction=faction).delete()
         self.session.commit()
 
-    def get_fighter_branch(self,
-                           player_name: str,
-                           faction: str
-                           ) -> list:
+    def get_unit_by_b_name(self, b_name: str) -> str:
+        """Получение юнита по названию постройки"""
+        query = self.session.query(
+            self.AllUnits.name
+        ).where(self.AllUnits.upgrade_b == b_name)
+
+        return query.first()[0]
+
+    def get_fighter_branch(self) -> list:
         """
         Метод получения построек ветви бойцов в столице игрока.
         """
         query = self.session.query(
             self.PlayerBuildings.fighter
-        ).filter_by(name=player_name, faction=faction)
+        ).where(self.PlayerBuildings.faction == self.current_faction)
+        building = query[-1][0]
         temp_graph = []
-        self.get_building_graph(query[-1], temp_graph, 'fighter')
+        self.get_building_graph(building, temp_graph, 'fighter')
+        # Возвращаем список
+        return temp_graph
+
+    def get_mage_branch(self) -> list:
+        """
+        Метод получения построек ветви магов в столице игрока.
+        """
+        query = self.session.query(
+            self.PlayerBuildings.mage
+        ).where(self.PlayerBuildings.faction == self.current_faction)
+        building = query[-1][0]
+        temp_graph = []
+        self.get_building_graph(building, temp_graph, 'mage')
+        # Возвращаем список
+        return temp_graph
+
+    def get_archer_branch(self) -> list:
+        """
+        Метод получения построек ветви стрелков в столице игрока.
+        """
+        query = self.session.query(
+            self.PlayerBuildings.archer
+        ).where(self.PlayerBuildings.faction == self.current_faction)
+        building = query[-1][0]
+        temp_graph = []
+        self.get_building_graph(building, temp_graph, 'archer')
+        # Возвращаем список
+        return temp_graph
+
+    def get_support_branch(self) -> list:
+        """
+        Метод получения построек ветви поддержки в столице игрока.
+        """
+        query = self.session.query(
+            self.PlayerBuildings.support
+        ).where(self.PlayerBuildings.faction == self.current_faction)
+        building = query[-1][0]
+        temp_graph = []
+        self.get_building_graph(building, temp_graph, 'support')
         # Возвращаем список
         return temp_graph
 
@@ -1338,13 +1383,21 @@ class ServerStorage:
                            graph: list,
                            branch: str) -> None:
         """Рекурсивное создание графа зданий/построек"""
-        for val in FACTIONS.get(self.current_faction)[branch]:
+        for val in FACTIONS.get(self.current_faction)[branch].values():
+            # print(val)
             if val.bname == bname:
                 graph.append(bname)
                 if val.prev not in ('', 0):
                     self.get_building_graph(val.prev, graph, branch)
                 else:
                     return
+        # for val in FACTIONS.get(self.current_faction)[branch]:
+        #     if val.bname == bname:
+        #         graph.append(bname)
+        #         if val.prev not in ('', 0):
+        #             self.get_building_graph(val.prev, graph, branch)
+        #         else:
+        #             return
 
     def create_buildings(self,
                          player_name: str,
@@ -1555,7 +1608,8 @@ class ServerStorage:
                     curr_exp: int,
                     exp_per_kill: int,
                     attack_chance: str,
-                    attack_dmg: int) -> None:
+                    attack_dmg: int,
+                    dyn_upd_level) -> None:
         """
         Метод изменения юнита игрока (здоровье и опыт).
         Изменяет запись в таблице PlayerUnits.
@@ -1570,7 +1624,8 @@ class ServerStorage:
             curr_exp=curr_exp,
             exp_per_kill=exp_per_kill,
             attack_chance=attack_chance,
-            attack_dmg=attack_dmg
+            attack_dmg=attack_dmg,
+            dyn_upd_level=dyn_upd_level
         ).execution_options(
             synchronize_session="fetch")
 
