@@ -20,7 +20,7 @@ from client_dir.settings import UNIT_STAND, UNIT_ATTACK, \
 from client_dir.ui_functions import show_no_frame, \
     show_damage, show_no_damage, show_green_frame, \
     show_red_frame, show_blue_frame, update_unit_health, \
-    get_unit_image, get_unit_faction, show_no_circle
+    get_unit_image, show_no_circle
 from client_dir.unit_dialog import UnitDialog
 from units_dir.units import main_db
 from units_dir.units_factory import Unit
@@ -973,16 +973,19 @@ class FightWindow(QMainWindow):
                 os.path.join(
                     UNIT_STAND,
                     f"{side}/empty.gif"))
-            gif.setSpeed(self.speed)
 
         # анимация смерти
         elif unit.curr_health == 0:
-            unit_faction = get_unit_faction(unit)
-            gif = QMovie(
-                os.path.join(
-                    action,
-                    f"{side}/{unit_faction}.gif"))
-            gif.setSpeed(self.speed)
+            if 'neutral' in unit.subrace:
+                gif = QMovie(
+                    os.path.join(
+                        action,
+                        f"{side}/neutral.gif"))
+            else:
+                gif = QMovie(
+                    os.path.join(
+                        action,
+                        f"{side}/{unit.subrace}.gif"))
         # if unit.curr_health == 0:
         #     gif = QMovie(os.path.join(COMMON, "skull.png"))
 
@@ -992,8 +995,8 @@ class FightWindow(QMainWindow):
                 os.path.join(
                     action,
                     f"{side}{unit.name}.gif"))
-            gif.setSpeed(self.speed)
 
+        gif.setSpeed(self.speed)
         gif_slot.setMovie(gif)
         gif.start()
 
