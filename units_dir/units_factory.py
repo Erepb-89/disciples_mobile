@@ -9,7 +9,7 @@ from typing import Dict, List
 from battle_logging import logging
 
 from client_dir.settings import EM, UH, LD, MC, BIG
-from units_dir.buildings import FACTIONS
+from units_dir.buildings import FACTIONS, ELDER_FORMS
 from units_dir.units import main_db
 from units_dir.ranking import empire_mage_lvls, \
     empire_archer_lvls, empire_support_lvls, \
@@ -1057,39 +1057,44 @@ class Unit:
         next_unit = ''
         branch_buildings = []
 
-        if self.branch == 'hero' and self.dyn_upd_level != 0:
-            self.upgrade_stats()
+        if self.branch == 'hero':
+            if self.dyn_upd_level != 0:
+                self.upgrade_stats()
 
-            line = f"{self.name} повысил свой уровень\n"
-            logging(line)
+                line = f"{self.name} повысил свой уровень\n"
+                logging(line)
+            else:
+                line = f"{self.name}  достиг предела развития\n"
+                logging(line)
+        else:
+            if self.branch == 'fighter':
+                branch_buildings = main_db.get_fighter_branch()
 
-        if self.branch == 'fighter':
-            branch_buildings = main_db.get_fighter_branch()
+            elif self.branch == 'mage':
+                branch_buildings = main_db.get_mage_branch()
 
-        elif self.branch == 'mage':
-            branch_buildings = main_db.get_mage_branch()
+            elif self.branch == 'archer':
+                branch_buildings = main_db.get_archer_branch()
 
-        elif self.branch == 'archer':
-            branch_buildings = main_db.get_archer_branch()
+            elif self.branch == 'support':
+                branch_buildings = main_db.get_support_branch()
 
-        elif self.branch == 'support':
-            branch_buildings = main_db.get_support_branch()
+            # находим следующую стадию юнита, если здание для апгрейда построено
+            for building in \
+                    FACTIONS[main_db.current_faction][self.branch].values():
+                if building.prev == self.upgrade_b and \
+                        building.bname in branch_buildings:
+                    # Следующая стадия
+                    next_unit = building.unit_name
 
-        # находим следующую стадию юнита, если здание для апгрейда построено
-        for building in \
-                FACTIONS[main_db.current_faction][self.branch].values():
-            if building.prev == self.upgrade_b and \
-                    building.bname in branch_buildings:
-                # Следующая стадия
-                next_unit = building.unit_name
-
-        self.upgrade_unit(next_unit, branch_buildings)
+            self.upgrade_unit(next_unit, branch_buildings)
 
     def upgrade_unit(self, next_unit: str, branch_buildings: List[str]):
         """Метод апгрейда юнита"""
         # здание для апгрейда еще не построено
         if next_unit == '' and self.curr_exp != self.exp - 1 and \
-                self.upgrade_b in branch_buildings:
+                self.upgrade_b in branch_buildings \
+                and self.name not in ELDER_FORMS:
             # ожидает апгрейда, поднять опыт до (exp - 1)
             main_db.update_unit_exp(
                 self.slot, self.exp - 1, main_db.PlayerUnits)
@@ -1098,7 +1103,8 @@ class Unit:
 
         # здание для апгрейда еще не построено
         elif next_unit == '' and self.curr_exp == self.exp - 1 and \
-                self.upgrade_b in branch_buildings:
+                self.upgrade_b in branch_buildings \
+                and self.name not in ELDER_FORMS:
             # ожидает апгрейда
             line = f"{self.name} ожидает повышения в столице\n"
             logging(line)
@@ -1119,6 +1125,9 @@ class Unit:
                 self.upgrade_stats()
 
                 line = f"{self.name} повысил свой уровень\n"
+                logging(line)
+            else:
+                line = f"{self.name}  достиг предела развития\n"
                 logging(line)
 
     @staticmethod

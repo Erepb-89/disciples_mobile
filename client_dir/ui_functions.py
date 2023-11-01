@@ -131,19 +131,6 @@ def update_unit_health(unit: any, slot: QtWidgets.QLabel) -> None:
         slot.setText('')
 
 
-def get_unit_faction(unit: any) -> str:
-    """Получение фракции юнита"""
-    try:
-        for faction, f_building in FACTIONS.items():
-            for branch in f_building.values():
-                for building in branch.values():
-                    if unit.name == building.unit_name:
-                        return faction
-        return 'is_dead'
-    except AttributeError:
-        return ''
-
-
 def set_beige_colour(button: QtWidgets.QPushButton):
     """Подкраска элементов в бежевый цвет"""
     button.setStyleSheet("background-color: rgb(181, 172, 155)")
