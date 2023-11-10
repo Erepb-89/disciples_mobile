@@ -34,6 +34,7 @@ class CampaignWindow(QMainWindow):
         self.campaign_buttons_dict = {}
         self.campaign_icons_dict = {}
         self.all_missions = {}
+        self.level = main_db.curr_campaign_level
 
         self.InitUI()
 
@@ -84,15 +85,15 @@ class CampaignWindow(QMainWindow):
         self.show_red_frame(self.ui.pushButtonSlot_1)
 
         # если в базе нет готовых миссий
-        if not main_db.show_dungeon_units(f'{self.faction}_1'):
+        if not main_db.show_dungeon_units(f'{self.faction}_{self.level}_1'):
             # генерируем их
-            self.update_all_missions()
+            self.update_all_missions(self.level)
         else:
             # иначе берем из базы готовые
             for mission_num in range(1, 16):
-                units = main_db.show_dungeon_units(f'{self.faction}_{mission_num}')
-                self.all_missions[
-                    f'{self.faction}_{mission_num}'] = {
+                dung_name = f'{self.faction}_{self.level}_{mission_num}'
+                units = main_db.show_dungeon_units(dung_name)
+                self.all_missions[dung_name] = {
                     1: units[0],
                     2: units[1],
                     3: units[2],
@@ -115,29 +116,43 @@ class CampaignWindow(QMainWindow):
         self.ui.campaignBG.setPixmap(QPixmap(BACKGROUND))
         self.ui.campaignBG.setGeometry(QtCore.QRect(0, 0, 1500, 827))
 
-    def update_all_missions(self) -> None:
+    def update_all_missions(self, level) -> None:
         """Обновляет состав армии для каждой миссии"""
-        start_level = 1
-        mid_level = 2
-
         # миссии с 1 по 15 (сгенерированные рандомно)
         self.all_missions = {
-            f'{self.faction}_1': unit_selector(start_level, setup_4),
-            f'{self.faction}_2': unit_selector(start_level, setup_4),
-            f'{self.faction}_3': unit_selector(start_level, setup_5),
-            f'{self.faction}_4': unit_selector(start_level, setup_5),
-            f'{self.faction}_5': unit_selector(start_level, setup_5),
-            f'{self.faction}_6': unit_selector(mid_level, setup_3),
-            f'{self.faction}_7': unit_selector(mid_level, setup_3),
-            f'{self.faction}_8': unit_selector(mid_level, setup_3),
-            f'{self.faction}_9': unit_selector(mid_level, setup_3),
-            f'{self.faction}_10': unit_selector(mid_level, setup_4),
-            f'{self.faction}_11': unit_selector(mid_level, setup_4),
-            f'{self.faction}_12': unit_selector(mid_level, setup_4),
-            f'{self.faction}_13': unit_selector(mid_level, setup_5),
-            f'{self.faction}_14': unit_selector(mid_level, setup_5),
-            f'{self.faction}_15': unit_selector(5, boss_setup)
+            f'{self.faction}_{level}_1': unit_selector(level, setup_2),
+            f'{self.faction}_{level}_2': unit_selector(level, setup_2),
+            f'{self.faction}_{level}_3': unit_selector(level, setup_3),
+            f'{self.faction}_{level}_4': unit_selector(level, setup_3),
+            f'{self.faction}_{level}_5': unit_selector(level, setup_3),
+            f'{self.faction}_{level}_6': unit_selector(level, setup_4),
+            f'{self.faction}_{level}_7': unit_selector(level, setup_4),
+            f'{self.faction}_{level}_8': unit_selector(level, setup_4),
+            f'{self.faction}_{level}_9': unit_selector(level, setup_4),
+            f'{self.faction}_{level}_10': unit_selector(level, setup_5),
+            f'{self.faction}_{level}_11': unit_selector(level, setup_5),
+            f'{self.faction}_{level}_12': unit_selector(level, setup_5),
+            f'{self.faction}_{level}_13': unit_selector(level, setup_6),
+            f'{self.faction}_{level}_14': unit_selector(level, setup_6),
+            f'{self.faction}_{level}_15': unit_selector(level + 2, boss_setup)
         }
+        # self.all_missions = {
+        #     f'{self.faction}_{start_level}_1': unit_selector(start_level, setup_4),
+        #     f'{self.faction}_{start_level}_2': unit_selector(start_level, setup_4),
+        #     f'{self.faction}_{start_level}_3': unit_selector(start_level, setup_5),
+        #     f'{self.faction}_{start_level}_4': unit_selector(start_level, setup_5),
+        #     f'{self.faction}_{start_level}_5': unit_selector(start_level, setup_5),
+        #     f'{self.faction}_{start_level}_6': unit_selector(mid_level, setup_3),
+        #     f'{self.faction}_{start_level}_7': unit_selector(mid_level, setup_3),
+        #     f'{self.faction}_{start_level}_8': unit_selector(mid_level, setup_3),
+        #     f'{self.faction}_{start_level}_9': unit_selector(mid_level, setup_3),
+        #     f'{self.faction}_{start_level}_10': unit_selector(mid_level, setup_4),
+        #     f'{self.faction}_{start_level}_11': unit_selector(mid_level, setup_4),
+        #     f'{self.faction}_{start_level}_12': unit_selector(mid_level, setup_4),
+        #     f'{self.faction}_{start_level}_13': unit_selector(mid_level, setup_5),
+        #     f'{self.faction}_{start_level}_14': unit_selector(mid_level, setup_5),
+        #     f'{self.faction}_{start_level}_15': unit_selector(mid_level + 1, boss_setup)
+        # }
 
         main_db.add_dungeons(self.all_missions)
 
@@ -148,8 +163,7 @@ class CampaignWindow(QMainWindow):
         FIGHT_WINDOW.show()
 
     @staticmethod
-    def mission_slot_detailed(database: any,
-                              dungeon_units: dict) -> None:
+    def mission_slot_detailed(dungeon_units: dict) -> None:
         """Метод создающий окно просмотра армии."""
         global DETAIL_WINDOW
         DETAIL_WINDOW = EnemyArmyDialog(
@@ -205,7 +219,7 @@ class CampaignWindow(QMainWindow):
     def mission_list_update(self) -> None:
         """Обновление иконок миссий кампании"""
         for number, mission in self.all_missions.items():
-            num = int(number.split('_')[1])
+            num = int(number.split('_')[-1])
             units = [main_db.get_unit_by_name(unit)
                      for unit in mission.values() if unit is not None]
 
@@ -250,7 +264,8 @@ class CampaignWindow(QMainWindow):
             if num == number:
                 self.show_red_frame(button)
                 self.mission_slot_detailed(
-                    main_db, self.all_missions[f'{self.faction}_{num}'])
+                    self.all_missions[
+                        f'{self.faction}_{self.level}_{num}'])
 
         self.dungeon = f'{self.faction}_{number}'
         # self.dungeon = number

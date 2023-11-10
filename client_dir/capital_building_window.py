@@ -290,7 +290,10 @@ class CapitalBuildingWindow(QMainWindow):
             unit_name = self.branch_settings[b_slot].unit_name
             self.ui.nextLevel.setText(unit_name)
 
-            prev_unit_name = self.get_unit_by_b_name(
+            # prev_unit_name = self.get_unit_by_b_name(
+            #     self.branch_settings[b_slot].prev)
+
+            prev_unit_name = main_db.get_unit_by_b_name(
                 self.branch_settings[b_slot].prev)
 
             self.ui.prevLevel.setText(prev_unit_name)
@@ -495,13 +498,13 @@ class CapitalBuildingWindow(QMainWindow):
         except KeyError:
             return None
 
-    def get_unit_by_b_name(self, b_name: str) -> str:
-        """Получение юнита по названию постройки"""
-        branch = FACTIONS.get(self.faction)[self.branch]
-        for val in branch.values():
-            if b_name == val.bname:
-                return val.unit_name
-        return ''
+    # def get_unit_by_b_name(self, b_name: str) -> str:
+    #     """Получение юнита по названию постройки"""
+    #     branch = FACTIONS.get(self.faction)[self.branch]
+    #     for val in branch.values():
+    #         if b_name == val.bname:
+    #             return val.unit_name
+    #     return ''
 
     def update_unit_by_b_slot(self, b_slot: int) -> None:
         """Обновление юнита согласно выбранному зданию"""

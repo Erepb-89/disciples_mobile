@@ -1064,7 +1064,7 @@ class Unit:
                 line = f"{self.name} повысил свой уровень\n"
                 logging(line)
             else:
-                line = f"{self.name}  достиг предела развития\n"
+                line = f"{self.name} достиг предела развития\n"
                 logging(line)
         else:
             if self.branch == 'fighter':
