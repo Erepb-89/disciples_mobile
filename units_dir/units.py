@@ -338,10 +338,12 @@ class ServerStorage:
 
         def __init__(self,
                      player_id: int,
-                     faction: str):
+                     faction: str,
+                     campaign_level: int):
             self.session_id = None
             self.player_id = player_id
             self.faction = faction
+            self.campaign_level = campaign_level
 
     class Dungeons:
         """Класс - подземелья."""
@@ -632,10 +634,12 @@ class ServerStorage:
 
         # Создаём таблицу игровых сессий
         game_sessions_table = Table(
-            'game_sessions', self.metadata, Column(
-                'session_id', Integer, primary_key=True), Column(
-                'player_id', Integer), Column(
-                'faction', String))
+            'game_sessions', self.metadata,
+            Column('session_id', Integer, primary_key=True),
+            Column('player_id', Integer),
+            Column('faction', String),
+            Column('campaign_level', Integer)
+        )
 
         # Создаём таблицу всех подземелий
         dungeons_table = Table('dungeons', self.metadata,
@@ -716,6 +720,8 @@ class ServerStorage:
         # self.current_faction = 'Empire'
         self.current_faction = self.current_game_session(
             self.current_player.id).faction
+        self.curr_campaign_level = self.current_game_session(
+            self.current_player.id).campaign_level
 
     def add_dungeon_unit(
             self,
@@ -871,6 +877,7 @@ class ServerStorage:
             self.GameSessions.session_id,
             self.GameSessions.player_id,
             self.GameSessions.faction,
+            self.GameSessions.campaign_level,
         ).filter_by(player_id=player_id)
         # Возвращаем кортеж
         return query[-1]
@@ -1021,7 +1028,8 @@ class ServerStorage:
             self.AllUnits.air_resist,
             self.AllUnits.fire_resist,
             self.AllUnits.earth_resist
-        ).filter_by(level=level)
+        ).filter(self.AllUnits.level == level,
+                 self.AllUnits.branch != 'hero')
         # Возвращаем список кортежей
         return query.all()
 
@@ -1384,20 +1392,12 @@ class ServerStorage:
                            branch: str) -> None:
         """Рекурсивное создание графа зданий/построек"""
         for val in FACTIONS.get(self.current_faction)[branch].values():
-            # print(val)
             if val.bname == bname:
                 graph.append(bname)
                 if val.prev not in ('', 0):
                     self.get_building_graph(val.prev, graph, branch)
                 else:
                     return
-        # for val in FACTIONS.get(self.current_faction)[branch]:
-        #     if val.bname == bname:
-        #         graph.append(bname)
-        #         if val.prev not in ('', 0):
-        #             self.get_building_graph(val.prev, graph, branch)
-        #         else:
-        #             return
 
     def create_buildings(self,
                          player_name: str,
@@ -1496,7 +1496,8 @@ class ServerStorage:
         mission_num = 1
         for dungeon in dungeons.values():
             dungeon_row = self.Dungeons(
-                f'{self.current_faction}_{mission_num}',
+                f'{self.current_faction}_'
+                f'{self.curr_campaign_level}_{mission_num}',
                 dungeon[1],
                 dungeon[2],
                 dungeon[3],
@@ -1850,11 +1851,16 @@ class ServerStorage:
         # Возвращаем список кортежей
         return query.all()
 
-    def set_faction(self, player_id: int, faction: str) -> None:
+    def set_faction(self,
+                    player_id: int,
+                    faction: str,
+                    campaign_level: int,
+                    ) -> None:
         """Метод сохранения выбранной фракции для текущей игровой сессии"""
         game_session_row = self.GameSessions(
             player_id,
-            faction
+            faction,
+            campaign_level
         )
         self.current_faction = faction
         self.session.add(game_session_row)
@@ -1931,5 +1937,7 @@ if __name__ == '__main__':
     #
     # main_db.create_buildings('Erepb-89', 'Empire', 5000, building_levels)
 
-    all_buildings = main_db.get_buildings('Erepb-89', 'Undead Hordes')
-    print(all_buildings._asdict())
+    # all_buildings = main_db.get_buildings('Erepb-89', 'Undead Hordes')
+    # print(all_buildings._asdict())
+
+    print(1)

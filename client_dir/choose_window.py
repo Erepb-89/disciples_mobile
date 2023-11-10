@@ -21,9 +21,10 @@ class ChooseRaceWindow(QMainWindow):
         super().__init__()
         # основные переменные
         self.main = instance
-        self.new_game = True
+        # self.new_game = True
         self.faction_number = 1
         self.faction = EM
+        self.level = main_db.curr_campaign_level
         self.factions = {
             1: EM,
             2: UH,
@@ -73,14 +74,25 @@ class ChooseRaceWindow(QMainWindow):
             self.faction_number = 4
         self.update_race()
 
+    @property
+    def next_level(self):
+        """Определение новой игры"""
+        if not main_db.show_dungeon_units(f'{self.faction}_{self.level}_1'):
+            return True
+        else:
+            return False
+
     def choose_race(self):
         """Выбор фракции (нажатие кнопки ОК)"""
         self.new_game = False
 
         if self.new_game:
             main_db.set_faction(
-                main_db.current_player.id, self.faction)
+                main_db.current_player.id,
+                self.faction,
+                1)
             main_db.build_default(self.faction)
+            main_db.curr_campaign_level = 1
         else:
             # buildings = main_db.get_saved_session(
             #     main_db.current_player.id,
@@ -90,7 +102,9 @@ class ChooseRaceWindow(QMainWindow):
             # print(buildings)
             main_db.current_faction = self.faction
             main_db.set_faction(
-                main_db.current_player.id, self.faction)
+                main_db.current_player.id,
+                self.faction,
+                self.level)
         self.main.reset()
 
         self.close()

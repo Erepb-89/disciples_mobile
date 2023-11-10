@@ -319,42 +319,27 @@ class FightWindow(QMainWindow):
         self.show()
 
     def eventFilter(self, source, event):
-        if source == self.ui.pushButtonSlot1 and event.type() == QtCore.QEvent.Enter:
-            self.show_circle_r(self.ui.gifCircleSlot_1)
+        """Обработчик событий"""
+        # front side
+        for num, item in self.unit_buttons_dict.items():
+            if source == item:
+                if event.type() == QtCore.QEvent.Enter:
+                    self.show_circle_r(self.unit_circles_dict.get(num))
 
-        elif source == self.ui.pushButtonSlot1 and event.type() == QtCore.QEvent.Leave:
-            show_no_circle(self.ui.gifCircleSlot_1)
-            # self.show_circle_attacker()
+                elif event.type() == QtCore.QEvent.Leave:
+                    # if self.new_battle.current_unit.slot != num:
+                    show_no_circle(self.unit_circles_dict.get(num))
+                    # self.show_circle_attacker()
 
-        elif source == self.ui.pushButtonSlot2 and event.type() == QtCore.QEvent.Enter:
-            self.show_circle_r(self.ui.gifCircleSlot_2)
-        elif source == self.ui.pushButtonSlot2 and event.type() == QtCore.QEvent.Leave:
-            show_no_circle(self.ui.gifCircleSlot_2)
-            # self.show_circle_attacker()
+        # rear side
+        for num, item in self.dung_buttons_dict.items():
+            if source == item:
+                if event.type() == QtCore.QEvent.Enter:
+                    self.show_circle_r(self.dung_circles_dict.get(num))
 
-        elif source == self.ui.pushButtonSlot3 and event.type() == QtCore.QEvent.Enter:
-            self.show_circle_r(self.ui.gifCircleSlot_3)
-        elif source == self.ui.pushButtonSlot3 and event.type() == QtCore.QEvent.Leave:
-            show_no_circle(self.ui.gifCircleSlot_3)
-            # self.show_circle_attacker()
-
-        elif source == self.ui.pushButtonSlot4 and event.type() == QtCore.QEvent.Enter:
-            self.show_circle_r(self.ui.gifCircleSlot_4)
-        elif source == self.ui.pushButtonSlot4 and event.type() == QtCore.QEvent.Leave:
-            show_no_circle(self.ui.gifCircleSlot_4)
-            # self.show_circle_attacker()
-
-        elif source == self.ui.pushButtonSlot5 and event.type() == QtCore.QEvent.Enter:
-            self.show_circle_r(self.ui.gifCircleSlot_5)
-        elif source == self.ui.pushButtonSlot5 and event.type() == QtCore.QEvent.Leave:
-            show_no_circle(self.ui.gifCircleSlot_5)
-            # self.show_circle_attacker()
-
-        elif source == self.ui.pushButtonSlot6 and event.type() == QtCore.QEvent.Enter:
-            self.show_circle_r(self.ui.gifCircleSlot_6)
-        elif source == self.ui.pushButtonSlot6 and event.type() == QtCore.QEvent.Leave:
-            show_no_circle(self.ui.gifCircleSlot_6)
-            # self.show_circle_attacker()
+                elif event.type() == QtCore.QEvent.Leave:
+                    show_no_circle(self.dung_circles_dict.get(num))
+                    # self.show_circle_attacker()
 
         return super().eventFilter(source, event)
 
@@ -388,7 +373,8 @@ class FightWindow(QMainWindow):
         """
         self.ui.speedText.setStyleSheet('color: white')
 
-        speed_slots = [0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5]
+        speed_slots = [0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5,
+                       5.5, 6, 7, 8, 9, 10]
         self.speed_model = QStandardItemModel()
         for slot in speed_slots:
             item = QStandardItem(str(slot))
@@ -841,6 +827,9 @@ class FightWindow(QMainWindow):
         self.show_no_frames(self.unit_icons_dict, show_no_frame)
         self.show_no_frames(self.dung_icons_dict, show_no_frame)
 
+        self.show_no_frames(self.unit_circles_dict, show_no_circle)
+        self.show_no_frames(self.dung_circles_dict, show_no_circle)
+
         # Очистка целей, чтобы в конце боя нельзя было атаковать повторно
         self.new_battle.target_slots = []
 
@@ -973,6 +962,7 @@ class FightWindow(QMainWindow):
                 os.path.join(
                     UNIT_STAND,
                     f"{side}/empty.gif"))
+            # gif.setSpeed(self.speed)
 
         # анимация смерти
         elif unit.curr_health == 0:
@@ -981,11 +971,13 @@ class FightWindow(QMainWindow):
                     os.path.join(
                         action,
                         f"{side}/neutral.gif"))
+                # gif.setSpeed(self.speed)
             else:
                 gif = QMovie(
                     os.path.join(
                         action,
                         f"{side}/{unit.subrace}.gif"))
+                # gif.setSpeed(self.speed)
         # if unit.curr_health == 0:
         #     gif = QMovie(os.path.join(COMMON, "skull.png"))
 
@@ -995,6 +987,7 @@ class FightWindow(QMainWindow):
                 os.path.join(
                     action,
                     f"{side}{unit.name}.gif"))
+            # gif.setSpeed(self.speed)
 
         gif.setSpeed(self.speed)
         gif_slot.setMovie(gif)
@@ -1049,8 +1042,8 @@ class FightWindow(QMainWindow):
         gif = QMovie(os.path.join(
             INTERF, "circle_g.gif"))
 
-        gif_label.setMovie(gif)
         gif.setSpeed(self.speed)
+        gif_label.setMovie(gif)
         gif.start()
 
     def show_circle_r(self, gif_label: QtWidgets.QLabel) -> None:
@@ -1058,8 +1051,8 @@ class FightWindow(QMainWindow):
         gif = QMovie(os.path.join(
             INTERF, "circle_r.gif"))
 
-        gif_label.setMovie(gif)
         gif.setSpeed(self.speed)
+        gif_label.setMovie(gif)
         gif.start()
 
     def show_level_up(self, unit: Unit, slots_dict: dict) -> None:
