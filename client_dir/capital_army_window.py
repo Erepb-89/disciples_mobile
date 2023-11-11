@@ -8,6 +8,7 @@ from PyQt5.QtWidgets import QMainWindow, QHBoxLayout
 
 from client_dir.capital_army_form import Ui_CapitalArmyWindow
 from client_dir.hire_menu_window import HireMenuWindow
+from client_dir.question_window import QuestionWindow
 from client_dir.settings import TOWN_ARMY, SCREEN_RECT, BIG
 from client_dir.ui_functions import get_unit_image, update_unit_health, \
     get_image, set_beige_colour
@@ -27,6 +28,7 @@ class CapitalArmyWindow(QMainWindow):
         super().__init__()
         # основные переменные
         self.capital = instance
+        self.question = False
         self.faction = main_db.current_faction
         self.factory = AbstractFactory.create_factory(
             self.faction)
@@ -235,13 +237,22 @@ class CapitalArmyWindow(QMainWindow):
 
     def delete_unit_action(self) -> None:
         """Метод обработчик нажатия кнопки 'Уволить'"""
-        try:
+        selected_slot = self.ui.listPlayerSlots.currentIndex().data()
+        unit = main_db.get_unit_by_slot(selected_slot, main_db.PlayerUnits)
+
+        if unit is not None:
+            global QUESTION_WINDOW
+            text = 'Вы действительно хотите уволить юнит?'
+            QUESTION_WINDOW = QuestionWindow(self, text)
+            QUESTION_WINDOW.show()
+
+    def confirmation(self):
+        """Подтверждение 'Увольнения' юнита"""
+        if self.question:
             selected_slot = self.ui.listPlayerSlots.currentIndex().data()
             main_db.delete_player_unit(int(selected_slot))
             self.reset()
             self.capital.main.reset()
-        except TypeError:
-            print('Выберите слот, который хотите освободить')
 
     def show_available_units(self, slot: int) -> None:
         """Метод показывающий доступных для покупки

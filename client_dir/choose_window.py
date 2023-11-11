@@ -22,7 +22,7 @@ class ChooseRaceWindow(QMainWindow):
         super().__init__()
         # основные переменные
         self.main = instance
-        self.new_game = True
+        self.question = True  # Новая игра
         self.faction_number = 1
         self.faction = EM
         # self.level = main_db.campaign_level
@@ -92,12 +92,14 @@ class ChooseRaceWindow(QMainWindow):
         if self.in_progress:
             self.show_question_window()
         else:
-            self.new_game = True
+            # Новая игра
+            self.question = True
             self.confirmation()
 
     def confirmation(self):
-
-        if self.new_game:
+        """Подтверждение начала новой игры"""
+        # Если выбрана Новая игра
+        if self.question:
             main_db.set_faction(
                 main_db.current_player.id,
                 self.faction,
@@ -106,11 +108,9 @@ class ChooseRaceWindow(QMainWindow):
             main_db.campaign_level = 1
 
             # удаление старых кампаний за данную фракцию
-            try:
-                main_db.delete_dungeons(self.faction)
-            except Exception as err:
-                print(err)
+            main_db.delete_dungeons(self.faction)
 
+        # Иначе продолжаем сохраненную
         else:
             # buildings = main_db.get_saved_session(
             #     main_db.current_player.id,
@@ -139,7 +139,8 @@ class ChooseRaceWindow(QMainWindow):
     def show_question_window(self) -> None:
         """Метод создающий окно вопроса"""
         global QUESTION_WINDOW
-        QUESTION_WINDOW = QuestionWindow(self)
+        text = 'Вы действительно хотите начать новую игру?'
+        QUESTION_WINDOW = QuestionWindow(self, text)
         QUESTION_WINDOW.show()
 
     def back(self):

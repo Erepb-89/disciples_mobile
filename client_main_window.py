@@ -16,9 +16,10 @@ from client_dir.fight_window import FightWindow
 from client_dir.campaign_window import CampaignWindow
 from client_dir.client_main_form import Ui_MainWindow
 from client_dir.hire_menu_window import HireMenuWindow
+from client_dir.question_window import QuestionWindow
 from client_dir.settings import UNIT_ICONS, GIF_ANIMATIONS, \
     TOWN_IMG, PLUG, ICON, UNIT_ATTACK, FRONT, PORTRAITS, BACKGROUND, BIG, ACTIVE_UNITS
-from client_dir.ui_functions import get_unit_image, set_beige_colour,\
+from client_dir.ui_functions import get_unit_image, set_beige_colour, \
     set_borders
 from client_dir.unit_dialog import UnitDialog
 from units_dir.units import main_db
@@ -36,6 +37,7 @@ class ClientMainWindow(QMainWindow):
         super().__init__()
         # основные переменные
         self.name = 'ClientMainWindow'
+        self.question = False  # увольнение
 
         self.player_units_model = None
         self.player_slots_model = None
@@ -528,13 +530,22 @@ class ClientMainWindow(QMainWindow):
 
     def delete_unit_action(self) -> None:
         """Метод обработчик нажатия кнопки 'Уволить' у игрока"""
-        try:
+        selected_slot = self.ui.listPlayerSlots.currentIndex().data()
+        unit = main_db.get_unit_by_slot(selected_slot, main_db.PlayerUnits)
+
+        if unit is not None:
+            global QUESTION_WINDOW
+            text = 'Вы действительно хотите уволить юнит?'
+            QUESTION_WINDOW = QuestionWindow(self, text)
+            QUESTION_WINDOW.show()
+
+    def confirmation(self):
+        """Подтверждение 'Увольнения' юнита игрока"""
+        if self.question:
             selected_slot = self.ui.listPlayerSlots.currentIndex().data()
             main_db.delete_player_unit(int(selected_slot))
             self.player_list_update()
             self.reset_player_buttons()
-        except TypeError:
-            print('Выберите слот, который хотите освободить')
 
     def delete_enemy_unit_action(self) -> None:
         """Метод обработчик нажатия кнопки 'Уволить' у противника"""
