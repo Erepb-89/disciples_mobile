@@ -5,6 +5,7 @@ from PyQt5.QtWidgets import QMainWindow, QHBoxLayout
 
 from client_dir.campaign_window import CampaignWindow
 from client_dir.choose_faction_form import Ui_FactionWindow
+from client_dir.question_window import QuestionWindow
 from client_dir.settings import FACTIONS, EM, UH, LD, MC, SCREEN_RECT
 from client_dir.ui_functions import get_image
 from units_dir.units import main_db
@@ -21,10 +22,10 @@ class ChooseRaceWindow(QMainWindow):
         super().__init__()
         # основные переменные
         self.main = instance
-        # self.new_game = True
+        self.new_game = True
         self.faction_number = 1
         self.faction = EM
-        self.level = main_db.curr_campaign_level
+        # self.level = main_db.campaign_level
         self.factions = {
             1: EM,
             2: UH,
@@ -75,16 +76,26 @@ class ChooseRaceWindow(QMainWindow):
         self.update_race()
 
     @property
-    def next_level(self):
+    def in_progress(self):
         """Определение новой игры"""
-        if not main_db.show_dungeon_units(f'{self.faction}_{self.level}_1'):
-            return True
-        else:
-            return False
+        session = main_db.game_session_by_faction(
+            main_db.current_player.id, self.faction)
+
+        if session is not None:
+            level = session.campaign_level
+            result = main_db.show_dungeon_units(f'{self.faction}_{level}_1')
+            return result
+        return
 
     def choose_race(self):
         """Выбор фракции (нажатие кнопки ОК)"""
-        self.new_game = False
+        if self.in_progress:
+            self.show_question_window()
+        else:
+            self.new_game = True
+            self.confirmation()
+
+    def confirmation(self):
 
         if self.new_game:
             main_db.set_faction(
@@ -92,7 +103,14 @@ class ChooseRaceWindow(QMainWindow):
                 self.faction,
                 1)
             main_db.build_default(self.faction)
-            main_db.curr_campaign_level = 1
+            main_db.campaign_level = 1
+
+            # удаление старых кампаний за данную фракцию
+            try:
+                main_db.delete_dungeons(self.faction)
+            except Exception as err:
+                print(err)
+
         else:
             # buildings = main_db.get_saved_session(
             #     main_db.current_player.id,
@@ -101,10 +119,13 @@ class ChooseRaceWindow(QMainWindow):
             # )
             # print(buildings)
             main_db.current_faction = self.faction
+            level = main_db.game_session_by_faction(
+                main_db.current_player.id, self.faction).campaign_level
+
             main_db.set_faction(
                 main_db.current_player.id,
                 self.faction,
-                self.level)
+                level)
         self.main.reset()
 
         self.close()
@@ -114,6 +135,12 @@ class ChooseRaceWindow(QMainWindow):
         global CAMPAIGN_WINDOW
         CAMPAIGN_WINDOW = CampaignWindow(main_db)
         CAMPAIGN_WINDOW.show()
+
+    def show_question_window(self) -> None:
+        """Метод создающий окно вопроса"""
+        global QUESTION_WINDOW
+        QUESTION_WINDOW = QuestionWindow(self)
+        QUESTION_WINDOW.show()
 
     def back(self):
         """Кнопка возврата"""

@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Question</class>
+ <widget class="QMainWindow" name="Question">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>552</width>
+    <height>461</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Question</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <widget class="QPushButton" name="pushButtonNO">
+    <property name="geometry">
+     <rect>
+      <x>406</x>
+      <y>390</y>
+      <width>60</width>
+      <height>60</height>
+     </rect>
+    </property>
+    <property name="toolTip">
+     <string>Закрыть</string>
+    </property>
+    <property name="autoFillBackground">
+     <bool>false</bool>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="flat">
+     <bool>true</bool>
+    </property>
+   </widget>
+   <widget class="QLabel" name="questionBG">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>0</y>
+      <width>41</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="maximumSize">
+     <size>
+      <width>552</width>
+      <height>461</height>
+     </size>
+    </property>
+    <property name="text">
+     <string>bg</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButtonYES">
+    <property name="geometry">
+     <rect>
+      <x>320</x>
+      <y>390</y>
+      <width>60</width>
+      <height>60</height>
+     </rect>
+    </property>
+    <property name="toolTip">
+     <string>Нанять</string>
+    </property>
+    <property name="autoFillBackground">
+     <bool>false</bool>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="flat">
+     <bool>true</bool>
+    </property>
+   </widget>
+   <widget class="QLabel" name="questionText">
+    <property name="geometry">
+     <rect>
+      <x>40</x>
+      <y>200</y>
+      <width>461</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>10</pointsize>
+      <weight>75</weight>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="text">
+     <string>questionText</string>
+    </property>
+    <property name="scaledContents">
+     <bool>true</bool>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
+    </property>
+   </widget>
+   <zorder>questionBG</zorder>
+   <zorder>pushButtonNO</zorder>
+   <zorder>pushButtonYES</zorder>
+   <zorder>questionText</zorder>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

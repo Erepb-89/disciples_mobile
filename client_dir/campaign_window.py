@@ -34,7 +34,7 @@ class CampaignWindow(QMainWindow):
         self.campaign_buttons_dict = {}
         self.campaign_icons_dict = {}
         self.all_missions = {}
-        self.level = main_db.curr_campaign_level
+        self.level = main_db.campaign_level
 
         self.InitUI()
 
@@ -154,7 +154,7 @@ class CampaignWindow(QMainWindow):
         #     f'{self.faction}_{start_level}_15': unit_selector(mid_level + 1, boss_setup)
         # }
 
-        main_db.add_dungeons(self.all_missions)
+        main_db.add_dungeons(self.all_missions, self.level)
 
     def show_fight_window(self) -> None:
         """Метод создающий окно Битвы."""

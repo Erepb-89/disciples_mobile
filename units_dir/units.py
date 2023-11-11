@@ -1,4 +1,5 @@
 """База. Классы юнитов"""
+import re
 from collections import namedtuple
 from typing import Callable, List
 
@@ -717,11 +718,13 @@ class ServerStorage:
         self.session = session()
 
         self.current_player = self.get_player('Erepb-89')
-        # self.current_faction = 'Empire'
-        self.current_faction = self.current_game_session(
-            self.current_player.id).faction
-        self.curr_campaign_level = self.current_game_session(
-            self.current_player.id).campaign_level
+
+        curr_game_session = self.current_game_session(
+            self.current_player.id)
+        if curr_game_session is not None:
+            self.current_faction = curr_game_session.faction
+        else:
+            self.current_faction = 'Empire'
 
     def add_dungeon_unit(
             self,
@@ -870,6 +873,17 @@ class ServerStorage:
         # Возвращаем кортеж
         return query.first()
 
+    def game_session_by_faction(self, player_id: int, faction: str) -> any:
+        """Метод получающий игровую сессию по игроку и фракции."""
+        query = self.session.query(
+            self.GameSessions.session_id,
+            self.GameSessions.player_id,
+            self.GameSessions.faction,
+            self.GameSessions.campaign_level,
+        ).filter_by(player_id=player_id, faction=faction)
+        # Возвращаем кортеж
+        return query.order_by(self.GameSessions.session_id.desc()).first()
+
     def current_game_session(self, player_id: int) -> any:
         """Метод получающий текущую игровую сессию
         (последнюю запись из таблицы GameSessions)."""
@@ -880,7 +894,7 @@ class ServerStorage:
             self.GameSessions.campaign_level,
         ).filter_by(player_id=player_id)
         # Возвращаем кортеж
-        return query[-1]
+        return query.order_by(self.GameSessions.session_id.desc()).first()
 
     def get_unit_by_id(self, _id: int, database: any) -> namedtuple:
         """Метод получающий юнита из общей базы по id."""
@@ -1491,13 +1505,13 @@ class ServerStorage:
         self.session.add(enemy_units)
         self.session.commit()
 
-    def add_dungeons(self, dungeons: dict):
+    def add_dungeons(self, dungeons: dict, campaign_level: int):
         """Добавление подземелий в таблицу Dungeons"""
         mission_num = 1
         for dungeon in dungeons.values():
             dungeon_row = self.Dungeons(
                 f'{self.current_faction}_'
-                f'{self.curr_campaign_level}_{mission_num}',
+                f'{campaign_level}_{mission_num}',
                 dungeon[1],
                 dungeon[2],
                 dungeon[3],
@@ -1507,6 +1521,27 @@ class ServerStorage:
             )
             self.session.add(dungeon_row)
             mission_num += 1
+        self.session.commit()
+
+    def delete_dungeons(self, faction: str) -> None:
+        """Удаление подземелий из таблицы Dungeons для данной фракции"""
+        for i in range(1, 16):
+            self.session.query(self.Dungeons).filter(
+                self.Dungeons.name == f'{faction}_1_{i}'
+            ).delete()
+            self.session.query(self.Dungeons).filter(
+                self.Dungeons.name == f'{faction}_2_{i}'
+            ).delete()
+            self.session.query(self.Dungeons).filter(
+                self.Dungeons.name == f'{faction}_3_{i}'
+            ).delete()
+            self.session.query(self.Dungeons).filter(
+                self.Dungeons.name == f'{faction}_4_{i}'
+            ).delete()
+            self.session.query(self.Dungeons).filter(
+                self.Dungeons.name == f'{faction}_5_{i}'
+            ).delete()
+
         self.session.commit()
 
     def delete_player_unit(self, slot: int) -> None:
