@@ -861,6 +861,13 @@ class FightWindow(QMainWindow):
         self.update_log()
         self.new_battle.autofight = False
 
+        # победили босса - повысился уровень кампании
+        if '15' in self.dungeon:
+            main_db.set_faction(
+                main_db.current_player.id,
+                main_db.current_faction,
+                main_db.campaign_level + 1)
+
     @staticmethod
     def add_gold(mission_number: int) -> None:
         """Добавление золота за победу"""
