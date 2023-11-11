@@ -1941,7 +1941,7 @@ class ServerStorage:
         self.create_buildings(
             self.current_player.name,
             faction,
-            5000,
+            500,
             building_levels)
 
 

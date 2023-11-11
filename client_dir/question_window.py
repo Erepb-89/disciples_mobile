@@ -16,10 +16,11 @@ class QuestionWindow(QMainWindow):
     конвертированного файла question_form.py
     """
 
-    def __init__(self, instance: any):
+    def __init__(self, instance: any, text: str):
         super().__init__()
         # основные переменные
         self.instance = instance
+        self.text = text
 
         self.InitUI()
 
@@ -31,9 +32,7 @@ class QuestionWindow(QMainWindow):
         self.hbox = QHBoxLayout(self)
         self.update_bg()
 
-        self.ui.questionText.setText(
-            'Вы действительно хотите начать новую игру?'
-        )
+        self.ui.questionText.setText(self.text)
 
         self.ui.pushButtonYES.clicked.connect(
             self.yes_action)
@@ -43,14 +42,14 @@ class QuestionWindow(QMainWindow):
         self.show()
 
     def yes_action(self):
-
-        self.instance.new_game = True
+        """Согласиться"""
+        self.instance.question = True
         self.instance.confirmation()
         self.close()
 
     def no_action(self):
-
-        self.instance.new_game = False
+        """Отказаться"""
+        self.instance.question = False
         self.instance.confirmation()
         self.close()
 
