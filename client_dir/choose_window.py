@@ -103,7 +103,9 @@ class ChooseRaceWindow(QMainWindow):
             main_db.set_faction(
                 main_db.current_player.id,
                 self.faction,
-                1)
+                1,
+                1,
+                0)
             main_db.build_default(self.faction)
             main_db.campaign_level = 1
 
@@ -119,13 +121,19 @@ class ChooseRaceWindow(QMainWindow):
             # )
             # print(buildings)
             main_db.current_faction = self.faction
-            level = main_db.game_session_by_faction(
-                main_db.current_player.id, self.faction).campaign_level
+            session = main_db.game_session_by_faction(
+                main_db.current_player.id, self.faction)
+
+            level = session.campaign_level
+            day = session.day
+            already_built = session.built
 
             main_db.set_faction(
                 main_db.current_player.id,
                 self.faction,
-                level)
+                level,
+                day,
+                already_built)  # поправить
         self.main.reset()
 
         self.close()

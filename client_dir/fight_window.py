@@ -861,12 +861,18 @@ class FightWindow(QMainWindow):
         self.update_log()
         self.new_battle.autofight = False
 
+        # после каждой битвы день увеличивается на 1
+        day = main_db.day + 1
+        already_built = 0
+
         # победили босса - повысился уровень кампании
         if '15' in self.dungeon:
             main_db.set_faction(
                 main_db.current_player.id,
                 main_db.current_faction,
-                main_db.campaign_level + 1)
+                main_db.campaign_level + 1,
+                day,
+                already_built)  # поправить
 
     @staticmethod
     def add_gold(mission_number: int) -> None:
