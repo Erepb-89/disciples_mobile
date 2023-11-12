@@ -340,11 +340,16 @@ class ServerStorage:
         def __init__(self,
                      player_id: int,
                      faction: str,
-                     campaign_level: int):
+                     campaign_level: int,
+                     day: int,
+                     built: int
+                     ):
             self.session_id = None
             self.player_id = player_id
             self.faction = faction
             self.campaign_level = campaign_level
+            self.day = day
+            self.built = built
 
     class Dungeons:
         """Класс - подземелья."""
@@ -639,7 +644,9 @@ class ServerStorage:
             Column('session_id', Integer, primary_key=True),
             Column('player_id', Integer),
             Column('faction', String),
-            Column('campaign_level', Integer)
+            Column('campaign_level', Integer),
+            Column('day', Integer),
+            Column('built', Integer)
         )
 
         # Создаём таблицу всех подземелий
@@ -880,6 +887,8 @@ class ServerStorage:
             self.GameSessions.player_id,
             self.GameSessions.faction,
             self.GameSessions.campaign_level,
+            self.GameSessions.day,
+            self.GameSessions.built,
         ).filter_by(player_id=player_id, faction=faction)
         # Возвращаем кортеж
         return query.order_by(self.GameSessions.session_id.desc()).first()
@@ -892,6 +901,8 @@ class ServerStorage:
             self.GameSessions.player_id,
             self.GameSessions.faction,
             self.GameSessions.campaign_level,
+            self.GameSessions.day,
+            self.GameSessions.built,
         ).filter_by(player_id=player_id)
         # Возвращаем кортеж
         return query.order_by(self.GameSessions.session_id.desc()).first()
@@ -1890,40 +1901,19 @@ class ServerStorage:
                     player_id: int,
                     faction: str,
                     campaign_level: int,
-                    ) -> None:
+                    day: int,
+                    built: int) -> None:
         """Метод сохранения выбранной фракции для текущей игровой сессии"""
         game_session_row = self.GameSessions(
             player_id,
             faction,
-            campaign_level
+            campaign_level,
+            day,
+            built
         )
         self.current_faction = faction
         self.session.add(game_session_row)
         self.session.commit()
-
-    def get_saved_session(self,
-                          player_id: str,
-                          faction: int,
-                          player_name: str) -> tuple:
-        """Метод получения последней сессии игрока за выбранную расу."""
-        if self.GameSessions(
-                player_id,
-                faction
-        ):
-            query = self.session.query(
-                self.PlayerBuildings.gold,
-                self.PlayerBuildings.fighter,
-                self.PlayerBuildings.mage,
-                self.PlayerBuildings.archer,
-                self.PlayerBuildings.support,
-                self.PlayerBuildings.special,
-                self.PlayerBuildings.thieves_guild,
-                self.PlayerBuildings.temple,
-                self.PlayerBuildings.magic_guild
-            ).filter_by(name=player_name, faction=faction)
-            # Возвращаем кортеж
-            return query.order_by(self.PlayerBuildings.id.desc()).first()
-        return ()
 
     def build_default(self, faction: str) -> None:
         """Базовая постройка зданий 1 уровня в выбранной столице"""
