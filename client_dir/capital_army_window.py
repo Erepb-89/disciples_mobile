@@ -224,17 +224,6 @@ class CapitalArmyWindow(QMainWindow):
         self.button_enabled(self.ui.swap34, main_db.PlayerUnits, 4)
         self.button_enabled(self.ui.swap56, main_db.PlayerUnits, 6)
 
-    def units_list_update(self) -> None:
-        """Метод обновляющий список юнитов."""
-        all_units = main_db.show_all_units()
-
-        self.units_model = QStandardItemModel()
-        for i in all_units:
-            item = QStandardItem(i.name)
-            item.setEditable(False)
-            self.units_model.appendRow(item)
-        self.ui.listAllUnits.setModel(self.units_model)
-
     def delete_unit_action(self) -> None:
         """Метод обработчик нажатия кнопки 'Уволить'"""
         selected_slot = self.ui.listPlayerSlots.currentIndex().data()
@@ -242,11 +231,11 @@ class CapitalArmyWindow(QMainWindow):
 
         if unit is not None:
             global QUESTION_WINDOW
-            text = 'Вы действительно хотите уволить юнит?'
+            text = f'Вы действительно хотите уволить {unit.name}?'
             QUESTION_WINDOW = QuestionWindow(self, text)
             QUESTION_WINDOW.show()
 
-    def confirmation(self):
+    def confirmation(self) -> None:
         """Подтверждение 'Увольнения' юнита"""
         if self.question:
             selected_slot = self.ui.listPlayerSlots.currentIndex().data()

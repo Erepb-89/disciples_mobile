@@ -3,7 +3,6 @@
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QMainWindow, QHBoxLayout
 
-from client_dir.campaign_window import CampaignWindow
 from client_dir.choose_faction_form import Ui_FactionWindow
 from client_dir.question_window import QuestionWindow
 from client_dir.settings import FACTIONS, EM, UH, LD, MC, SCREEN_RECT
@@ -50,7 +49,7 @@ class ChooseRaceWindow(QMainWindow):
 
         self.show()
 
-    def update_race(self):
+    def update_race(self) -> None:
         """Обновление лейбла, заполнение картинкой фракции"""
         self.faction = self.factions.get(self.faction_number)
         faction = self.ui.faction
@@ -59,7 +58,7 @@ class ChooseRaceWindow(QMainWindow):
         self.hbox.addWidget(faction)
         self.setLayout(self.hbox)
 
-    def next_race(self):
+    def next_race(self) -> None:
         """Следующая фракция"""
         if self.faction_number < 4:
             self.faction_number += 1
@@ -67,7 +66,7 @@ class ChooseRaceWindow(QMainWindow):
             self.faction_number = 1
         self.update_race()
 
-    def prev_race(self):
+    def prev_race(self) -> None:
         """Предыдущая фракция"""
         if self.faction_number > 1:
             self.faction_number -= 1
@@ -76,7 +75,7 @@ class ChooseRaceWindow(QMainWindow):
         self.update_race()
 
     @property
-    def in_progress(self):
+    def in_progress(self) -> bool:
         """Определение новой игры"""
         session = main_db.game_session_by_faction(
             main_db.current_player.id, self.faction)
@@ -87,7 +86,7 @@ class ChooseRaceWindow(QMainWindow):
             return result
         return
 
-    def choose_race(self):
+    def choose_race(self) -> None:
         """Выбор фракции (нажатие кнопки ОК)"""
         # Если найдена начатая игра за фракцию
         if self.in_progress:
@@ -98,7 +97,7 @@ class ChooseRaceWindow(QMainWindow):
             main_db.already_built = 0
             self.confirmation()
 
-    def confirmation(self):
+    def confirmation(self) -> None:
         """Подтверждение начала новой игры"""
         # Если выбрана Новая игра
         if self.question:
@@ -111,7 +110,7 @@ class ChooseRaceWindow(QMainWindow):
 
         self.close()
 
-    def new_game(self):
+    def new_game(self) -> None:
         """Новая игра"""
         # удаление старых построек за данную фракцию
         main_db.clear_buildings(main_db.current_player.name, self.faction)
@@ -125,10 +124,12 @@ class ChooseRaceWindow(QMainWindow):
             1,
             1,
             0)
+        main_db.already_built = 0
+
         main_db.build_default(self.faction)
         main_db.campaign_level = 1
 
-    def continue_game(self):
+    def continue_game(self) -> None:
         """Продолжение игры"""
         main_db.current_faction = self.faction
         session = main_db.game_session_by_faction(
@@ -145,12 +146,6 @@ class ChooseRaceWindow(QMainWindow):
             day,
             already_built)
 
-    def show_campaign_window(self):
-        """Метод создающий окно выбора миссий в Кампании."""
-        global CAMPAIGN_WINDOW
-        CAMPAIGN_WINDOW = CampaignWindow(main_db)
-        CAMPAIGN_WINDOW.show()
-
     def show_question_window(self) -> None:
         """Метод создающий окно вопроса"""
         global QUESTION_WINDOW
@@ -158,6 +153,6 @@ class ChooseRaceWindow(QMainWindow):
         QUESTION_WINDOW = QuestionWindow(self, text)
         QUESTION_WINDOW.show()
 
-    def back(self):
+    def back(self) -> None:
         """Кнопка возврата"""
         self.close()

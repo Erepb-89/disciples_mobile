@@ -11,6 +11,7 @@ from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QMainWindow, QHBoxLayout, QMessageBox
 
 from client_dir.capital_building_form import Ui_CapitalBuildingWindow
+from client_dir.question_window import QuestionWindow
 from client_dir.settings import CAPITAL_BUILDING, UNIT_ICONS, TOWN_ICONS, \
     SCREEN_RECT, DECLINATIONS, INTERF, ICON, COMMON, OTHERS, ALREADY_BUILT, \
     POSSIBLE_TO_BUILD, NEED_TO_BUILD_PREV, \
@@ -32,6 +33,7 @@ class CapitalBuildingWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         # основные переменные
+        self.question = False  # Постройка зданий
         self.faction = main_db.current_faction
         self.branch = 'archer'
         self.building_name = ''
@@ -617,21 +619,23 @@ class CapitalBuildingWindow(QMainWindow):
 
     def buy_building(self) -> None:
         """Метод постройки зданий в столице"""
-        if self.player_gold < self.building_cost:
+        global QUESTION_WINDOW
+        text = f'{self.building_name} - постройка этого здания будет ' \
+               f'стоить {self.building_cost} золотых монет. Продолжить?'
+        QUESTION_WINDOW = QuestionWindow(self, text)
+        QUESTION_WINDOW.show()
 
-            msg = QMessageBox()
-            msg.setWindowTitle("Предупреждение")
-            msg.setText("Недостаточно золота")
-            msg.setIcon(QMessageBox.Warning)
-
-            msg.exec_()
-        else:
+    def confirmation(self) -> None:
+        """Подтверждение постройки выбранного здания в столице"""
+        # Если ОК
+        if self.question:
+            # берем из базы уже построенные здания
             changed_buildings = list(
                 main_db.get_buildings(
                     main_db.current_player.name,
                     self.faction))
 
-            # обновление построек в текущей сессии
+            # определяем текущую постройку
             if self.building_name == 'Гильдия':
                 changed_buildings[5] = self.building_name
             elif self.building_name == 'Храм':
@@ -641,11 +645,13 @@ class CapitalBuildingWindow(QMainWindow):
             else:
                 changed_buildings[BRANCHES[self.branch]] = self.building_name
 
+            # обновление построек в текущей сессии
             main_db.update_buildings(
                 main_db.current_player.name,
                 self.faction,
                 changed_buildings)
 
+            # получение текущего количества золота
             self.player_gold = main_db.get_gold(
                 main_db.current_player.name, self.faction)
             changed_gold = self.player_gold - self.building_cost
@@ -664,8 +670,8 @@ class CapitalBuildingWindow(QMainWindow):
                 main_db.game_session_id,
                 main_db.already_built)
 
-        self.set_building_possibility()
-        self.show_already_built()
+            self.set_building_possibility()
+            self.show_already_built()
 
     def slot_detailed(self) -> None:
         """Метод создающий окно юнита (слот)."""
@@ -685,7 +691,7 @@ class CapitalBuildingWindow(QMainWindow):
         return os.path.join(TOWN_ICONS, icon_path)
 
     @staticmethod
-    def set_size_by_slot(ui_obj):
+    def set_size_by_slot(ui_obj) -> None:
         """Установка размеров картинки по слоту здания"""
         ui_obj.setFixedWidth(118)
         ui_obj.setFixedHeight(114)

@@ -7,6 +7,7 @@ from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QMainWindow, QHBoxLayout, QMessageBox
 
 from client_dir.hire_menu_form import Ui_HireMenu
+from client_dir.question_window import QuestionWindow
 from client_dir.settings import HIRE_SCREEN
 from client_dir.ui_functions import show_gif,\
     slot_frame_update, slot_update, button_update
@@ -26,6 +27,7 @@ class HireMenuWindow(QMainWindow):
         super().__init__()
         # основные переменные
         self.capital_army = instance
+        self.question = False  # Найм юнитов
         self.faction = main_db.current_faction
         self.factory = AbstractFactory.create_factory(
             self.faction)
@@ -154,11 +156,23 @@ class HireMenuWindow(QMainWindow):
 
     def buy(self) -> None:
         """Кнопка найма"""
-        print(f'Вы купили воина: {self.highlighted_unit.name}')
-        self.hire_unit_action(self.unit_slot)
-        self.capital_army.reset()
-        self.capital_army.capital.main.reset()
-        self.close()
+        global QUESTION_WINDOW
+        text = 'Вы хотите нанять этого воина?'
+        QUESTION_WINDOW = QuestionWindow(self, text)
+        QUESTION_WINDOW.show()
+
+    def confirmation(self) -> None:
+        """Подтверждение найма выбранного воина"""
+        # Если ОК, добавляем воина в базу
+        if self.question:
+            self.hire_unit_action(self.unit_slot)
+            self.capital_army.reset()
+            self.capital_army.capital.main.reset()
+            self.close()
+
+        # Иначе выходим
+        else:
+            self.close()
 
     def unit_list_update(self) -> None:
         """Метод обновляющий список юнитов."""
