@@ -89,54 +89,61 @@ class ChooseRaceWindow(QMainWindow):
 
     def choose_race(self):
         """Выбор фракции (нажатие кнопки ОК)"""
+        # Если найдена начатая игра за фракцию
         if self.in_progress:
             self.show_question_window()
         else:
             # Новая игра
             self.question = True
+            main_db.already_built = 0
             self.confirmation()
 
     def confirmation(self):
         """Подтверждение начала новой игры"""
         # Если выбрана Новая игра
         if self.question:
-            main_db.set_faction(
-                main_db.current_player.id,
-                self.faction,
-                1,
-                1,
-                0)
-            main_db.build_default(self.faction)
-            main_db.campaign_level = 1
+            self.new_game()
 
-            # удаление старых кампаний за данную фракцию
-            main_db.delete_dungeons(self.faction)
-
-        # Иначе продолжаем сохраненную
+        # Иначе продолжаем сохраненную игру
         else:
-            # buildings = main_db.get_saved_session(
-            #     main_db.current_player.id,
-            #     self.faction,
-            #     main_db.current_player.name,
-            # )
-            # print(buildings)
-            main_db.current_faction = self.faction
-            session = main_db.game_session_by_faction(
-                main_db.current_player.id, self.faction)
-
-            level = session.campaign_level
-            day = session.day
-            already_built = session.built
-
-            main_db.set_faction(
-                main_db.current_player.id,
-                self.faction,
-                level,
-                day,
-                already_built)  # поправить
+            self.continue_game()
         self.main.reset()
 
         self.close()
+
+    def new_game(self):
+        """Новая игра"""
+        # удаление старых построек за данную фракцию
+        main_db.clear_buildings(main_db.current_player.name, self.faction)
+
+        # удаление старых кампаний за данную фракцию
+        main_db.delete_dungeons(self.faction)
+
+        main_db.set_faction(
+            main_db.current_player.id,
+            self.faction,
+            1,
+            1,
+            0)
+        main_db.build_default(self.faction)
+        main_db.campaign_level = 1
+
+    def continue_game(self):
+        """Продолжение игры"""
+        main_db.current_faction = self.faction
+        session = main_db.game_session_by_faction(
+            main_db.current_player.id, self.faction)
+
+        level = session.campaign_level
+        day = session.day
+        already_built = session.built
+
+        main_db.set_faction(
+            main_db.current_player.id,
+            self.faction,
+            level,
+            day,
+            already_built)
 
     def show_campaign_window(self):
         """Метод создающий окно выбора миссий в Кампании."""

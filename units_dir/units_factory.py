@@ -1127,7 +1127,7 @@ class Unit:
                 line = f"{self.name} повысил свой уровень\n"
                 logging(line)
             else:
-                line = f"{self.name}  достиг предела развития\n"
+                line = f"{self.name} достиг предела развития\n"
                 logging(line)
 
     @staticmethod
@@ -1142,7 +1142,7 @@ class Unit:
                              ward_activated: bool,
                              attack_source: str) -> None:
         """
-        Проверка успешности атаки. Проверка на иммуны, варды.
+        Проверка успешности атаки. Проверка на иммунитеты, защиты.
         Расчет урона в случае успешной атаки.
         Логирование.
         """
