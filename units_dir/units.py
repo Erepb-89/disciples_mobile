@@ -726,12 +726,20 @@ class ServerStorage:
 
         self.current_player = self.get_player('Erepb-89')
 
+        # текущая игровая сессия
         curr_game_session = self.current_game_session(
             self.current_player.id)
         if curr_game_session is not None:
             self.current_faction = curr_game_session.faction
+            self.campaign_level = curr_game_session.campaign_level
+            self.campaign_day = curr_game_session.day
+            self.already_built = curr_game_session.built
+            self.game_session_id = curr_game_session.session_id
         else:
             self.current_faction = 'Empire'
+            self.campaign_level = 1
+            self.campaign_day = 1
+            self.already_built = 0
 
     def add_dungeon_unit(
             self,
@@ -1909,10 +1917,43 @@ class ServerStorage:
             faction,
             campaign_level,
             day,
-            built
-        )
+            built)
         self.current_faction = faction
         self.session.add(game_session_row)
+        self.session.commit()
+
+    def update_session(self,
+                       session_id: int,
+                       campaign_level: int,
+                       day: int,
+                       built: int) -> None:
+        """Метод изменения текущей игровой сессии"""
+        changes = update(
+            self.GameSessions).where(
+            self.GameSessions.session_id == session_id
+        ).values(
+            campaign_level=campaign_level,
+            day=day,
+            built=built
+        ).execution_options(
+            synchronize_session="fetch")
+
+        self.session.execute(changes)
+        self.session.commit()
+
+    def update_session_built(self,
+                             session_id: int,
+                             built: int) -> None:
+        """Метод изменения текущей игровой сессии"""
+        changes = update(
+            self.GameSessions).where(
+            self.GameSessions.session_id == session_id
+        ).values(
+            built=built
+        ).execution_options(
+            synchronize_session="fetch")
+
+        self.session.execute(changes)
         self.session.commit()
 
     def build_default(self, faction: str) -> None:

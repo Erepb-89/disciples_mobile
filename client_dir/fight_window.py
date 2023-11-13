@@ -861,19 +861,6 @@ class FightWindow(QMainWindow):
         self.update_log()
         self.new_battle.autofight = False
 
-        # после каждой битвы день увеличивается на 1
-        day = main_db.day + 1
-        already_built = 0
-
-        # победили босса - повысился уровень кампании
-        if '15' in self.dungeon:
-            main_db.set_faction(
-                main_db.current_player.id,
-                main_db.current_faction,
-                main_db.campaign_level + 1,
-                day,
-                already_built)  # поправить
-
     @staticmethod
     def add_gold(mission_number: int) -> None:
         """Добавление золота за победу"""
@@ -959,8 +946,28 @@ class FightWindow(QMainWindow):
 
             if self.new_battle.player2.name == 'Computer':
                 try:
-                    mission_number = self.dungeon.split('_')[1]
+                    mission_number = self.dungeon.split('_')[-1]
                     self.add_gold(int(mission_number))
+
+                    # после каждой победы день увеличивается на 1
+                    main_db.campaign_day += 1
+                    main_db.already_built = 0
+
+                    # победили босса - повысился уровень кампании, день + 1
+                    if '15' in self.dungeon:
+                        main_db.update_session(
+                            main_db.game_session_id,
+                            main_db.campaign_level + 1,
+                            main_db.campaign_day,
+                            main_db.already_built)
+                    # иначе просто прибавляем день
+                    else:
+                        main_db.update_session(
+                            main_db.game_session_id,
+                            main_db.campaign_level,
+                            main_db.campaign_day,
+                            main_db.already_built)
+
                 except IndexError:
                     pass
 

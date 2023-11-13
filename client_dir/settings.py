@@ -91,6 +91,7 @@ PANEL_RECT = QRect(0, 500, 0, 0)
 # building descriptions
 ALREADY_BUILT = 'Это здание уже построено'
 POSSIBLE_TO_BUILD = 'Это здание можно построить'
+NOT_ENOUGH_GOLD = 'Недостаточно золота'
 NEED_TO_BUILD_PREV = 'Сначала нужно построить здание, предшествующее этому'
 ANOTHER_BRANCH = 'Это здание нельзя построить, поскольку была выбрана ' \
                  'другая ветвь развития'

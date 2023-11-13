@@ -82,7 +82,6 @@ class CampaignWindow(QMainWindow):
         self.set_campaign_image()
         self.append_campaign_buttons()
         self.append_campaign_icons()
-        self.show_red_frame(self.ui.pushButtonSlot_1)
 
         # если в базе нет готовых миссий
         if not main_db.show_dungeon_units(f'{self.faction}_{self.level}_1'):
@@ -104,6 +103,7 @@ class CampaignWindow(QMainWindow):
 
         # обновляем иконки миссий кампании
         self.mission_list_update()
+        self.highlight_selected_1()
 
         self.show()
 
@@ -267,7 +267,7 @@ class CampaignWindow(QMainWindow):
                     self.all_missions[
                         f'{self.faction}_{self.level}_{num}'])
 
-        self.dungeon = f'{self.faction}_{number}'
+        self.dungeon = f'{self.faction}_{self.level}_{number}'
         # self.dungeon = number
 
     def highlight_selected_1(self) -> None:

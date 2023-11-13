@@ -11,14 +11,14 @@ from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QMainWindow, QHBoxLayout, QMessageBox
 
 from client_dir.capital_building_form import Ui_CapitalBuildingWindow
-from client_dir.settings import CAPITAL_BUILDING, UNIT_ICONS, TOWN_ICONS,\
-    SCREEN_RECT, DECLINATIONS, INTERF, ICON, COMMON, OTHERS, ALREADY_BUILT,\
+from client_dir.settings import CAPITAL_BUILDING, UNIT_ICONS, TOWN_ICONS, \
+    SCREEN_RECT, DECLINATIONS, INTERF, ICON, COMMON, OTHERS, ALREADY_BUILT, \
     POSSIBLE_TO_BUILD, NEED_TO_BUILD_PREV, \
-    ANOTHER_BRANCH
+    ANOTHER_BRANCH, NOT_ENOUGH_GOLD
 from client_dir.ui_functions import set_size_by_unit, get_unit_image, \
     slot_frame_update
 from client_dir.unit_dialog import UnitDialog
-from units_dir.buildings import FACTIONS, BRANCHES
+from units_dir.buildings import FACTIONS, BRANCHES, STARTING_FORMS
 from units_dir.units import main_db
 
 
@@ -290,9 +290,6 @@ class CapitalBuildingWindow(QMainWindow):
             unit_name = self.branch_settings[b_slot].unit_name
             self.ui.nextLevel.setText(unit_name)
 
-            # prev_unit_name = self.get_unit_by_b_name(
-            #     self.branch_settings[b_slot].prev)
-
             prev_unit_name = main_db.get_unit_by_b_name(
                 self.branch_settings[b_slot].prev)
 
@@ -331,11 +328,14 @@ class CapitalBuildingWindow(QMainWindow):
             color = 'black'
             self.ui.slotBuy.setFixedSize(0, 0)
 
-        elif 'уже' in text:
+        elif 'построено' in text:
             color = 'darkgreen'
             self.ui.slotBuy.setFixedSize(59, 60)
 
-        elif 'нельзя' in text or 'нужно' in text:
+        elif 'нельзя' in text or \
+                'нужно' in text or \
+                'уже' in text or \
+                'Недостаточно' in text:
             color = 'darkred'
             self.ui.slotBuy.setFixedSize(59, 60)
 
@@ -374,7 +374,7 @@ class CapitalBuildingWindow(QMainWindow):
 
             # ставим отметки о постройке зданий
             for building in temp_graph:
-                if building != '':
+                if building != '' and building not in STARTING_FORMS:
                     b_slot = self.get_building_slot_by_name(building)
 
                     self.builded_dict[b_slot].setPixmap(QPixmap(
@@ -417,7 +417,10 @@ class CapitalBuildingWindow(QMainWindow):
                     and '' not in temp_graph:
                 self.set_text_and_buy_slot(NEED_TO_BUILD_PREV, False)
 
-            elif '' in temp_graph and len(self.graph) < 2:
+            elif '' in temp_graph and len(self.graph) < 2 and \
+                    main_db.get_gold(
+                        main_db.current_player.name, self.faction
+                    ) >= self.building_cost:
                 self.set_text_and_buy_slot(POSSIBLE_TO_BUILD, True)
 
             elif '' in temp_graph and len(self.graph) >= 2:
@@ -428,16 +431,30 @@ class CapitalBuildingWindow(QMainWindow):
                     and '' not in temp_graph:
                 self.set_text_and_buy_slot(ANOTHER_BRANCH, False)
 
-            else:
+            elif main_db.get_gold(
+                    main_db.current_player.name, self.faction
+            ) >= self.building_cost:
                 self.set_text_and_buy_slot(POSSIBLE_TO_BUILD, True)
+
+            else:
+                self.set_text_and_buy_slot(NOT_ENOUGH_GOLD, False)
 
         elif self.branch == OTHERS:
             # если текущее здание уже в построенных
             if self.building_name in buildings.values():
                 self.set_text_and_buy_slot(ALREADY_BUILT, False)
 
-            else:
+            elif main_db.get_gold(
+                    main_db.current_player.name, self.faction
+            ) >= self.building_cost:
                 self.set_text_and_buy_slot(POSSIBLE_TO_BUILD, True)
+
+            else:
+                self.set_text_and_buy_slot(NOT_ENOUGH_GOLD, False)
+
+        if main_db.already_built:
+            self.set_text_and_buy_slot(
+                'Сегодня уже была совершена постройка', False)
 
     def decline(self, unit_name: str) -> None:
         """Склонение имен юнитов по падежам"""
@@ -498,22 +515,12 @@ class CapitalBuildingWindow(QMainWindow):
         except KeyError:
             return None
 
-    # def get_unit_by_b_name(self, b_name: str) -> str:
-    #     """Получение юнита по названию постройки"""
-    #     branch = FACTIONS.get(self.faction)[self.branch]
-    #     for val in branch.values():
-    #         if b_name == val.bname:
-    #             return val.unit_name
-    #     return ''
-
     def update_unit_by_b_slot(self, b_slot: int) -> None:
         """Обновление юнита согласно выбранному зданию"""
         self.unit = self.get_unit_by_b_slot(b_slot)
         self.slot_update(self.unit, self.ui.slot)
         self.button_update(self.unit, self.ui.pushButtonSlot)
         self.get_building_params(b_slot)
-        # if self.unit is not None:
-        #     slot_frame_update(self.unit, self.ui.slotFrame1)
 
         # подсветка выбранного здания
         self.highlight_selected_building(b_slot, self.ui.labelSelected1)
@@ -649,6 +656,13 @@ class CapitalBuildingWindow(QMainWindow):
                 self.faction,
                 changed_gold)
             self.ui.gold.setText(str(changed_gold))
+
+            # уже строили сегодня
+            main_db.already_built = 1
+
+            main_db.update_session_built(
+                main_db.game_session_id,
+                main_db.already_built)
 
         self.set_building_possibility()
         self.show_already_built()
