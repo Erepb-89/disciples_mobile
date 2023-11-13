@@ -1,4 +1,5 @@
-import os
+"""Окно кампании"""
+
 from typing import Callable, Dict
 
 from PyQt5 import QtWidgets, QtCore
@@ -84,13 +85,15 @@ class CampaignWindow(QMainWindow):
         self.append_campaign_icons()
 
         # если в базе нет готовых миссий
-        if not main_db.show_dungeon_units(f'{self.faction}_{self.level}_1'):
+        if not main_db.show_dungeon_units(
+                f'{self.faction}_{self.level}_1'):
             # генерируем их
             self.update_all_missions(self.level)
         else:
             # иначе берем из базы готовые
             for mission_num in range(1, 16):
-                dung_name = f'{self.faction}_{self.level}_{mission_num}'
+                dung_name = f'{self.faction}_{self.level}_' \
+                            f'{mission_num}'
                 units = main_db.show_dungeon_units(dung_name)
                 self.all_missions[dung_name] = {
                     1: units[0],
@@ -103,7 +106,10 @@ class CampaignWindow(QMainWindow):
 
         # обновляем иконки миссий кампании
         self.mission_list_update()
-        self.highlight_selected_1()
+        # self.highlight_selected_1()
+
+        self.show_red_frame(self.ui.pushButtonSlot_1)
+        self.dungeon = f'{self.faction}_{self.level}_{1}'
 
         self.show()
 
@@ -136,23 +142,6 @@ class CampaignWindow(QMainWindow):
             f'{self.faction}_{level}_14': unit_selector(level, setup_6),
             f'{self.faction}_{level}_15': unit_selector(level + 2, boss_setup)
         }
-        # self.all_missions = {
-        #     f'{self.faction}_{start_level}_1': unit_selector(start_level, setup_4),
-        #     f'{self.faction}_{start_level}_2': unit_selector(start_level, setup_4),
-        #     f'{self.faction}_{start_level}_3': unit_selector(start_level, setup_5),
-        #     f'{self.faction}_{start_level}_4': unit_selector(start_level, setup_5),
-        #     f'{self.faction}_{start_level}_5': unit_selector(start_level, setup_5),
-        #     f'{self.faction}_{start_level}_6': unit_selector(mid_level, setup_3),
-        #     f'{self.faction}_{start_level}_7': unit_selector(mid_level, setup_3),
-        #     f'{self.faction}_{start_level}_8': unit_selector(mid_level, setup_3),
-        #     f'{self.faction}_{start_level}_9': unit_selector(mid_level, setup_3),
-        #     f'{self.faction}_{start_level}_10': unit_selector(mid_level, setup_4),
-        #     f'{self.faction}_{start_level}_11': unit_selector(mid_level, setup_4),
-        #     f'{self.faction}_{start_level}_12': unit_selector(mid_level, setup_4),
-        #     f'{self.faction}_{start_level}_13': unit_selector(mid_level, setup_5),
-        #     f'{self.faction}_{start_level}_14': unit_selector(mid_level, setup_5),
-        #     f'{self.faction}_{start_level}_15': unit_selector(mid_level + 1, boss_setup)
-        # }
 
         main_db.add_dungeons(self.all_missions, self.level)
 

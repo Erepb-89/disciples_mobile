@@ -373,8 +373,8 @@ class FightWindow(QMainWindow):
         """
         self.ui.speedText.setStyleSheet('color: white')
 
-        speed_slots = [0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5,
-                       5.5, 6, 7, 8, 9, 10]
+        speed_slots = [1, 2, 3, 4, 5,
+                       6, 7, 8, 9, 10]
         self.speed_model = QStandardItemModel()
         for slot in speed_slots:
             item = QStandardItem(str(slot))
@@ -960,6 +960,8 @@ class FightWindow(QMainWindow):
                             main_db.campaign_level + 1,
                             main_db.campaign_day,
                             main_db.already_built)
+
+                        main_db.campaign_level += 1
                     # иначе просто прибавляем день
                     else:
                         main_db.update_session(
@@ -1344,7 +1346,7 @@ class FightWindow(QMainWindow):
         # Иконки кругов REAR стороны
         self.append_rear_circles()
 
-    def unit_icons_update(self):
+    def unit_icons_update(self) -> None:
         """Метод обновляющий иконки и кнопки юнитов игроков"""
         if self.player_side == FRONT:
             self.set_unit_icons_player1()
