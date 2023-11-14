@@ -390,7 +390,7 @@ class FightWindow(QMainWindow):
         """Устанавливает выбранную скорость анимации"""
         multiplier = self.ui.comboSpeed.currentText()
         self.speed = 100 * float(multiplier)
-        self.unit_gifs_update()
+        # self.unit_gifs_update()
 
     def update_log(self) -> None:
         """Обновление лога"""
@@ -810,7 +810,7 @@ class FightWindow(QMainWindow):
         if not self.new_battle.battle_is_over:
             # если есть кого атаковать
             if self.new_battle.target_slots != [None]:
-                self.unit_gifs_update()
+                # self.unit_gifs_update()
                 self.new_battle.auto_fight()
                 self.show_attack_and_attacked()
             # иначе защита
@@ -862,9 +862,10 @@ class FightWindow(QMainWindow):
         self.new_battle.autofight = False
 
     @staticmethod
-    def add_gold(mission_number: int) -> None:
+    def add_gold(mission_number: any) -> None:
         """Добавление золота за победу"""
         gold_gradation = {
+            'versus': 0,
             1: 50,
             2: 50,
             3: 100,
@@ -947,7 +948,7 @@ class FightWindow(QMainWindow):
             if self.new_battle.player2.name == 'Computer':
                 try:
                     mission_number = self.dungeon.split('_')[-1]
-                    self.add_gold(int(mission_number))
+                    self.add_gold(mission_number)
 
                     # после каждой победы день увеличивается на 1
                     main_db.campaign_day += 1
@@ -1519,7 +1520,7 @@ class FightWindow(QMainWindow):
 
     def attack_enemy_by_slot(self, slot: int, side: str) -> None:
         """Атака и анимация по выбранному слоту противника"""
-        self.unit_gifs_update()
+        # self.unit_gifs_update()
         target = self._unit_by_slot_and_side(slot, side)
         # невозможность атаковать своих
         if target is not None:
