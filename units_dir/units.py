@@ -1658,6 +1658,7 @@ class ServerStorage:
     def update_unit(self,
                     unit_id: int,
                     level: int,
+                    exp: int,
                     health: int,
                     curr_health: int,
                     curr_exp: int,
@@ -1674,6 +1675,7 @@ class ServerStorage:
             self.PlayerUnits).where(
             self.PlayerUnits.id == unit_id).values(
             level=level,
+            exp=exp,
             health=health,
             curr_health=curr_health,
             curr_exp=curr_exp,

@@ -964,8 +964,24 @@ class Unit:
         # Уровень
         next_level = self.level + 1
 
+        # Опыт
+        next_exp = self.exp
+        # Увеличение требуемого опыта для повышения (для героев)
+        if self.branch == 'hero' and self.level < 10:
+            if self.leader_cat in ('fighter', 'mage'):
+                next_exp = self.exp + 500
+            elif self.leader_cat == 'archer':
+                next_exp = self.exp + 450
+            elif self.leader_cat == 'rod':
+                next_exp = self.exp + 300
+
         # Здоровье
         next_hp = int(self.health * 1.10)
+
+        # Здоровье для героев
+        if self.branch == 'hero':
+            next_hp = max(next_hp, 10)
+
         while next_hp % 5 != 0:
             next_hp += 1
 
@@ -985,10 +1001,28 @@ class Unit:
             # Добавить увеличение доп. урона
             additional = self.attack_dmg.split('/')[1]
 
-            next_damage = int(damage * 1.10)
+            # Урон для героев
+            if self.branch == 'hero':
+                if self.leader_cat == 'fighter':
+                    next_damage = int(damage) + 10
+                else:
+                    next_damage = int(damage) + 5
+            # Для юнитов
+            else:
+                next_damage = int(damage * 1.10)
+
             next_damage = f'{min(next_damage, 300)}/{additional}'
         except AttributeError:  # IndexError
-            next_damage = int(self.attack_dmg * 1.10)
+            # Урон для героев
+            if self.branch == 'hero':
+                if self.leader_cat == 'fighter':
+                    next_damage = int(self.attack_dmg) + 10
+                else:
+                    next_damage = int(self.attack_dmg) + 5
+            # Для юнитов
+            else:
+                next_damage = int(self.attack_dmg * 1.10)
+
             next_damage = min(next_damage, 300)
 
         # Опыт за убийство
@@ -1003,6 +1037,7 @@ class Unit:
         main_db.update_unit(
             self.id,
             next_level,
+            next_exp,
             next_hp,
             next_hp,
             0,
