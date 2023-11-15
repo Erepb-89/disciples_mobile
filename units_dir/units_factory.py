@@ -9,7 +9,7 @@ from typing import Dict, List
 from battle_logging import logging
 
 from client_dir.settings import EM, UH, LD, MC, BIG
-from units_dir.buildings import FACTIONS, ELDER_FORMS
+from units_dir.buildings import FACTIONS, ELDER_FORMS, PERKS
 from units_dir.units import main_db
 from units_dir.ranking import empire_mage_lvls, \
     empire_archer_lvls, empire_support_lvls, \
@@ -965,25 +965,10 @@ class Unit:
         next_level = self.level + 1
 
         # Опыт
-        next_exp = self.exp
-        # Увеличение требуемого опыта для повышения (для героев)
-        if self.branch == 'hero' and self.level < 10:
-            if self.leader_cat in ('fighter', 'mage'):
-                next_exp = self.exp + 500
-            elif self.leader_cat == 'archer':
-                next_exp = self.exp + 450
-            elif self.leader_cat == 'rod':
-                next_exp = self.exp + 300
+        next_exp = self.get_next_exp()
 
         # Здоровье
-        next_hp = int(self.health * 1.10)
-
-        # Здоровье для героев
-        if self.branch == 'hero':
-            next_hp = max(next_hp, 10)
-
-        while next_hp % 5 != 0:
-            next_hp += 1
+        next_hp = self.get_next_hp()
 
         # Шанс на попадание
         try:
@@ -1046,6 +1031,71 @@ class Unit:
             next_damage,
             updates_left)
 
+    def get_next_exp(self):
+        """Увеличение требуемого опыта для повышения (для героев)"""
+        next_exp = self.exp
+        # Увеличение требуемого опыта для повышения (для героев)
+        if self.branch == 'hero' and self.level < 10:
+            if self.leader_cat in ('fighter', 'mage'):
+                next_exp = self.exp + 500
+            elif self.leader_cat == 'archer':
+                next_exp = self.exp + 450
+            elif self.leader_cat == 'rod':
+                next_exp = self.exp + 300
+        return next_exp
+
+    def get_next_hp(self):
+        """Увеличение здоровья"""
+        next_hp = int(self.health * 1.10)
+
+        # Здоровье для героев
+        if self.branch == 'hero':
+            next_hp = max(next_hp, 10)
+
+        while next_hp % 5 != 0:
+            next_hp += 1
+
+        return next_hp
+
+    def give_perks(self):
+        """Получение перков героем"""
+        # Рандомное получение перков
+        all_perks = []
+
+        perks = {
+            'leadership': self.leadership,
+            'nat_armor': self.nat_armor,
+            'might': self.might,
+            'weapon_master': self.weapon_master,
+            'endurance': self.endurance,
+            'first_strike': self.first_strike,
+            'accuracy': self.accuracy,
+            'water_resist': self.water_resist,
+            'air_resist': self.air_resist,
+            'fire_resist': self.fire_resist,
+            'earth_resist': self.earth_resist
+        }
+
+        for key in PERKS.keys():
+            if (key == 'leadership' and self.leadership < 5) \
+                    or perks[key] != 1:
+                all_perks.append(key)
+
+        if all_perks:
+            perk = random.choice(all_perks)
+            # print('perk', perk)
+            line = f"{self.name} получает перк perk\n"
+            logging(line)
+
+            if perk == 'leadership' and self.leadership < 5:
+                perks[perk] = self.leadership + 1
+            else:
+                perks[perk] = 1
+
+            main_db.update_perks(
+                self.id,
+                perks)
+
     @property
     def race_settings(self) -> Dict[str, dict]:
         """Получение настроек фракции"""
@@ -1095,6 +1145,7 @@ class Unit:
         if self.branch == 'hero':
             if self.dyn_upd_level != 0:
                 self.upgrade_stats()
+                self.give_perks()
 
                 line = f"{self.name} повысил свой уровень\n"
                 logging(line)
@@ -1114,7 +1165,8 @@ class Unit:
             elif self.branch == 'support':
                 branch_buildings = main_db.get_support_branch()
 
-            # находим следующую стадию юнита, если здание для апгрейда построено
+            # находим следующую стадию юнита, если здание для апгрейда
+            # построено
             for building in \
                     FACTIONS[main_db.current_faction][self.branch].values():
                 if building.prev == self.upgrade_b and \
@@ -1186,12 +1238,14 @@ class Unit:
         if attack_successful and not immune_activated and not ward_activated:
             # Вычисление урона с учетом брони
             try:
+                dmg = int(self.attack_dmg.split('/')[0])
                 damage = int(
-                    (int(self.attack_dmg.split('/')[0]) +
+                    (dmg + (dmg * self.might * 0.25) +
                      random.randrange(6)) * (1 - target.armor * 0.01))
             except AttributeError:
-                damage = int((self.attack_dmg + random.randrange(6)) *
-                             (1 - target.armor * 0.01))
+                damage = \
+                    int((self.attack_dmg + (self.attack_dmg * self.might * 0.25) +
+                         random.randrange(6)) * (1 - target.armor * 0.01))
 
             # если урон больше, чем здоровье врага, приравниваем урон к
             # здоровью

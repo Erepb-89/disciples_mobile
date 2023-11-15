@@ -201,7 +201,8 @@ class UnitDialog(QDialog):
             self.attackDmg.setText(f'{unit.attack_dmg} (Макс.)')
             self.attackDmg.setStyleSheet('color: darkred')
         else:
-            self.attackDmg.setText(str(unit.attack_dmg))
+            self.attackDmg.setText(f'{unit.attack_dmg} + '
+                                   f'{int(unit.attack_dmg * unit.might * 0.25)}')
             self.attackDmg.setStyleSheet('color: black')
         self.attackSource.setText(str(unit.attack_source))
         self.attackIni.setText(str(unit.attack_ini))
@@ -398,7 +399,8 @@ class UnitNameDialog(QDialog):
             self.attackDmg.setText(f'{unit.attack_dmg} (Макс.)')
             self.attackDmg.setStyleSheet('color: darkred')
         else:
-            self.attackDmg.setText(str(unit.attack_dmg))
+            self.attackDmg.setText(f'{unit.attack_dmg} + '
+                                   f'{int(unit.attack_dmg * unit.might * 0.25)}')
             self.attackDmg.setStyleSheet('color: black')
         self.attackSource.setText(str(unit.attack_source))
         self.attackIni.setText(str(unit.attack_ini))
