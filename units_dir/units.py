@@ -1667,7 +1667,7 @@ class ServerStorage:
                     attack_dmg: int,
                     dyn_upd_level) -> None:
         """
-        Метод изменения юнита игрока (здоровье и опыт).
+        Метод изменения характеристик юнита игрока.
         Изменяет запись в таблице PlayerUnits.
         """
 
@@ -1683,6 +1683,33 @@ class ServerStorage:
             attack_chance=attack_chance,
             attack_dmg=attack_dmg,
             dyn_upd_level=dyn_upd_level
+        ).execution_options(
+            synchronize_session="fetch")
+
+        self.session.execute(changes)
+        self.session.commit()
+
+    def update_perks(self,
+                     unit_id: int,
+                     perks: dict) -> None:
+        """
+        Метод изменения героя игрока (перки).
+        Изменяет запись в таблице PlayerUnits.
+        """
+        changes = update(
+            self.PlayerUnits).where(
+            self.PlayerUnits.id == unit_id).values(
+            leadership=perks['leadership'],
+            nat_armor=perks['nat_armor'],
+            might=perks['might'],
+            weapon_master=perks['weapon_master'],
+            endurance=perks['endurance'],
+            first_strike=perks['first_strike'],
+            accuracy=perks['accuracy'],
+            water_resist=perks['water_resist'],
+            air_resist=perks['air_resist'],
+            fire_resist=perks['fire_resist'],
+            earth_resist=perks['earth_resist']
         ).execution_options(
             synchronize_session="fetch")
 
