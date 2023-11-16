@@ -239,7 +239,7 @@
     <rect>
      <x>660</x>
      <y>362</y>
-     <width>121</width>
+     <width>170</width>
      <height>20</height>
     </rect>
    </property>
@@ -344,7 +344,7 @@
     <rect>
      <x>660</x>
      <y>337</y>
-     <width>121</width>
+     <width>170</width>
      <height>20</height>
     </rect>
    </property>
@@ -406,6 +406,291 @@
    </property>
    <property name="wordWrap">
     <bool>true</bool>
+   </property>
+  </widget>
+  <widget class="QLabel" name="leadership">
+   <property name="geometry">
+    <rect>
+     <x>660</x>
+     <y>550</y>
+     <width>200</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <family>Arial</family>
+     <pointsize>11</pointsize>
+     <weight>75</weight>
+     <bold>true</bold>
+    </font>
+   </property>
+   <property name="text">
+    <string>Лидерство</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="leadershipText">
+   <property name="geometry">
+    <rect>
+     <x>490</x>
+     <y>550</y>
+     <width>141</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <family>Arial</family>
+     <pointsize>11</pointsize>
+     <weight>75</weight>
+     <bold>true</bold>
+    </font>
+   </property>
+   <property name="toolTip">
+    <string>Позволяет брать предводителю в группу на одного юнита больше</string>
+   </property>
+   <property name="text">
+    <string>Лидерство:</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="natArmor">
+   <property name="geometry">
+    <rect>
+     <x>490</x>
+     <y>580</y>
+     <width>160</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <family>Arial</family>
+     <pointsize>11</pointsize>
+     <weight>75</weight>
+     <bold>true</bold>
+    </font>
+   </property>
+   <property name="toolTip">
+    <string>Предводитель поглощает 20% полученного урона</string>
+   </property>
+   <property name="text">
+    <string>Природная броня</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="might">
+   <property name="geometry">
+    <rect>
+     <x>490</x>
+     <y>610</y>
+     <width>160</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <family>Arial</family>
+     <pointsize>11</pointsize>
+     <weight>75</weight>
+     <bold>true</bold>
+    </font>
+   </property>
+   <property name="toolTip">
+    <string>Добавляет 25% к урону предводителя</string>
+   </property>
+   <property name="text">
+    <string>Мощь</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="weaponMaster">
+   <property name="geometry">
+    <rect>
+     <x>490</x>
+     <y>640</y>
+     <width>160</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <family>Arial</family>
+     <pointsize>11</pointsize>
+     <weight>75</weight>
+     <bold>true</bold>
+    </font>
+   </property>
+   <property name="toolTip">
+    <string>Все юниты в группе предводителя получают на 25% больше опыта в бою</string>
+   </property>
+   <property name="text">
+    <string>Мастер оружия</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="endurance">
+   <property name="geometry">
+    <rect>
+     <x>490</x>
+     <y>670</y>
+     <width>160</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <family>Arial</family>
+     <pointsize>11</pointsize>
+     <weight>75</weight>
+     <bold>true</bold>
+    </font>
+   </property>
+   <property name="toolTip">
+    <string>Добавляет дополнительно 20% очков здоровья предводителю</string>
+   </property>
+   <property name="text">
+    <string>Выносливость</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="firstStrike">
+   <property name="geometry">
+    <rect>
+     <x>490</x>
+     <y>700</y>
+     <width>160</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <family>Arial</family>
+     <pointsize>11</pointsize>
+     <weight>75</weight>
+     <bold>true</bold>
+    </font>
+   </property>
+   <property name="toolTip">
+    <string>Повышает инициативу предводителя на 50%</string>
+   </property>
+   <property name="text">
+    <string>Первый удар</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="accuracy">
+   <property name="geometry">
+    <rect>
+     <x>490</x>
+     <y>730</y>
+     <width>160</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <family>Arial</family>
+     <pointsize>11</pointsize>
+     <weight>75</weight>
+     <bold>true</bold>
+    </font>
+   </property>
+   <property name="toolTip">
+    <string>Повышает шанс удачной атаки предводителя на 20%</string>
+   </property>
+   <property name="text">
+    <string>Точность</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="airResist">
+   <property name="geometry">
+    <rect>
+     <x>660</x>
+     <y>610</y>
+     <width>200</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <family>Arial</family>
+     <pointsize>11</pointsize>
+     <weight>75</weight>
+     <bold>true</bold>
+    </font>
+   </property>
+   <property name="toolTip">
+    <string>Защищает предводителя от первой атаки магии Воздуха в бою</string>
+   </property>
+   <property name="text">
+    <string>Защита от Воздуха</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="waterResist">
+   <property name="geometry">
+    <rect>
+     <x>660</x>
+     <y>580</y>
+     <width>200</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <family>Arial</family>
+     <pointsize>11</pointsize>
+     <weight>75</weight>
+     <bold>true</bold>
+    </font>
+   </property>
+   <property name="toolTip">
+    <string>Защищает предводителя от первой атаки магии Воды в бою</string>
+   </property>
+   <property name="text">
+    <string>Защита от Воды</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="fireResist">
+   <property name="geometry">
+    <rect>
+     <x>660</x>
+     <y>640</y>
+     <width>200</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <family>Arial</family>
+     <pointsize>11</pointsize>
+     <weight>75</weight>
+     <bold>true</bold>
+    </font>
+   </property>
+   <property name="toolTip">
+    <string>Защищает предводителя от первой атаки магии Огня в бою</string>
+   </property>
+   <property name="text">
+    <string>Защита от Огня</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="earthResist">
+   <property name="geometry">
+    <rect>
+     <x>660</x>
+     <y>670</y>
+     <width>200</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <family>Arial</family>
+     <pointsize>11</pointsize>
+     <weight>75</weight>
+     <bold>true</bold>
+    </font>
+   </property>
+   <property name="toolTip">
+    <string>Защищает предводителя от первой атаки магии Земли в бою</string>
+   </property>
+   <property name="text">
+    <string>Защита от Земли</string>
    </property>
   </widget>
  </widget>

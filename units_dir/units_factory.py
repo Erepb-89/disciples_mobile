@@ -938,13 +938,15 @@ class Unit:
 
     def undefence(self) -> None:
         """Сброс защиты в битве"""
-        self.armor = main_db.get_unit_by_name(self.name).armor
+        self.armor = main_db.get_unit_by_name(self.name).armor + \
+                     self.might * 20
 
     def defence(self) -> None:
         """Пропуск хода и защита в битве"""
-        # self.armor = round(self.armor / 2 + 50)
-        self.armor = round(
-            main_db.get_unit_by_name(self.name).armor / 2 + 50)
+        self.armor = round(self.armor / 2 + 50)
+        # self.armor = round(
+        #     main_db.get_unit_by_name(self.name).armor +
+        #     (self.might * 20) / 2 + 50)
 
         line = f"{self.name} защищается\n"
         logging(line)
@@ -1025,6 +1027,7 @@ class Unit:
             next_exp,
             next_hp,
             next_hp,
+            self.armor,
             0,
             next_killed_exp,
             next_chance,
@@ -1083,8 +1086,7 @@ class Unit:
 
         if all_perks:
             perk = random.choice(all_perks)
-            # print('perk', perk)
-            line = f"{self.name} получает перк perk\n"
+            line = f"{self.name} получает перк {perk}\n"
             logging(line)
 
             if perk == 'leadership' and self.leadership < 5:
@@ -1095,6 +1097,9 @@ class Unit:
             main_db.update_perks(
                 self.id,
                 perks)
+
+            if perk == 'nat_armor':
+                main_db.update_unit_armor(self.id, self.armor + 20)
 
     @property
     def race_settings(self) -> Dict[str, dict]:

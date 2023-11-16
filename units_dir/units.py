@@ -1661,6 +1661,7 @@ class ServerStorage:
                     exp: int,
                     health: int,
                     curr_health: int,
+                    armor: int,
                     curr_exp: int,
                     exp_per_kill: int,
                     attack_chance: str,
@@ -1678,11 +1679,30 @@ class ServerStorage:
             exp=exp,
             health=health,
             curr_health=curr_health,
+            armor=armor,
             curr_exp=curr_exp,
             exp_per_kill=exp_per_kill,
             attack_chance=attack_chance,
             attack_dmg=attack_dmg,
             dyn_upd_level=dyn_upd_level
+        ).execution_options(
+            synchronize_session="fetch")
+
+        self.session.execute(changes)
+        self.session.commit()
+
+    def update_unit_armor(self,
+                          unit_id: int,
+                          armor: int) -> None:
+        """
+        Метод изменения брони юнита игрока.
+        Изменяет запись в таблице PlayerUnits.
+        """
+
+        changes = update(
+            self.PlayerUnits).where(
+            self.PlayerUnits.id == unit_id).values(
+            armor=armor
         ).execution_options(
             synchronize_session="fetch")
 
