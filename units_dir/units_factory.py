@@ -1098,8 +1098,33 @@ class Unit:
                 self.id,
                 perks)
 
+            # Природная броня
             if perk == 'nat_armor':
                 main_db.update_unit_armor(self.id, self.armor + 20)
+
+            # Защита от Воды
+            if perk == 'water_resist' and self.ward != 'Нет':
+                main_db.update_ward(self.id, f'{self.ward}, Вода')
+            elif perk == 'water_resist' and self.ward == 'Нет':
+                main_db.update_ward(self.id, 'Вода')
+
+            # Защита от Воздуха
+            if perk == 'air_resist' and self.ward != 'Нет':
+                main_db.update_ward(self.id, f'{self.ward}, Воздух')
+            elif perk == 'air_resist' and self.ward == 'Нет':
+                main_db.update_ward(self.id, 'Воздух')
+
+            # Защита от Огня
+            if perk == 'fire_resist' and self.ward != 'Нет':
+                main_db.update_ward(self.id, f'{self.ward}, Огонь')
+            elif perk == 'fire_resist' and self.ward == 'Нет':
+                main_db.update_ward(self.id, 'Огонь')
+
+            # Защита от Земли
+            if perk == 'earth_resist' and self.ward != 'Нет':
+                main_db.update_ward(self.id, f'{self.ward}, Земля')
+            elif perk == 'earth_resist' and self.ward == 'Нет':
+                main_db.update_ward(self.id, 'Земля')
 
     @property
     def race_settings(self) -> Dict[str, dict]:
@@ -1244,13 +1269,15 @@ class Unit:
             # Вычисление урона с учетом брони
             try:
                 dmg = int(self.attack_dmg.split('/')[0])
-                damage = int(
+                damage = min(int(
                     (dmg + (dmg * self.might * 0.25) +
-                     random.randrange(6)) * (1 - target.armor * 0.01))
+                     random.randrange(6)) * (1 - target.armor * 0.01)),
+                    300)
             except AttributeError:
                 damage = \
-                    int((self.attack_dmg + (self.attack_dmg * self.might * 0.25) +
-                         random.randrange(6)) * (1 - target.armor * 0.01))
+                    min(int((self.attack_dmg + (self.attack_dmg * self.might * 0.25) +
+                             random.randrange(6)) * (1 - target.armor * 0.01)),
+                        300)
 
             # если урон больше, чем здоровье врага, приравниваем урон к
             # здоровью

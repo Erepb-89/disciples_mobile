@@ -299,23 +299,9 @@ class UnitDialog(QDialog):
         self.ward.setText(str(unit.ward))
         self.attackType.setText(str(unit.attack_type))
         self.attackChance.setText(f'{unit.attack_chance}%')
-        if unit.attack_dmg == 300:
-            self.attackDmg.setText(f'{unit.attack_dmg} (Макс.)')
-            self.attackDmg.setStyleSheet('color: darkred')
-        elif unit.might and unit.attack_dmg + \
-                (unit.attack_dmg * unit.might * 0.25) >= 300:
-            self.attackDmg.setText(
-                f'{unit.attack_dmg} + '
-                f'{int(unit.attack_dmg * unit.might * 0.25)} (Макс.)')
-            self.attackDmg.setStyleSheet('color: darkred')
-        elif unit.might and unit.attack_dmg + \
-                (unit.attack_dmg * unit.might * 0.25) < 300:
-            self.attackDmg.setText(
-                f'{unit.attack_dmg} + '
-                f'{int(unit.attack_dmg * unit.might * 0.25)}')
-            self.attackDmg.setStyleSheet('color: black')
-        else:
-            self.attackDmg.setText(f'{unit.attack_dmg}')
+
+        self.show_damage(unit)
+
         self.attackSource.setText(str(unit.attack_source))
         self.attackIni.setText(str(unit.attack_ini))
         self.attackRadius.setText(str(unit.attack_radius))
@@ -344,8 +330,30 @@ class UnitDialog(QDialog):
         self.retranslateUi(self)
         QtCore.QMetaObject.connectSlotsByName(self)
 
+    def show_damage(self, unit):
+        """Показать урон юнита"""
+        if unit.attack_dmg == 300:
+            self.attackDmg.setText('300 (Макс.)')
+            self.attackDmg.setStyleSheet('color: darkred')
+
+        elif unit.might and unit.attack_dmg + \
+                (unit.attack_dmg * unit.might * 0.25) >= 300:
+            self.attackDmg.setText(
+                f'{unit.attack_dmg} + '
+                f'{300 - unit.attack_dmg} (Макс.)')
+            self.attackDmg.setStyleSheet('color: darkred')
+
+        elif unit.might and unit.attack_dmg + \
+                (unit.attack_dmg * unit.might * 0.25) < 300:
+            self.attackDmg.setText(
+                f'{unit.attack_dmg} + '
+                f'{int(unit.attack_dmg * unit.might * 0.25)}')
+            self.attackDmg.setStyleSheet('color: black')
+        else:
+            self.attackDmg.setText(f'{unit.attack_dmg}')
+
     def check_perk(self, unit_perk, ui_obj):
-        """Проверка перка"""
+        """Проверка перка с выводом на окно характеристик"""
         if unit_perk:
             ui_obj.setVisible(True)
         else:
@@ -712,114 +720,9 @@ class UnitNameDialog(QDialog):
         self.ward.setText(str(unit.ward))
         self.attackType.setText(str(unit.attack_type))
         self.attackChance.setText(f'{unit.attack_chance}%')
-        if unit.attack_dmg == 300:
-            self.attackDmg.setText(f'{unit.attack_dmg} (Макс.)')
-            self.attackDmg.setStyleSheet('color: darkred')
-        elif unit.might and unit.attack_dmg + \
-                (unit.attack_dmg * unit.might * 0.25) >= 300:
-            self.attackDmg.setText(
-                f'{unit.attack_dmg} + '
-                f'{int(unit.attack_dmg * unit.might * 0.25)} (Макс.)')
-            self.attackDmg.setStyleSheet('color: darkred')
-        elif unit.might and unit.attack_dmg + \
-                (unit.attack_dmg * unit.might * 0.25) < 300:
-            self.attackDmg.setText(
-                f'{unit.attack_dmg} + '
-                f'{int(unit.attack_dmg * unit.might * 0.25)}')
-            self.attackDmg.setStyleSheet('color: black')
-        else:
-            self.attackDmg.setText(f'{unit.attack_dmg}')
+        self.attackDmg.setText(f'{unit.attack_dmg}')
         self.attackSource.setText(str(unit.attack_source))
         self.attackIni.setText(str(unit.attack_ini))
         self.attackRadius.setText(str(unit.attack_radius))
         self.attackPurpose.setText(str(unit.attack_purpose))
         self.description.setText(str(unit.desc))
-
-        # Проверяем видимость перков
-        if unit.leadership is not None:
-            self.leadership.setText(str(unit.leadership))
-            self.check_perk(unit.leadership, self.leadership)
-        else:
-            self.leadershipText.setVisible(False)
-
-        self.check_perk(unit.nat_armor, self.natArmor)
-        self.check_perk(unit.might, self.might)
-        self.check_perk(unit.weapon_master, self.weaponMaster)
-        self.check_perk(unit.nat_armor, self.natArmor)
-        self.check_perk(unit.endurance, self.endurance)
-        self.check_perk(unit.first_strike, self.firstStrike)
-        self.check_perk(unit.accuracy, self.accuracy)
-        self.check_perk(unit.water_resist, self.waterResist)
-        self.check_perk(unit.air_resist, self.airResist)
-        self.check_perk(unit.fire_resist, self.fireResist)
-        self.check_perk(unit.earth_resist, self.earthResist)
-
-        self.retranslateUi(self)
-        QtCore.QMetaObject.connectSlotsByName(self)
-
-    def check_perk(self, unit_perk, ui_obj):
-        """Проверка перка"""
-        if unit_perk:
-            ui_obj.setVisible(True)
-        else:
-            ui_obj.setVisible(False)
-
-    def retranslateUi(self, Dialog):
-        _translate = QtCore.QCoreApplication.translate
-        self.leadershipText.setToolTip(
-            _translate(
-                "Dialog",
-                "Позволяет брать предводителю в группу на одного юнита "
-                "больше"))
-        self.leadershipText.setText(_translate("Dialog", "Лидерство:"))
-        self.natArmor.setToolTip(
-            _translate(
-                "Dialog",
-                "Предводитель поглощает 20% полученного урона"))
-        self.natArmor.setText(_translate("Dialog", "Природная броня"))
-        self.might.setToolTip(
-            _translate(
-                "Dialog",
-                "Добавляет 25% к урону предводителя"))
-        self.might.setText(_translate("Dialog", "Мощь"))
-        self.weaponMaster.setToolTip(
-            _translate(
-                "Dialog",
-                "Все юниты в группе предводителя получают на 25% больше "
-                "опыта в бою"))
-        self.weaponMaster.setText(_translate("Dialog", "Мастер оружия"))
-        self.endurance.setToolTip(
-            _translate(
-                "Dialog",
-                "Добавляет дополнительно 20% очков здоровья предводителю"))
-        self.endurance.setText(_translate("Dialog", "Выносливость"))
-        self.firstStrike.setToolTip(
-            _translate(
-                "Dialog",
-                "Повышает инициативу предводителя на 50%"))
-        self.firstStrike.setText(_translate("Dialog", "Первый удар"))
-        self.accuracy.setToolTip(
-            _translate(
-                "Dialog",
-                "Повышает шанс удачной атаки предводителя на 20%"))
-        self.accuracy.setText(_translate("Dialog", "Точность"))
-        self.airResist.setToolTip(
-            _translate(
-                "Dialog",
-                "Защищает предводителя от первой атаки магии Воздуха в бою"))
-        self.airResist.setText(_translate("Dialog", "Защита от Воздуха"))
-        self.waterResist.setToolTip(
-            _translate(
-                "Dialog",
-                "Защищает предводителя от первой атаки магии Воды в бою"))
-        self.waterResist.setText(_translate("Dialog", "Защита от Воды"))
-        self.fireResist.setToolTip(
-            _translate(
-                "Dialog",
-                "Защищает предводителя от первой атаки магии Огня в бою"))
-        self.fireResist.setText(_translate("Dialog", "Защита от Огня"))
-        self.earthResist.setToolTip(
-            _translate(
-                "Dialog",
-                "Защищает предводителя от первой атаки магии Земли в бою"))
-        self.earthResist.setText(_translate("Dialog", "Защита от Земли"))

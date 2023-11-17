@@ -1709,6 +1709,24 @@ class ServerStorage:
         self.session.execute(changes)
         self.session.commit()
 
+    def update_ward(self,
+                          unit_id: int,
+                          ward: str) -> None:
+        """
+        Метод изменения брони юнита игрока.
+        Изменяет запись в таблице PlayerUnits.
+        """
+
+        changes = update(
+            self.PlayerUnits).where(
+            self.PlayerUnits.id == unit_id).values(
+            ward=ward
+        ).execution_options(
+            synchronize_session="fetch")
+
+        self.session.execute(changes)
+        self.session.commit()
+
     def update_perks(self,
                      unit_id: int,
                      perks: dict) -> None:
