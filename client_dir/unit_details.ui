@@ -522,7 +522,7 @@
     <string>Все юниты в группе предводителя получают на 25% больше опыта в бою</string>
    </property>
    <property name="text">
-    <string>Мастер оружия</string>
+    <string>Инструктор</string>
    </property>
   </widget>
   <widget class="QLabel" name="endurance">

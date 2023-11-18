@@ -1729,17 +1729,18 @@ class ServerStorage:
         self.session.commit()
 
     def update_unit_armor(self,
-                          unit_id: int,
-                          armor: int) -> None:
+                          unit_id: int) -> None:
         """
         Метод изменения брони юнита игрока.
         Изменяет запись в таблице PlayerUnits.
         """
+        unit = self.get_unit_by_id(unit_id, self.PlayerUnits)
+        unit_armor = unit.armor + 20
 
         changes = update(
             self.PlayerUnits).where(
             self.PlayerUnits.id == unit_id).values(
-            armor=armor
+            armor=unit_armor
         ).execution_options(
             synchronize_session="fetch")
 
@@ -1747,17 +1748,22 @@ class ServerStorage:
         self.session.commit()
 
     def update_ward(self,
-                          unit_id: int,
-                          ward: str) -> None:
+                    unit_id: int,
+                    element: str) -> None:
         """
         Метод изменения брони юнита игрока.
         Изменяет запись в таблице PlayerUnits.
         """
+        unit = self.get_unit_by_id(unit_id, self.PlayerUnits)
+        if unit.ward != 'Нет':
+            unit_ward = f'{unit.ward}, {element}'
+        else:
+            unit_ward = element
 
         changes = update(
             self.PlayerUnits).where(
             self.PlayerUnits.id == unit_id).values(
-            ward=ward
+            ward=unit_ward
         ).execution_options(
             synchronize_session="fetch")
 

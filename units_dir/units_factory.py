@@ -1073,7 +1073,7 @@ class Unit:
         all_perks = []
 
         perks = {
-            'leadership': self.leadership,
+            # 'leadership': self.leadership,
             'nat_armor': self.nat_armor,
             'might': self.might,
             'weapon_master': self.weapon_master,
@@ -1088,19 +1088,27 @@ class Unit:
 
         # определение оставшихся свободных перков
         for perk in PERKS.keys():
-            if (perk == 'leadership' and self.leadership < 5) \
-                    or (perk != 'leadership' and perks[perk] != 1):
-                all_perks.append(perk)
+            all_perks.append(perk)
 
         if all_perks:
+            element_dict = {
+                'water_resist': 'Вода',
+                'air_resist': 'Воздух',
+                'fire_resist': 'Огонь',
+                'earth_resist': 'Земля'
+            }
+
             perk = random.choice(all_perks)
+
             line = f"{self.name} получает перк {PERKS[perk]}\n"
             logging(line)
 
-            if perk == 'leadership' and self.leadership < 5:
-                perks[perk] = self.leadership + 1
+            if self.leadership < 5 and self.level % 2 == 1:
+                perks['leadership'] = self.leadership + 1
             else:
-                perks[perk] = 1
+                perks['leadership'] = self.leadership
+
+            perks[perk] = 1
 
             main_db.update_perks(
                 self.id,
@@ -1108,7 +1116,7 @@ class Unit:
 
             # Природная броня
             if perk == 'nat_armor':
-                main_db.update_unit_armor(self.id, self.armor + 20)
+                main_db.update_unit_armor(self.id)
 
             # Выносливость
             if perk == 'endurance':
@@ -1120,17 +1128,9 @@ class Unit:
                 main_db.update_unit_ini(
                     self.id, self.attack_ini + self.attack_ini * 0.5)
 
-            self.element_perk(perk, 'water_resist', 'Вода')
-            self.element_perk(perk, 'air_resist', 'Воздух')
-            self.element_perk(perk, 'fire_resist', 'Огонь')
-            self.element_perk(perk, 'earth_resist', 'Земля')
-
-    def element_perk(self, perk, resist, element):
-        """Проверка на стихийный перк"""
-        if perk == resist and self.ward != 'Нет':
-            main_db.update_ward(self.id, f'{self.ward}, {element}')
-        elif perk == resist and self.ward == 'Нет':
-            main_db.update_ward(self.id, element)
+            # Стихийный перк
+            if 'resist' in perk:
+                main_db.update_ward(self.id, element_dict[perk])
 
     @property
     def race_settings(self) -> Dict[str, dict]:
@@ -1194,6 +1194,10 @@ class Unit:
             else:
                 line = f"{self.name} достиг предела развития\n"
                 logging(line)
+
+        elif self.branch == 'special':
+            self.upgrade_stats()
+
         else:
             # Вызываем нунную функцию в зависимости от ветви
             branch_buildings = branch_dict[self.branch]()
