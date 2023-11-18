@@ -9,8 +9,8 @@ from PyQt5.QtWidgets import QMainWindow, QHBoxLayout, QMessageBox
 from client_dir.hire_menu_form import Ui_HireMenu
 from client_dir.question_window import QuestionWindow
 from client_dir.settings import HIRE_SCREEN
-from client_dir.ui_functions import show_gif,\
-    slot_frame_update, slot_update, button_update
+from client_dir.ui_functions import show_gif, \
+    slot_frame_update, slot_update, button_update, ui_lock, ui_unlock
 from client_dir.unit_dialog import UnitNameDialog
 from units_dir.units import main_db
 from units_dir.units_factory import AbstractFactory
@@ -91,7 +91,7 @@ class HireMenuWindow(QMainWindow):
         self.player_gold = main_db.get_gold(
             main_db.current_player.name, self.faction)
         self.ui.gold.setText(str(self.player_gold))
-        self.ui.pushButtonBuy.setEnabled(False)
+        ui_lock(self.ui.pushButtonBuy)
 
         self.show()
 
@@ -111,7 +111,7 @@ class HireMenuWindow(QMainWindow):
         ui_obj.setLineWidth(2)
         ui_obj.setStyleSheet("color: rgb(65, 3, 2)")
         self.highlighted_unit = unit_type
-        self.ui.pushButtonBuy.setEnabled(True)
+        ui_unlock(self.ui.pushButtonBuy)
 
     def highlight_selected_unit1(self) -> None:
         """Подсветка выбранного юнита"""

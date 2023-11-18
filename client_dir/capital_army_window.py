@@ -11,7 +11,7 @@ from client_dir.hire_menu_window import HireMenuWindow
 from client_dir.question_window import QuestionWindow
 from client_dir.settings import TOWN_ARMY, SCREEN_RECT, BIG
 from client_dir.ui_functions import get_unit_image, update_unit_health, \
-    get_image, set_beige_colour
+    get_image, set_beige_colour, ui_lock, ui_unlock
 from client_dir.unit_dialog import UnitDialog
 from units_dir.units import main_db
 from units_dir.units_factory import AbstractFactory
@@ -99,9 +99,9 @@ class CapitalArmyWindow(QMainWindow):
 
         self.reset()
 
-        self.button_enabled(self.ui.swap12, main_db.PlayerUnits, 2)
-        self.button_enabled(self.ui.swap34, main_db.PlayerUnits, 4)
-        self.button_enabled(self.ui.swap56, main_db.PlayerUnits, 6)
+        self.is_button_enabled(self.ui.swap12, main_db.PlayerUnits, 2)
+        self.is_button_enabled(self.ui.swap34, main_db.PlayerUnits, 4)
+        self.is_button_enabled(self.ui.swap56, main_db.PlayerUnits, 6)
 
         self.show()
 
@@ -109,17 +109,6 @@ class CapitalArmyWindow(QMainWindow):
         """Метод обработки нажатия клавиши D"""
         if event.key() == QtCore.Qt.Key_D:
             self.delete_unit_action()
-
-    def button_enabled(self, button, database, num2):
-        """Определяет доступность кнопки по юнитам в слотах"""
-        try:
-            if main_db.get_unit_by_slot(
-                    num2, database).size == BIG:
-                button.setEnabled(False)
-            else:
-                button.setEnabled(True)
-        except AttributeError:
-            button.setEnabled(True)
 
     def update_capital(self) -> None:
         """Обновление лейбла, заполнение картинкой замка"""
@@ -399,8 +388,21 @@ class CapitalArmyWindow(QMainWindow):
         """Метод создающий окно юнита игрока (слот 6)."""
         self.slot_detailed(6)
 
-    def player_unit_by_slot(self, slot: int) -> namedtuple:
+    @staticmethod
+    def player_unit_by_slot(slot: int) -> namedtuple:
         """Метод получающий юнита игрока по слоту."""
         return main_db.get_unit_by_slot(
             slot,
             main_db.PlayerUnits)
+
+    @staticmethod
+    def is_button_enabled(button, database, num2):
+        """Определяет доступность кнопки по юнитам в слотах"""
+        try:
+            if main_db.get_unit_by_slot(
+                    num2, database).size == BIG:
+                ui_lock(button)
+            else:
+                ui_unlock(button)
+        except AttributeError:
+            ui_unlock(button)

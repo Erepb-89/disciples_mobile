@@ -17,7 +17,7 @@ from client_dir.settings import CAPITAL_BUILDING, UNIT_ICONS, TOWN_ICONS, \
     POSSIBLE_TO_BUILD, NEED_TO_BUILD_PREV, \
     ANOTHER_BRANCH, NOT_ENOUGH_GOLD
 from client_dir.ui_functions import set_size_by_unit, get_unit_image, \
-    slot_frame_update
+    slot_frame_update, ui_lock, ui_unlock
 from client_dir.unit_dialog import UnitDialog
 from units_dir.buildings import FACTIONS, BRANCHES, STARTING_FORMS
 from units_dir.units import main_db
@@ -176,7 +176,7 @@ class CapitalBuildingWindow(QMainWindow):
         self.unit = self.get_unit_by_b_slot(1)
         self.slot_update(self.unit, self.ui.slot)
         self.button_update(self.unit, self.ui.pushButtonSlot)
-        self.ui.pushButtonSlot.setEnabled(True)
+        ui_unlock(self.ui.pushButtonSlot)
 
         # Прорисовка всех иконок и кнопок ветви
         self.show_all_branch_icons()
@@ -221,7 +221,7 @@ class CapitalBuildingWindow(QMainWindow):
         self.unit = None
         self.ui.slot.setFixedSize(0, 0)
         self.ui.slotFrame1.setFixedSize(0, 0)
-        self.ui.pushButtonSlot.setEnabled(False)
+        ui_lock(self.ui.pushButtonSlot)
 
         # получаем координаты кнопок
         for num, icon_button in self.icon_buttons_dict.items():
@@ -611,10 +611,10 @@ class CapitalBuildingWindow(QMainWindow):
     def reverse_update(self) -> None:
         """Обновление доступности реверса иконок"""
         if self.branch == OTHERS:
-            self.ui.pushButtonReverse.setEnabled(False)
+            ui_lock(self.ui.pushButtonReverse)
             self.ui.slotReverse.setFixedSize(0, 0)
         else:
-            self.ui.pushButtonReverse.setEnabled(True)
+            ui_unlock(self.ui.pushButtonReverse)
             self.ui.slotReverse.setFixedSize(46, 46)
 
     def buy_building(self) -> None:

@@ -143,3 +143,9 @@ def set_borders(ui_obj: QtWidgets.QPushButton):
                          "border-left-color: rgb(65, 3, 2);"
                          "border-right-color: rgb(181, 172, 155);"
                          "border-bottom-color: rgb(181, 172, 155)")
+
+def ui_lock(ui_obj):
+    ui_obj.setEnabled(False)
+
+def ui_unlock(ui_obj):
+    ui_obj.setEnabled(True)

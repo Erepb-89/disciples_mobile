@@ -18,9 +18,10 @@ from client_dir.client_main_form import Ui_MainWindow
 from client_dir.hire_menu_window import HireMenuWindow
 from client_dir.question_window import QuestionWindow
 from client_dir.settings import UNIT_ICONS, GIF_ANIMATIONS, \
-    TOWN_IMG, PLUG, ICON, UNIT_ATTACK, FRONT, PORTRAITS, BACKGROUND, BIG, ACTIVE_UNITS
-from client_dir.ui_functions import get_unit_image, set_beige_colour, \
-    set_borders
+    TOWN_IMG, PLUG, ICON, UNIT_ATTACK, FRONT, PORTRAITS, \
+    BACKGROUND, BIG, ACTIVE_UNITS
+from client_dir.ui_functions import get_unit_image, \
+    set_beige_colour, set_borders, ui_lock, ui_unlock
 from client_dir.unit_dialog import UnitDialog
 from units_dir.units import main_db
 
@@ -211,11 +212,11 @@ class ClientMainWindow(QMainWindow):
         try:
             if main_db.get_unit_by_slot(
                     num2, database).size == BIG:
-                button.setEnabled(False)
+                ui_lock(button)
             else:
-                button.setEnabled(True)
+                ui_unlock(button)
         except AttributeError:
-            button.setEnabled(True)
+            ui_unlock(button)
 
     def on_list_clicked(self) -> None:
         """Показывает иконку и портрет выбранного из списка юнита"""
@@ -560,11 +561,11 @@ class ClientMainWindow(QMainWindow):
     def define_hire_active(self, selected: str) -> None:
         """Определение активности кнопок 'Нанять'"""
         if f'{selected}.gif' not in ACTIVE_UNITS:
-            self.ui.pushButtonHire.setEnabled(False)
-            self.ui.pushButtonHireEn.setEnabled(False)
+            ui_lock(self.ui.pushButtonHire)
+            ui_lock(self.ui.pushButtonHireEn)
         else:
-            self.ui.pushButtonHire.setEnabled(True)
-            self.ui.pushButtonHireEn.setEnabled(True)
+            ui_unlock(self.ui.pushButtonHire)
+            ui_unlock(self.ui.pushButtonHireEn)
 
     def hire_unit_action(self) -> None:
         """Метод обработчик нажатия кнопки 'Нанять' для игрока"""
@@ -745,13 +746,15 @@ class ClientMainWindow(QMainWindow):
         unit = main_db.get_unit_by_slot(6, main_db.CurrentDungeon)
         self.slot_detailed(unit, UnitDialog)
 
-    def player_unit_by_slot(self, slot: int) -> namedtuple:
+    @staticmethod
+    def player_unit_by_slot(slot: int) -> namedtuple:
         """Метод получающий юнита игрока по слоту."""
         return main_db.get_unit_by_slot(
             slot,
             main_db.PlayerUnits)
 
-    def enemy_unit_by_slot(self, slot: int) -> namedtuple:
+    @staticmethod
+    def enemy_unit_by_slot(slot: int) -> namedtuple:
         """Метод получающий вражеского юнита по слоту."""
         return main_db.get_unit_by_slot(
             slot,

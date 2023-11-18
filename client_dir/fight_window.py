@@ -20,7 +20,7 @@ from client_dir.settings import UNIT_STAND, UNIT_ATTACK, \
 from client_dir.ui_functions import show_no_frame, \
     show_damage, show_no_damage, show_green_frame, \
     show_red_frame, show_blue_frame, update_unit_health, \
-    get_unit_image, show_no_circle
+    get_unit_image, show_no_circle, ui_lock, ui_unlock
 from client_dir.unit_dialog import UnitDialog
 from units_dir.units import main_db
 from units_dir.units_factory import Unit
@@ -733,7 +733,7 @@ class FightWindow(QMainWindow):
         elif self.new_battle.waiting_units:
             if self.new_battle.current_unit in self.new_battle.waiting_units:
                 # кнопка ожидания недоступна
-                self.ui.pushButtonWaiting.setEnabled(False)
+                ui_lock(self.ui.pushButtonWaiting)
 
             self.new_battle.waiting_round()
             self.new_battle.next_turn()
@@ -743,7 +743,7 @@ class FightWindow(QMainWindow):
             # новый раунд
             self.new_battle.new_round()
             # кнопка ожидания снова доступна
-            self.ui.pushButtonWaiting.setEnabled(True)
+            ui_unlock(self.ui.pushButtonWaiting)
             # следующий ход
             self.new_battle.next_turn()
 
@@ -866,21 +866,21 @@ class FightWindow(QMainWindow):
         """Добавление золота за победу"""
         gold_gradation = {
             'versus': 0,
-            1: 50,
-            2: 50,
-            3: 100,
-            4: 100,
-            5: 100,
-            6: 150,
-            7: 150,
-            8: 150,
-            9: 150,
-            10: 200,
-            11: 200,
-            12: 200,
-            13: 250,
-            14: 250,
-            15: 500,
+            '1': 50,
+            '2': 50,
+            '3': 100,
+            '4': 100,
+            '5': 100,
+            '6': 150,
+            '7': 150,
+            '8': 150,
+            '9': 150,
+            '10': 200,
+            '11': 200,
+            '12': 200,
+            '13': 250,
+            '14': 250,
+            '15': 500,
         }
 
         player_gold = main_db.get_gold(

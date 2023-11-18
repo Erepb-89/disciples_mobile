@@ -1,5 +1,5 @@
 """Окно кампании"""
-
+import os
 from typing import Callable, Dict
 
 from PyQt5 import QtWidgets, QtCore
@@ -147,6 +147,8 @@ class CampaignWindow(QMainWindow):
 
     def show_fight_window(self) -> None:
         """Метод создающий окно Битвы."""
+        self.back()
+
         global FIGHT_WINDOW
         FIGHT_WINDOW = FightWindow(self.dungeon, self)
         FIGHT_WINDOW.show()

@@ -136,12 +136,6 @@ class Battle:
             slot,
             main_db.CurrentDungeon)
 
-    def player_unit_by_slot(self, slot: int) -> Unit:
-        """Метод получающий юнита игрока по слоту."""
-        return main_db.get_unit_by_slot(
-            slot,
-            main_db.PlayerUnits)
-
     @staticmethod
     def get_unit_by_slot(slot: int,
                          player_units: List[Unit]) -> Optional[Unit]:
@@ -195,20 +189,20 @@ class Battle:
 
     def next_turn(self) -> None:
         """Ход юнита"""
+        heal_list = ['Лечение', 'Лечение/Исцеление', 'Лечение/Воскрешение']
+
         self.current_unit = self.units_deque.popleft()
         self.current_unit.undefence()
 
         if self.current_unit in self.player1.units:
             self.current_player = self.player1
-            if self.current_unit.attack_type not in [
-                    'Лечение', 'Лечение/Исцеление', 'Лечение/Воскрешение']:
+            if self.current_unit.attack_type not in heal_list:
                 self.target_player = self.player2
             else:
                 self.target_player = self.player1
         else:
             self.current_player = self.player2
-            if self.current_unit.attack_type not in [
-                    'Лечение', 'Лечение/Исцеление', 'Лечение/Воскрешение']:
+            if self.current_unit.attack_type not in heal_list:
                 self.target_player = self.player1
             else:
                 self.target_player = self.player2
@@ -243,17 +237,25 @@ class Battle:
         """Получение опыта юнитами"""
         self.alive_units = []
         killed_units = player1.units
+        exp_enhanced = 0
         self.get_player_slots(player2)
+
+        for unit in player2.units:
+            if unit.weapon_master:
+                exp_enhanced = 1
 
         for unit in killed_units:
             self.en_exp_killed += unit.exp_per_kill
+
+        extra_exp = self.en_exp_killed * exp_enhanced * 0.25
 
         for slot in player2.slots:
             alive_unit = self.get_unit_by_slot(
                 slot, player2.units)
 
             if alive_unit.exp != 'Максимальный':
-                exp_value = int(self.en_exp_killed / len(player2.slots))
+                exp_value = int((self.en_exp_killed + extra_exp)
+                                / len(player2.slots))
                 if exp_value < alive_unit.exp:
                     if alive_unit.curr_exp + exp_value >= alive_unit.exp:
                         alive_unit.lvl_up()

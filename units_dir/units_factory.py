@@ -8,7 +8,7 @@ from typing import Dict, List
 
 from battle_logging import logging
 
-from client_dir.settings import EM, UH, LD, MC, BIG
+from client_dir.settings import EM, UH, LD, MC, BIG, HERO_FIGHTER_EXP, HERO_ARCHER_EXP, HERO_ROD_EXP
 from units_dir.buildings import FACTIONS, ELDER_FORMS, PERKS
 from units_dir.units import main_db
 from units_dir.ranking import empire_mage_lvls, \
@@ -971,22 +971,29 @@ class Unit:
 
         # Здоровье
         next_hp = self.get_next_hp()
+        self.health = next_hp
 
         # Шанс на попадание
         try:
             chance = int(self.attack_chance.split('/')[0])
-            poison = int(self.attack_chance.split('/')[1])
-            next_chance = f'{chance + 1}/{poison + 1}'
+            # яды и т.д.
+            dot_chance = int(self.attack_chance.split('/')[1])
+
+            next_chance = f'{chance + 1}/{dot_chance + 1}' \
+                if chance < 100 else 100
         except IndexError:
             chance = int(self.attack_chance)
-            next_chance = chance + 1
+
+            next_chance = chance + 1 if chance < 100 else 100
 
         # Урон
         try:
-            damage = int(self.attack_dmg.split('/')[0])
+            splitted_dmg = self.attack_dmg.split('/')
+            damage = int(splitted_dmg[0])
 
             # Добавить увеличение доп. урона
-            additional = self.attack_dmg.split('/')[1]
+            additional = int(splitted_dmg[1])
+            next_additional = additional + 6
 
             # Урон для героев
             if self.branch == 'hero':
@@ -998,7 +1005,7 @@ class Unit:
             else:
                 next_damage = int(damage * 1.10)
 
-            next_damage = f'{min(next_damage, 300)}/{additional}'
+            next_damage = f'{min(next_damage, 300)}/{next_additional}'
         except AttributeError:  # IndexError
             # Урон для героев
             if self.branch == 'hero':
@@ -1040,11 +1047,11 @@ class Unit:
         # Увеличение требуемого опыта для повышения (для героев)
         if self.branch == 'hero' and self.level < 10:
             if self.leader_cat in ('fighter', 'mage'):
-                next_exp = self.exp + 500
+                next_exp = self.exp + HERO_FIGHTER_EXP
             elif self.leader_cat == 'archer':
-                next_exp = self.exp + 450
+                next_exp = self.exp + HERO_ARCHER_EXP
             elif self.leader_cat == 'rod':
-                next_exp = self.exp + 300
+                next_exp = self.exp + HERO_ROD_EXP
         return next_exp
 
     def get_next_hp(self):
@@ -1079,14 +1086,15 @@ class Unit:
             'earth_resist': self.earth_resist
         }
 
-        for key in PERKS.keys():
-            if (key == 'leadership' and self.leadership < 5) \
-                    or perks[key] != 1:
-                all_perks.append(key)
+        # определение оставшихся свободных перков
+        for perk in PERKS.keys():
+            if (perk == 'leadership' and self.leadership < 5) \
+                    or (perk != 'leadership' and perks[perk] != 1):
+                all_perks.append(perk)
 
         if all_perks:
             perk = random.choice(all_perks)
-            line = f"{self.name} получает перк {perk}\n"
+            line = f"{self.name} получает перк {PERKS[perk]}\n"
             logging(line)
 
             if perk == 'leadership' and self.leadership < 5:
@@ -1098,8 +1106,31 @@ class Unit:
                 self.id,
                 perks)
 
+            # Природная броня
             if perk == 'nat_armor':
                 main_db.update_unit_armor(self.id, self.armor + 20)
+
+            # Выносливость
+            if perk == 'endurance':
+                main_db.update_unit_health(
+                    self.id, self.health + self.health * 0.2)
+
+            # Первый удар
+            if perk == 'first_strike':
+                main_db.update_unit_ini(
+                    self.id, self.attack_ini + self.attack_ini * 0.5)
+
+            self.element_perk(perk, 'water_resist', 'Вода')
+            self.element_perk(perk, 'air_resist', 'Воздух')
+            self.element_perk(perk, 'fire_resist', 'Огонь')
+            self.element_perk(perk, 'earth_resist', 'Земля')
+
+    def element_perk(self, perk, resist, element):
+        """Проверка на стихийный перк"""
+        if perk == resist and self.ward != 'Нет':
+            main_db.update_ward(self.id, f'{self.ward}, {element}')
+        elif perk == resist and self.ward == 'Нет':
+            main_db.update_ward(self.id, element)
 
     @property
     def race_settings(self) -> Dict[str, dict]:
@@ -1145,7 +1176,13 @@ class Unit:
     def lvl_up(self) -> None:
         """Повышение уровня"""
         next_unit = ''
-        branch_buildings = []
+
+        branch_dict = {
+            'fighter': main_db.get_fighter_branch,
+            'mage': main_db.get_mage_branch,
+            'archer': main_db.get_archer_branch,
+            'support': main_db.get_support_branch,
+        }
 
         if self.branch == 'hero':
             if self.dyn_upd_level != 0:
@@ -1158,17 +1195,8 @@ class Unit:
                 line = f"{self.name} достиг предела развития\n"
                 logging(line)
         else:
-            if self.branch == 'fighter':
-                branch_buildings = main_db.get_fighter_branch()
-
-            elif self.branch == 'mage':
-                branch_buildings = main_db.get_mage_branch()
-
-            elif self.branch == 'archer':
-                branch_buildings = main_db.get_archer_branch()
-
-            elif self.branch == 'support':
-                branch_buildings = main_db.get_support_branch()
+            # Вызываем нунную функцию в зависимости от ветви
+            branch_buildings = branch_dict[self.branch]()
 
             # находим следующую стадию юнита, если здание для апгрейда
             # построено
@@ -1244,13 +1272,16 @@ class Unit:
             # Вычисление урона с учетом брони
             try:
                 dmg = int(self.attack_dmg.split('/')[0])
-                damage = int(
+                damage = min(int(
                     (dmg + (dmg * self.might * 0.25) +
-                     random.randrange(6)) * (1 - target.armor * 0.01))
+                     random.randrange(6)) * (1 - target.armor * 0.01)),
+                    300)
             except AttributeError:
-                damage = \
-                    int((self.attack_dmg + (self.attack_dmg * self.might * 0.25) +
-                         random.randrange(6)) * (1 - target.armor * 0.01))
+                damage = min(
+                    int((self.attack_dmg +
+                         (self.attack_dmg * self.might * 0.25) +
+                         random.randrange(6)) * (1 - target.armor * 0.01)),
+                    300)
 
             # если урон больше, чем здоровье врага, приравниваем урон к
             # здоровью
@@ -1266,7 +1297,7 @@ class Unit:
                 self.curr_health += int(damage / 2)
                 self.curr_health = min(self.curr_health, self.health)
 
-                # main_db.update_unit_hp(
+                # main_db.update_unit_curr_hp(
                 #     self.slot, self.curr_health, main_db.attacker_db)
 
             line = f"{self.name} наносит урон {damage} воину " \
@@ -1292,14 +1323,16 @@ class Unit:
 
         # Вычисление вероятности попадания
         try:
-            accuracy = int(self.attack_chance.split(
-                '/')[0]) / 100
+            acc = int(self.attack_chance.split(
+                '/')[0])
+            chance = (acc + self.accuracy * 0.2 * acc) / 100
 
             # Добавить урон ядом / ожогом и т.п.
             # poison = int(self.attack_chance.split(
             #     '/')[1]) / 100
         except IndexError:
-            accuracy = int(self.attack_chance) / 100
+            chance = (int(self.attack_chance) +
+                      self.accuracy * 0.2) / 100
 
         # источник атаки
         try:
@@ -1318,7 +1351,7 @@ class Unit:
                 and attack_source not in target_wards:
 
             # атака удачна или неудачна / промах
-            attack_successful = bool(random.random() <= accuracy)
+            attack_successful = bool(random.random() <= chance)
 
         # у цели есть иммунитет от источника атаки
         elif attack_source in target_immunes:
