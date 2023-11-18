@@ -6,7 +6,7 @@ from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QDialog
 
 from client_dir.settings import BACKGROUND
-from client_dir.ui_functions import slot_update, button_update, get_unit_image
+from client_dir.ui_functions import slot_update, button_update, get_unit_image, ui_lock, ui_unlock
 from client_dir.unit_dialog import UnitDialog
 from units_dir.units import main_db
 
@@ -240,12 +240,12 @@ class EnemyArmyDialog(QDialog):
                 slot_update(
                     unit,
                     icon_slot)
-                self.dung_buttons_dict[num].setEnabled(True)
+                ui_unlock(self.dung_buttons_dict[num])
             else:
                 icon_slot.setPixmap(QPixmap(
                     get_unit_image(None)).scaled(
                     icon_slot.width(), icon_slot.height()))
-                self.dung_buttons_dict[num].setEnabled(False)
+                ui_lock(self.dung_buttons_dict[num])
 
     def slot_detailed(self, unit: namedtuple, slot_dialog: any) -> None:
         """Метод создающий окно юнита игрока при нажатии на слот."""
@@ -286,3 +286,7 @@ class EnemyArmyDialog(QDialog):
         """Метод создающий окно вражеского юнита (слот 6)."""
         unit = main_db.get_unit_by_name(self.dungeon_units[6])
         self.slot_detailed(unit, UnitDialog)
+
+    def back(self) -> None:
+        """Кнопка возврата"""
+        self.close()

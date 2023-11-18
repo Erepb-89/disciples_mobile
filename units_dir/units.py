@@ -1691,6 +1691,43 @@ class ServerStorage:
         self.session.execute(changes)
         self.session.commit()
 
+    def update_unit_ini(self,
+                        unit_id: int,
+                        attack_ini: int) -> None:
+        """
+        Метод изменения инициативы юнита игрока.
+        Изменяет запись в таблице PlayerUnits.
+        """
+
+        changes = update(
+            self.PlayerUnits).where(
+            self.PlayerUnits.id == unit_id).values(
+            attack_ini=attack_ini
+        ).execution_options(
+            synchronize_session="fetch")
+
+        self.session.execute(changes)
+        self.session.commit()
+
+    def update_unit_health(self,
+                           unit_id: int,
+                           health: int) -> None:
+        """
+        Метод изменения здоровья юнита игрока.
+        Изменяет запись в таблице PlayerUnits.
+        """
+
+        changes = update(
+            self.PlayerUnits).where(
+            self.PlayerUnits.id == unit_id).values(
+            health=health,
+            curr_health=health
+        ).execution_options(
+            synchronize_session="fetch")
+
+        self.session.execute(changes)
+        self.session.commit()
+
     def update_unit_armor(self,
                           unit_id: int,
                           armor: int) -> None:
@@ -1754,7 +1791,7 @@ class ServerStorage:
         self.session.execute(changes)
         self.session.commit()
 
-    def update_unit_hp(self,
+    def update_unit_curr_hp(self,
                        slot: int,
                        curr_health: int,
                        database: any) -> None:

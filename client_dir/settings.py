@@ -79,6 +79,11 @@ ACTIVE_UNITS = os.listdir(f'{UNIT_ATTACK}{FRONT}')
 # animation speed
 SPEED = 200
 
+# hero exp
+HERO_FIGHTER_EXP = 300  # 500
+HERO_ARCHER_EXP = 250  # 450
+HERO_ROD_EXP = 200  # 300
+
 # coordinates
 X_COORD_1 = 40
 X_COORD_2 = 160

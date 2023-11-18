@@ -35,7 +35,7 @@ class UnitDialog(QDialog):
         self.portrait.setAlignment(QtCore.Qt.AlignCenter)
         self.portrait.setObjectName("portrait")
         self.unitName = QtWidgets.QLabel(self)
-        self.unitName.setGeometry(QtCore.QRect(140, 620, 256, 41))
+        self.unitName.setGeometry(QtCore.QRect(75, 620, 401, 41))
         font = QtGui.QFont()
         font.setFamily("Times New Roman")
         font.setPointSize(14)
@@ -298,8 +298,8 @@ class UnitDialog(QDialog):
         self.immune.setText(str(unit.immune))
         self.ward.setText(str(unit.ward))
         self.attackType.setText(str(unit.attack_type))
-        self.attackChance.setText(f'{unit.attack_chance}%')
 
+        self.show_accuracy(unit)
         self.show_damage(unit)
 
         self.attackSource.setText(str(unit.attack_source))
@@ -330,27 +330,50 @@ class UnitDialog(QDialog):
         self.retranslateUi(self)
         QtCore.QMetaObject.connectSlotsByName(self)
 
+    def show_accuracy(self, unit):
+        """Показать точность юнита"""
+        if unit.accuracy:
+            bonus = int(int(unit.attack_chance) * 0.2)
+            if int(unit.accuracy) + bonus >= 100:
+                acc = f'{unit.attack_chance}% + ' \
+                      f'{100 - int(unit.attack_chance)}'
+                self.attackChance.setText(acc)
+
+            elif int(unit.accuracy) + bonus < 100:
+                acc = f'{unit.attack_chance}% + {bonus}'
+                self.attackChance.setText(acc)
+        else:
+            self.attackChance.setText(f'{unit.attack_chance}%')
+
     def show_damage(self, unit):
         """Показать урон юнита"""
-        if unit.attack_dmg == 300:
-            self.attackDmg.setText('300 (Макс.)')
+        try:
+            splitted_dmg = unit.attack_dmg.split('/')
+            damage = int(splitted_dmg[0])
+            additional = f"/{int(splitted_dmg[1])}"
+        except AttributeError:
+            damage = int(unit.attack_dmg)
+            additional = ''
+
+        extra_dmg = int(damage * unit.might * 0.25)
+
+        if damage == 300:
+            self.attackDmg.setText(f'300 (Макс.){additional}')
             self.attackDmg.setStyleSheet('color: darkred')
 
-        elif unit.might and unit.attack_dmg + \
-                (unit.attack_dmg * unit.might * 0.25) >= 300:
-            self.attackDmg.setText(
-                f'{unit.attack_dmg} + '
-                f'{300 - unit.attack_dmg} (Макс.)')
+        elif unit.might and damage + extra_dmg >= 300:
+
+            dmg = f'{damage} + {300 - damage} (Макс.){additional}'
+            self.attackDmg.setText(dmg)
             self.attackDmg.setStyleSheet('color: darkred')
 
-        elif unit.might and unit.attack_dmg + \
-                (unit.attack_dmg * unit.might * 0.25) < 300:
-            self.attackDmg.setText(
-                f'{unit.attack_dmg} + '
-                f'{int(unit.attack_dmg * unit.might * 0.25)}')
+        elif unit.might and damage + extra_dmg < 300:
+
+            dmg = f'{damage} + {extra_dmg}{additional}'
+            self.attackDmg.setText(dmg)
             self.attackDmg.setStyleSheet('color: black')
         else:
-            self.attackDmg.setText(f'{unit.attack_dmg}')
+            self.attackDmg.setText(f'{damage}{additional}')
 
     def check_perk(self, unit_perk, ui_obj):
         """Проверка перка с выводом на окно характеристик"""
@@ -451,7 +474,7 @@ class UnitNameDialog(QDialog):
         self.portrait.setAlignment(QtCore.Qt.AlignCenter)
         self.portrait.setObjectName("portrait")
         self.unitName = QtWidgets.QLabel(self)
-        self.unitName.setGeometry(QtCore.QRect(140, 620, 256, 41))
+        self.unitName.setGeometry(QtCore.QRect(75, 620, 401, 41))
         font = QtGui.QFont()
         font.setFamily("Times New Roman")
         font.setPointSize(14)
