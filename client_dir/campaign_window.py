@@ -30,6 +30,7 @@ class CampaignWindow(QMainWindow):
         # основные переменные
         self.name = 'CampaignWindow'
         self.main = instance
+        self.difficulty = 1
         self.faction = main_db.current_faction
         self.dungeon = ''
         self.campaign_buttons_dict = {}
@@ -88,7 +89,7 @@ class CampaignWindow(QMainWindow):
         if not main_db.show_dungeon_units(
                 f'{self.faction}_{self.level}_1'):
             # генерируем их
-            self.update_all_missions(self.level)
+            self.update_all_missions(self.level, self.difficulty)
         else:
             # иначе берем из базы готовые
             for mission_num in range(1, 16):
@@ -122,25 +123,33 @@ class CampaignWindow(QMainWindow):
         self.ui.campaignBG.setPixmap(QPixmap(BACKGROUND))
         self.ui.campaignBG.setGeometry(QtCore.QRect(0, 0, 1500, 827))
 
-    def update_all_missions(self, level) -> None:
+    def update_all_missions(self, level, diff) -> None:
         """Обновляет состав армии для каждой миссии"""
+        squad_dict = {
+            1: (setup_4, setup_4, setup_5),
+            2: (setup_4, setup_5, setup_5),
+            3: (setup_4, setup_5, setup_6),
+        }
+
         # миссии с 1 по 15 (сгенерированные рандомно)
+        name = f'{self.faction}_{level}'
+
         self.all_missions = {
-            f'{self.faction}_{level}_1': unit_selector(level, setup_2),
-            f'{self.faction}_{level}_2': unit_selector(level, setup_2),
-            f'{self.faction}_{level}_3': unit_selector(level, setup_3),
-            f'{self.faction}_{level}_4': unit_selector(level, setup_3),
-            f'{self.faction}_{level}_5': unit_selector(level, setup_3),
-            f'{self.faction}_{level}_6': unit_selector(level, setup_4),
-            f'{self.faction}_{level}_7': unit_selector(level, setup_4),
-            f'{self.faction}_{level}_8': unit_selector(level, setup_4),
-            f'{self.faction}_{level}_9': unit_selector(level, setup_4),
-            f'{self.faction}_{level}_10': unit_selector(level, setup_5),
-            f'{self.faction}_{level}_11': unit_selector(level, setup_5),
-            f'{self.faction}_{level}_12': unit_selector(level, setup_5),
-            f'{self.faction}_{level}_13': unit_selector(level, setup_6),
-            f'{self.faction}_{level}_14': unit_selector(level, setup_6),
-            f'{self.faction}_{level}_15': unit_selector(level + 2, boss_setup)
+            f'{name}_1': unit_selector(level, setup_2),
+            f'{name}_2': unit_selector(level, setup_2),
+            f'{name}_3': unit_selector(level, setup_3),
+            f'{name}_4': unit_selector(level, setup_3),
+            f'{name}_5': unit_selector(level, setup_3),
+            f'{name}_6': unit_selector(level, squad_dict[diff][0]),
+            f'{name}_7': unit_selector(level, squad_dict[diff][0]),
+            f'{name}_8': unit_selector(level, squad_dict[diff][0]),
+            f'{name}_9': unit_selector(level, squad_dict[diff][0]),
+            f'{name}_10': unit_selector(level, squad_dict[diff][1]),
+            f'{name}_11': unit_selector(level, squad_dict[diff][1]),
+            f'{name}_12': unit_selector(level, squad_dict[diff][1]),
+            f'{name}_13': unit_selector(level, squad_dict[diff][2]),
+            f'{name}_14': unit_selector(level, squad_dict[diff][2]),
+            f'{name}_15': unit_selector(level + 2, boss_setup)
         }
 
         main_db.add_dungeons(self.all_missions, self.level)

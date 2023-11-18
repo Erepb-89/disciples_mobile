@@ -209,9 +209,9 @@ class CapitalArmyWindow(QMainWindow):
         self.player_list_update()
         # self.player_slots_update()
 
-        self.button_enabled(self.ui.swap12, main_db.PlayerUnits, 2)
-        self.button_enabled(self.ui.swap34, main_db.PlayerUnits, 4)
-        self.button_enabled(self.ui.swap56, main_db.PlayerUnits, 6)
+        self.is_button_enabled(self.ui.swap12, main_db.PlayerUnits, 2)
+        self.is_button_enabled(self.ui.swap34, main_db.PlayerUnits, 4)
+        self.is_button_enabled(self.ui.swap56, main_db.PlayerUnits, 6)
 
     def delete_unit_action(self) -> None:
         """Метод обработчик нажатия кнопки 'Уволить'"""

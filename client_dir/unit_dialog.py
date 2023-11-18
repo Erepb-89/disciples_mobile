@@ -405,7 +405,7 @@ class UnitDialog(QDialog):
                 "Dialog",
                 "Все юниты в группе предводителя получают на 25% больше "
                 "опыта в бою"))
-        self.weaponMaster.setText(_translate("Dialog", "Мастер оружия"))
+        self.weaponMaster.setText(_translate("Dialog", "Инструктор"))
         self.endurance.setToolTip(
             _translate(
                 "Dialog",
