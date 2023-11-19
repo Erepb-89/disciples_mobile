@@ -268,7 +268,8 @@ def get_mages(units: list) -> list:
             unit.attack_radius == 'Любой юнит' and
             unit.attack_purpose == 6 and
             'Лечение' not in unit.attack_type and
-            'Увеличение урона' not in unit.attack_type
+            'Увеличение урона' not in unit.attack_type and
+            'Дополнительная атака' not in unit.attack_type
             # доп условие, когда будут все модельки - нужно убрать
             and f'{unit.name}.gif' in ACTIVE_UNITS
             ]
@@ -281,7 +282,8 @@ def get_archers(units: list) -> list:
               unit.attack_radius == 'Любой юнит' and
               unit.attack_purpose == 1 and
               'Лечение' not in unit.attack_type and
-              'Увеличение урона' not in unit.attack_type
+              'Увеличение урона' not in unit.attack_type and
+              'Дополнительная атака' not in unit.attack_type
               # доп условие, когда будут все модельки - нужно убрать
               and f'{unit.name}.gif' in ACTIVE_UNITS
               ]
@@ -293,8 +295,9 @@ def get_supports(units: list) -> list:
     support = [unit.name for unit in units if unit.size == SMALL and
                unit.attack_radius == 'Любой юнит' and
                unit.attack_purpose == 1 and
-               'Лечение' not in unit.attack_type and
-               'Увеличение урона' not in unit.attack_type
+               ('Лечение' in unit.attack_type or
+               'Увеличение урона' in unit.attack_type or
+               'Дополнительная атака' in unit.attack_type)
                # доп условие, когда будут все модельки - нужно убрать
                and f'{unit.name}.gif' in ACTIVE_UNITS
                ]
@@ -305,8 +308,7 @@ def get_mass_supports(units: list) -> list:
     """Получить юнитов поддержки (масс хил) из списка юнитов"""
     mass_support = [unit.name for unit in units if unit.size == SMALL and
                     unit.attack_purpose == 6 and
-                    ('Лечение' in unit.attack_type or
-                     'Увеличение урона' in unit.attack_type)
+                    'Лечение' in unit.attack_type
                     # доп условие, когда будут все модельки - нужно убрать
                     and f'{unit.name}.gif' in ACTIVE_UNITS
                     ]
@@ -392,7 +394,3 @@ def unit_selector(level: int, setup: list) -> dict:
             result_dict[slot] = None
 
     return result_dict
-
-# troop1 = unit_selector(3, setup_6)
-# troop2 = unit_selector(2, setup_5)
-# troop3 = unit_selector(1, setup_4)

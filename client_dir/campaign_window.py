@@ -1,5 +1,5 @@
 """Окно кампании"""
-import os
+
 from typing import Callable, Dict
 
 from PyQt5 import QtWidgets, QtCore
@@ -170,7 +170,8 @@ class CampaignWindow(QMainWindow):
             dungeon_units)
         DETAIL_WINDOW.show()
 
-    def dungeon_unit_by_slot(self, slot: int) -> Unit:
+    @staticmethod
+    def dungeon_unit_by_slot(slot: int) -> Unit:
         """Метод получающий юнита подземелья по слоту."""
         return main_db.get_unit_by_slot(
             slot,

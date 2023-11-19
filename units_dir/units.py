@@ -1,5 +1,5 @@
 """База. Классы юнитов"""
-import re
+
 from collections import namedtuple
 from typing import Callable, List
 
