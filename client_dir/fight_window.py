@@ -1182,15 +1182,21 @@ class FightWindow(QMainWindow):
 
     def show_life_drain(self) -> None:
         """Прорисовка анимации высасывания жизни"""
+        slots_dict = {}
+
+        if self.new_battle.current_unit in self.new_battle.player1.units:
+            slots_dict = self.pl_slots_eff_dict
+
+        elif self.new_battle.current_unit in self.new_battle.player2.units:
+            slots_dict = self.en_slots_eff_dict
+
         unit_gif = "life_drain.gif"
         gif = QMovie(
             os.path.join(
                 BATTLE_ANIM,
                 unit_gif))
 
-        self.pl_slots_eff_dict[
-            self.new_battle.current_unit.slot
-        ].setMovie(gif)
+        slots_dict[self.new_battle.current_unit.slot].setMovie(gif)
         gif.start()
 
     def who_attack(self) -> None:

@@ -352,9 +352,14 @@ class Battle:
 
         else:
             self.attacked_slots = []
+            # рандомная атака
             target = self.get_unit_by_slot(
                 random.choice(self.target_slots),
                 self.target_player.units)
+
+            # атака/лечение определенного юнита - доделать!
+            # ---------------------------------------------
+
             self.attack_1_unit(target)
 
     def clear_dungeon(self) -> None:

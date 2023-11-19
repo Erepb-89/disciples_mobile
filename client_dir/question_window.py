@@ -54,7 +54,7 @@ class QuestionWindow(QMainWindow):
         self.close()
 
     def update_bg(self) -> None:
-        """Обновление бэкграунда, заполнение картинкой найма"""
+        """Обновление бэкграунда, заполнение картинкой"""
         question_bg = self.ui.questionBG
         question_bg.setPixmap(
             QPixmap(

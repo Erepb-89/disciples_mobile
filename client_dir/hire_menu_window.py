@@ -7,8 +7,9 @@ from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QMainWindow, QHBoxLayout, QMessageBox
 
 from client_dir.hire_menu_form import Ui_HireMenu
+from client_dir.message_window import MessageWindow
 from client_dir.question_window import QuestionWindow
-from client_dir.settings import HIRE_SCREEN
+from client_dir.settings import HIRE_SCREEN, BIG
 from client_dir.ui_functions import show_gif, \
     slot_frame_update, slot_update, button_update, ui_lock, ui_unlock
 from client_dir.unit_dialog import UnitNameDialog
@@ -156,10 +157,36 @@ class HireMenuWindow(QMainWindow):
 
     def buy(self) -> None:
         """Кнопка найма"""
-        global QUESTION_WINDOW
-        text = 'Вы хотите нанять этого воина?'
-        QUESTION_WINDOW = QuestionWindow(self, text)
-        QUESTION_WINDOW.show()
+        squad_points = 0
+        leadership = 3
+        player_units = main_db.show_player_units()
+
+        for unit in player_units:
+            if unit.leadership >= 3:
+                leadership = unit.leadership
+
+            if unit.size == BIG:
+                squad_points += 2
+            else:
+                squad_points += 1
+
+        if self.player_gold < int(self.highlighted_unit.cost):
+            global MES_GOLD_WINDOW
+            text = 'Недостаточно золота'
+            MES_GOLD_WINDOW = MessageWindow(self, text)
+            MES_GOLD_WINDOW.show()
+
+        elif squad_points >= leadership:
+            global MES_LEAD_WINDOW
+            text = 'У вашего полководца недостаточно лидерства'
+            MES_LEAD_WINDOW = MessageWindow(self, text)
+            MES_LEAD_WINDOW.show()
+
+        else:
+            global QUESTION_WINDOW
+            text = 'Вы хотите нанять этого воина?'
+            QUESTION_WINDOW = QuestionWindow(self, text)
+            QUESTION_WINDOW.show()
 
     def confirmation(self) -> None:
         """Подтверждение найма выбранного воина"""
@@ -197,7 +224,6 @@ class HireMenuWindow(QMainWindow):
     def hire_unit_action(self, slot: int) -> None:
         """Метод обработчик нажатия кнопки 'Нанять' для игрока"""
         if self.player_gold < int(self.highlighted_unit.cost):
-
             msg = QMessageBox()
             msg.setWindowTitle("Предупреждение")
             msg.setText("Недостаточно золота")
