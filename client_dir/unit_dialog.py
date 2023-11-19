@@ -312,6 +312,7 @@ class UnitDialog(QDialog):
         if unit.leadership is not None:
             self.leadership.setText(str(unit.leadership))
             self.check_perk(unit.leadership, self.leadership)
+            self.check_perk(unit.leadership, self.leadershipText)
         else:
             self.leadershipText.setVisible(False)
 
@@ -375,7 +376,8 @@ class UnitDialog(QDialog):
         else:
             self.attackDmg.setText(f'{damage}{additional}')
 
-    def check_perk(self, unit_perk, ui_obj):
+    @staticmethod
+    def check_perk(unit_perk, ui_obj):
         """Проверка перка с выводом на окно характеристик"""
         if unit_perk:
             ui_obj.setVisible(True)
