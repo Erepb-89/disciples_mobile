@@ -3,7 +3,7 @@ import random
 from collections import deque
 from typing import List, Optional
 
-from client_dir.settings import ANY_UNIT, CLOSEST_UNIT
+from client_dir.settings import ANY_UNIT, CLOSEST_UNIT, HEAL_LIST
 from battle_logging import logging
 from units_dir.units import main_db
 from units_dir.units_factory import Unit
@@ -146,7 +146,7 @@ class Battle:
         return None
 
     @staticmethod
-    def sorting_units(all_units: list) -> List[Unit]:
+    def sorting_ini(all_units: list) -> List[Unit]:
         """Сортировка юнитов по инициативе"""
         units_ini = {}
         for unit in all_units:
@@ -156,6 +156,41 @@ class Battle:
         sorted_units_by_ini = sorted(
             units_ini, key=units_ini.get, reverse=True)
         return sorted_units_by_ini
+
+    @staticmethod
+    def sorting_health_percentage(units: list) -> List[Unit]:
+        """Сортировка юнитов по процентам оставшегося здоровья"""
+        percentage = {}
+        for unit in units:
+            perc = unit.curr_health / unit.health
+            percentage[unit] = perc
+
+        sorted_units_by_perc = sorted(
+            percentage, key=percentage.get, reverse=False)
+        return sorted_units_by_perc
+
+    @staticmethod
+    def sorting_health(units: list) -> List[Unit]:
+        """Сортировка юнитов по текущему здоровью в единицах"""
+        health = {}
+        for unit in units:
+            health[unit] = unit.curr_health
+
+        sorted_units_by_health = sorted(
+            health, key=health.get, reverse=False)
+        return sorted_units_by_health
+
+    @staticmethod
+    def sorting_unit_types(units: list) -> List[Unit]:
+        """Сортировка юнитов по типам/ветвям: Маги, Стрелки и т.д."""
+        branches = {}
+        for unit in units:
+            branch = unit.curr_health / unit.health # тут править
+            branches[unit] = branch
+
+        sorted_units_by_branch = sorted(
+            branches, key=branches.get, reverse=False)
+        return sorted_units_by_branch
 
     def waiting_round(self) -> None:
         """Раунд для ожидающих юнитов"""
@@ -181,7 +216,7 @@ class Battle:
             unit for unit in self.player2.units if unit.curr_health != 0]
 
         all_units = units_pl1 + units_pl2
-        sorted_units_by_ini = self.sorting_units(all_units)
+        sorted_units_by_ini = self.sorting_ini(all_units)
 
         for unit in sorted_units_by_ini:
             self.units_deque.append(unit)
@@ -189,20 +224,18 @@ class Battle:
 
     def next_turn(self) -> None:
         """Ход юнита"""
-        heal_list = ['Лечение', 'Лечение/Исцеление', 'Лечение/Воскрешение']
-
         self.current_unit = self.units_deque.popleft()
         self.current_unit.undefence()
 
         if self.current_unit in self.player1.units:
             self.current_player = self.player1
-            if self.current_unit.attack_type not in heal_list:
+            if self.current_unit.attack_type not in HEAL_LIST:
                 self.target_player = self.player2
             else:
                 self.target_player = self.player1
         else:
             self.current_player = self.player2
-            if self.current_unit.attack_type not in heal_list:
+            if self.current_unit.attack_type not in HEAL_LIST:
                 self.target_player = self.player1
             else:
                 self.target_player = self.player2
@@ -309,14 +342,19 @@ class Battle:
 
     def attack_1_unit(self, target: Unit) -> None:
         """Если цель - 1 юнит"""
-        if self.current_unit.attack_type \
-                not in ['Лечение',
-                        'Лечение/Исцеление',
-                        'Лечение/Воскрешение']:
+        # Если текущий юнит - атакующий
+        if self.current_unit.attack_type not in HEAL_LIST:
             success = self.current_unit.attack(target)
-        else:
-            # Если текущий юнит - лекарь
+
+        # Если текущий юнит - лекарь
+        elif self.current_unit.attack_type in HEAL_LIST:
+
             success = self.current_unit.heal(target)
+
+        # Если текущий юнит - друид/алхимик
+        elif self.current_unit.attack_type in ['Увеличение урона',
+                                               'Дополнительная атака']:
+            pass
 
         if success:
             self.attacked_slots.append(target.slot)
@@ -353,16 +391,110 @@ class Battle:
         else:
             self.attacked_slots = []
             # рандомная атака
-            target = self.get_unit_by_slot(
-                random.choice(self.target_slots),
-                self.target_player.units)
+            # target = self.get_unit_by_slot(
+            #     random.choice(self.target_slots),
+            #     self.target_player.units)
 
             # атака/лечение определенного юнита - доделать!
             # ---------------------------------------------
+            if self.current_unit.attack_type not in HEAL_LIST:
+                # определяем приоритет для атаки
+                target = self.getting_attack_target(self.current_unit, self.target_slots)
 
-            self.attack_1_unit(target)
+                self.attack_1_unit(target)
 
-    def clear_dungeon(self) -> None:
+            elif self.current_unit.attack_type in HEAL_LIST:
+                # определяем приоритет для лечения
+                target = self.getting_heal_target(self.target_slots)
+                if target.curr_health == target.health:
+                    self.current_unit.defence()
+                else:
+                    self.attack_1_unit(target)
+
+            elif self.current_unit.attack_type in \
+                    ['Увеличение урона', 'Дополнительная атака']:
+                # определяем приоритет для друидов/алхимиков
+                pass
+
+                # self.attack_1_unit(target)
+
+    def getting_attack_target(self, unit, target_slots) -> Unit:
+        """Приоритет для атаки"""
+        prior1_targets = []
+        prior2_targets = []
+        prior3_targets = []
+        target_units = []
+
+        for slot in target_slots:
+            unit_ = self.get_unit_by_slot(slot, self.target_player.units)
+            target_units.append(unit_)
+
+        for target_unit in target_units:
+            target_armor = (1 - target_unit.armor * 0.01)
+
+            # убьет цель за 1 ход
+            if target_unit.curr_health <= \
+                    unit.attack_dmg * target_armor:
+                prior1_targets.append(target_unit)
+
+            # убьет цель за 2 хода
+            elif target_unit.curr_health <= \
+                    unit.attack_dmg * 2 * target_armor:
+                prior2_targets.append(target_unit)
+
+            # иначе добавляем всех попавшихся
+            else:
+                prior3_targets.append(target_unit)
+
+        if prior1_targets:
+            target = self.attack_priority(prior1_targets)
+        elif not prior1_targets and prior2_targets:
+            target = self.attack_priority(prior2_targets)
+        else:
+            target = self.attack_priority(prior3_targets)
+
+        return target
+
+    def attack_priority(self, prior_targets: list) -> Unit:
+        """Приоритет для атаки"""
+        result_target = None
+
+        for target in prior_targets:
+            # В первую очередь бьем лекарей
+            if target.branch == 'support' and \
+                    target.attack_source in HEAL_LIST:
+                result_target = target
+
+            # Во вторую - бьем магов
+            elif target.branch == 'mage':
+                result_target = target
+
+            # Во третью - бьем стрелков
+            elif target.branch == 'archer':
+                result_target = target
+
+        # В остальных случаях
+        if result_target is None:
+            # выбираем слабейшего из оставшихся (по абсолютному здоровью)
+            weakest_unit = self.sorting_health(prior_targets)[0]
+            result_target = weakest_unit
+
+        return result_target
+
+    def getting_heal_target(self, target_slots) -> Unit:
+        """Приоритет для лечения"""
+        target_units = []
+
+        for slot in target_slots:
+            unit_ = self.get_unit_by_slot(slot, self.target_player.units)
+            target_units.append(unit_)
+
+        health_sorted_units = self.sorting_health_percentage(target_units)
+
+        return health_sorted_units[0]
+
+    @staticmethod
+    def clear_dungeon() -> None:
         """Очистка текущего подземелья от вражеских юнитов"""
         main_db.delete_dungeon_unit(1)
         main_db.delete_dungeon_unit(2)
@@ -371,7 +503,8 @@ class Battle:
         main_db.delete_dungeon_unit(5)
         main_db.delete_dungeon_unit(6)
 
-    def regen(self) -> None:
+    @staticmethod
+    def regen() -> None:
         """Восстановление здоровья всех юнитов игрока"""
         # self.clear_dungeon()
         main_db.autoregen(1)

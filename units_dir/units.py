@@ -1626,17 +1626,22 @@ class ServerStorage:
                    func: Callable[[int], any]
                    ) -> bool:
         """Проверка свободен ли слот для юнита"""
-        result = func(slot) is not None
+        if func(slot) is not None:
+            result = True
 
         # Если слот четный и сам юнит двойной
-        if slot % 2 == 0 and self.is_double(unit):
+        elif slot % 2 == 0 and self.is_double(unit):
             if func(slot - 1) is not None:
                 result = True
+            else:
+                result = False
 
         # Если слот нечетный и сам юнит двойной
         elif slot % 2 == 1 and self.is_double(unit):
             if func(slot + 1) is not None:
                 result = True
+            else:
+                result = False
 
         # Если (номер слота + 1) - уже занят двойным юнитом
         elif func(slot + 1) is not None and self.is_double(func(slot + 1).name):
