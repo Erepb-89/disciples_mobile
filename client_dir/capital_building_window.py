@@ -8,7 +8,7 @@ from typing import Optional, List
 
 from PyQt5 import QtWidgets
 from PyQt5.QtGui import QPixmap
-from PyQt5.QtWidgets import QMainWindow, QHBoxLayout, QMessageBox
+from PyQt5.QtWidgets import QMainWindow, QHBoxLayout
 
 from client_dir.capital_building_form import Ui_CapitalBuildingWindow
 from client_dir.question_window import QuestionWindow

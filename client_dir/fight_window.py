@@ -808,11 +808,13 @@ class FightWindow(QMainWindow):
         """Автобой"""
         # пока битва не окончена
         if not self.new_battle.battle_is_over:
+
             # если есть кого атаковать
             if self.new_battle.target_slots != [None]:
                 # self.unit_gifs_update()
                 self.new_battle.auto_fight()
                 self.show_attack_and_attacked()
+
             # иначе защита
             else:
                 self.unit_defence()
@@ -955,7 +957,7 @@ class FightWindow(QMainWindow):
                     main_db.already_built = 0
 
                     # победили босса - повысился уровень кампании, день + 1
-                    if '15' in self.dungeon:
+                    if '15' in self.dungeon and main_db.campaign_level != 5:
                         main_db.update_session(
                             main_db.game_session_id,
                             main_db.campaign_level + 1,
@@ -1204,8 +1206,6 @@ class FightWindow(QMainWindow):
         # получение текущего юнита
         curr_unit = self.new_battle.current_unit
 
-        # if self.new_battle.autofight:
-
         # очищает иконки атакованных юнитов
         self.show_no_damaged()
 
@@ -1232,7 +1232,6 @@ class FightWindow(QMainWindow):
         # получение текущей цели
         curr_target = self.get_curr_target(target_slot)
 
-        # if self.new_battle.autofight:
         if curr_target is None:
             pass
 

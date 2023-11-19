@@ -8,7 +8,8 @@ from typing import Dict, List
 
 from battle_logging import logging
 
-from client_dir.settings import EM, UH, LD, MC, BIG, HERO_FIGHTER_EXP, HERO_ARCHER_EXP, HERO_ROD_EXP
+from client_dir.settings import EM, UH, LD, MC, BIG, \
+    HERO_FIGHTER_EXP, HERO_ARCHER_EXP, HERO_ROD_EXP
 from units_dir.buildings import FACTIONS, ELDER_FORMS, PERKS
 from units_dir.units import main_db
 from units_dir.ranking import empire_mage_lvls, \
@@ -1400,6 +1401,13 @@ class Unit:
         line = f"{self.name} лечит {health} воину {target.name}. " \
                f"Стало ХП: {target.curr_health}\n"
         logging(line)
+
+        return True
+
+    def up_damage(self, target: any) -> bool:
+        """Увеличение урона Друда, дополнительная атака Алхимика"""
+        dmg_boost = int(self.attack_dmg)
+        pass
 
         return True
 

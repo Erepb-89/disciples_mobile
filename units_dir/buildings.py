@@ -2,7 +2,7 @@
 
 from collections import namedtuple
 from client_dir.settings import LD, EM, UH, MC, GUILD_DESC, MAGIC_DESC, \
-    TWMPLE_DESC, COMMON_DESC, SPECIAL_DESC
+    TEMPLE_DESC, COMMON_DESC, SPECIAL_DESC
 
 Building = namedtuple('Building', [
     'bname',
@@ -18,7 +18,7 @@ guild = Building(
 magic_guild = Building(
     'Башня магии', '', 150, '', [480, 287, 118, 114], MAGIC_DESC)
 temple = Building(
-    'Храм', '', 300, '', [480, 555, 118, 114], TWMPLE_DESC)
+    'Храм', '', 300, '', [480, 555, 118, 114], TEMPLE_DESC)
 
 BRANCHES = {
     'fighter': 0,

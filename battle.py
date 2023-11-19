@@ -3,7 +3,8 @@ import random
 from collections import deque
 from typing import List, Optional
 
-from client_dir.settings import ANY_UNIT, CLOSEST_UNIT, HEAL_LIST
+from client_dir.settings import ANY_UNIT, CLOSEST_UNIT, \
+    HEAL_LIST, ALCHEMIST_LIST
 from battle_logging import logging
 from units_dir.units import main_db
 from units_dir.units_factory import Unit
@@ -73,12 +74,12 @@ class Battle:
         self.new_round()
         self.next_turn()
 
-    def add_player_unit(self,
-                        slot: int,
+    @staticmethod
+    def add_player_unit(slot: int,
                         player: Player,
                         database: any) -> None:
         """
-        Добавление юнита игрока в текущую битву.
+        Добавление одного юнита игрока по слоту в текущую битву.
         """
         unit = main_db.get_unit_by_slot(
             slot,
@@ -87,8 +88,8 @@ class Battle:
         player.units.append(Unit(unit))
         player.slots.append(unit.slot)
 
-    def add_player_units(self,
-                         player: Player,
+    @staticmethod
+    def add_player_units(player: Player,
                          database: any) -> None:
         """
         Добавление юнитов игрока в текущую битву.
@@ -130,7 +131,8 @@ class Battle:
             except (TypeError, AttributeError):
                 pass
 
-    def dungeon_unit_by_slot(self, slot) -> Unit:
+    @staticmethod
+    def dungeon_unit_by_slot(slot) -> Unit:
         """Метод получающий юнита подземелья по слоту."""
         return main_db.get_unit_by_slot(
             slot,
@@ -179,6 +181,17 @@ class Battle:
         sorted_units_by_health = sorted(
             health, key=health.get, reverse=False)
         return sorted_units_by_health
+
+    @staticmethod
+    def sorting_damage(units: list) -> List[Unit]:
+        """Сортировка юнитов по урону"""
+        damage = {}
+        for unit in units:
+            damage[unit] = unit.attack_dmg
+
+        sorted_units_by_damage = sorted(
+            damage, key=damage.get, reverse=True)
+        return sorted_units_by_damage
 
     @staticmethod
     def sorting_unit_types(units: list) -> List[Unit]:
@@ -348,13 +361,11 @@ class Battle:
 
         # Если текущий юнит - лекарь
         elif self.current_unit.attack_type in HEAL_LIST:
-
             success = self.current_unit.heal(target)
 
-        # Если текущий юнит - друид/алхимик
-        elif self.current_unit.attack_type in ['Увеличение урона',
-                                               'Дополнительная атака']:
-            pass
+        # Если текущий юнит - Друид/Алхимик
+        elif self.current_unit.attack_type in ALCHEMIST_LIST:
+            success = self.current_unit.up_damage(target)
 
         if success:
             self.attacked_slots.append(target.slot)
@@ -395,11 +406,12 @@ class Battle:
             #     random.choice(self.target_slots),
             #     self.target_player.units)
 
-            # атака/лечение определенного юнита - доделать!
-            # ---------------------------------------------
-            if self.current_unit.attack_type not in HEAL_LIST:
+            # атака/лечение определенного юнита
+            if self.current_unit.attack_type not in HEAL_LIST and \
+                    self.current_unit.attack_type not in ALCHEMIST_LIST:
                 # определяем приоритет для атаки
-                target = self.getting_attack_target(self.current_unit, self.target_slots)
+                target = self.getting_attack_target(
+                    self.current_unit, self.target_slots)
 
                 self.attack_1_unit(target)
 
@@ -411,12 +423,15 @@ class Battle:
                 else:
                     self.attack_1_unit(target)
 
-            elif self.current_unit.attack_type in \
-                    ['Увеличение урона', 'Дополнительная атака']:
+            elif self.current_unit.attack_type in ALCHEMIST_LIST:
                 # определяем приоритет для друидов/алхимиков
-                pass
+                self.current_unit.defence()
 
-                # self.attack_1_unit(target)
+                # target = self.getting_druid_target(self.target_slots)
+                # if target.attack_dmg == 0:
+                #     self.current_unit.defence()
+                # else:
+                #     self.attack_1_unit(target)
 
     def getting_attack_target(self, unit, target_slots) -> Unit:
         """Приоритет для атаки"""
@@ -486,12 +501,24 @@ class Battle:
         target_units = []
 
         for slot in target_slots:
-            unit_ = self.get_unit_by_slot(slot, self.target_player.units)
-            target_units.append(unit_)
+            unit = self.get_unit_by_slot(slot, self.target_player.units)
+            target_units.append(unit)
 
         health_sorted_units = self.sorting_health_percentage(target_units)
 
         return health_sorted_units[0]
+
+    def getting_druid_target(self, target_slots) -> Unit:
+        """Приоритет для Друида/Алхимика"""
+        target_units = []
+
+        for slot in target_slots:
+            unit = self.get_unit_by_slot(slot, self.target_player.units)
+            target_units.append(unit)
+
+        damage_sorted_units = self.sorting_damage(target_units)
+
+        return damage_sorted_units[0]
 
     @staticmethod
     def clear_dungeon() -> None:
