@@ -189,19 +189,9 @@ setup_3 = [
 ]
 setup_2 = [
     {
-        1: None, 2: None,
-        3: None, 4: BIG,
-        5: None, 6: None,
-    },
-    {
         1: None, 2: BIG,
         3: None, 4: None,
         5: None, 6: None,
-    },
-    {
-        1: None, 2: None,
-        3: None, 4: None,
-        5: None, 6: BIG,
     },
     {
         1: None, 2: None,

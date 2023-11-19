@@ -114,9 +114,9 @@ class Battle:
         for unit_slot in range(6):
             try:
                 unit = main_db.get_unit_by_name(
-                    self.dungeon_units[unit_slot])[:24]
+                    self.dungeon_units[unit_slot])[:25]
                 unit_cols_after_slot = main_db.get_unit_by_name(
-                    self.dungeon_units[unit_slot])[25:43]
+                    self.dungeon_units[unit_slot])[26:45]
 
                 main_db.add_dungeon_unit(
                     *unit,

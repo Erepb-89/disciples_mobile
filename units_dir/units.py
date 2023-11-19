@@ -37,6 +37,7 @@ class ServerStorage:
                      attack_type: str,
                      attack_chance: str,
                      attack_dmg: int,
+                     dot_dmg: int,
                      attack_source: str,
                      attack_ini: int,
                      attack_radius: str,
@@ -63,7 +64,8 @@ class ServerStorage:
                      water_resist: int,
                      air_resist: int,
                      fire_resist: int,
-                     earth_resist: int
+                     earth_resist: int,
+                     dotted: int
                      ):
             self.id = None
             self.name = name
@@ -81,6 +83,7 @@ class ServerStorage:
             self.attack_type = attack_type
             self.attack_chance = attack_chance
             self.attack_dmg = attack_dmg
+            self.dot_dmg = dot_dmg
             self.attack_source = attack_source
             self.attack_ini = attack_ini
             self.attack_radius = attack_radius
@@ -108,6 +111,7 @@ class ServerStorage:
             self.air_resist = air_resist
             self.fire_resist = fire_resist
             self.earth_resist = earth_resist
+            self.dotted = dotted
 
     class PlayerUnits(AllUnits):
         """Класс - отображение таблицы юнитов игрока."""
@@ -130,6 +134,7 @@ class ServerStorage:
                 attack_type,
                 attack_chance,
                 attack_dmg,
+                dot_dmg,
                 attack_source,
                 attack_ini,
                 attack_radius,
@@ -156,7 +161,8 @@ class ServerStorage:
                 water_resist,
                 air_resist,
                 fire_resist,
-                earth_resist
+                earth_resist,
+                dotted
         ):
             super().__init__(
                 name,
@@ -174,6 +180,7 @@ class ServerStorage:
                 attack_type,
                 attack_chance,
                 attack_dmg,
+                dot_dmg,
                 attack_source,
                 attack_ini,
                 attack_radius,
@@ -200,7 +207,8 @@ class ServerStorage:
                 water_resist,
                 air_resist,
                 fire_resist,
-                earth_resist
+                earth_resist,
+                dotted
             )
 
     class Player2Units(AllUnits):
@@ -224,6 +232,7 @@ class ServerStorage:
                 attack_type,
                 attack_chance,
                 attack_dmg,
+                dot_dmg,
                 attack_source,
                 attack_ini,
                 attack_radius,
@@ -250,7 +259,8 @@ class ServerStorage:
                 water_resist,
                 air_resist,
                 fire_resist,
-                earth_resist
+                earth_resist,
+                dotted
         ):
             super().__init__(
                 name,
@@ -268,6 +278,7 @@ class ServerStorage:
                 attack_type,
                 attack_chance,
                 attack_dmg,
+                dot_dmg,
                 attack_source,
                 attack_ini,
                 attack_radius,
@@ -294,7 +305,8 @@ class ServerStorage:
                 water_resist,
                 air_resist,
                 fire_resist,
-                earth_resist
+                earth_resist,
+                dotted
             )
 
     class Players:
@@ -391,6 +403,7 @@ class ServerStorage:
                 attack_type,
                 attack_chance,
                 attack_dmg,
+                dot_dmg,
                 attack_source,
                 attack_ini,
                 attack_radius,
@@ -417,7 +430,8 @@ class ServerStorage:
                 water_resist,
                 air_resist,
                 fire_resist,
-                earth_resist
+                earth_resist,
+                dotted
         ):
             super().__init__(
                 name,
@@ -435,6 +449,7 @@ class ServerStorage:
                 attack_type,
                 attack_chance,
                 attack_dmg,
+                dot_dmg,
                 attack_source,
                 attack_ini,
                 attack_radius,
@@ -461,7 +476,8 @@ class ServerStorage:
                 water_resist,
                 air_resist,
                 fire_resist,
-                earth_resist
+                earth_resist,
+                dotted
             )
 
     def __init__(self, path):
@@ -494,6 +510,7 @@ class ServerStorage:
                             Column('attack_type', String),
                             Column('attack_chance', String),
                             Column('attack_dmg', Integer),
+                            Column('dot_dmg', Integer),
                             Column('attack_source', String),
                             Column('attack_ini', Integer),
                             Column('attack_radius', String),
@@ -503,14 +520,14 @@ class ServerStorage:
                             Column('photo', String),
                             Column('gif', String),
                             Column('slot', Integer),
-                            Column('subrace', Integer),
-                            Column('branch', Integer),
+                            Column('subrace', String),
+                            Column('branch', String),
                             Column('attack_twice', Integer),
                             Column('regen', Integer),
                             Column('dyn_upd_level', Integer),
-                            Column('upgrade_b', Integer),
+                            Column('upgrade_b', String),
                             Column('leadership', Integer),
-                            Column('leader_cat', Integer),
+                            Column('leader_cat', String),
                             Column('nat_armor', Integer),
                             Column('might', Integer),
                             Column('weapon_master', Integer),
@@ -521,6 +538,7 @@ class ServerStorage:
                             Column('air_resist', Integer),
                             Column('fire_resist', Integer),
                             Column('earth_resist', Integer),
+                            Column('dotted', Integer),
                             )
 
         player_units_table = Table('player_units', self.metadata,
@@ -540,6 +558,7 @@ class ServerStorage:
                                    Column('attack_type', String),
                                    Column('attack_chance', String),
                                    Column('attack_dmg', Integer),
+                                   Column('dot_dmg', Integer),
                                    Column('attack_source', String),
                                    Column('attack_ini', Integer),
                                    Column('attack_radius', String),
@@ -549,14 +568,14 @@ class ServerStorage:
                                    Column('photo', String),
                                    Column('gif', String),
                                    Column('slot', Integer),
-                                   Column('subrace', Integer),
-                                   Column('branch', Integer),
+                                   Column('subrace', String),
+                                   Column('branch', String),
                                    Column('attack_twice', Integer),
                                    Column('regen', Integer),
                                    Column('dyn_upd_level', Integer),
-                                   Column('upgrade_b', Integer),
+                                   Column('upgrade_b', String),
                                    Column('leadership', Integer),
-                                   Column('leader_cat', Integer),
+                                   Column('leader_cat', String),
                                    Column('nat_armor', Integer),
                                    Column('might', Integer),
                                    Column('weapon_master', Integer),
@@ -567,6 +586,7 @@ class ServerStorage:
                                    Column('air_resist', Integer),
                                    Column('fire_resist', Integer),
                                    Column('earth_resist', Integer),
+                                   Column('dotted', Integer),
                                    )
 
         player2_units_table = Table('player2_units', self.metadata,
@@ -586,6 +606,7 @@ class ServerStorage:
                                     Column('attack_type', String),
                                     Column('attack_chance', String),
                                     Column('attack_dmg', Integer),
+                                    Column('dot_dmg', Integer),
                                     Column('attack_source', String),
                                     Column('attack_ini', Integer),
                                     Column('attack_radius', String),
@@ -595,14 +616,14 @@ class ServerStorage:
                                     Column('photo', String),
                                     Column('gif', String),
                                     Column('slot', Integer),
-                                    Column('subrace', Integer),
-                                    Column('branch', Integer),
+                                    Column('subrace', String),
+                                    Column('branch', String),
                                     Column('attack_twice', Integer),
                                     Column('regen', Integer),
                                     Column('dyn_upd_level', Integer),
-                                    Column('upgrade_b', Integer),
+                                    Column('upgrade_b', String),
                                     Column('leadership', Integer),
-                                    Column('leader_cat', Integer),
+                                    Column('leader_cat', String),
                                     Column('nat_armor', Integer),
                                     Column('might', Integer),
                                     Column('weapon_master', Integer),
@@ -613,6 +634,7 @@ class ServerStorage:
                                     Column('air_resist', Integer),
                                     Column('fire_resist', Integer),
                                     Column('earth_resist', Integer),
+                                    Column('dotted', Integer),
                                     )
 
         # Создаём таблицу игроков
@@ -678,6 +700,7 @@ class ServerStorage:
                                       Column('attack_type', String),
                                       Column('attack_chance', String),
                                       Column('attack_dmg', Integer),
+                                      Column('dot_dmg', Integer),
                                       Column('attack_source', String),
                                       Column('attack_ini', Integer),
                                       Column('attack_radius', String),
@@ -687,14 +710,14 @@ class ServerStorage:
                                       Column('photo', String),
                                       Column('gif', String),
                                       Column('slot', Integer),
-                                      Column('subrace', Integer),
-                                      Column('branch', Integer),
+                                      Column('subrace', String),
+                                      Column('branch', String),
                                       Column('attack_twice', Integer),
                                       Column('regen', Integer),
                                       Column('dyn_upd_level', Integer),
-                                      Column('upgrade_b', Integer),
+                                      Column('upgrade_b', String),
                                       Column('leadership', Integer),
-                                      Column('leader_cat', Integer),
+                                      Column('leader_cat', String),
                                       Column('nat_armor', Integer),
                                       Column('might', Integer),
                                       Column('weapon_master', Integer),
@@ -705,6 +728,7 @@ class ServerStorage:
                                       Column('air_resist', Integer),
                                       Column('fire_resist', Integer),
                                       Column('earth_resist', Integer),
+                                      Column('dotted', Integer),
                                       )
 
         # Создаём таблицы
@@ -759,6 +783,7 @@ class ServerStorage:
             attack_type,
             attack_chance,
             attack_dmg,
+            dot_dmg,
             attack_source,
             attack_ini,
             attack_radius,
@@ -785,7 +810,8 @@ class ServerStorage:
             water_resist,
             air_resist,
             fire_resist,
-            earth_resist):
+            earth_resist,
+            dotted):
         """
         Метод регистрации юнита.
         Создаёт запись в таблице CurrentDungeon.
@@ -807,6 +833,7 @@ class ServerStorage:
             attack_type,
             attack_chance,
             attack_dmg,
+            dot_dmg,
             attack_source,
             attack_ini,
             attack_radius,
@@ -833,7 +860,8 @@ class ServerStorage:
             water_resist,
             air_resist,
             fire_resist,
-            earth_resist
+            earth_resist,
+            dotted
         )
         self.session.add(unit_row)
         self.session.commit()
@@ -857,6 +885,7 @@ class ServerStorage:
             self.AllUnits.attack_type,
             self.AllUnits.attack_chance,
             self.AllUnits.attack_dmg,
+            self.AllUnits.dot_dmg,
             self.AllUnits.attack_source,
             self.AllUnits.attack_ini,
             self.AllUnits.attack_radius,
@@ -883,7 +912,8 @@ class ServerStorage:
             self.AllUnits.water_resist,
             self.AllUnits.air_resist,
             self.AllUnits.fire_resist,
-            self.AllUnits.earth_resist
+            self.AllUnits.earth_resist,
+            self.AllUnits.dotted
         ).filter_by(name=name)
         # Возвращаем кортеж
         return query.first()
@@ -934,6 +964,7 @@ class ServerStorage:
             database.attack_type,
             database.attack_chance,
             database.attack_dmg,
+            database.dot_dmg,
             database.attack_source,
             database.attack_ini,
             database.attack_radius,
@@ -960,7 +991,8 @@ class ServerStorage:
             database.water_resist,
             database.air_resist,
             database.fire_resist,
-            database.earth_resist
+            database.earth_resist,
+            database.dotted
         ).filter_by(id=_id)
         # Возвращаем кортеж
         return query.first()
@@ -984,6 +1016,7 @@ class ServerStorage:
             database.attack_type,
             database.attack_chance,
             database.attack_dmg,
+            database.dot_dmg,
             database.attack_source,
             database.attack_ini,
             database.attack_radius,
@@ -1010,7 +1043,8 @@ class ServerStorage:
             database.water_resist,
             database.air_resist,
             database.fire_resist,
-            database.earth_resist
+            database.earth_resist,
+            database.dotted
         ).filter_by(slot=slot)
         # Возвращаем кортеж
         return query.first()
@@ -1034,6 +1068,7 @@ class ServerStorage:
             self.AllUnits.attack_type,
             self.AllUnits.attack_chance,
             self.AllUnits.attack_dmg,
+            self.AllUnits.dot_dmg,
             self.AllUnits.attack_source,
             self.AllUnits.attack_ini,
             self.AllUnits.attack_radius,
@@ -1060,7 +1095,8 @@ class ServerStorage:
             self.AllUnits.water_resist,
             self.AllUnits.air_resist,
             self.AllUnits.fire_resist,
-            self.AllUnits.earth_resist
+            self.AllUnits.earth_resist,
+            self.AllUnits.dotted
         ).filter(self.AllUnits.level == level,
                  self.AllUnits.branch != 'hero')
         # Возвращаем список кортежей
@@ -1085,6 +1121,7 @@ class ServerStorage:
             self.PlayerUnits.attack_type,
             self.PlayerUnits.attack_chance,
             self.PlayerUnits.attack_dmg,
+            self.PlayerUnits.dot_dmg,
             self.PlayerUnits.attack_source,
             self.PlayerUnits.attack_ini,
             self.PlayerUnits.attack_radius,
@@ -1109,7 +1146,8 @@ class ServerStorage:
             self.PlayerUnits.water_resist,
             self.PlayerUnits.air_resist,
             self.PlayerUnits.fire_resist,
-            self.PlayerUnits.earth_resist
+            self.PlayerUnits.earth_resist,
+            self.PlayerUnits.dotted
         ).filter_by(slot=slot)
         # Возвращаем кортеж
         return query.first()
@@ -1133,6 +1171,7 @@ class ServerStorage:
             self.PlayerUnits.attack_type,
             self.PlayerUnits.attack_chance,
             self.PlayerUnits.attack_dmg,
+            self.PlayerUnits.dot_dmg,
             self.PlayerUnits.attack_source,
             self.PlayerUnits.attack_ini,
             self.PlayerUnits.attack_radius,
@@ -1157,7 +1196,8 @@ class ServerStorage:
             self.PlayerUnits.water_resist,
             self.PlayerUnits.air_resist,
             self.PlayerUnits.fire_resist,
-            self.PlayerUnits.earth_resist
+            self.PlayerUnits.earth_resist,
+            self.PlayerUnits.dotted
         ).order_by(self.PlayerUnits.slot)
         # Возвращаем список кортежей
         return query.all()
@@ -1181,6 +1221,7 @@ class ServerStorage:
             self.CurrentDungeon.attack_type,
             self.CurrentDungeon.attack_chance,
             self.CurrentDungeon.attack_dmg,
+            self.CurrentDungeon.dot_dmg,
             self.CurrentDungeon.attack_source,
             self.CurrentDungeon.attack_ini,
             self.CurrentDungeon.attack_radius,
@@ -1205,7 +1246,8 @@ class ServerStorage:
             self.CurrentDungeon.water_resist,
             self.CurrentDungeon.air_resist,
             self.CurrentDungeon.fire_resist,
-            self.CurrentDungeon.earth_resist
+            self.CurrentDungeon.earth_resist,
+            self.CurrentDungeon.dotted
         ).order_by(self.CurrentDungeon.slot)
         # Возвращаем список кортежей
         return query.all()
@@ -1583,14 +1625,14 @@ class ServerStorage:
         else:
             unit_row = self.get_unit_by_name(unit)
             unit_cols_after_slot = main_db.get_unit_by_name(
-                unit)[25:43]
+                unit)[26:45]
 
             # print(unit_row._asdict())
             if self.is_double(unit_row.name) and slot % 2 == 1:
                 slot += 1
 
             player_unit = self.PlayerUnits(
-                *unit_row[:24],
+                *unit_row[:25],
                 slot,
                 *unit_cols_after_slot)
             self.session.add(player_unit)
@@ -1606,14 +1648,14 @@ class ServerStorage:
         else:
             unit_row = self.get_unit_by_name(unit)
             unit_cols_after_slot = main_db.get_unit_by_name(
-                unit)[25:43]
+                unit)[26:45]
 
             # print(unit_row._asdict())
             if self.is_double(unit) and slot % 2 == 1:
                 slot += 1
 
             enemy_unit = self.CurrentDungeon(
-                *unit_row[:24],
+                *unit_row[:25],
                 slot,
                 *unit_cols_after_slot)
             # enemy_unit = self.Dungeons(unit_id)
@@ -1890,6 +1932,7 @@ class ServerStorage:
             self.CurrentDungeon.attack_type,
             self.CurrentDungeon.attack_chance,
             self.CurrentDungeon.attack_dmg,
+            self.CurrentDungeon.dot_dmg,
             self.CurrentDungeon.attack_source,
             self.CurrentDungeon.attack_ini,
             self.CurrentDungeon.attack_radius,
@@ -1914,7 +1957,8 @@ class ServerStorage:
             self.CurrentDungeon.water_resist,
             self.CurrentDungeon.air_resist,
             self.CurrentDungeon.fire_resist,
-            self.CurrentDungeon.earth_resist
+            self.CurrentDungeon.earth_resist,
+            self.CurrentDungeon.dotted
         ).filter_by(slot=slot)
         # Возвращаем кортеж
         return query.first()
@@ -1941,6 +1985,7 @@ class ServerStorage:
             database.attack_type,
             database.attack_chance,
             database.attack_dmg,
+            database.dot_dmg,
             database.attack_source,
             database.attack_ini,
             database.attack_radius,
@@ -1965,7 +2010,8 @@ class ServerStorage:
             database.water_resist,
             database.air_resist,
             database.fire_resist,
-            database.earth_resist
+            database.earth_resist,
+            database.dotted
         ).order_by(database.slot)
         # Возвращаем список кортежей
         return query.all()
@@ -1989,6 +2035,7 @@ class ServerStorage:
             self.AllUnits.attack_type,
             self.AllUnits.attack_chance,
             self.AllUnits.attack_dmg,
+            self.AllUnits.dot_dmg,
             self.AllUnits.attack_source,
             self.AllUnits.attack_ini,
             self.AllUnits.attack_radius,
@@ -2015,7 +2062,8 @@ class ServerStorage:
             self.AllUnits.water_resist,
             self.AllUnits.air_resist,
             self.AllUnits.fire_resist,
-            self.AllUnits.earth_resist
+            self.AllUnits.earth_resist,
+            self.AllUnits.dotted
         )
         # Возвращаем список кортежей
         return query.all()
