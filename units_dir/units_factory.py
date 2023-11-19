@@ -1088,7 +1088,8 @@ class Unit:
 
         # определение оставшихся свободных перков
         for perk in PERKS.keys():
-            all_perks.append(perk)
+            if perk != 'leadership':
+                all_perks.append(perk)
 
         if all_perks:
             element_dict = {
@@ -1105,7 +1106,8 @@ class Unit:
 
             if self.leadership < 5 and self.level % 2 == 1:
                 perks['leadership'] = self.leadership + 1
-            else:
+
+            elif self.leadership == 5 or self.level % 2 == 0:
                 perks['leadership'] = self.leadership
 
             perks[perk] = 1
