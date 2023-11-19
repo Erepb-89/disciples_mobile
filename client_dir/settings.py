@@ -67,6 +67,8 @@ OTHERS = 'others'
 BIG = 'Большой'
 SMALL = 'Обычный'
 
+HEAL_LIST = ['Лечение', 'Лечение/Исцеление', 'Лечение/Воскрешение']
+
 # races
 EM = 'Empire'
 UH = 'Undead Hordes'
