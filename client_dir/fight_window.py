@@ -16,7 +16,7 @@ from client_dir.settings import UNIT_STAND, UNIT_ATTACK, \
     COMMON, BATTLE_GROUNDS, UNIT_SHADOW_ATTACK, UNIT_SHADOW_STAND, \
     UNIT_SHADOW_ATTACKED, UNIT_EFFECTS_AREA, UNIT_EFFECTS_TARGET, \
     RIGHT_ICONS, LEFT_ICONS, SCREEN_RECT, PANEL_RECT, BATTLE_LOG, \
-    BATTLE_ANIM, BIG, INTERF, HEAL_LIST
+    BATTLE_ANIM, BIG, INTERF, HEAL_LIST, ALCHEMIST_LIST
 from client_dir.ui_functions import show_no_frame, \
     show_damage, show_no_damage, show_green_frame, \
     show_red_frame, show_blue_frame, update_unit_health, \
@@ -1531,15 +1531,19 @@ class FightWindow(QMainWindow):
         if target is not None:
             if target not in self.new_battle.current_player.units \
                     and self.new_battle.current_unit.attack_type \
-                    not in HEAL_LIST:
+                    not in HEAL_LIST \
+                    and self.new_battle.current_unit.attack_type \
+                    not in ALCHEMIST_LIST:
 
                 self.new_battle.player_attack(target)
                 self.show_attack_and_attacked()
 
             # если текущий юнит лекарь - можно выбрать целью свой юнит
             elif target in self.new_battle.current_player.units \
-                    and self.new_battle.current_unit.attack_type \
-                    in HEAL_LIST:
+                    and (self.new_battle.current_unit.attack_type \
+                         in HEAL_LIST
+                         or self.new_battle.current_unit.attack_type \
+                         in ALCHEMIST_LIST):
 
                 self.new_battle.player_attack(target)
                 self.show_attack_and_attacked()

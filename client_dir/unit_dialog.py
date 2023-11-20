@@ -348,12 +348,11 @@ class UnitDialog(QDialog):
 
     def show_damage(self, unit):
         """Показать урон юнита"""
-        try:
-            splitted_dmg = unit.attack_dmg.split('/')
-            damage = int(splitted_dmg[0])
-            additional = f"/{int(splitted_dmg[1])}"
-        except AttributeError:
-            damage = int(unit.attack_dmg)
+        if unit.dot_dmg:
+            damage = unit.attack_dmg
+            additional = f"/{unit.dot_dmg}"
+        else:
+            damage = unit.attack_dmg
             additional = ''
 
         extra_dmg = int(damage * unit.might * 0.25)

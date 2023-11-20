@@ -10,16 +10,9 @@ from battle_logging import logging
 
 from client_dir.settings import EM, UH, LD, MC, BIG, \
     HERO_FIGHTER_EXP, HERO_ARCHER_EXP, HERO_ROD_EXP
-from units_dir.buildings import FACTIONS, ELDER_FORMS, PERKS
+from units_dir.buildings import FACTIONS
+from units_dir.ranking import PERKS, ELDER_FORMS
 from units_dir.units import main_db
-from units_dir.ranking import empire_mage_lvls, \
-    empire_archer_lvls, empire_support_lvls, \
-    hordes_fighter_lvls, hordes_mage_lvls, \
-    hordes_archer_lvls, hordes_support_lvls, \
-    legions_fighter_lvls, legions_mage_lvls, \
-    legions_archer_lvls, legions_support_lvls, \
-    clans_fighter_lvls, clans_mage_lvls, \
-    clans_archer_lvls, clans_support_lvls
 
 
 # Empire classes
@@ -55,10 +48,7 @@ class EmpireFighter:
     @staticmethod
     def lvl_up(slot):
         """Боец Империи. Повышение уровня"""
-        unit = main_db.get_unit_by_slot(slot, main_db.PlayerUnits)
-        new_unit = legions_fighter_lvls[unit.level + 1]
-        print(unit.name, 'повысил уровень до', new_unit)
-        main_db.replace_unit(slot, new_unit)
+        pass
 
     @staticmethod
     def say():
@@ -92,10 +82,7 @@ class EmpireMage:
     @staticmethod
     def lvl_up(slot):
         """Маг Империи. Повышение уровня"""
-        unit = main_db.get_unit_by_slot(slot, main_db.PlayerUnits)
-        new_unit = empire_mage_lvls[unit.level + 1]
-        print(unit.name, 'повысил уровень до', new_unit)
-        main_db.replace_unit(slot, new_unit)
+        pass
 
     @staticmethod
     def say():
@@ -129,10 +116,7 @@ class EmpireArcher:
     @staticmethod
     def lvl_up(slot):
         """Стрелок Империи. Повышение уровня"""
-        unit = main_db.get_unit_by_slot(slot, main_db.PlayerUnits)
-        new_unit = empire_archer_lvls[unit.level + 1]
-        print(unit.name, 'повысил уровень до', new_unit)
-        main_db.replace_unit(slot, new_unit)
+        pass
 
     @staticmethod
     def say():
@@ -166,10 +150,7 @@ class EmpireSupport:
     @staticmethod
     def lvl_up(slot):
         """Поддержка Империи. Повышение уровня"""
-        unit = main_db.get_unit_by_slot(slot, main_db.PlayerUnits)
-        new_unit = empire_support_lvls[unit.level + 1]
-        print(unit.name, 'повысил уровень до', new_unit)
-        main_db.replace_unit(slot, new_unit)
+        pass
 
     @staticmethod
     def say():
@@ -233,10 +214,7 @@ class HordesFighter:
     @staticmethod
     def lvl_up(slot):
         """Боец Орд нежити. Повышение уровня"""
-        unit = main_db.get_unit_by_slot(slot, main_db.PlayerUnits)
-        new_unit = hordes_fighter_lvls[unit.level + 1]
-        print(unit.name, 'повысил уровень до', new_unit)
-        main_db.replace_unit(slot, new_unit)
+        pass
 
     @staticmethod
     def say():
@@ -270,10 +248,7 @@ class HordesMage:
     @staticmethod
     def lvl_up(slot):
         """Маг Орд нежити. Повышение уровня"""
-        unit = main_db.get_unit_by_slot(slot, main_db.PlayerUnits)
-        new_unit = hordes_mage_lvls[unit.level + 1]
-        print(unit.name, 'повысил уровень до', new_unit)
-        main_db.replace_unit(slot, new_unit)
+        pass
 
     @staticmethod
     def say():
@@ -307,10 +282,7 @@ class HordesArcher:
     @staticmethod
     def lvl_up(slot):
         """Стрелок Орд нежити. Повышение уровня"""
-        unit = main_db.get_unit_by_slot(slot, main_db.PlayerUnits)
-        new_unit = hordes_archer_lvls[unit.level + 1]
-        print(unit.name, 'повысил уровень до', new_unit)
-        main_db.replace_unit(slot, new_unit)
+        pass
 
     @staticmethod
     def say():
@@ -344,10 +316,7 @@ class HordesSupport:
     @staticmethod
     def lvl_up(slot):
         """Поддержка Орд нежити. Повышение уровня"""
-        unit = main_db.get_unit_by_slot(slot, main_db.PlayerUnits)
-        new_unit = hordes_support_lvls[unit.level + 1]
-        print(unit.name, 'повысил уровень до', new_unit)
-        main_db.replace_unit(slot, new_unit)
+        pass
 
     @staticmethod
     def say():
@@ -411,10 +380,7 @@ class LegionsFighter:
     @staticmethod
     def lvl_up(slot):
         """Боец Легионов проклятых. Повышение уровня"""
-        unit = main_db.get_unit_by_slot(slot, main_db.PlayerUnits)
-        new_unit = legions_fighter_lvls[unit.level + 1]
-        print(unit.name, 'повысил уровень до', new_unit)
-        main_db.replace_unit(slot, new_unit)
+        pass
 
     @staticmethod
     def say():
@@ -448,10 +414,7 @@ class LegionsMage:
     @staticmethod
     def lvl_up(slot):
         """Маг Легионов проклятых. Повышение уровня"""
-        unit = main_db.get_unit_by_slot(slot, main_db.PlayerUnits)
-        new_unit = legions_mage_lvls[unit.level + 1]
-        print(unit.name, 'повысил уровень до', new_unit)
-        main_db.replace_unit(slot, new_unit)
+        pass
 
     @staticmethod
     def say():
@@ -485,10 +448,7 @@ class LegionsArcher:
     @staticmethod
     def lvl_up(slot):
         """Стрелок Легионов проклятых. Повышение уровня"""
-        unit = main_db.get_unit_by_slot(slot, main_db.PlayerUnits)
-        new_unit = legions_archer_lvls[unit.level + 1]
-        print(unit.name, 'повысил уровень до', new_unit)
-        main_db.replace_unit(slot, new_unit)
+        pass
 
     @staticmethod
     def say():
@@ -522,10 +482,7 @@ class LegionsSupport:
     @staticmethod
     def lvl_up(slot):
         """Поддержка Легионов проклятых. Повышение уровня"""
-        unit = main_db.get_unit_by_slot(slot, main_db.PlayerUnits)
-        new_unit = legions_support_lvls[unit.level + 1]
-        print(unit.name, 'повысил уровень до', new_unit)
-        main_db.replace_unit(slot, new_unit)
+        pass
 
     @staticmethod
     def say():
@@ -589,10 +546,7 @@ class ClansFighter:
     @staticmethod
     def lvl_up(slot):
         """Боец Горных кланов. Повышение уровня"""
-        unit = main_db.get_unit_by_slot(slot, main_db.PlayerUnits)
-        new_unit = clans_fighter_lvls[unit.level + 1]
-        print(unit.name, 'повысил уровень до', new_unit)
-        main_db.replace_unit(slot, new_unit)
+        pass
 
     @staticmethod
     def say():
@@ -626,10 +580,7 @@ class ClansMage:
     @staticmethod
     def lvl_up(slot):
         """Маг Горных кланов. Повышение уровня"""
-        unit = main_db.get_unit_by_slot(slot, main_db.PlayerUnits)
-        new_unit = clans_mage_lvls[unit.level + 1]
-        print(unit.name, 'повысил уровень до', new_unit)
-        main_db.replace_unit(slot, new_unit)
+        pass
 
     @staticmethod
     def say():
@@ -663,10 +614,7 @@ class ClansArcher:
     @staticmethod
     def lvl_up(slot):
         """Стрелок Горных кланов. Повышение уровня"""
-        unit = main_db.get_unit_by_slot(slot, main_db.PlayerUnits)
-        new_unit = clans_archer_lvls[unit.level + 1]
-        print(unit.name, 'повысил уровень до', new_unit)
-        main_db.replace_unit(slot, new_unit)
+        pass
 
     @staticmethod
     def say():
@@ -700,10 +648,7 @@ class ClansSupport:
     @staticmethod
     def lvl_up(slot):
         """Поддержка Горных кланов. Повышение уровня"""
-        unit = main_db.get_unit_by_slot(slot, main_db.PlayerUnits)
-        new_unit = clans_support_lvls[unit.level + 1]
-        print(unit.name, 'повысил уровень до', new_unit)
-        main_db.replace_unit(slot, new_unit)
+        pass
 
     @staticmethod
     def say():
@@ -990,37 +935,25 @@ class Unit:
             next_chance = chance + 1 if chance < 100 else 100
 
         # Урон
-        try:
-            splitted_dmg = self.attack_dmg.split('/')
-            damage = int(splitted_dmg[0])
+        damage = self.attack_dmg
 
-            # Добавить увеличение доп. урона
-            additional = int(splitted_dmg[1])
-            next_additional = additional + 6
-
-            # Урон для героев
-            if self.branch == 'hero':
-                if self.leader_cat == 'fighter':
-                    next_damage = int(damage) + 10
-                else:
-                    next_damage = int(damage) + 5
-            # Для юнитов
+        # Урон для героев
+        if self.branch == 'hero':
+            if self.leader_cat == 'fighter':
+                next_damage = int(damage) + 10
             else:
-                next_damage = int(damage * 1.10)
+                next_damage = int(damage) + 5
+        # Для юнитов
+        else:
+            next_damage = int(damage * 1.10)
 
-            next_damage = f'{min(next_damage, 300)}/{next_additional}'
-        except AttributeError:  # IndexError
-            # Урон для героев
-            if self.branch == 'hero':
-                if self.leader_cat == 'fighter':
-                    next_damage = int(self.attack_dmg) + 10
-                else:
-                    next_damage = int(self.attack_dmg) + 5
-            # Для юнитов
-            else:
-                next_damage = int(self.attack_dmg * 1.10)
+        # Увеличение доп. урона
+        if self.dot_dmg:
+            next_additional = self.dot_dmg + 6
+        else:
+            next_additional = None
 
-            next_damage = min(next_damage, 300)
+        next_damage = min(next_damage, 300)
 
         # Опыт за убийство
         if self.level <= 10:
@@ -1042,6 +975,7 @@ class Unit:
             next_killed_exp,
             next_chance,
             next_damage,
+            next_additional,
             updates_left)
 
     def get_next_exp(self):
@@ -1264,33 +1198,26 @@ class Unit:
         """Боевой клич"""
         print('fight')
 
-    def is_attack_successful(self,
-                             target: any,
-                             attack_successful: bool,
-                             immune_activated: bool,
-                             ward_activated: bool,
-                             attack_source: str) -> None:
+    def damage_calculating(self,
+                           target: any,
+                           attack_dict: dict) -> None:
         """
-        Проверка успешности атаки. Проверка на иммунитеты, защиты.
-        Расчет урона в случае успешной атаки.
+        Расчет урона в случае успешной атаки. Учет брони у цели.
+        Расчет здоровья цели после нанесения урона.
         Логирование.
         """
+        attack_source = attack_dict['attack_source']
 
         # Если атака успешна
-        if attack_successful and not immune_activated and not ward_activated:
+        if attack_dict['attack_successful'] \
+                and not attack_dict['immune_activated'] \
+                and not attack_dict['ward_activated']:
             # Вычисление урона с учетом брони
-            try:
-                dmg = int(self.attack_dmg.split('/')[0])
-                damage = min(int(
-                    (dmg + (dmg * self.might * 0.25) +
+            damage = min(
+                int((self.attack_dmg +
+                     (self.attack_dmg * self.might * 0.25) +
                      random.randrange(6)) * (1 - target.armor * 0.01)),
-                    300)
-            except AttributeError:
-                damage = min(
-                    int((self.attack_dmg +
-                         (self.attack_dmg * self.might * 0.25) +
-                         random.randrange(6)) * (1 - target.armor * 0.01)),
-                    300)
+                300)
 
             # если урон больше, чем здоровье врага, приравниваем урон к
             # здоровью
@@ -1313,22 +1240,30 @@ class Unit:
                    f"{target.name}. Осталось ХП: {target.curr_health}\n"
             logging(line)
 
-        elif immune_activated:
+        elif attack_dict['immune_activated']:
             logging(
                 f"{target.name} имеет иммунитет к {attack_source} \n")
 
-        elif ward_activated:
+        elif attack_dict['ward_activated']:
             logging(
                 f"{target.name} имеет защиту от {attack_source} \n")
 
-        elif not attack_successful:
+        elif not attack_dict['attack_successful']:
             logging(f"{self.name} промахивается по {target.name}\n")
 
     def attack(self, target: any) -> bool:
-        """Атака"""
+        """
+        Атака.
+        Проверка успешности атаки. Проверка на иммунитеты, защиты.
+        """
+        attack_dict = {
+            'attack_successful': False,
+            'immune_activated': False,
+            'ward_activated': False,
+            'attack_source': ''
+        }
+
         attack_successful = False
-        immune_activated = False
-        ward_activated = False
 
         # Вычисление вероятности попадания
         try:
@@ -1339,17 +1274,20 @@ class Unit:
             # Добавить урон ядом / ожогом и т.п.
             # poison = int(self.attack_chance.split(
             #     '/')[1]) / 100
+
         except IndexError:
             chance = (int(self.attack_chance) +
-                      self.accuracy * 0.2) / 100
+                      self.accuracy * 0.2 * self.attack_chance) / 100
 
         # источник атаки
         try:
             attack_source = self.attack_source.split('/')[0]
+            attack_dict['attack_source'] = attack_source
             # Добавить урон ядом / ожогом и т.п.
 
         except IndexError:
             attack_source = self.attack_source
+            attack_dict['attack_source'] = attack_source
 
         # иммунитеты и защиты
         target_immunes = target.immune.split(', ')
@@ -1360,12 +1298,14 @@ class Unit:
                 and attack_source not in target_wards:
 
             # атака удачна или неудачна / промах
-            attack_successful = bool(random.random() <= chance)
+            attack_successful = \
+                bool(random.random() <= chance)
+            attack_dict['attack_successful'] = attack_successful
 
         # у цели есть иммунитет от источника атаки
         elif attack_source in target_immunes:
             # иммунитет остается всегда
-            immune_activated = True
+            attack_dict['immune_activated'] = True
 
         # у цели есть защита от источника атаки
         elif attack_source in target_wards:
@@ -1379,14 +1319,12 @@ class Unit:
                 else:
                     target.ward += ward + ", "
 
-            ward_activated = True
+            attack_dict['ward_activated'] = True
 
-        # проверка успешности атаки
-        self.is_attack_successful(target,
-                                  attack_successful,
-                                  immune_activated,
-                                  ward_activated,
-                                  attack_source)
+        # Вычисление урона атакующего и здоровья цели.
+        # Логирование срабатывания иммунов и защит
+        self.damage_calculating(target,
+                                attack_dict)
 
         return attack_successful
 
@@ -1406,10 +1344,15 @@ class Unit:
 
         return True
 
-    def up_damage(self, target: any) -> bool:
+    def increase_damage(self, target: any) -> bool:
         """Увеличение урона Друда, дополнительная атака Алхимика"""
-        dmg_boost = int(self.attack_dmg)
-        pass
+        if 'Увеличение урона' in self.attack_type:
+            dmg_boost = int(target.attack_dmg * 0.01 * target.attack_dmg)
+            target.attack_dmg += dmg_boost
+
+            line = f"{self.name} увеличивает урон на " \
+                   f"{self.attack_dmg}% воину {target.name}.\n"
+            logging(line)
 
         return True
 

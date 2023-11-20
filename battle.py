@@ -187,7 +187,9 @@ class Battle:
         """Сортировка юнитов по урону"""
         damage = {}
         for unit in units:
-            damage[unit] = unit.attack_dmg
+            if unit.attack_type not in HEAL_LIST and \
+                    unit.attack_type not in ALCHEMIST_LIST:
+                damage[unit] = unit.attack_dmg
 
         sorted_units_by_damage = sorted(
             damage, key=damage.get, reverse=True)
@@ -242,13 +244,15 @@ class Battle:
 
         if self.current_unit in self.player1.units:
             self.current_player = self.player1
-            if self.current_unit.attack_type not in HEAL_LIST:
+            if self.current_unit.attack_type not in HEAL_LIST and \
+                    self.current_unit.attack_type not in ALCHEMIST_LIST:
                 self.target_player = self.player2
             else:
                 self.target_player = self.player1
         else:
             self.current_player = self.player2
-            if self.current_unit.attack_type not in HEAL_LIST:
+            if self.current_unit.attack_type not in HEAL_LIST and \
+                    self.current_unit.attack_type not in ALCHEMIST_LIST:
                 self.target_player = self.player1
             else:
                 self.target_player = self.player2
@@ -356,7 +360,8 @@ class Battle:
     def attack_1_unit(self, target: Unit) -> None:
         """Если цель - 1 юнит"""
         # Если текущий юнит - атакующий
-        if self.current_unit.attack_type not in HEAL_LIST:
+        if self.current_unit.attack_type not in HEAL_LIST and \
+                self.current_unit.attack_type not in ALCHEMIST_LIST:
             success = self.current_unit.attack(target)
 
         # Если текущий юнит - лекарь
@@ -365,7 +370,12 @@ class Battle:
 
         # Если текущий юнит - Друид/Алхимик
         elif self.current_unit.attack_type in ALCHEMIST_LIST:
-            success = self.current_unit.up_damage(target)
+            if 'Увеличение урона' in self.current_unit.attack_type:
+                # поправить, сейчас можно увеличивать дмг бесконечно
+                success = self.current_unit.increase_damage(target)
+            else:
+                success = False
+                self.current_unit.defence()
 
         if success:
             self.attacked_slots.append(target.slot)
@@ -425,13 +435,13 @@ class Battle:
 
             elif self.current_unit.attack_type in ALCHEMIST_LIST:
                 # определяем приоритет для друидов/алхимиков
-                self.current_unit.defence()
+                # self.current_unit.defence()
 
-                # target = self.getting_druid_target(self.target_slots)
-                # if target.attack_dmg == 0:
-                #     self.current_unit.defence()
-                # else:
-                #     self.attack_1_unit(target)
+                target = self.getting_druid_target(self.target_slots)
+                if target.attack_dmg == 0:
+                    self.current_unit.defence()
+                else:
+                    self.attack_1_unit(target)
 
     def getting_attack_target(self, unit, target_slots) -> Unit:
         """Приоритет для атаки"""

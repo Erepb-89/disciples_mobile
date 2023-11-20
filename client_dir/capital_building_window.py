@@ -14,12 +14,12 @@ from client_dir.capital_building_form import Ui_CapitalBuildingWindow
 from client_dir.question_window import QuestionWindow
 from client_dir.settings import CAPITAL_BUILDING, UNIT_ICONS, TOWN_ICONS, \
     SCREEN_RECT, DECLINATIONS, INTERF, ICON, COMMON, OTHERS, ALREADY_BUILT, \
-    POSSIBLE_TO_BUILD, NEED_TO_BUILD_PREV, \
-    ANOTHER_BRANCH, NOT_ENOUGH_GOLD
+    POSSIBLE_TO_BUILD, NEED_TO_BUILD_PREV, ANOTHER_BRANCH, NOT_ENOUGH_GOLD
 from client_dir.ui_functions import set_size_by_unit, get_unit_image, \
     slot_frame_update, ui_lock, ui_unlock
 from client_dir.unit_dialog import UnitDialog
-from units_dir.buildings import FACTIONS, BRANCHES, STARTING_FORMS
+from units_dir.buildings import FACTIONS, BRANCHES
+from units_dir.ranking import STARTING_FORMS
 from units_dir.units import main_db
 
 
@@ -422,7 +422,7 @@ class CapitalBuildingWindow(QMainWindow):
             elif '' in temp_graph and len(self.graph) < 2 and \
                     main_db.get_gold(
                         main_db.current_player.name, self.faction
-                    ) >= self.building_cost:
+            ) >= self.building_cost:
                 self.set_text_and_buy_slot(POSSIBLE_TO_BUILD, True)
 
             elif '' in temp_graph and len(self.graph) >= 2:
