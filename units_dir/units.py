@@ -1713,6 +1713,7 @@ class ServerStorage:
                     exp_per_kill: int,
                     attack_chance: str,
                     attack_dmg: int,
+                    dot_dmg: int,
                     dyn_upd_level) -> None:
         """
         Метод изменения характеристик юнита игрока.
@@ -1731,6 +1732,7 @@ class ServerStorage:
             exp_per_kill=exp_per_kill,
             attack_chance=attack_chance,
             attack_dmg=attack_dmg,
+            dot_dmg=dot_dmg,
             dyn_upd_level=dyn_upd_level
         ).execution_options(
             synchronize_session="fetch")
