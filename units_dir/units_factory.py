@@ -887,7 +887,7 @@ class Unit:
     def undefence(self) -> None:
         """Сброс защиты в битве"""
         self.armor = main_db.get_unit_by_name(self.name).armor + \
-                     self.might * 20
+            self.might * 20
 
     def defence(self) -> None:
         """Пропуск хода и защита в битве"""
@@ -1252,10 +1252,8 @@ class Unit:
             logging(f"{self.name} промахивается по {target.name}\n")
 
     def attack(self, target: any) -> bool:
-        """
-        Атака.
-        Проверка успешности атаки. Проверка на иммунитеты, защиты.
-        """
+        """Обычная атака."""
+
         attack_dict = {
             'attack_successful': False,
             'immune_activated': False,
@@ -1263,38 +1261,67 @@ class Unit:
             'attack_source': ''
         }
 
-        attack_successful = False
-
         # Вычисление вероятности попадания
         try:
-            acc = int(self.attack_chance.split(
-                '/')[0])
+            acc = int(self.attack_chance.split('/')[0])
             chance = (acc + self.accuracy * 0.2 * acc) / 100
 
-            # Добавить урон ядом / ожогом и т.п.
-            # poison = int(self.attack_chance.split(
-            #     '/')[1]) / 100
-
         except IndexError:
-            chance = (int(self.attack_chance) +
-                      self.accuracy * 0.2 * self.attack_chance) / 100
+            extra_chance = self.accuracy * 0.2 * int(self.attack_chance)
+            chance = (int(self.attack_chance) + extra_chance) / 100
 
         # источник атаки
         try:
             attack_source = self.attack_source.split('/')[0]
             attack_dict['attack_source'] = attack_source
-            # Добавить урон ядом / ожогом и т.п.
 
         except IndexError:
             attack_source = self.attack_source
             attack_dict['attack_source'] = attack_source
 
+        attack_dict = self.checking_immune_ward(target, chance, attack_dict)
+
+        # Вычисление урона атакующего и здоровья цели.
+        # Логирование срабатывания иммунов и защит
+        self.damage_calculating(target,
+                                attack_dict)
+
+        return attack_dict['attack_successful']
+
+    def dot_attack(self, target: any) -> bool:
+        """Атака доп уроном."""
+        attack_dict = {
+            'attack_successful': False,
+            'immune_activated': False,
+            'ward_activated': False,
+            'attack_source': ''
+        }
+
+        # Вычисление вероятности попадания
+        acc = int(self.attack_chance.split(
+            '/')[1])
+        chance = (acc + self.accuracy * 0.2 * acc) / 100
+
+        # источник атаки
+        attack_source = self.attack_source.split('/')[1]
+        attack_dict['attack_source'] = attack_source
+
+        attack_dict = self.checking_immune_ward(target, chance, attack_dict)
+
+        return attack_dict['attack_successful']
+
+    @staticmethod
+    def checking_immune_ward(target, chance: float, attack_dict: dict):
+        """Проверка успешности атаки. Проверка на иммунитеты, защиты."""
+        # источник атаки
+        attack_source = attack_dict['attack_source']
+
         # иммунитеты и защиты
-        target_immunes = target.immune.split(', ')
+        target_immune = target.immune.split(', ')
         target_wards = target.ward.split(', ')
 
         # у цели нет иммунитета и защиты от источника атаки
-        if attack_source not in target_immunes \
+        if attack_source not in target_immune \
                 and attack_source not in target_wards:
 
             # атака удачна или неудачна / промах
@@ -1303,7 +1330,7 @@ class Unit:
             attack_dict['attack_successful'] = attack_successful
 
         # у цели есть иммунитет от источника атаки
-        elif attack_source in target_immunes:
+        elif attack_source in target_immune:
             # иммунитет остается всегда
             attack_dict['immune_activated'] = True
 
@@ -1321,12 +1348,7 @@ class Unit:
 
             attack_dict['ward_activated'] = True
 
-        # Вычисление урона атакующего и здоровья цели.
-        # Логирование срабатывания иммунов и защит
-        self.damage_calculating(target,
-                                attack_dict)
-
-        return attack_successful
+        return attack_dict
 
     def heal(self, target: any) -> bool:
         """Лечение"""
@@ -1347,7 +1369,7 @@ class Unit:
     def increase_damage(self, target: any) -> bool:
         """Увеличение урона Друда, дополнительная атака Алхимика"""
         if 'Увеличение урона' in self.attack_type:
-            dmg_boost = int(target.attack_dmg * 0.01 * target.attack_dmg)
+            dmg_boost = int(self.attack_dmg * 0.01 * target.attack_dmg)
             target.attack_dmg += dmg_boost
 
             line = f"{self.name} увеличивает урон на " \
