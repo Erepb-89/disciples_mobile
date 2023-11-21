@@ -719,6 +719,37 @@ class FightWindow(QMainWindow):
         gif_slot.setMovie(gif)
         gif.start()
 
+    def show_poisoned_unit(self):
+        """Если ходящий юнит отравлен и т.д."""
+        print('dotted_units', self.new_battle.dotted_units)
+
+        if self.new_battle.current_unit in self.new_battle.dotted_units:
+            # прорисовка модели атакованного юнита
+            self.show_attacked(self.new_battle.current_unit)
+            # прорисовка тени атакованного юнита
+            self.show_shadow_attacked(self.new_battle.current_unit)
+
+            self._update_all_unit_health()
+
+            # если отравленный юнит погиб, удаляем его
+            if self.new_battle.current_unit.curr_health == 0:
+                if self.new_battle.current_unit in self.new_battle.units_deque:
+                    self.new_battle.units_deque.remove(
+                        self.new_battle.current_unit)
+                if self.new_battle.current_unit in self.new_battle.units_in_round:
+                    self.new_battle.units_in_round.remove(
+                        self.new_battle.current_unit)
+                if self.new_battle.current_unit in self.new_battle.waiting_units:
+                    self.new_battle.waiting_units.remove(
+                        self.new_battle.current_unit)
+
+                # прорисовка модели атакованного юнита
+                self.show_attacked(self.new_battle.current_unit)
+
+                self.new_battle._alive_getting_experience()
+
+                self.are_units_in_round()
+
     def are_units_in_round(self) -> None:
         """Проверка на наличие юнитов в раунде"""
         if self.new_battle.current_unit in self.new_battle.units_in_round:
@@ -729,14 +760,23 @@ class FightWindow(QMainWindow):
         if self.new_battle.units_in_round:
             self.new_battle.next_turn()
 
+            # если ходящий юнит отравлен и т.д.
+            self.show_poisoned_unit()
+
         # есть юниты, ожидающие лучшего момента
         elif self.new_battle.waiting_units:
             if self.new_battle.current_unit in self.new_battle.waiting_units:
                 # кнопка ожидания недоступна
                 ui_lock(self.ui.pushButtonWaiting)
 
+                # если ходящий юнит отравлен и т.д.
+                self.show_poisoned_unit()
+
             self.new_battle.waiting_round()
             self.new_battle.next_turn()
+
+            # если ходящий юнит отравлен и т.д.
+            self.show_poisoned_unit()
 
         # новый раунд
         else:
@@ -746,6 +786,9 @@ class FightWindow(QMainWindow):
             ui_unlock(self.ui.pushButtonWaiting)
             # следующий ход
             self.new_battle.next_turn()
+
+            # если ходящий юнит отравлен и т.д.
+            self.show_poisoned_unit()
 
         # Показать рамки
         self.show_frame_attacked()
@@ -1146,10 +1189,14 @@ class FightWindow(QMainWindow):
             # цель и текущий юнит принадлежат одному игроку
             if curr_target in self.new_battle.target_player.units and \
                     self.new_battle.current_unit in self.new_battle.target_player.units:
-                self.show_frames_by_side(curr_target,
-                                         self.unit_icons_dict,
-                                         self.dung_icons_dict,
-                                         show_blue_frame)
+
+                if (self.new_battle.current_unit.attack_type in ALCHEMIST_LIST and \
+                    curr_target not in self.new_battle.boosted_units) or \
+                        self.new_battle.current_unit.attack_type in HEAL_LIST:
+                    self.show_frames_by_side(curr_target,
+                                             self.unit_icons_dict,
+                                             self.dung_icons_dict,
+                                             show_blue_frame)
 
             else:
                 self.show_frames_by_side(curr_target,

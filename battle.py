@@ -55,6 +55,8 @@ class Battle:
         self.battle_is_over = False
         self.alive_units = []
         self.curr_target_slot = 1
+        self.dotted_units = {}
+        self.boosted_units = {}
 
         self.player1 = Player(PLAYER1_NAME)
         self.player2 = Player(PLAYER2_NAME)
@@ -242,22 +244,36 @@ class Battle:
         self.current_unit = self.units_deque.popleft()
         self.current_unit.undefence()
 
-        if self.current_unit in self.player1.units:
-            self.current_player = self.player1
-            if self.current_unit.attack_type not in HEAL_LIST and \
-                    self.current_unit.attack_type not in ALCHEMIST_LIST:
-                self.target_player = self.player2
-            else:
-                self.target_player = self.player1
-        else:
-            self.current_player = self.player2
-            if self.current_unit.attack_type not in HEAL_LIST and \
-                    self.current_unit.attack_type not in ALCHEMIST_LIST:
-                self.target_player = self.player1
-            else:
-                self.target_player = self.player2
         line = f'Ходит: {self.current_unit.name}\n'
         logging(line)
+
+        if self.current_unit in self.dotted_units:
+            dot_dmg = self.dotted_units[self.current_unit]
+            dot_dmg = min(self.current_unit.curr_health, dot_dmg)
+
+            self.current_unit.curr_health -= dot_dmg
+
+            line = f'{self.current_unit.name} получает урон {dot_dmg} ядом. ' \
+                   f'Осталось ХП: {self.current_unit.curr_health}\n'
+            logging(line)
+
+        # если юнит жив
+        if self.current_unit.curr_health > 0:
+
+            if self.current_unit in self.player1.units:
+                self.current_player = self.player1
+                if self.current_unit.attack_type not in HEAL_LIST and \
+                        self.current_unit.attack_type not in ALCHEMIST_LIST:
+                    self.target_player = self.player2
+                else:
+                    self.target_player = self.player1
+            else:
+                self.current_player = self.player2
+                if self.current_unit.attack_type not in HEAL_LIST and \
+                        self.current_unit.attack_type not in ALCHEMIST_LIST:
+                    self.target_player = self.player1
+                else:
+                    self.target_player = self.player2
 
         self.target_slots = self._auto_choose_targets(self.current_unit)
 
@@ -364,6 +380,16 @@ class Battle:
                 self.current_unit.attack_type not in ALCHEMIST_LIST:
             success = self.current_unit.attack(target)
 
+            if success and self.current_unit.dot_dmg:
+                dot_success = self.current_unit.dot_attack(target)
+
+                if dot_success:
+                    self.dotted_units[target] = self.current_unit.dot_dmg
+                    print(self.dotted_units)
+
+                    line = f'{target.name} отравлен ядом\n'
+                    logging(line)
+
         # Если текущий юнит - лекарь
         elif self.current_unit.attack_type in HEAL_LIST:
             success = self.current_unit.heal(target)
@@ -373,6 +399,8 @@ class Battle:
             if 'Увеличение урона' in self.current_unit.attack_type:
                 # поправить, сейчас можно увеличивать дмг бесконечно
                 success = self.current_unit.increase_damage(target)
+
+                self.boosted_units[target] = self.current_unit.attack_dmg
             else:
                 success = False
                 self.current_unit.defence()
@@ -438,10 +466,10 @@ class Battle:
                 # self.current_unit.defence()
 
                 target = self.getting_druid_target(self.target_slots)
-                if target.attack_dmg == 0:
+                if not target:
                     self.current_unit.defence()
                 else:
-                    self.attack_1_unit(target)
+                    self.attack_1_unit(target[0])
 
     def getting_attack_target(self, unit, target_slots) -> Unit:
         """Приоритет для атаки"""
@@ -518,17 +546,18 @@ class Battle:
 
         return health_sorted_units[0]
 
-    def getting_druid_target(self, target_slots) -> Unit:
+    def getting_druid_target(self, target_slots) -> List[Unit]:
         """Приоритет для Друида/Алхимика"""
         target_units = []
 
         for slot in target_slots:
             unit = self.get_unit_by_slot(slot, self.target_player.units)
-            target_units.append(unit)
+            if unit not in self.boosted_units:
+                target_units.append(unit)
 
         damage_sorted_units = self.sorting_damage(target_units)
 
-        return damage_sorted_units[0]
+        return damage_sorted_units
 
     @staticmethod
     def clear_dungeon() -> None:
