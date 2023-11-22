@@ -6,7 +6,7 @@ from PyQt5 import QtWidgets
 from PyQt5.QtGui import QMovie, QPixmap
 
 from client_dir.settings import UNIT_ICONS, PLUG, ICON, GIF_ANIMATIONS, \
-    HIRE_SCREEN, COMMON, UNIT_STAND, BIG, INTERF
+    HIRE_SCREEN, COMMON, UNIT_STAND, BIG
 
 
 def get_image(folder: str, faction: str):
