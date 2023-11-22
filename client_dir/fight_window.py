@@ -321,27 +321,42 @@ class FightWindow(QMainWindow):
     def eventFilter(self, source, event):
         """Обработчик событий"""
         # front side
-        for num, item in self.unit_buttons_dict.items():
-            if source == item:
-                if event.type() == QtCore.QEvent.Enter:
-                    self.show_circle_r(self.unit_circles_dict.get(num))
-
-                elif event.type() == QtCore.QEvent.Leave:
-                    # if self.new_battle.current_unit.slot != num:
-                    show_no_circle(self.unit_circles_dict.get(num))
-                    # self.show_circle_attacker()
+        self.show_circle_by_unit(self.unit_buttons_dict,
+                                 self.unit_circles_dict,
+                                 FRONT,
+                                 source,
+                                 event)
 
         # rear side
-        for num, item in self.dung_buttons_dict.items():
-            if source == item:
-                if event.type() == QtCore.QEvent.Enter:
-                    self.show_circle_r(self.dung_circles_dict.get(num))
-
-                elif event.type() == QtCore.QEvent.Leave:
-                    show_no_circle(self.dung_circles_dict.get(num))
-                    # self.show_circle_attacker()
+        self.show_circle_by_unit(self.dung_buttons_dict,
+                                 self.dung_circles_dict,
+                                 REAR,
+                                 source,
+                                 event)
 
         return super().eventFilter(source, event)
+
+    def show_circle_by_unit(self,
+                            buttons_dict: dict,
+                            ui_dict: dict,
+                            side: str,
+                            source: any,
+                            event: any):
+        for num, item in buttons_dict.items():
+            unit = self._unit_by_slot_and_side(num, side)
+
+            if source == item and unit is not None:
+                if event.type() == QtCore.QEvent.Enter:
+                    unit = self._unit_by_slot_and_side(num, side)
+                    if unit not in self.new_battle.current_player.units:
+                        self.show_circle_r(unit, ui_dict.get(num))
+
+                    if unit in self.new_battle.current_player.units:
+                        self.show_circle_y(unit, ui_dict.get(num))
+
+                elif event.type() == QtCore.QEvent.Leave:
+                    show_no_circle(ui_dict.get(num))
+                    self.show_circle_attacker()
 
     def update_bg(self) -> None:
         """Обновление бэкграунда, заполнение картинкой поля сражения"""
@@ -373,8 +388,8 @@ class FightWindow(QMainWindow):
         """
         self.ui.speedText.setStyleSheet('color: white')
 
-        speed_slots = [1, 2, 3, 4, 5,
-                       6, 7, 8, 9, 10]
+        speed_slots = [0.5, 1, 1.5, 2, 2.5,
+                       3, 3.5, 4, 4.5, 5]
         self.speed_model = QStandardItemModel()
         for slot in speed_slots:
             item = QStandardItem(str(slot))
@@ -1099,29 +1114,62 @@ class FightWindow(QMainWindow):
         elif unit in self.new_battle.player2.units:
             func(slots_dict2[unit.slot])
 
+    def show_circles_by_side(self,
+                            unit: Unit,
+                            slots_dict1: dict,
+                            slots_dict2: dict,
+                            func: Callable) -> None:
+        """Отображает рамку в зависимости от стороны и действия"""
+        if unit is None:
+            pass
+        elif unit in self.new_battle.player1.units:
+            func(unit, slots_dict1[unit.slot])
+        elif unit in self.new_battle.player2.units:
+            func(unit, slots_dict2[unit.slot])
+
     @staticmethod
     def show_no_frames(slots_dict: dict, func: Callable) -> None:
         """Убирает все рамки"""
         for slot in range(1, 7):
             func(slots_dict[slot])
 
-    def show_circle_g(self, gif_label: QtWidgets.QLabel) -> None:
-        """Установка gif'ки зеленого круга под юнитом"""
-        gif = QMovie(os.path.join(
-            INTERF, "circle_g.gif"))
+    def show_circle_g(self, unit, gif_label: QtWidgets.QLabel) -> None:
+        """Установка gif'ки круга под юнитом (зеленый)"""
+        if unit is not None:
+            circle_gif = "circle_g.gif"
 
-        gif.setSpeed(self.speed)
-        gif_label.setMovie(gif)
-        gif.start()
+            gif = QMovie(os.path.join(
+                BATTLE_ANIM, circle_gif))
 
-    def show_circle_r(self, gif_label: QtWidgets.QLabel) -> None:
-        """Установка gif'ки красного круга под юнитом"""
-        gif = QMovie(os.path.join(
-            INTERF, "circle_r.gif"))
+            gif.setSpeed(self.speed)
+            gif_label.setMovie(gif)
+            gif.start()
 
-        gif.setSpeed(self.speed)
-        gif_label.setMovie(gif)
-        gif.start()
+    def show_circle_y(self, unit, gif_label: QtWidgets.QLabel) -> None:
+        """Установка gif'ки круга под юнитом (желтый)"""
+        if unit is not None:
+            circle_gif = "big_circle_y.gif" if unit.size == BIG \
+                else "circle_y.gif"
+
+            gif = QMovie(os.path.join(
+                BATTLE_ANIM, circle_gif))
+
+            gif.setSpeed(self.speed)
+            gif_label.setMovie(gif)
+            gif.start()
+
+    def show_circle_r(self, unit, gif_label: QtWidgets.QLabel) -> None:
+        """Установка gif'ки круга под юнитом (красный)"""
+        if unit is not None:
+            circle_gif = "big_circle_r.gif" if unit.size == BIG \
+                else "circle_r.gif"
+
+            gif = QMovie(os.path.join(
+                BATTLE_ANIM, circle_gif))
+
+            gif.setSpeed(self.speed)
+            gif_label.setMovie(gif)
+            gif.start()
 
     def show_level_up(self, unit: Unit, slots_dict: dict) -> None:
         """Прорисовка модели юнита, получившего уровень"""
@@ -1155,10 +1203,10 @@ class FightWindow(QMainWindow):
 
     def show_circle_attacker(self) -> None:
         """Прорисовка круга под активным юнитом"""
-        self.show_frames_by_side(self.new_battle.current_unit,
-                                 self.unit_circles_dict,
-                                 self.dung_circles_dict,
-                                 self.show_circle_g)
+        self.show_circles_by_side(self.new_battle.current_unit,
+                                  self.unit_circles_dict,
+                                  self.dung_circles_dict,
+                                  self.show_circle_g)
 
     def show_attacker_eff(self, unit: Unit) -> None:
         """Прорисовка эффектов атакующего юнита"""
