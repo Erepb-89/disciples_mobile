@@ -320,19 +320,35 @@ class FightWindow(QMainWindow):
 
     def eventFilter(self, source, event):
         """Обработчик событий"""
-        # front side
-        self.show_circle_by_unit(self.unit_buttons_dict,
-                                 self.unit_circles_dict,
-                                 FRONT,
-                                 source,
-                                 event)
+        if self.player_side == FRONT:
+            # front side
+            self.show_circle_by_unit(self.unit_buttons_dict,
+                                     self.unit_circles_dict,
+                                     FRONT,
+                                     source,
+                                     event)
 
-        # rear side
-        self.show_circle_by_unit(self.dung_buttons_dict,
-                                 self.dung_circles_dict,
-                                 REAR,
-                                 source,
-                                 event)
+            # rear side
+            self.show_circle_by_unit(self.dung_buttons_dict,
+                                     self.dung_circles_dict,
+                                     REAR,
+                                     source,
+                                     event)
+
+        elif self.player_side == REAR:
+            # rear side
+            self.show_circle_by_unit(self.unit_buttons_dict,
+                                     self.unit_circles_dict,
+                                     REAR,
+                                     source,
+                                     event)
+
+            # front side
+            self.show_circle_by_unit(self.dung_buttons_dict,
+                                     self.dung_circles_dict,
+                                     FRONT,
+                                     source,
+                                     event)
 
         return super().eventFilter(source, event)
 
@@ -775,7 +791,7 @@ class FightWindow(QMainWindow):
 
                 # битва еще не закончена
                 if not self.new_battle.battle_is_over:
-                    self._update_all_unit_health()
+                    # self._update_all_unit_health()
                     self.are_units_in_round()
 
                 # битва закончена
@@ -783,6 +799,8 @@ class FightWindow(QMainWindow):
                     self.show_no_frames(self.unit_circles_dict, show_no_circle)
                     self.show_no_frames(self.dung_circles_dict, show_no_circle)
                     self.show_lvl_up_animations()
+
+                self._update_all_unit_health()
 
     def are_units_in_round(self) -> None:
         """Проверка на наличие юнитов в раунде"""
