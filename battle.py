@@ -4,7 +4,7 @@ from collections import deque
 from typing import List, Optional
 
 from client_dir.settings import ANY_UNIT, CLOSEST_UNIT, \
-    HEAL_LIST, ALCHEMIST_LIST
+    HEAL_LIST, ALCHEMIST_LIST, PARALYZE_LIST, PARALYZE_MAIN_LIST
 from battle_logging import logging
 from units_dir.units import main_db
 from units_dir.units_factory import Unit
@@ -247,35 +247,106 @@ class Battle:
         line = f'Ходит: {self.current_unit.name}\n'
         logging(line)
 
-        if self.current_unit in self.dotted_units:
-            dot_dmg = self.dotted_units[self.current_unit]
-            dot_dmg = min(self.current_unit.curr_health, dot_dmg)
-
-            self.current_unit.curr_health -= dot_dmg
-
-            line = f'{self.current_unit.name} получает урон {dot_dmg} ядом. ' \
-                   f'Осталось ХП: {self.current_unit.curr_health}\n'
-            logging(line)
+        # Получение периодического урона
+        if self.current_unit in self.dotted_units and \
+                self.current_unit.dotted:
+            self.take_dot_damage()
 
         # если юнит жив
         if self.current_unit.curr_health > 0:
 
             if self.current_unit in self.player1.units:
-                self.current_player = self.player1
-                if self.current_unit.attack_type not in HEAL_LIST and \
-                        self.current_unit.attack_type not in ALCHEMIST_LIST:
-                    self.target_player = self.player2
-                else:
-                    self.target_player = self.player1
+                self.define_target_player(self.player1, self.player2)
+
             else:
-                self.current_player = self.player2
-                if self.current_unit.attack_type not in HEAL_LIST and \
-                        self.current_unit.attack_type not in ALCHEMIST_LIST:
-                    self.target_player = self.player1
-                else:
-                    self.target_player = self.player2
+                self.define_target_player(self.player2, self.player1)
 
         self.target_slots = self._auto_choose_targets(self.current_unit)
+
+    def logging_dot(self, dot_source, dot_dmg) -> None:
+        """Логирование периодического урона"""
+        line = f'{dot_source} наносит урон {dot_dmg} воину ' \
+               f'{self.current_unit.name}. ' \
+               f'Осталось ХП: {self.current_unit.curr_health}\n'
+        logging(line)
+
+    def logging_paralyze(self, dot_source) -> None:
+        """Логирование паралича и окаменения"""
+        line = f'На воина {self.current_unit.name} ' \
+               f'действует {dot_source}. ' \
+               f'{self.current_unit.name} пропускает ход\n'
+        logging(line)
+
+    def take_dot_damage(self):
+        """Получение периодического урона от эффектов текущим юнитом"""
+        # флаг паралича, нужен для того, чтобы сначала отработали все доты
+        paralyzed = False
+
+        for dot_source, dot_params in \
+                self.dotted_units[self.current_unit].items():
+            # если юнит все еще жив
+            if self.current_unit.curr_health > 0:
+                dot_dmg = dot_params[0]  # урон
+                dot_rounds = dot_params[1]  # раунды
+
+                # если остались раунды у текущего эффекта
+                if dot_rounds:
+                    # Если периодический урон
+                    if dot_dmg != 0:
+                        dot_dmg = min(self.current_unit.curr_health, dot_dmg)
+
+                        self.current_unit.curr_health -= dot_dmg
+                        # логирование
+                        self.logging_dot(dot_source, dot_dmg)
+
+                    # Если Паралич
+                    else:
+                        paralyzed = True
+                        # логирование
+                        self.logging_paralyze(dot_source)
+
+                # уменьшаем раунды на 1
+                self.dotted_units[self.current_unit][dot_source] = \
+                    [dot_dmg, dot_rounds - 1]
+
+        # Если Паралич, пропускаем ход
+        if paralyzed:
+            self.are_units_in_round()
+
+    def are_units_in_round(self) -> None:
+        """Проверка на наличие юнитов в раунде"""
+        if self.current_unit in self.units_in_round:
+            self.units_in_round.remove(
+                self.current_unit)
+
+        # есть не ходившие юниты в текущем раунде
+        if self.units_in_round:
+            self.next_turn()
+
+        # есть юниты, ожидающие лучшего момента
+        elif self.waiting_units:
+            self.waiting_round()
+            self.next_turn()
+
+        else:
+            # новый раунд
+            self.new_round()
+            # следующий ход
+            self.next_turn()
+
+    def define_target_player(self,
+                             allied_player: Player,
+                             enemy_player: Player) -> None:
+        """
+        Определение цели для текущего юнита в зависимости
+        от типа атаки (сам игрок или противник)
+        """
+        self.current_player = allied_player
+        if self.current_unit.attack_type not in HEAL_LIST and \
+                self.current_unit.attack_type not in ALCHEMIST_LIST:
+            self.target_player = enemy_player
+        else:
+            self.target_player = allied_player
 
     def _get_battle_unit_by_id(self, _id: int) -> Optional[Unit]:
         """Метод возвращает юнита из deque по id"""
@@ -294,7 +365,36 @@ class Battle:
             self.new_round()
             self.next_turn()
 
-        self._alive_getting_experience()
+        self.alive_getting_experience()
+
+    def append_alive_unit(self,
+                          alive_unit: Unit,
+                          exp_value: int,
+                          player: Player,
+                          pl_database: any) -> None:
+        """
+        Получение опыта, либо уровня выжившим юнитом.
+        Добавление юнита в alive_units для отображения на fight_window
+        """
+        # полученный опыт < макс. опыт выжившего юнита
+        if exp_value < alive_unit.exp:
+            # полученного опыта достаточно для повышения уровня
+            if alive_unit.curr_exp + exp_value >= alive_unit.exp:
+                alive_unit.lvl_up()
+                self.alive_units.append(alive_unit.slot)
+            else:
+                alive_unit.curr_exp += exp_value
+
+                if player.name != 'Computer':
+                    main_db.update_unit_exp(
+                        alive_unit.slot,
+                        alive_unit.curr_exp,
+                        pl_database)
+
+            # полученный опыт > макс. опыт выжившего юнита
+        else:
+            alive_unit.lvl_up()
+            self.alive_units.append(alive_unit.slot)
 
     def _getting_experience(self,
                             player1: Player,
@@ -322,31 +422,13 @@ class Battle:
             if alive_unit.exp != 'Максимальный':
                 exp_value = int((self.en_exp_killed + extra_exp)
                                 / len(player2.slots))
-                if exp_value < alive_unit.exp:
-                    if alive_unit.curr_exp + exp_value >= alive_unit.exp:
-                        alive_unit.lvl_up()
-                        self.alive_units.append(alive_unit.slot)
-                    else:
-                        alive_unit.curr_exp += exp_value
 
-                        # if player2.name == 'Computer':
-                        #     print('player Computer')
-                        #     main_db.update_unit_exp(
-                        #         alive_unit.slot,
-                        #         alive_unit.curr_exp,
-                        #         main_db.CurrentDungeon
-                        #     )
-                        if player2.name != 'Computer':
-                            main_db.update_unit_exp(
-                                alive_unit.slot,
-                                alive_unit.curr_exp,
-                                pl_database
-                            )
-                else:
-                    alive_unit.lvl_up()
-                    self.alive_units.append(alive_unit.slot)
+                self.append_alive_unit(alive_unit,
+                                       exp_value,
+                                       player2,
+                                       pl_database)
 
-    def _alive_getting_experience(self) -> None:
+    def alive_getting_experience(self) -> None:
         """Повышение опыта или уровня выжившим юнитам"""
         self.get_player_slots(self.player1)
         self.get_player_slots(self.player2)
@@ -364,6 +446,48 @@ class Battle:
                                      main_db.PlayerUnits)
             self.battle_is_over = True
 
+    def dot_calculations(self,
+                         dot_source: str,
+                         target: Unit) -> None:
+        """Вычисление периодического урона и раундов"""
+        # урон
+        dot_dmg = self.current_unit.dot_dmg
+
+        # раунды
+        if dot_source in ['Паралич', 'Окаменение']:
+            dot_dmg = 0
+            if self.current_unit.name in PARALYZE_MAIN_LIST:
+                dot_rounds = 1
+            else:
+                dot_rounds = random.choice(range(1, 4))
+        else:
+            dot_rounds = random.choice(range(3, 7))
+
+        if self.dotted_units.get(target):
+            dot_dict = self.dotted_units[target]
+
+            if dot_dict.get(dot_source):
+                if dot_dict[dot_source][0] < dot_dmg:
+                    dot_dict[dot_source][0] = dot_dmg
+
+                if dot_dict[dot_source][1] < dot_rounds:
+                    dot_dict[dot_source][1] = dot_rounds
+            else:
+                dot_dict[dot_source] = [dot_dmg, dot_rounds]
+        else:
+            dot_dict = {dot_source: [dot_dmg, dot_rounds]}
+
+        self.dotted_units[target] = dot_dict
+        print(self.dotted_units)
+        print(self.dotted_units[target])
+
+        target.dotted = max(dot_rounds, target.dotted)
+
+        line = f"На {target.name} будет оказывать воздействие " \
+               f"{dot_source} в течение " \
+               f"{dot_rounds} раунд(ов)\n"
+        logging(line)
+
     def attack_6_units(self, player: Player) -> None:
         """Если цели - 6 юнитов"""
         self.attacked_slots = []
@@ -375,35 +499,42 @@ class Battle:
 
     def attack_1_unit(self, target: Unit) -> None:
         """Если цель - 1 юнит"""
+        attack_type = self.current_unit.attack_type
+
         # Если текущий юнит - атакующий
-        if self.current_unit.attack_type not in HEAL_LIST and \
-                self.current_unit.attack_type not in ALCHEMIST_LIST:
+        if attack_type not in HEAL_LIST and \
+                attack_type not in ALCHEMIST_LIST and \
+                attack_type not in PARALYZE_LIST:
             success = self.current_unit.attack(target)
 
             if success and self.current_unit.dot_dmg:
                 dot_success = self.current_unit.dot_attack(target)
+                dot_source = attack_type.split('/')[1]
 
                 if dot_success:
-                    self.dotted_units[target] = self.current_unit.dot_dmg
-                    print(self.dotted_units)
-
-                    line = f'{target.name} отравлен ядом\n'
-                    logging(line)
+                    self.dot_calculations(dot_source, target)
 
         # Если текущий юнит - лекарь
-        elif self.current_unit.attack_type in HEAL_LIST:
+        elif attack_type in HEAL_LIST:
             success = self.current_unit.heal(target)
 
         # Если текущий юнит - Друид/Алхимик
-        elif self.current_unit.attack_type in ALCHEMIST_LIST:
-            if 'Увеличение урона' in self.current_unit.attack_type:
-                # поправить, сейчас можно увеличивать дмг бесконечно
+        elif attack_type in ALCHEMIST_LIST:
+            if 'Увеличение урона' in attack_type:
                 success = self.current_unit.increase_damage(target)
 
                 self.boosted_units[target] = self.current_unit.attack_dmg
             else:
                 success = False
                 self.current_unit.defence()
+
+        # Для воинов с основной атакой типа Паралич и Окаменение
+        elif attack_type in PARALYZE_LIST:
+            success = self.current_unit.dot_attack(target)
+            dot_source = attack_type
+
+            if success:
+                self.dot_calculations(dot_source, target)
 
         if success:
             self.attacked_slots.append(target.slot)
@@ -423,7 +554,7 @@ class Battle:
             self.new_round()
             self.next_turn()
 
-        self._alive_getting_experience()
+        self.alive_getting_experience()
 
     def auto_attack(self) -> None:
         """Автоматическая атака игрока по противнику"""
@@ -454,7 +585,7 @@ class Battle:
                 self.attack_1_unit(target)
 
             elif self.current_unit.attack_type in HEAL_LIST:
-                # определяем приоритет для лечения
+                # определяем приоритет для лекарей
                 target = self.getting_heal_target(self.target_slots)
                 if target.curr_health == target.health:
                     self.current_unit.defence()
@@ -463,8 +594,6 @@ class Battle:
 
             elif self.current_unit.attack_type in ALCHEMIST_LIST:
                 # определяем приоритет для друидов/алхимиков
-                # self.current_unit.defence()
-
                 target = self.getting_druid_target(self.target_slots)
                 if not target:
                     self.current_unit.defence()
