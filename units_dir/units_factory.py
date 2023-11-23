@@ -1123,6 +1123,9 @@ class Unit:
             'support': main_db.get_support_branch,
         }
 
+        # снимаем защиту
+        self.undefence()
+
         if self.branch == 'hero':
             if self.dyn_upd_level != 0:
                 self.upgrade_stats()
@@ -1138,7 +1141,7 @@ class Unit:
             self.upgrade_stats()
 
         else:
-            # Вызываем нунную функцию в зависимости от ветви
+            # Вызываем нужную функцию в зависимости от ветви
             branch_buildings = branch_dict[self.branch]()
 
             # находим следующую стадию юнита, если здание для апгрейда
@@ -1204,10 +1207,8 @@ class Unit:
         """
         Расчет урона в случае успешной атаки. Учет брони у цели.
         Расчет здоровья цели после нанесения урона.
-        Логирование.
+        Логирование удачного попадания.
         """
-        attack_source = attack_dict['attack_source']
-
         # Если атака успешна
         if attack_dict['attack_successful'] \
                 and not attack_dict['immune_activated'] \
@@ -1240,7 +1241,22 @@ class Unit:
                    f"{target.name}. Осталось ХП: {target.curr_health}\n"
             logging(line)
 
-        elif attack_dict['immune_activated']:
+        # elif attack_dict['immune_activated']:
+        #     logging(
+        #         f"{target.name} имеет иммунитет к {attack_source} \n")
+        #
+        # elif attack_dict['ward_activated']:
+        #     logging(
+        #         f"{target.name} имеет защиту от {attack_source} \n")
+        #
+        # elif not attack_dict['attack_successful']:
+        #     logging(f"{self.name} промахивается по {target.name}\n")
+
+    def miss_logging(self, target, attack_dict):
+        """Логирование промахов"""
+        attack_source = attack_dict['attack_source']
+
+        if attack_dict['immune_activated']:
             logging(
                 f"{target.name} имеет иммунитет к {attack_source} \n")
 
@@ -1282,9 +1298,13 @@ class Unit:
         attack_dict = self.checking_immune_ward(target, chance, attack_dict)
 
         # Вычисление урона атакующего и здоровья цели.
-        # Логирование срабатывания иммунов и защит
+        # Логирование удачного попадания
         self.damage_calculating(target,
                                 attack_dict)
+
+        # Логирование промахов
+        self.miss_logging(target,
+                          attack_dict)
 
         return attack_dict['attack_successful']
 
@@ -1298,15 +1318,31 @@ class Unit:
         }
 
         # Вычисление вероятности попадания
-        acc = int(self.attack_chance.split(
-            '/')[1])
-        chance = (acc + self.accuracy * 0.2 * acc) / 100
+        try:
+            acc = int(self.attack_chance.split(
+                '/')[1])
+            chance = (acc + self.accuracy * 0.2 * acc) / 100
+        except IndexError:
+            extra_chance = self.accuracy * 0.2 * int(self.attack_chance)
+            chance = (int(self.attack_chance) + extra_chance) / 100
 
         # источник атаки
-        attack_source = self.attack_source.split('/')[1]
-        attack_dict['attack_source'] = attack_source
+        try:
+            attack_source = self.attack_source.split('/')[1]
+            attack_dict['attack_source'] = attack_source
+
+        except IndexError:
+            attack_source = self.attack_source
+            attack_dict['attack_source'] = attack_source
+
+        # attack_source = self.attack_source.split('/')[1]
+        # attack_dict['attack_source'] = attack_source
 
         attack_dict = self.checking_immune_ward(target, chance, attack_dict)
+
+        # Логирование промахов
+        self.miss_logging(target,
+                          attack_dict)
 
         return attack_dict['attack_successful']
 

@@ -356,7 +356,9 @@ class FightWindow(QMainWindow):
 
                 elif event.type() == QtCore.QEvent.Leave:
                     show_no_circle(ui_dict.get(num))
-                    self.show_circle_attacker()
+                    # битва еще не закончена
+                    if not self.new_battle.battle_is_over:
+                        self.show_circle_attacker()
 
     def update_bg(self) -> None:
         """Обновление бэкграунда, заполнение картинкой поля сражения"""
@@ -736,34 +738,51 @@ class FightWindow(QMainWindow):
 
     def show_poisoned_unit(self):
         """Если ходящий юнит отравлен и т.д."""
-        print('dotted_units', self.new_battle.dotted_units)
+        curr_unit = self.new_battle.current_unit
 
-        if self.new_battle.current_unit in self.new_battle.dotted_units:
+        if curr_unit in self.new_battle.dotted_units and \
+                curr_unit.dotted:
+
             # прорисовка модели атакованного юнита
-            self.show_attacked(self.new_battle.current_unit)
+            self.show_attacked(curr_unit)
             # прорисовка тени атакованного юнита
-            self.show_shadow_attacked(self.new_battle.current_unit)
+            self.show_shadow_attacked(curr_unit)
 
+            # обновляем здоровье
             self._update_all_unit_health()
 
+            # уменьшаем кол-во раундов
+            curr_unit.dotted -= 1
+
             # если отравленный юнит погиб, удаляем его
-            if self.new_battle.current_unit.curr_health == 0:
-                if self.new_battle.current_unit in self.new_battle.units_deque:
+            if curr_unit.curr_health == 0:
+                if curr_unit in self.new_battle.units_deque:
                     self.new_battle.units_deque.remove(
-                        self.new_battle.current_unit)
-                if self.new_battle.current_unit in self.new_battle.units_in_round:
+                        curr_unit)
+                if curr_unit in self.new_battle.units_in_round:
                     self.new_battle.units_in_round.remove(
-                        self.new_battle.current_unit)
-                if self.new_battle.current_unit in self.new_battle.waiting_units:
+                        curr_unit)
+                if curr_unit in self.new_battle.waiting_units:
                     self.new_battle.waiting_units.remove(
-                        self.new_battle.current_unit)
+                        curr_unit)
 
                 # прорисовка модели атакованного юнита
-                self.show_attacked(self.new_battle.current_unit)
+                self.show_attacked(curr_unit)
 
-                self.new_battle._alive_getting_experience()
+                self.new_battle.alive_getting_experience()
 
-                self.are_units_in_round()
+                # self.are_units_in_round()
+
+                # битва еще не закончена
+                if not self.new_battle.battle_is_over:
+                    self._update_all_unit_health()
+                    self.are_units_in_round()
+
+                # битва закончена
+                else:
+                    self.show_no_frames(self.unit_circles_dict, show_no_circle)
+                    self.show_no_frames(self.dung_circles_dict, show_no_circle)
+                    self.show_lvl_up_animations()
 
     def are_units_in_round(self) -> None:
         """Проверка на наличие юнитов в раунде"""
@@ -793,7 +812,6 @@ class FightWindow(QMainWindow):
             # если ходящий юнит отравлен и т.д.
             self.show_poisoned_unit()
 
-        # новый раунд
         else:
             # новый раунд
             self.new_battle.new_round()
@@ -805,10 +823,12 @@ class FightWindow(QMainWindow):
             # если ходящий юнит отравлен и т.д.
             self.show_poisoned_unit()
 
-        # Показать рамки
-        self.show_frame_attacked()
-        self.show_frame_attacker()
-        self.show_circle_attacker()
+        # битва еще не закончена
+        if not self.new_battle.battle_is_over:
+            # Показать рамки
+            self.show_frame_attacked()
+            self.show_frame_attacker()
+            self.show_circle_attacker()
 
     def unit_defence(self) -> None:
         """Встать в Защиту выбранным юнитом"""
@@ -904,10 +924,10 @@ class FightWindow(QMainWindow):
 
         # битва закончена
         else:
-            self.show_lvl_up_animations()
-
             self.show_no_frames(self.unit_circles_dict, show_no_circle)
             self.show_no_frames(self.dung_circles_dict, show_no_circle)
+
+            self.show_lvl_up_animations()
 
             self.instance.reset()
             if self.instance.name == 'CampaignWindow':
@@ -1173,7 +1193,8 @@ class FightWindow(QMainWindow):
 
     def show_level_up(self, unit: Unit, slots_dict: dict) -> None:
         """Прорисовка модели юнита, получившего уровень"""
-        if unit.slot in self.new_battle.alive_units and self.new_battle.battle_is_over:
+        if unit.slot in self.new_battle.alive_units and \
+                self.new_battle.battle_is_over:
             if unit.size == BIG:
                 unit_gif = "lvl_up_big.gif"
             else:
