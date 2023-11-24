@@ -4,7 +4,7 @@ from collections import deque
 from typing import List, Optional
 
 from client_dir.settings import ANY_UNIT, CLOSEST_UNIT, \
-    HEAL_LIST, ALCHEMIST_LIST, PARALYZE_LIST, PARALYZE_MAIN_LIST
+    HEAL_LIST, ALCHEMIST_LIST, PARALYZE_LIST, PARALYZE_UNIT_LIST
 from battle_logging import logging
 from units_dir.units import main_db
 from units_dir.units_factory import Unit
@@ -302,12 +302,17 @@ class Battle:
                     # Если Паралич
                     else:
                         paralyzed = True
+
+                        # уменьшаем кол-во раундов
+                        self.current_unit.dotted -= 1
+
                         # логирование
                         self.logging_paralyze(dot_source)
 
                 # уменьшаем раунды на 1
+                dot_rounds = max(0, dot_rounds - 1)
                 self.dotted_units[self.current_unit][dot_source] = \
-                    [dot_dmg, dot_rounds - 1]
+                    [dot_dmg, dot_rounds]
 
         # Если Паралич, пропускаем ход
         if paralyzed:
@@ -454,9 +459,9 @@ class Battle:
         dot_dmg = self.current_unit.dot_dmg
 
         # раунды
-        if dot_source in ['Паралич', 'Окаменение']:
+        if dot_source in PARALYZE_LIST:
             dot_dmg = 0
-            if self.current_unit.name in PARALYZE_MAIN_LIST:
+            if self.current_unit.name in PARALYZE_UNIT_LIST:
                 dot_rounds = 1
             else:
                 dot_rounds = random.choice(range(1, 4))
@@ -478,8 +483,6 @@ class Battle:
             dot_dict = {dot_source: [dot_dmg, dot_rounds]}
 
         self.dotted_units[target] = dot_dict
-        print(self.dotted_units)
-        print(self.dotted_units[target])
 
         target.dotted = max(dot_rounds, target.dotted)
 

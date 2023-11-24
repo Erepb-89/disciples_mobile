@@ -6,7 +6,7 @@ from PyQt5 import QtWidgets
 from PyQt5.QtGui import QMovie, QPixmap
 
 from client_dir.settings import UNIT_ICONS, PLUG, ICON, GIF_ANIMATIONS, \
-    HIRE_SCREEN, COMMON, UNIT_STAND, BIG
+    HIRE_SCREEN, COMMON, UNIT_STAND, BIG, BATTLE_ANIM
 
 
 def get_image(folder: str, faction: str):
@@ -118,8 +118,13 @@ def show_damage(icon_slot: QtWidgets.QLabel) -> None:
 
 def show_no_damage(icon_slot: QtWidgets.QLabel) -> None:
     """Метод скрывающий нанесенный урон на иконке"""
-    # icon_slot.setText("0")
     icon_slot.setPixmap(QPixmap(os.path.join(COMMON, "transparent.gif")))
+
+
+def show_dot_icon(icon_slot: QtWidgets.QLabel, dot_type) -> None:
+    """Метод показывающий иконку эффекта на юните"""
+    icon_slot.setPixmap(
+        QPixmap(os.path.join(BATTLE_ANIM, f"{dot_type}.gif")))
 
 
 def update_unit_health(unit: any, slot: QtWidgets.QLabel) -> None:
