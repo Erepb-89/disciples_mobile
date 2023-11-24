@@ -16,11 +16,12 @@ from client_dir.settings import UNIT_STAND, UNIT_ATTACK, \
     COMMON, BATTLE_GROUNDS, UNIT_SHADOW_ATTACK, UNIT_SHADOW_STAND, \
     UNIT_SHADOW_ATTACKED, UNIT_EFFECTS_AREA, UNIT_EFFECTS_TARGET, \
     RIGHT_ICONS, LEFT_ICONS, SCREEN_RECT, PANEL_RECT, BATTLE_LOG, \
-    BATTLE_ANIM, BIG, INTERF, HEAL_LIST, ALCHEMIST_LIST
+    BATTLE_ANIM, BIG, HEAL_LIST, ALCHEMIST_LIST
 from client_dir.ui_functions import show_no_frame, \
     show_damage, show_no_damage, show_green_frame, \
     show_red_frame, show_blue_frame, update_unit_health, \
-    get_unit_image, show_no_circle, ui_lock, ui_unlock
+    get_unit_image, show_no_circle, ui_lock, ui_unlock, \
+    show_dot_icon
 from client_dir.unit_dialog import UnitDialog
 from units_dir.units import main_db
 from units_dir.units_factory import Unit
@@ -284,15 +285,6 @@ class FightWindow(QMainWindow):
 
         self.ui.battleLog.setStyleSheet("background-color: rgb(65, 3, 2)")
 
-        self.enemy_dam_list = [
-            self.ui.damEnemySlot_1,
-            self.ui.damEnemySlot_2,
-            self.ui.damEnemySlot_3,
-            self.ui.damEnemySlot_4,
-            self.ui.damEnemySlot_5,
-            self.ui.damEnemySlot_6,
-        ]
-
         self.update_speed_checkbox()
         self.show_frame_attacked()
         self.show_frame_attacker()
@@ -361,7 +353,7 @@ class FightWindow(QMainWindow):
         for num, item in buttons_dict.items():
             unit = self._unit_by_slot_and_side(num, side)
 
-            if source == item and unit is not None:
+            if source == item and unit is not None and unit.curr_health != 0:
                 if event.type() == QtCore.QEvent.Enter:
                     unit = self._unit_by_slot_and_side(num, side)
                     if unit not in self.new_battle.current_player.units:
@@ -758,6 +750,7 @@ class FightWindow(QMainWindow):
 
         if curr_unit in self.new_battle.dotted_units and \
                 curr_unit.dotted:
+            print(curr_unit.dotted)
 
             # прорисовка модели атакованного юнита
             self.show_attacked(curr_unit)
@@ -815,20 +808,23 @@ class FightWindow(QMainWindow):
             # если ходящий юнит отравлен и т.д.
             self.show_poisoned_unit()
 
+            # показать иконки эффектов
+            self.define_dotted_units()
+
         # есть юниты, ожидающие лучшего момента
         elif self.new_battle.waiting_units:
             if self.new_battle.current_unit in self.new_battle.waiting_units:
                 # кнопка ожидания недоступна
                 ui_lock(self.ui.pushButtonWaiting)
 
-                # если ходящий юнит отравлен и т.д.
-                self.show_poisoned_unit()
-
             self.new_battle.waiting_round()
             self.new_battle.next_turn()
 
             # если ходящий юнит отравлен и т.д.
             self.show_poisoned_unit()
+
+            # показать иконки эффектов
+            self.define_dotted_units()
 
         else:
             # новый раунд
@@ -840,6 +836,9 @@ class FightWindow(QMainWindow):
 
             # если ходящий юнит отравлен и т.д.
             self.show_poisoned_unit()
+
+            # показать иконки эффектов
+            self.define_dotted_units()
 
         # битва еще не закончена
         if not self.new_battle.battle_is_over:
@@ -873,8 +872,6 @@ class FightWindow(QMainWindow):
 
         self.show_no_frames(self.unit_circles_dict, show_no_circle)
         self.show_no_frames(self.dung_circles_dict, show_no_circle)
-
-        # self.new_battle.units_deque.append(self.new_battle.current_unit)
 
         self.new_battle.waiting_units.append(self.new_battle.current_unit)
 
@@ -1440,6 +1437,37 @@ class FightWindow(QMainWindow):
             if curr_target in self.new_battle.waiting_units:
                 self.new_battle.waiting_units.remove(
                     curr_target)
+
+    def show_dot_effect(self, unit, dot_type, icons_dict):
+        """Показывает действующий эффект на юните"""
+        if self.new_battle.dotted_units[unit].get(dot_type):
+            rounds = self.new_battle.dotted_units[unit][dot_type][1]
+            if rounds:
+                show_dot_icon(
+                    icons_dict[unit.slot], dot_type)
+
+    def define_priority_effect(self, unit, icons_dict):
+        """Отобразить один приоритетный эффект"""
+        self.show_dot_effect(unit, 'Увеличение урона', icons_dict)
+        self.show_dot_effect(unit, 'Снижение урона', icons_dict)
+        self.show_dot_effect(unit, 'Снижение инициативы', icons_dict)
+        self.show_dot_effect(unit, 'Яд', icons_dict)
+        self.show_dot_effect(unit, 'Ожог', icons_dict)
+        self.show_dot_effect(unit, 'Обморожение', icons_dict)
+        self.show_dot_effect(unit, 'Паралич', icons_dict)
+        self.show_dot_effect(unit, 'Окаменение', icons_dict)
+
+    def define_dotted_units(self):
+        """Определяет юнитов с наложенными эффектами"""
+        for unit in self.new_battle.player1.units:
+            if unit in self.new_battle.dotted_units:
+                # Показывает эффект на юните игрока
+                self.define_priority_effect(unit, self.unit_damaged_dict)
+
+        for unit in self.new_battle.player2.units:
+            if unit in self.new_battle.dotted_units:
+                # Показывает эффект на вражеском юните
+                self.define_priority_effect(unit, self.dung_damaged_dict)
 
     def update_icons(self,
                      icons_dict: dict,

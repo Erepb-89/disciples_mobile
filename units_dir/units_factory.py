@@ -9,7 +9,7 @@ from typing import Dict, List
 from battle_logging import logging
 
 from client_dir.settings import EM, UH, LD, MC, BIG, \
-    HERO_FIGHTER_EXP, HERO_ARCHER_EXP, HERO_ROD_EXP
+    HERO_FIGHTER_EXP, HERO_ARCHER_EXP, HERO_ROD_EXP, PARALYZE_LIST, DOT_LIST
 from units_dir.buildings import FACTIONS
 from units_dir.ranking import PERKS, ELDER_FORMS
 from units_dir.units import main_db
@@ -1213,44 +1213,32 @@ class Unit:
         if attack_dict['attack_successful'] \
                 and not attack_dict['immune_activated'] \
                 and not attack_dict['ward_activated']:
-            # Вычисление урона с учетом брони
-            damage = min(
-                int((self.attack_dmg +
-                     (self.attack_dmg * self.might * 0.25) +
-                     random.randrange(6)) * (1 - target.armor * 0.01)),
-                300)
 
-            # если урон больше, чем здоровье врага, приравниваем урон к
-            # здоровью
-            damage = min(damage, target.curr_health)
+            if self.attack_dmg > 0:
+                # Вычисление урона с учетом брони
+                damage = min(
+                    int((self.attack_dmg +
+                         (self.attack_dmg * self.might * 0.25) +
+                         random.randrange(6)) * (1 - target.armor * 0.01)),
+                    300)
 
-            # вычисление текущего здоровья цели после получения урона
-            target.curr_health -= damage
+                # если урон больше, чем здоровье врага, приравниваем урон к
+                # здоровью
+                damage = min(damage, target.curr_health)
 
-            # если есть вампиризм у атакующего:
-            if self.attack_type in [
-                'Высасывание жизни',
-                    'Избыточное высасывание жизни']:
-                self.curr_health += int(damage / 2)
-                self.curr_health = min(self.curr_health, self.health)
+                # вычисление текущего здоровья цели после получения урона
+                target.curr_health -= damage
 
-                # main_db.update_unit_curr_hp(
-                #     self.slot, self.curr_health, main_db.attacker_db)
+                # если есть вампиризм у атакующего:
+                if self.attack_type in [
+                    'Высасывание жизни',
+                        'Избыточное высасывание жизни']:
+                    self.curr_health += int(damage / 2)
+                    self.curr_health = min(self.curr_health, self.health)
 
-            line = f"{self.name} наносит урон {damage} воину " \
-                   f"{target.name}. Осталось ХП: {target.curr_health}\n"
-            logging(line)
-
-        # elif attack_dict['immune_activated']:
-        #     logging(
-        #         f"{target.name} имеет иммунитет к {attack_source} \n")
-        #
-        # elif attack_dict['ward_activated']:
-        #     logging(
-        #         f"{target.name} имеет защиту от {attack_source} \n")
-        #
-        # elif not attack_dict['attack_successful']:
-        #     logging(f"{self.name} промахивается по {target.name}\n")
+                line = f"{self.name} наносит урон {damage} воину " \
+                       f"{target.name}. Осталось ХП: {target.curr_health}\n"
+                logging(line)
 
     def miss_logging(self, target, attack_dict):
         """Логирование промахов"""
