@@ -1,4 +1,4 @@
-import os.path
+"""Главное окно столицы"""
 
 from PyQt5 import QtCore
 from PyQt5.QtGui import QPixmap

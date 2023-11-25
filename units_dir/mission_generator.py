@@ -229,14 +229,34 @@ boss_setup = [
         1: None, 2: None,
         3: None, 4: BIG,
         5: None, 6: None,
+    },
+    {
+        1: None, 2: SMALL,
+        3: None, 4: BIG,
+        5: None, 6: SMALL,
+    },
+    {
+        1: SMALL, 2: None,
+        3: None, 4: BIG,
+        5: SMALL, 6: None,
+    },
+    {
+        1: None, 2: SMALL,
+        3: None, 4: BIG,
+        5: SMALL, 6: None,
+    },
+    {
+        1: SMALL, 2: None,
+        3: None, 4: BIG,
+        5: None, 6: SMALL,
     }
 ]
 
 
 def get_big(units: list) -> list:
     """Получить большие иниты из списка юнитов"""
-    big = [unit.name for unit in units if unit.size == BIG
-           # доп условие, когда будут все модельки - нужно убрать
+    big = [unit.name for unit in units
+           if unit.size == BIG
            and f'{unit.name}.gif' in ACTIVE_UNITS
            ]
     return big
@@ -244,9 +264,9 @@ def get_big(units: list) -> list:
 
 def get_fighters(units: list) -> list:
     """Получить бойцов из списка юнитов"""
-    fighter = [unit.name for unit in units if unit.size == SMALL and
-               unit.attack_radius == 'Ближайший юнит'
-               # доп условие, когда будут все модельки - нужно убрать
+    fighter = [unit.name for unit in units
+               if unit.size == SMALL
+               and unit.attack_radius == 'Ближайший юнит'
                and f'{unit.name}.gif' in ACTIVE_UNITS
                ]
     return fighter
@@ -254,13 +274,13 @@ def get_fighters(units: list) -> list:
 
 def get_mages(units: list) -> list:
     """Получить магов из списка юнитов"""
-    mage = [unit.name for unit in units if unit.size == SMALL and
-            unit.attack_radius == 'Любой юнит' and
-            unit.attack_purpose == 6 and
-            'Лечение' not in unit.attack_type and
-            'Увеличение урона' not in unit.attack_type and
-            'Дополнительная атака' not in unit.attack_type
-            # доп условие, когда будут все модельки - нужно убрать
+    mage = [unit.name for unit in units
+            if unit.size == SMALL
+            and unit.attack_radius == 'Любой юнит'
+            and unit.attack_purpose == 6
+            and 'Лечение' not in unit.attack_type
+            and 'Увеличение урона' not in unit.attack_type
+            and 'Дополнительная атака' not in unit.attack_type
             and f'{unit.name}.gif' in ACTIVE_UNITS
             ]
     return mage
@@ -268,13 +288,12 @@ def get_mages(units: list) -> list:
 
 def get_archers(units: list) -> list:
     """Получить стрелков из списка юнитов"""
-    archer = [unit.name for unit in units if unit.size == SMALL and
-              unit.attack_radius == 'Любой юнит' and
-              unit.attack_purpose == 1 and
-              'Лечение' not in unit.attack_type and
-              'Увеличение урона' not in unit.attack_type and
-              'Дополнительная атака' not in unit.attack_type
-              # доп условие, когда будут все модельки - нужно убрать
+    archer = [unit.name for unit in units if unit.size == SMALL
+              and unit.attack_radius == 'Любой юнит'
+              and unit.attack_purpose == 1
+              and 'Лечение' not in unit.attack_type
+              and 'Увеличение урона' not in unit.attack_type
+              and 'Дополнительная атака' not in unit.attack_type
               and f'{unit.name}.gif' in ACTIVE_UNITS
               ]
     return archer
@@ -282,13 +301,12 @@ def get_archers(units: list) -> list:
 
 def get_supports(units: list) -> list:
     """Получить юнитов поддержки (без масс хила) из списка юнитов"""
-    support = [unit.name for unit in units if unit.size == SMALL and
-               unit.attack_radius == 'Любой юнит' and
-               unit.attack_purpose == 1 and
-               ('Лечение' in unit.attack_type or
-               'Увеличение урона' in unit.attack_type or
-               'Дополнительная атака' in unit.attack_type)
-               # доп условие, когда будут все модельки - нужно убрать
+    support = [unit.name for unit in units if unit.size == SMALL
+               and unit.attack_radius == 'Любой юнит'
+               and unit.attack_purpose == 1
+               and ('Лечение' in unit.attack_type
+                    or 'Увеличение урона' in unit.attack_type
+                    or 'Дополнительная атака' in unit.attack_type)
                and f'{unit.name}.gif' in ACTIVE_UNITS
                ]
     return support
@@ -296,10 +314,9 @@ def get_supports(units: list) -> list:
 
 def get_mass_supports(units: list) -> list:
     """Получить юнитов поддержки (масс хил) из списка юнитов"""
-    mass_support = [unit.name for unit in units if unit.size == SMALL and
-                    unit.attack_purpose == 6 and
-                    'Лечение' in unit.attack_type
-                    # доп условие, когда будут все модельки - нужно убрать
+    mass_support = [unit.name for unit in units if unit.size == SMALL
+                    and unit.attack_purpose == 6
+                    and 'Лечение' in unit.attack_type
                     and f'{unit.name}.gif' in ACTIVE_UNITS
                     ]
     return mass_support
@@ -344,8 +361,14 @@ def unit_selector(level: int, setup: list) -> dict:
     result_dict = {}
     mask = random.choice(setup)
     for slot, unit_type in mask.items():
+        # если это Босс
+        if unit_type == BIG and setup == boss_setup:
+            unit = random.choice(
+                get_curr_level_units(level + 2)[BIG])
+            result_dict[slot] = unit
+
         # если юнит большой
-        if unit_type == BIG:
+        elif unit_type == BIG:
             unit = random.choice(units[BIG])
             result_dict[slot] = unit
 

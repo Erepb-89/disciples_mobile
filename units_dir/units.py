@@ -918,7 +918,7 @@ class ServerStorage:
         # Возвращаем кортеж
         return query.first()
 
-    def game_session_by_faction(self, player_id: int, faction: str) -> any:
+    def session_by_faction(self, player_id: int, faction: str) -> any:
         """Метод получающий игровую сессию по игроку и фракции."""
         query = self.session.query(
             self.GameSessions.session_id,
@@ -1704,17 +1704,7 @@ class ServerStorage:
 
     def update_unit(self,
                     unit_id: int,
-                    level: int,
-                    exp: int,
-                    health: int,
-                    curr_health: int,
-                    armor: int,
-                    curr_exp: int,
-                    exp_per_kill: int,
-                    attack_chance: str,
-                    attack_dmg: int,
-                    dot_dmg: int,
-                    dyn_upd_level) -> None:
+                    params: dict) -> None:
         """
         Метод изменения характеристик юнита игрока.
         Изменяет запись в таблице PlayerUnits.
@@ -1723,17 +1713,17 @@ class ServerStorage:
         changes = update(
             self.PlayerUnits).where(
             self.PlayerUnits.id == unit_id).values(
-            level=level,
-            exp=exp,
-            health=health,
-            curr_health=curr_health,
-            armor=armor,
-            curr_exp=curr_exp,
-            exp_per_kill=exp_per_kill,
-            attack_chance=attack_chance,
-            attack_dmg=attack_dmg,
-            dot_dmg=dot_dmg,
-            dyn_upd_level=dyn_upd_level
+            level=params['level'],
+            exp=params['exp'],
+            health=params['health'],
+            curr_health=params['curr_health'],
+            armor=params['armor'],
+            curr_exp=params['curr_exp'],
+            exp_per_kill=params['exp_per_kill'],
+            attack_chance=params['attack_chance'],
+            attack_dmg=params['attack_dmg'],
+            dot_dmg=params['dot_dmg'],
+            dyn_upd_level=params['dyn_upd_level']
         ).execution_options(
             synchronize_session="fetch")
 

@@ -135,12 +135,12 @@ def update_unit_health(unit: any, slot: QtWidgets.QLabel) -> None:
         slot.setText('')
 
 
-def set_beige_colour(button: QtWidgets.QPushButton):
+def set_beige_colour(button: QtWidgets.QPushButton) -> None:
     """Подкраска элементов в бежевый цвет"""
     button.setStyleSheet("background-color: rgb(181, 172, 155)")
 
 
-def set_borders(ui_obj: QtWidgets.QPushButton):
+def set_borders(ui_obj: QtWidgets.QPushButton) -> None:
     """Стиль и цвет рамок (коричневый с бежевым)"""
     ui_obj.setStyleSheet("border: 3px solid;"
                          "border-top-color: rgb(65, 3, 2);"
@@ -148,8 +148,8 @@ def set_borders(ui_obj: QtWidgets.QPushButton):
                          "border-right-color: rgb(181, 172, 155);"
                          "border-bottom-color: rgb(181, 172, 155)")
 
-def ui_lock(ui_obj):
+def ui_lock(ui_obj: any) -> None:
     ui_obj.setEnabled(False)
 
-def ui_unlock(ui_obj):
+def ui_unlock(ui_obj: any) -> None:
     ui_obj.setEnabled(True)

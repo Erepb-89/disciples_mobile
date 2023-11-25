@@ -298,18 +298,23 @@ class CapitalArmyWindow(QMainWindow):
         unit1 = main_db.get_unit_by_slot(num1, main_db.PlayerUnits)
         unit2 = main_db.get_unit_by_slot(num2, main_db.PlayerUnits)
 
-        if unit1 is not None and unit2 is not None \
-                and unit1.size == BIG and unit2.size == BIG:
+        if unit1 is not None \
+                and unit2 is not None \
+                and unit1.size == BIG \
+                and unit2.size == BIG:
             self.swap_unit_action(num1, num2)
             return True
+
         if unit1 is not None and unit1.size == BIG:
             self.swap_unit_action(num1 - 1, num2 - 1)
             self.swap_unit_action(num1, num2)
             return True
+
         if unit2 is not None and unit2.size == BIG:
             self.swap_unit_action(num1 - 1, num2 - 1)
             self.swap_unit_action(num1, num2)
             return True
+
         return False
 
     def swap_unit_action(self, slot1: int, slot2: int) -> None:

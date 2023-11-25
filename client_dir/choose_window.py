@@ -77,12 +77,13 @@ class ChooseRaceWindow(QMainWindow):
     @property
     def in_progress(self) -> bool:
         """Определение новой игры"""
-        session = main_db.game_session_by_faction(
+        session = main_db.session_by_faction(
             main_db.current_player.id, self.faction)
 
         if session is not None:
             level = session.campaign_level
-            result = main_db.show_dungeon_units(f'{self.faction}_{level}_1')
+            result = main_db.show_dungeon_units(
+                f'{self.faction}_{level}_1')
             return result
         return
 
@@ -113,7 +114,9 @@ class ChooseRaceWindow(QMainWindow):
     def new_game(self) -> None:
         """Новая игра"""
         # удаление старых построек за данную фракцию
-        main_db.clear_buildings(main_db.current_player.name, self.faction)
+        main_db.clear_buildings(
+            main_db.current_player.name,
+            self.faction)
 
         # удаление старых кампаний за данную фракцию
         main_db.delete_dungeons(self.faction)
@@ -132,8 +135,9 @@ class ChooseRaceWindow(QMainWindow):
     def continue_game(self) -> None:
         """Продолжение игры"""
         main_db.current_faction = self.faction
-        session = main_db.game_session_by_faction(
-            main_db.current_player.id, self.faction)
+        session = main_db.session_by_faction(
+            main_db.current_player.id,
+            self.faction)
 
         level = session.campaign_level
         day = session.day
