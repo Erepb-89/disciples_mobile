@@ -946,6 +946,13 @@ class FightWindow(QMainWindow):
             self.worker.dataThread.connect(self.unit_gifs_update)
             self.worker.start()
 
+            if not self.new_battle.player1.slots:
+                self.show_need_effect(self.dung_damaged_dict,
+                                      self.new_battle.player2)
+            if not self.new_battle.player2.slots:
+                self.show_need_effect(self.unit_damaged_dict,
+                                      self.new_battle.player1)
+
         self.update_log()
         self.new_battle.autofight = False
 
@@ -1461,7 +1468,7 @@ class FightWindow(QMainWindow):
                 target)
 
     def show_dot_effect(self, unit, dot_type, icons_dict):
-        """Показывает действующий эффект на юните"""
+        """Показывает действующий отрицательный эффект на юните"""
         if self.new_battle.dotted_units[unit].get(dot_type):
             rounds = self.new_battle.dotted_units[unit][dot_type][1]
             if rounds:
@@ -1469,10 +1476,17 @@ class FightWindow(QMainWindow):
                     icons_dict[unit.slot], dot_type)
 
     def show_might_effect(self, unit, dot_type, icons_dict):
-        """Показывает действующий эффект на юните"""
+        """Показывает действующий положительный эффект на юните"""
         if self.new_battle.boosted_units.get(unit):
             show_dot_icon(
                 icons_dict[unit.slot], dot_type)
+
+    def show_need_effect(self, icons_dict, player):
+        """Показывает ограничение в апгрейде на юните"""
+        for unit in player.units:
+            if unit.curr_exp == unit.exp - 1:
+                show_dot_icon(
+                    icons_dict[unit.slot], 'waiting_next')
 
     def define_priority_effect(self, unit, icons_dict):
         """Отобразить один приоритетный эффект"""

@@ -9,7 +9,8 @@ from typing import Dict, List
 from battle_logging import logging
 
 from client_dir.settings import EM, UH, LD, MC, BIG, \
-    HERO_FIGHTER_EXP, HERO_ARCHER_EXP, HERO_ROD_EXP, PARALYZE_LIST, DOT_LIST
+    HERO_FIGHTER_EXP, HERO_ARCHER_EXP, HERO_ROD_EXP, \
+    VAMPIRE_LIST
 from units_dir.buildings import FACTIONS
 from units_dir.ranking import PERKS, ELDER_FORMS
 from units_dir.units import main_db
@@ -43,7 +44,8 @@ class EmpireFighter:
     @staticmethod
     def up_to_base():
         """Обновление характеристик юнита игрока (health, exp)"""
-        main_db.update_unit('Сквайр', 70, 50)
+        # main_db.update_unit('Сквайр', 70, 50)
+        pass
 
     @staticmethod
     def lvl_up(slot):
@@ -892,9 +894,6 @@ class Unit:
     def defence(self) -> None:
         """Пропуск хода и защита в битве"""
         self.armor = round(self.armor / 2 + 50)
-        # self.armor = round(
-        #     main_db.get_unit_by_name(self.name).armor +
-        #     (self.might * 20) / 2 + 50)
 
         line = f"{self.name} защищается\n"
         logging(line)
@@ -923,12 +922,13 @@ class Unit:
 
         # Шанс на попадание
         try:
-            chance = int(self.attack_chance.split('/')[0])
+            spitted_chance = self.attack_chance.split('/')
+            chance = int(spitted_chance[0])
             # яды и т.д.
-            dot_chance = int(self.attack_chance.split('/')[1])
+            dot_chance = int(spitted_chance[1])
+            base_dot = f'{chance + 1}/{dot_chance + 1}'
 
-            next_chance = f'{chance + 1}/{dot_chance + 1}' \
-                if chance < 100 else 100
+            next_chance = base_dot if chance < 100 else 100
         except IndexError:
             chance = int(self.attack_chance)
 
@@ -964,19 +964,23 @@ class Unit:
         # Осталось возможных повышений уровня
         updates_left = self.dyn_upd_level - 1
 
+        characteristics = {
+            'level': next_level,
+            'exp': next_exp,
+            'health': next_hp,
+            'curr_health': next_hp,
+            'armor': self.armor,
+            'curr_exp': 0,
+            'exp_per_kill': next_killed_exp,
+            'attack_chance': next_chance,
+            'attack_dmg': next_damage,
+            'dot_dmg': next_additional,
+            'dyn_upd_level': updates_left
+        }
+
         main_db.update_unit(
             self.id,
-            next_level,
-            next_exp,
-            next_hp,
-            next_hp,
-            self.armor,
-            0,
-            next_killed_exp,
-            next_chance,
-            next_damage,
-            next_additional,
-            updates_left)
+            characteristics)
 
     def get_next_exp(self):
         """Увеличение требуемого опыта для повышения (для героев)"""
@@ -1055,21 +1059,26 @@ class Unit:
 
             # Природная броня
             if perk == 'nat_armor':
-                main_db.update_unit_armor(self.id)
+                main_db.update_unit_armor(
+                    self.id)
 
             # Выносливость
             if perk == 'endurance':
                 main_db.update_unit_health(
-                    self.id, self.health + self.health * 0.2)
+                    self.id,
+                    self.health + self.health * 0.2)
 
             # Первый удар
             if perk == 'first_strike':
                 main_db.update_unit_ini(
-                    self.id, self.attack_ini + self.attack_ini * 0.5)
+                    self.id,
+                    self.attack_ini + self.attack_ini * 0.5)
 
             # Стихийный перк
             if 'resist' in perk:
-                main_db.update_ward(self.id, element_dict[perk])
+                main_db.update_ward(
+                    self.id,
+                    element_dict[perk])
 
     @property
     def race_settings(self) -> Dict[str, dict]:
@@ -1100,7 +1109,10 @@ class Unit:
 
         for bld in buildings.values():
             for branch in graph_dict:
-                self.get_building_graph(bld, branch, graph_dict[branch])
+                self.get_building_graph(
+                    bld,
+                    branch,
+                    graph_dict[branch])
 
         # фракционные юниты
         faction_units = []
@@ -1146,10 +1158,10 @@ class Unit:
 
             # находим следующую стадию юнита, если здание для апгрейда
             # построено
-            for building in \
-                    FACTIONS[main_db.current_faction][self.branch].values():
-                if building.prev == self.upgrade_b and \
-                        building.bname in branch_buildings:
+            for building \
+                    in FACTIONS[main_db.current_faction][self.branch].values():
+                if building.prev == self.upgrade_b \
+                        and building.bname in branch_buildings:
                     # Следующая стадия
                     next_unit = building.unit_name
 
@@ -1158,20 +1170,13 @@ class Unit:
     def upgrade_unit(self, next_unit: str, branch_buildings: List[str]):
         """Метод апгрейда юнита"""
         # здание для апгрейда еще не построено
-        if next_unit == '' and self.curr_exp != self.exp - 1 and \
-                self.upgrade_b in branch_buildings \
+        if next_unit == '' \
+                and self.curr_exp <= self.exp - 1 \
+                and self.upgrade_b in branch_buildings \
                 and self.name not in ELDER_FORMS:
             # ожидает апгрейда, поднять опыт до (exp - 1)
             main_db.update_unit_exp(
                 self.slot, self.exp - 1, main_db.PlayerUnits)
-            line = f"{self.name} ожидает повышения в столице\n"
-            logging(line)
-
-        # здание для апгрейда еще не построено
-        elif next_unit == '' and self.curr_exp == self.exp - 1 and \
-                self.upgrade_b in branch_buildings \
-                and self.name not in ELDER_FORMS:
-            # ожидает апгрейда
             line = f"{self.name} ожидает повышения в столице\n"
             logging(line)
 
@@ -1186,7 +1191,7 @@ class Unit:
 
         # если следующей стадии нет
         else:
-            # Апгрейд юнита по характеристикам
+            # Апгрейд характеристик юнита
             if self.dyn_upd_level != 0:
                 self.upgrade_stats()
 
@@ -1233,9 +1238,7 @@ class Unit:
                 target.curr_health -= damage
 
                 # если есть вампиризм у атакующего:
-                if self.attack_type in [
-                    'Высасывание жизни',
-                        'Избыточное высасывание жизни']:
+                if self.attack_type in VAMPIRE_LIST:
                     self.curr_health += int(damage / 2)
                     self.curr_health = min(self.curr_health, self.health)
 

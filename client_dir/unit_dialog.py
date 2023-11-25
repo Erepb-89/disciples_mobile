@@ -331,7 +331,7 @@ class UnitDialog(QDialog):
         self.retranslateUi(self)
         QtCore.QMetaObject.connectSlotsByName(self)
 
-    def show_accuracy(self, unit):
+    def show_accuracy(self, unit: any) -> None:
         """Показать точность юнита"""
         if unit.accuracy:
             bonus = int(int(unit.attack_chance) * 0.2)
@@ -346,7 +346,7 @@ class UnitDialog(QDialog):
         else:
             self.attackChance.setText(f'{unit.attack_chance}%')
 
-    def show_damage(self, unit):
+    def show_damage(self, unit: any) -> None:
         """Показать урон юнита"""
         if unit.dot_dmg:
             damage = unit.attack_dmg
@@ -376,7 +376,7 @@ class UnitDialog(QDialog):
             self.attackDmg.setText(f'{damage}{additional}')
 
     @staticmethod
-    def check_perk(unit_perk, ui_obj):
+    def check_perk(unit_perk: int, ui_obj: QtWidgets.QLabel) -> None:
         """Проверка перка с выводом на окно характеристик"""
         if unit_perk:
             ui_obj.setVisible(True)

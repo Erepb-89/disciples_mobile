@@ -149,7 +149,7 @@ class CampaignWindow(QMainWindow):
             f'{name}_12': unit_selector(level, squad_dict[diff][1]),
             f'{name}_13': unit_selector(level, squad_dict[diff][2]),
             f'{name}_14': unit_selector(level, squad_dict[diff][2]),
-            f'{name}_15': unit_selector(level + 2, boss_setup)
+            f'{name}_15': unit_selector(level, boss_setup)
         }
 
         main_db.add_dungeons(self.all_missions, self.level)

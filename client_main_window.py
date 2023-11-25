@@ -7,8 +7,10 @@ from typing import Callable, Optional
 
 from PyQt5 import QtCore, QtWidgets
 from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QPixmap, QStandardItemModel, QStandardItem, QMovie
-from PyQt5.QtWidgets import QMainWindow, QApplication, QHBoxLayout
+from PyQt5.QtGui import QPixmap, QStandardItemModel, \
+    QStandardItem, QMovie
+from PyQt5.QtWidgets import QMainWindow, QApplication, \
+    QHBoxLayout
 
 from client_dir.capital_window import CapitalWindow
 from client_dir.choose_window import ChooseRaceWindow
@@ -18,8 +20,8 @@ from client_dir.client_main_form import Ui_MainWindow
 from client_dir.hire_menu_window import HireMenuWindow
 from client_dir.question_window import QuestionWindow
 from client_dir.settings import UNIT_ICONS, GIF_ANIMATIONS, \
-    TOWN_IMG, PLUG, ICON, UNIT_ATTACK, FRONT, PORTRAITS, \
-    BACKGROUND, BIG, ACTIVE_UNITS
+    TOWN_IMG, PLUG, ICON, PORTRAITS, BACKGROUND, BIG, \
+    ACTIVE_UNITS
 from client_dir.ui_functions import get_unit_image, \
     set_beige_colour, set_borders, ui_lock, ui_unlock
 from client_dir.unit_dialog import UnitDialog
@@ -211,7 +213,8 @@ class ClientMainWindow(QMainWindow):
         """Определяет доступность кнопки по юнитам в слотах"""
         try:
             if main_db.get_unit_by_slot(
-                    num2, database).size == BIG:
+                    num2,
+                    database).size == BIG:
                 ui_lock(button)
             else:
                 ui_unlock(button)
@@ -430,21 +433,29 @@ class ClientMainWindow(QMainWindow):
         unit1 = main_db.get_unit_by_slot(num1, database)
         unit2 = main_db.get_unit_by_slot(num2, database)
         func = self.swap_unit_action
+
         if database == main_db.CurrentDungeon:
             func = self.swap_enemy_action
 
-        if unit1 is not None and unit2 is not None \
-                and unit1.size == BIG and unit2.size == BIG:
+        if unit1 is not None \
+                and unit2 is not None \
+                and unit1.size == BIG \
+                and unit2.size == BIG:
             func(num1, num2)
             return True
-        if unit1 is not None and unit1.size == BIG:
+
+        if unit1 is not None \
+                and unit1.size == BIG:
             func(num1 - 1, num2 - 1)
             func(num1, num2)
             return True
-        if unit2 is not None and unit2.size == BIG:
+
+        if unit2 is not None \
+                and unit2.size == BIG:
             func(num1 - 1, num2 - 1)
             func(num1, num2)
             return True
+
         return False
 
     def swap_unit_action(self, slot1: int, slot2: int) -> None:
@@ -532,7 +543,9 @@ class ClientMainWindow(QMainWindow):
     def delete_unit_action(self) -> None:
         """Метод обработчик нажатия кнопки 'Уволить' у игрока"""
         selected_slot = self.ui.listPlayerSlots.currentIndex().data()
-        unit = main_db.get_unit_by_slot(selected_slot, main_db.PlayerUnits)
+        unit = main_db.get_unit_by_slot(
+            selected_slot,
+            main_db.PlayerUnits)
 
         if unit is not None:
             global QUESTION_WINDOW
@@ -572,7 +585,9 @@ class ClientMainWindow(QMainWindow):
         try:
             selected_slot = self.ui.listPlayerSlots.currentIndex().data()
             selected = self.ui.listAllUnits.currentIndex().data()
-            main_db.hire_unit(selected, int(selected_slot))
+            main_db.hire_unit(
+                selected,
+                int(selected_slot))
             self.player_list_update()
         except TypeError:
             print('Выберите номер слота для найма')
@@ -582,7 +597,9 @@ class ClientMainWindow(QMainWindow):
         try:
             selected_slot = self.ui.listEnemySlots.currentIndex().data()
             selected = self.ui.listAllUnits.currentIndex().data()
-            main_db.hire_enemy_unit(selected, int(selected_slot))
+            main_db.hire_enemy_unit(
+                selected,
+                int(selected_slot))
             self.enemy_list_update()
         except TypeError:
             print('Выберите номер слота для найма')

@@ -14,7 +14,7 @@ from client_dir.capital_building_form import Ui_CapitalBuildingWindow
 from client_dir.question_window import QuestionWindow
 from client_dir.settings import CAPITAL_BUILDING, UNIT_ICONS, TOWN_ICONS, \
     SCREEN_RECT, DECLINATIONS, INTERF, ICON, COMMON, OTHERS, ALREADY_BUILT, \
-    POSSIBLE_TO_BUILD, NEED_TO_BUILD_PREV, ANOTHER_BRANCH, NOT_ENOUGH_GOLD
+    READY_TO_BUILD, NEED_TO_BUILD_PREV, ANOTHER_BRANCH, NOT_ENOUGH_GOLD
 from client_dir.ui_functions import set_size_by_unit, get_unit_image, \
     slot_frame_update, ui_lock, ui_unlock
 from client_dir.unit_dialog import UnitDialog
@@ -320,7 +320,9 @@ class CapitalBuildingWindow(QMainWindow):
         # Метод определения возможности постройки
         self.set_building_possibility()
 
-    def set_text_and_buy_slot(self, text: str, possibility: bool) -> None:
+    def set_text_and_buy_slot(self,
+                              text: str,
+                              possibility: bool) -> None:
         """
         Задание текста о возможности постройки.
         Вывод рисунка кнопки.
@@ -406,53 +408,67 @@ class CapitalBuildingWindow(QMainWindow):
 
         if self.branch != OTHERS:
             # рекурсивное создание графа уже построенных зданий
-            self.get_building_graph(buildings[self.branch], temp_graph)
+            self.get_building_graph(
+                buildings[self.branch],
+                temp_graph)
 
             # если здание входит в граф построенных
             if self.building_name in temp_graph:
-                self.set_text_and_buy_slot(ALREADY_BUILT, False)
+                self.set_text_and_buy_slot(
+                    ALREADY_BUILT,
+                    False)
 
             # если граф построенных входит в текущий граф и длина текущего
             # графа отличается от графа построенных более, чем на 1
             elif len(self.graph) - len(temp_graph) > 1 \
                     and set(temp_graph).issubset(self.graph)\
                     and '' not in temp_graph:
-                self.set_text_and_buy_slot(NEED_TO_BUILD_PREV, False)
+                self.set_text_and_buy_slot(NEED_TO_BUILD_PREV,
+                    False)
 
-            elif '' in temp_graph and len(self.graph) < 2 and \
-                    main_db.get_gold(
-                        main_db.current_player.name, self.faction
+            elif '' in temp_graph \
+                    and len(self.graph) < 2 \
+                    and main_db.get_gold(
+                main_db.current_player.name, self.faction
             ) >= self.building_cost:
-                self.set_text_and_buy_slot(POSSIBLE_TO_BUILD, True)
+                self.set_text_and_buy_slot(READY_TO_BUILD,
+                    True)
 
             elif '' in temp_graph and len(self.graph) >= 2:
-                self.set_text_and_buy_slot(NEED_TO_BUILD_PREV, False)
+                self.set_text_and_buy_slot(NEED_TO_BUILD_PREV,
+                    False)
 
             # если граф построенных не входит в текущий граф
             elif not set(temp_graph).issubset(self.graph) \
                     and '' not in temp_graph:
-                self.set_text_and_buy_slot(ANOTHER_BRANCH, False)
+                self.set_text_and_buy_slot(ANOTHER_BRANCH,
+                    False)
 
             elif main_db.get_gold(
                     main_db.current_player.name, self.faction
             ) >= self.building_cost:
-                self.set_text_and_buy_slot(POSSIBLE_TO_BUILD, True)
+                self.set_text_and_buy_slot(READY_TO_BUILD,
+                    True)
 
             else:
-                self.set_text_and_buy_slot(NOT_ENOUGH_GOLD, False)
+                self.set_text_and_buy_slot(NOT_ENOUGH_GOLD,
+                    False)
 
         elif self.branch == OTHERS:
             # если текущее здание уже в построенных
             if self.building_name in buildings.values():
-                self.set_text_and_buy_slot(ALREADY_BUILT, False)
+                self.set_text_and_buy_slot(ALREADY_BUILT,
+                    False)
 
             elif main_db.get_gold(
                     main_db.current_player.name, self.faction
             ) >= self.building_cost:
-                self.set_text_and_buy_slot(POSSIBLE_TO_BUILD, True)
+                self.set_text_and_buy_slot(READY_TO_BUILD,
+                    True)
 
             else:
-                self.set_text_and_buy_slot(NOT_ENOUGH_GOLD, False)
+                self.set_text_and_buy_slot(NOT_ENOUGH_GOLD,
+                    False)
 
         if main_db.already_built:
             self.set_text_and_buy_slot(
@@ -575,16 +591,18 @@ class CapitalBuildingWindow(QMainWindow):
         self.hbox.addWidget(ui_slot)
         self.setLayout(self.hbox)
 
-    def building_face_update(self, unit: namedtuple, slot: int) -> None:
+    def building_face_update(self,
+                             unit: namedtuple,
+                             ui_slot: QtWidgets.QLabel) -> None:
         """Обновление лица юнита соответствующего постройке"""
         if unit is not None:
-            slot.setPixmap(QPixmap(
+            ui_slot.setPixmap(QPixmap(
                 self.get_unit_face(unit)).scaled(
-                slot.width(), slot.height()))
-            self.hbox.addWidget(slot)
+                ui_slot.width(), ui_slot.height()))
+            self.hbox.addWidget(ui_slot)
             self.setLayout(self.hbox)
         else:
-            slot.setFixedSize(0, 0)
+            ui_slot.setFixedSize(0, 0)
 
     def button_update(self,
                       unit: namedtuple,
@@ -599,7 +617,6 @@ class CapitalBuildingWindow(QMainWindow):
         """Смена картинки постройки на лицо юнита"""
         if self.icons:
             for num, icon_slot in self.town_icons_dict.items():
-                # icon_slot.setFixedSize(118, 114)
                 unit = self.get_unit_by_b_slot(num)
                 self.building_face_update(unit, icon_slot)
                 self.set_size_by_slot(icon_slot)
@@ -643,7 +660,8 @@ class CapitalBuildingWindow(QMainWindow):
             elif self.building_name == 'Башня магии':
                 changed_buildings[7] = self.building_name
             else:
-                changed_buildings[BRANCHES[self.branch]] = self.building_name
+                changed_buildings[BRANCHES[self.branch]] = \
+                    self.building_name
 
             # обновление построек в текущей сессии
             main_db.update_buildings(

@@ -4,7 +4,7 @@ from collections import deque
 from typing import List, Optional
 
 from client_dir.settings import ANY_UNIT, CLOSEST_UNIT, \
-    HEAL_LIST, ALCHEMIST_LIST, PARALYZE_LIST, PARALYZE_UNIT_LIST
+    HEAL_LIST, ALCHEMIST_LIST, PARALYZE_LIST, PARALYZE_UNITS
 from battle_logging import logging
 from units_dir.units import main_db
 from units_dir.units_factory import Unit
@@ -464,7 +464,7 @@ class Battle:
         # раунды
         if dot_source in PARALYZE_LIST:
             dot_dmg = 0
-            if self.current_unit.name in PARALYZE_UNIT_LIST:
+            if self.current_unit.name in PARALYZE_UNITS:
                 dot_rounds = 1
             else:
                 dot_rounds = random.choice(range(1, 4))

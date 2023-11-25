@@ -4,14 +4,14 @@ import os.path
 
 from PyQt5 import QtCore, QtWidgets
 from PyQt5.QtGui import QPixmap
-from PyQt5.QtWidgets import QMainWindow, QHBoxLayout, QMessageBox
+from PyQt5.QtWidgets import QMainWindow, QHBoxLayout
 
 from client_dir.hire_menu_form import Ui_HireMenu
 from client_dir.message_window import MessageWindow
 from client_dir.question_window import QuestionWindow
 from client_dir.settings import HIRE_SCREEN, BIG
-from client_dir.ui_functions import show_gif, \
-    slot_frame_update, slot_update, button_update, ui_lock, ui_unlock
+from client_dir.ui_functions import show_gif, slot_frame_update, \
+    slot_update, button_update, ui_lock, ui_unlock
 from client_dir.unit_dialog import UnitNameDialog
 from units_dir.units import main_db
 from units_dir.units_factory import AbstractFactory
@@ -223,27 +223,19 @@ class HireMenuWindow(QMainWindow):
 
     def hire_unit_action(self, slot: int) -> None:
         """Метод обработчик нажатия кнопки 'Нанять' для игрока"""
-        if self.player_gold < int(self.highlighted_unit.cost):
-            msg = QMessageBox()
-            msg.setWindowTitle("Предупреждение")
-            msg.setText("Недостаточно золота")
-            msg.setIcon(QMessageBox.Warning)
+        changed_gold = self.player_gold - int(self.highlighted_unit.cost)
 
-            msg.exec_()
-        else:
-        # if self.player_gold >= int(self.highlighted_unit.cost):
-            changed_gold = self.player_gold - int(self.highlighted_unit.cost)
+        # обновление золота в базе
+        main_db.update_gold(
+            main_db.current_player.name,
+            self.faction,
+            changed_gold)
+        self.highlighted_unit.add_to_band(int(slot))
 
-            # обновление золота в базе
-            main_db.update_gold(
-                main_db.current_player.name,
-                self.faction,
-                changed_gold)
-            self.highlighted_unit.add_to_band(int(slot))
+        self.capital_army.ui.gold.setText(str(changed_gold))
 
-            self.capital_army.ui.gold.setText(str(changed_gold))
-
-    def hire_slot_detailed(self, unit_type: any) -> None:
+    @staticmethod
+    def hire_slot_detailed(unit_type: any) -> None:
         """Метод создающий окно юнита."""
         global DETAIL_WINDOW
         DETAIL_WINDOW = UnitNameDialog(
