@@ -1217,9 +1217,12 @@ class Unit:
             if self.attack_dmg > 0:
                 # Вычисление урона с учетом брони
                 damage = min(
-                    int((self.attack_dmg +
+                    int(
+                        (self.attack_dmg +
                          (self.attack_dmg * self.might * 0.25) +
-                         random.randrange(6)) * (1 - target.armor * 0.01)),
+                         random.randrange(6)
+                         ) * (1 - target.armor * 0.01)
+                    ),
                     300)
 
                 # если урон больше, чем здоровье врага, приравниваем урон к
@@ -1283,7 +1286,10 @@ class Unit:
             attack_source = self.attack_source
             attack_dict['attack_source'] = attack_source
 
-        attack_dict = self.checking_immune_ward(target, chance, attack_dict)
+        attack_dict = self.checking_immune_ward(
+            target,
+            chance,
+            attack_dict)
 
         # Вычисление урона атакующего и здоровья цели.
         # Логирование удачного попадания
@@ -1307,8 +1313,7 @@ class Unit:
 
         # Вычисление вероятности попадания
         try:
-            acc = int(self.attack_chance.split(
-                '/')[1])
+            acc = int(self.attack_chance.split('/')[1])
             chance = (acc + self.accuracy * 0.2 * acc) / 100
         except IndexError:
             extra_chance = self.accuracy * 0.2 * int(self.attack_chance)
@@ -1322,9 +1327,6 @@ class Unit:
         except IndexError:
             attack_source = self.attack_source
             attack_dict['attack_source'] = attack_source
-
-        # attack_source = self.attack_source.split('/')[1]
-        # attack_dict['attack_source'] = attack_source
 
         attack_dict = self.checking_immune_ward(target, chance, attack_dict)
 
@@ -1384,14 +1386,25 @@ class Unit:
 
         target.curr_health += health
 
-        line = f"{self.name} лечит {health} воину {target.name}. " \
+        line = f"{self.name} лечит {health} " \
+               f"единиц здоровья воину {target.name}. " \
                f"Стало ХП: {target.curr_health}\n"
         logging(line)
 
         return True
 
+    def cure(self, target: any) -> bool:
+        """Исцеление"""
+        if target.dotted:
+            target.dotted = 0
+
+        line = f"{self.name} исцеляет воина {target.name}.\n"
+        logging(line)
+
+        return True
+
     def increase_damage(self, target: any) -> bool:
-        """Увеличение урона Друда, дополнительная атака Алхимика"""
+        """Увеличение урона Друида, дополнительная атака Алхимика"""
         if 'Увеличение урона' in self.attack_type:
             dmg_boost = int(self.attack_dmg * 0.01 * target.attack_dmg)
             target.attack_dmg += dmg_boost

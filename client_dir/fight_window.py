@@ -286,7 +286,7 @@ class FightWindow(QMainWindow):
         self.ui.battleLog.setStyleSheet("background-color: rgb(65, 3, 2)")
 
         self.update_speed_checkbox()
-        self.show_frame_attacked()
+        self.show_target_frame()
         self.show_frame_attacker()
         self.update_log()
 
@@ -353,9 +353,13 @@ class FightWindow(QMainWindow):
         for num, item in buttons_dict.items():
             unit = self._unit_by_slot_and_side(num, side)
 
-            if source == item and unit is not None and unit.curr_health != 0:
+            if source == item \
+                    and unit is not None \
+                    and unit.curr_health != 0:
+
                 if event.type() == QtCore.QEvent.Enter:
                     unit = self._unit_by_slot_and_side(num, side)
+
                     if unit not in self.new_battle.current_player.units:
                         self.show_circle_r(unit, ui_dict.get(num))
 
@@ -459,7 +463,7 @@ class FightWindow(QMainWindow):
         self.show_no_frames(self.unit_circles_dict, show_no_circle)
         self.show_no_frames(self.dung_circles_dict, show_no_circle)
         if not self.new_battle.battle_is_over:
-            self.show_frame_attacked()
+            self.show_target_frame()
             self.show_frame_attacker()
             self.show_circle_attacker()
 
@@ -750,8 +754,6 @@ class FightWindow(QMainWindow):
 
         if curr_unit in self.new_battle.dotted_units and \
                 curr_unit.dotted:
-            print(curr_unit.dotted)
-
             # прорисовка модели атакованного юнита
             self.show_attacked(curr_unit)
             # прорисовка тени атакованного юнита
@@ -763,24 +765,21 @@ class FightWindow(QMainWindow):
             # уменьшаем кол-во раундов
             curr_unit.dotted -= 1
 
+            if curr_unit.dotted == 0 \
+                    and curr_unit in self.new_battle.dotted_units:
+                self.new_battle.dotted_units.pop(curr_unit)
+
             # если отравленный юнит погиб, удаляем его
             if curr_unit.curr_health == 0:
-                if curr_unit in self.new_battle.units_deque:
-                    self.new_battle.units_deque.remove(
-                        curr_unit)
-                if curr_unit in self.new_battle.units_in_round:
-                    self.new_battle.units_in_round.remove(
-                        curr_unit)
-                if curr_unit in self.new_battle.waiting_units:
-                    self.new_battle.waiting_units.remove(
-                        curr_unit)
+                self.removing_dead_unit(curr_unit)
+
+                if curr_unit in self.new_battle.dotted_units:
+                    self.new_battle.dotted_units.pop(curr_unit)
 
                 # прорисовка модели атакованного юнита
                 self.show_attacked(curr_unit)
 
                 self.new_battle.alive_getting_experience()
-
-                # self.are_units_in_round()
 
                 # битва еще не закончена
                 if not self.new_battle.battle_is_over:
@@ -795,6 +794,9 @@ class FightWindow(QMainWindow):
 
                 self._update_all_unit_health()
 
+        # показать иконки эффектов
+        self.define_dotted_units()
+
     def are_units_in_round(self) -> None:
         """Проверка на наличие юнитов в раунде"""
         if self.new_battle.current_unit in self.new_battle.units_in_round:
@@ -808,9 +810,6 @@ class FightWindow(QMainWindow):
             # если ходящий юнит отравлен и т.д.
             self.show_poisoned_unit()
 
-            # показать иконки эффектов
-            self.define_dotted_units()
-
         # есть юниты, ожидающие лучшего момента
         elif self.new_battle.waiting_units:
             if self.new_battle.current_unit in self.new_battle.waiting_units:
@@ -823,9 +822,6 @@ class FightWindow(QMainWindow):
             # если ходящий юнит отравлен и т.д.
             self.show_poisoned_unit()
 
-            # показать иконки эффектов
-            self.define_dotted_units()
-
         else:
             # новый раунд
             self.new_battle.new_round()
@@ -837,13 +833,10 @@ class FightWindow(QMainWindow):
             # если ходящий юнит отравлен и т.д.
             self.show_poisoned_unit()
 
-            # показать иконки эффектов
-            self.define_dotted_units()
-
         # битва еще не закончена
         if not self.new_battle.battle_is_over:
             # Показать рамки
-            self.show_frame_attacked()
+            self.show_target_frame()
             self.show_frame_attacker()
             self.show_circle_attacker()
 
@@ -1265,25 +1258,50 @@ class FightWindow(QMainWindow):
                               self.pl_slots_dict,
                               self.en_slots_dict)
 
-    def show_frame_attacked(self) -> None:
-        """Прорисовка рамки вокруг иконки атакованного юнита"""
+    def show_target_frame(self) -> None:
+        """Прорисовка рамки вокруг иконки цели"""
+        curr_unit = self.new_battle.current_unit
+        boosted = self.new_battle.boosted_units
+
         for target_slot in self.new_battle.target_slots:
-            curr_target = self.get_curr_target(target_slot)
+            target = self.get_curr_target(target_slot)
 
             # цель и текущий юнит принадлежат одному игроку
-            if curr_target in self.new_battle.target_player.units and \
-                    self.new_battle.current_unit in self.new_battle.target_player.units:
+            if target in self.new_battle.target_player.units and \
+                    curr_unit in self.new_battle.target_player.units:
 
-                if (self.new_battle.current_unit.attack_type in ALCHEMIST_LIST and \
-                    curr_target not in self.new_battle.boosted_units) or \
-                        self.new_battle.current_unit.attack_type in HEAL_LIST:
-                    self.show_frames_by_side(curr_target,
+                if (curr_unit.attack_type in ALCHEMIST_LIST
+                    and
+                    target not in boosted
+                    and
+                    target.attack_dmg != 0
+                    and
+                    target.attack_type not in ALCHEMIST_LIST) \
+                        or \
+                        ('Исцеление' in curr_unit.attack_type
+                         and target.dotted) \
+                        or \
+                        curr_unit.attack_type in HEAL_LIST:
+
+                    # синяя рамка
+                    self.show_frames_by_side(target,
                                              self.unit_icons_dict,
                                              self.dung_icons_dict,
                                              show_blue_frame)
 
+                if boosted.get(target):
+                    if (curr_unit.attack_type in ALCHEMIST_LIST
+                            and boosted[target] < curr_unit.attack_dmg):
+
+                        # синяя рамка
+                        self.show_frames_by_side(target,
+                                                 self.unit_icons_dict,
+                                                 self.dung_icons_dict,
+                                                 show_blue_frame)
+
             else:
-                self.show_frames_by_side(curr_target,
+                # красная рамка
+                self.show_frames_by_side(target,
                                          self.unit_icons_dict,
                                          self.dung_icons_dict,
                                          show_red_frame)
@@ -1428,15 +1446,19 @@ class FightWindow(QMainWindow):
 
         # если атакованный юнит погиб, удаляем его
         if curr_target.curr_health == 0:
-            if curr_target in self.new_battle.units_deque:
-                self.new_battle.units_deque.remove(
-                    curr_target)
-            if curr_target in self.new_battle.units_in_round:
-                self.new_battle.units_in_round.remove(
-                    curr_target)
-            if curr_target in self.new_battle.waiting_units:
-                self.new_battle.waiting_units.remove(
-                    curr_target)
+            self.removing_dead_unit(curr_target)
+
+    def removing_dead_unit(self, target):
+        """Удаление погибшего юнита из битвы"""
+        if target in self.new_battle.units_deque:
+            self.new_battle.units_deque.remove(
+                target)
+        if target in self.new_battle.units_in_round:
+            self.new_battle.units_in_round.remove(
+                target)
+        if target in self.new_battle.waiting_units:
+            self.new_battle.waiting_units.remove(
+                target)
 
     def show_dot_effect(self, unit, dot_type, icons_dict):
         """Показывает действующий эффект на юните"""
@@ -1445,6 +1467,12 @@ class FightWindow(QMainWindow):
             if rounds:
                 show_dot_icon(
                     icons_dict[unit.slot], dot_type)
+
+    def show_might_effect(self, unit, dot_type, icons_dict):
+        """Показывает действующий эффект на юните"""
+        if self.new_battle.boosted_units.get(unit):
+            show_dot_icon(
+                icons_dict[unit.slot], dot_type)
 
     def define_priority_effect(self, unit, icons_dict):
         """Отобразить один приоритетный эффект"""
@@ -1464,10 +1492,18 @@ class FightWindow(QMainWindow):
                 # Показывает эффект на юните игрока
                 self.define_priority_effect(unit, self.unit_damaged_dict)
 
+            elif unit in self.new_battle.boosted_units:
+                self.show_might_effect(
+                    unit, 'Увеличение урона', self.unit_damaged_dict)
+
         for unit in self.new_battle.player2.units:
             if unit in self.new_battle.dotted_units:
                 # Показывает эффект на вражеском юните
                 self.define_priority_effect(unit, self.dung_damaged_dict)
+
+            elif unit in self.new_battle.boosted_units:
+                self.show_might_effect(
+                    unit, 'Увеличение урона', self.dung_damaged_dict)
 
     def update_icons(self,
                      icons_dict: dict,
@@ -1617,6 +1653,9 @@ class FightWindow(QMainWindow):
                 self._unit_by_slot_and_side(num, self.enemy_side),
                 hp_slot)
 
+        # показать иконки эффектов
+        self.define_dotted_units()
+
     def set_coords_double_slots(self, ui_obj) -> None:
         """Задание координат для 'двойных' слотов либо кнопок"""
         if ui_obj in self.right_slots:
@@ -1689,23 +1728,21 @@ class FightWindow(QMainWindow):
         """Атака и анимация по выбранному слоту противника"""
         # self.unit_gifs_update()
         target = self._unit_by_slot_and_side(slot, side)
+        curr_unit = self.new_battle.current_unit
+
         # невозможность атаковать своих
         if target is not None:
             if target not in self.new_battle.current_player.units \
-                    and self.new_battle.current_unit.attack_type \
-                    not in HEAL_LIST \
-                    and self.new_battle.current_unit.attack_type \
-                    not in ALCHEMIST_LIST:
+                    and curr_unit.attack_type \
+                    not in [*HEAL_LIST, *ALCHEMIST_LIST]:
 
                 self.new_battle.player_attack(target)
                 self.show_attack_and_attacked()
 
             # если текущий юнит лекарь - можно выбрать целью свой юнит
             elif target in self.new_battle.current_player.units \
-                    and (self.new_battle.current_unit.attack_type \
-                         in HEAL_LIST
-                         or self.new_battle.current_unit.attack_type \
-                         in ALCHEMIST_LIST):
+                    and curr_unit.attack_type \
+                    in [*HEAL_LIST, *ALCHEMIST_LIST]:
 
                 self.new_battle.player_attack(target)
                 self.show_attack_and_attacked()

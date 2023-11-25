@@ -202,7 +202,7 @@ class Battle:
         """Сортировка юнитов по типам/ветвям: Маги, Стрелки и т.д."""
         branches = {}
         for unit in units:
-            branch = unit.curr_health / unit.health # тут править
+            branch = unit.curr_health / unit.health  # тут править
             branches[unit] = branch
 
         sorted_units_by_branch = sorted(
@@ -311,8 +311,11 @@ class Battle:
 
                 # уменьшаем раунды на 1
                 dot_rounds = max(0, dot_rounds - 1)
-                self.dotted_units[self.current_unit][dot_source] = \
-                    [dot_dmg, dot_rounds]
+                if self.current_unit.dotted == 0:
+                    self.dotted_units.pop(self.current_unit)
+                else:
+                    self.dotted_units[self.current_unit][dot_source] = \
+                        [dot_dmg, dot_rounds]
 
         # Если Паралич, пропускаем ход
         if paralyzed:
@@ -500,18 +503,18 @@ class Battle:
                 player.units)
             self.attack_1_unit(target)
 
-    def attack_1_unit(self, target: Unit) -> None:
+    def attack_1_unit(self, target: Optional[Unit]) -> None:
         """Если цель - 1 юнит"""
         attack_type = self.current_unit.attack_type
+        curr_unit = self.current_unit
 
         # Если текущий юнит - атакующий
-        if attack_type not in HEAL_LIST and \
-                attack_type not in ALCHEMIST_LIST and \
-                attack_type not in PARALYZE_LIST:
-            success = self.current_unit.attack(target)
+        if attack_type \
+                not in [*HEAL_LIST, *ALCHEMIST_LIST, *PARALYZE_LIST]:
+            success = curr_unit.attack(target)
 
-            if success and self.current_unit.dot_dmg:
-                dot_success = self.current_unit.dot_attack(target)
+            if success and curr_unit.dot_dmg:
+                dot_success = curr_unit.dot_attack(target)
                 dot_source = attack_type.split('/')[1]
 
                 if dot_success:
@@ -519,21 +522,44 @@ class Battle:
 
         # Если текущий юнит - лекарь
         elif attack_type in HEAL_LIST:
-            success = self.current_unit.heal(target)
+            success = curr_unit.heal(target)
+
+            if 'Исцеление' in attack_type and target.dotted:
+                self.dotted_units.pop(target)
+                success = curr_unit.cure(target)
 
         # Если текущий юнит - Друид/Алхимик
         elif attack_type in ALCHEMIST_LIST:
             if 'Увеличение урона' in attack_type:
-                success = self.current_unit.increase_damage(target)
+                if target not in self.boosted_units:
 
-                self.boosted_units[target] = self.current_unit.attack_dmg
-            else:
-                success = False
-                self.current_unit.defence()
+                    success = curr_unit.increase_damage(target)
+                    self.boosted_units[target] = curr_unit.attack_dmg
+
+                elif self.boosted_units.get(target):
+                    if self.boosted_units[target] < curr_unit.attack_dmg:
+                        target.attack_dmg = \
+                            int(target.attack_dmg * 100 /
+                                (100 + self.boosted_units[target]))
+
+                        success = curr_unit.increase_damage(target)
+                        self.boosted_units[target] = curr_unit.attack_dmg
+
+                    elif (target in self.boosted_units
+                        or self.boosted_units[target] >=
+                        curr_unit.attack_dmg) \
+                            and 'Исцеление' not in attack_type:
+                        success = False
+                        curr_unit.defence()
+
+                if 'Исцеление' in attack_type and target.dotted:
+
+                    self.dotted_units.pop(target)
+                    success = curr_unit.cure(target)
 
         # Для воинов с основной атакой типа Паралич и Окаменение
         elif attack_type in PARALYZE_LIST:
-            success = self.current_unit.dot_attack(target)
+            success = curr_unit.dot_attack(target)
             dot_source = attack_type
 
             if success:
@@ -542,7 +568,7 @@ class Battle:
         if success:
             self.attacked_slots.append(target.slot)
 
-    def player_attack(self, curr_target: Unit) -> None:
+    def player_attack(self, target: Unit) -> None:
         """Атака игрока по цели"""
         if self.units_in_round:
 
@@ -551,7 +577,7 @@ class Battle:
                 self.attack_6_units(self.target_player)
             else:
                 self.attacked_slots = []
-                self.attack_1_unit(curr_target)
+                self.attack_1_unit(target)
 
         else:
             self.new_round()
@@ -579,17 +605,18 @@ class Battle:
             #     self.target_player.units)
 
             # атака/лечение определенного юнита
-            if self.current_unit.attack_type not in HEAL_LIST and \
-                    self.current_unit.attack_type not in ALCHEMIST_LIST:
+            if self.current_unit.attack_type \
+                    not in [*HEAL_LIST, *ALCHEMIST_LIST, *PARALYZE_LIST]:
                 # определяем приоритет для атаки
-                target = self.getting_attack_target(
+                target = self.get_priority_target(
                     self.current_unit, self.target_slots)
 
                 self.attack_1_unit(target)
 
             elif self.current_unit.attack_type in HEAL_LIST:
                 # определяем приоритет для лекарей
-                target = self.getting_heal_target(self.target_slots)
+                target = self.get_heal_target(self.target_slots)
+
                 if target.curr_health == target.health:
                     self.current_unit.defence()
                 else:
@@ -597,17 +624,29 @@ class Battle:
 
             elif self.current_unit.attack_type in ALCHEMIST_LIST:
                 # определяем приоритет для друидов/алхимиков
-                target = self.getting_druid_target(self.target_slots)
+                target = self.get_druid_target(self.target_slots)
+
                 if not target:
                     self.current_unit.defence()
                 else:
                     self.attack_1_unit(target[0])
 
-    def getting_attack_target(self, unit, target_slots) -> Unit:
-        """Приоритет для атаки"""
-        prior1_targets = []
-        prior2_targets = []
-        prior3_targets = []
+            elif self.current_unit.attack_type in PARALYZE_LIST:
+                # определяем приоритет для парализаторов
+                target = self.get_paralyze_target(self.target_slots)
+
+                if not target:
+                    self.current_unit.defence()
+                else:
+                    self.attack_1_unit(target)
+
+    def get_priority_target(self,
+                              unit: Unit,
+                              target_slots: List[int]) -> Unit:
+        """Получить приоритетную для атаки цель"""
+        first_priority = []
+        second_priority = []
+        third_priority = []
         target_units = []
 
         for slot in target_slots:
@@ -620,31 +659,33 @@ class Battle:
             # убьет цель за 1 ход
             if target_unit.curr_health <= \
                     unit.attack_dmg * target_armor:
-                prior1_targets.append(target_unit)
+                first_priority.append(target_unit)
 
             # убьет цель за 2 хода
             elif target_unit.curr_health <= \
                     unit.attack_dmg * 2 * target_armor:
-                prior2_targets.append(target_unit)
+                second_priority.append(target_unit)
 
             # иначе добавляем всех попавшихся
             else:
-                prior3_targets.append(target_unit)
+                third_priority.append(target_unit)
 
-        if prior1_targets:
-            target = self.attack_priority(prior1_targets)
-        elif not prior1_targets and prior2_targets:
-            target = self.attack_priority(prior2_targets)
+        if first_priority:
+            target = self.attack_priority(first_priority)
+
+        elif not first_priority and second_priority:
+            target = self.attack_priority(second_priority)
+
         else:
-            target = self.attack_priority(prior3_targets)
+            target = self.attack_priority(third_priority)
 
         return target
 
-    def attack_priority(self, prior_targets: list) -> Unit:
-        """Приоритет для атаки"""
+    def attack_priority(self, targets: list) -> Unit:
+        """Определение приоритета для атаки"""
         result_target = None
 
-        for target in prior_targets:
+        for target in targets:
             # В первую очередь бьем лекарей
             if target.branch == 'support' and \
                     target.attack_source in HEAL_LIST:
@@ -661,13 +702,13 @@ class Battle:
         # В остальных случаях
         if result_target is None:
             # выбираем слабейшего из оставшихся (по абсолютному здоровью)
-            weakest_unit = self.sorting_health(prior_targets)[0]
+            weakest_unit = self.sorting_health(targets)[0]
             result_target = weakest_unit
 
         return result_target
 
-    def getting_heal_target(self, target_slots) -> Unit:
-        """Приоритет для лечения"""
+    def get_heal_target(self, target_slots: List[int]) -> Unit:
+        """Получить приоритетную для лечения цель"""
         target_units = []
 
         for slot in target_slots:
@@ -678,18 +719,46 @@ class Battle:
 
         return health_sorted_units[0]
 
-    def getting_druid_target(self, target_slots) -> List[Unit]:
-        """Приоритет для Друида/Алхимика"""
+    def get_druid_target(self, target_slots: List[int]) -> List[Unit]:
+        """Получение приоритетной для Друида/Алхимика цели"""
         target_units = []
 
         for slot in target_slots:
-            unit = self.get_unit_by_slot(slot, self.target_player.units)
-            if unit not in self.boosted_units:
+            unit = self.get_unit_by_slot(
+                slot,
+                self.target_player.units)
+
+            if (unit.dotted
+                and 'Исцеление' in self.current_unit.attack_type) \
+                    or \
+                    (unit not in self.boosted_units \
+                     and unit.attack_dmg != 0):
+                # if unit not in self.boosted_units:
                 target_units.append(unit)
+
+            # усиленный юнит усилен на меньший процент
+            if self.boosted_units.get(unit):
+                if self.boosted_units[unit] < self.current_unit.attack_dmg:
+                    target_units.append(unit)
 
         damage_sorted_units = self.sorting_damage(target_units)
 
         return damage_sorted_units
+
+    def get_paralyze_target(self, target_slots: List[int]) -> Unit:
+        """Получение приоритетной для парализатора цели"""
+        target_units = []
+
+        for slot in target_slots:
+            unit = self.get_unit_by_slot(
+                slot,
+                self.target_player.units)
+            if self.current_unit.attack_type not in unit.immune:
+                target_units.append(unit)
+
+        damage_sorted_units = self.sorting_damage(target_units)
+
+        return damage_sorted_units[0]
 
     @staticmethod
     def clear_dungeon() -> None:
@@ -786,8 +855,8 @@ class Battle:
                 6, 4, 2),
         }
 
-        if (vanguard_enemies_died and
-                vanguard_alies_died):  # Авангард мертв, Авангард врага мертв
+        if (vanguard_enemies_died
+                and vanguard_alies_died):  # Авангард мертв, Авангард врага мертв
             if unit.slot % 2 == 1:
                 result = targets_dict[unit.slot]
 
@@ -795,8 +864,8 @@ class Battle:
             if unit.slot % 2 == 0:
                 result = targets_dict[unit.slot - 1]
 
-        elif (not vanguard_enemies_died and
-              vanguard_alies_died):  # Авангард мертв, Авангард врага жив
+        elif (not vanguard_enemies_died
+              and vanguard_alies_died):  # Авангард мертв, Авангард врага жив
             if unit.slot % 2 == 1:
                 result = targets_dict[unit.slot + 1]
 
@@ -814,12 +883,15 @@ class Battle:
         # для контактных юнитов
         if unit.attack_radius == CLOSEST_UNIT:
             targets = self._define_closest_slots(
-                unit, target_slots, attacker_slots)
+                unit,
+                target_slots,
+                attacker_slots)
             if targets != [None]:
                 return targets
 
         # Для дальнобойных юнитов
-        if unit.attack_radius == ANY_UNIT and unit.attack_purpose in [1, 6]:
+        if unit.attack_radius == ANY_UNIT \
+                and unit.attack_purpose in [1, 6]:
             return target_slots
 
         return [None]
@@ -830,7 +902,9 @@ class Battle:
         self.get_player_slots(self.player2)
 
         return self._choose_targets(
-            unit, self.current_player.slots, self.target_player.slots)
+            unit,
+            self.current_player.slots,
+            self.target_player.slots)
 
     @staticmethod
     def get_player_slots(player: Player) -> None:
