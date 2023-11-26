@@ -1337,6 +1337,87 @@
      <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
     </property>
    </widget>
+   <widget class="QLabel" name="slotBuilded_10">
+    <property name="geometry">
+     <rect>
+      <x>780</x>
+      <y>20</y>
+      <width>55</width>
+      <height>60</height>
+     </rect>
+    </property>
+    <property name="layoutDirection">
+     <enum>Qt::LeftToRight</enum>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::NoFrame</enum>
+    </property>
+    <property name="frameShadow">
+     <enum>QFrame::Raised</enum>
+    </property>
+    <property name="lineWidth">
+     <number>1</number>
+    </property>
+    <property name="midLineWidth">
+     <number>0</number>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="scaledContents">
+     <bool>false</bool>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButtonSlot_10">
+    <property name="geometry">
+     <rect>
+      <x>590</x>
+      <y>100</y>
+      <width>118</width>
+      <height>114</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="flat">
+     <bool>true</bool>
+    </property>
+   </widget>
+   <widget class="QLabel" name="slot_10">
+    <property name="geometry">
+     <rect>
+      <x>590</x>
+      <y>100</y>
+      <width>118</width>
+      <height>114</height>
+     </rect>
+    </property>
+    <property name="layoutDirection">
+     <enum>Qt::LeftToRight</enum>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::NoFrame</enum>
+    </property>
+    <property name="frameShadow">
+     <enum>QFrame::Raised</enum>
+    </property>
+    <property name="lineWidth">
+     <number>1</number>
+    </property>
+    <property name="midLineWidth">
+     <number>0</number>
+    </property>
+    <property name="text">
+     <string>slot_10</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+    </property>
+   </widget>
    <zorder>capitalBuildingBG</zorder>
    <zorder>slotFrame1</zorder>
    <zorder>pushButtonBack</zorder>
@@ -1364,7 +1445,6 @@
    <zorder>nextLevel</zorder>
    <zorder>prevLevel</zorder>
    <zorder>gold</zorder>
-   <zorder>labelSelected1</zorder>
    <zorder>slotBuy</zorder>
    <zorder>pushButtonBuy</zorder>
    <zorder>slotBuilded_1</zorder>
@@ -1376,17 +1456,21 @@
    <zorder>slotBuilded_7</zorder>
    <zorder>slotBuilded_8</zorder>
    <zorder>slotBuilded_9</zorder>
-   <zorder>pushButtonSlot_3</zorder>
-   <zorder>pushButtonSlot_5</zorder>
-   <zorder>pushButtonSlot_9</zorder>
-   <zorder>pushButtonSlot_6</zorder>
-   <zorder>pushButtonSlot_8</zorder>
-   <zorder>pushButtonSlot_2</zorder>
-   <zorder>pushButtonSlot_4</zorder>
-   <zorder>pushButtonSlot_1</zorder>
-   <zorder>pushButtonSlot_7</zorder>
    <zorder>slotReverse</zorder>
    <zorder>pushButtonReverse</zorder>
+   <zorder>slot_10</zorder>
+   <zorder>slotBuilded_10</zorder>
+   <zorder>labelSelected1</zorder>
+   <zorder>pushButtonSlot_1</zorder>
+   <zorder>pushButtonSlot_3</zorder>
+   <zorder>pushButtonSlot_7</zorder>
+   <zorder>pushButtonSlot_9</zorder>
+   <zorder>pushButtonSlot_2</zorder>
+   <zorder>pushButtonSlot_4</zorder>
+   <zorder>pushButtonSlot_10</zorder>
+   <zorder>pushButtonSlot_8</zorder>
+   <zorder>pushButtonSlot_5</zorder>
+   <zorder>pushButtonSlot_6</zorder>
   </widget>
  </widget>
  <resources/>
