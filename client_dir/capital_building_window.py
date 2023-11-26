@@ -14,7 +14,7 @@ from client_dir.capital_building_form import Ui_CapitalBuildingWindow
 from client_dir.question_window import QuestionWindow
 from client_dir.settings import CAPITAL_BUILDING, UNIT_ICONS, TOWN_ICONS, \
     SCREEN_RECT, DECLINATIONS, INTERF, ICON, COMMON, OTHERS, ALREADY_BUILT, \
-    READY_TO_BUILD, NEED_TO_BUILD_PREV, ANOTHER_BRANCH, NOT_ENOUGH_GOLD
+    READY_TO_BUILD, NEED_TO_BUILD_PREV, ANOTHER_BRANCH, NOT_ENOUGH_GOLD, SPECIAL_BUILDINGS
 from client_dir.ui_functions import set_size_by_unit, get_unit_image, \
     slot_frame_update, ui_lock, ui_unlock
 from client_dir.unit_dialog import UnitDialog
@@ -96,6 +96,8 @@ class CapitalBuildingWindow(QMainWindow):
             self.update_unit_by_b_slot8)
         self.ui.pushButtonSlot_9.clicked.connect(
             self.update_unit_by_b_slot9)
+        self.ui.pushButtonSlot_10.clicked.connect(
+            self.update_unit_by_b_slot10)
 
         self.town_icons_dict = {
             1: self.ui.slot_1,
@@ -107,6 +109,7 @@ class CapitalBuildingWindow(QMainWindow):
             7: self.ui.slot_7,
             8: self.ui.slot_8,
             9: self.ui.slot_9,
+            10: self.ui.slot_10,
         }
 
         self.icon_buttons_dict = {
@@ -119,6 +122,7 @@ class CapitalBuildingWindow(QMainWindow):
             7: self.ui.pushButtonSlot_7,
             8: self.ui.pushButtonSlot_8,
             9: self.ui.pushButtonSlot_9,
+            10: self.ui.pushButtonSlot_10,
         }
 
         self.builded_dict = {
@@ -131,6 +135,7 @@ class CapitalBuildingWindow(QMainWindow):
             7: self.ui.slotBuilded_7,
             8: self.ui.slotBuilded_8,
             9: self.ui.slotBuilded_9,
+            10: self.ui.slotBuilded_10,
         }
 
         self.highlight_selected_building(1, self.ui.labelSelected1)
@@ -292,20 +297,27 @@ class CapitalBuildingWindow(QMainWindow):
             unit_name = self.branch_settings[b_slot].unit_name
             self.ui.nextLevel.setText(unit_name)
 
-            prev_unit_name = main_db.get_unit_by_b_name(
-                self.branch_settings[b_slot].prev)
-
-            self.ui.prevLevel.setText(prev_unit_name)
             self.ui.nextLevelText.setText('След. уровень:')
             self.ui.prevLevelText.setText('Пред. уровень:')
 
-            # просклонять имя юнита
-            # declined_name = self.decline(unit_name)
+            if b_slot < 10:
+                prev_unit_name = main_db.get_unit_by_b_name(
+                    self.branch_settings[b_slot].prev)
 
-            self.ui.desc.setText(
-                f'{self.branch_settings[b_slot].desc}\n'
-                # f'{prev_unit_name} становится {declined_name}')
-                f'{prev_unit_name} превращается в {unit_name}')
+                self.ui.prevLevel.setText(prev_unit_name)
+
+                # просклонять имя юнита
+                # declined_name = self.decline(unit_name)
+
+                self.ui.desc.setText(
+                    f'{self.branch_settings[b_slot].desc}\n'
+                    f'{prev_unit_name} превращается в {unit_name}')
+            else:
+                self.ui.prevLevel.setText('')
+
+                self.ui.desc.setText(
+                    f'{self.branch_settings[b_slot].desc}\n'
+                    f'{unit_name}')
         else:
             self.ui.nextLevel.setText('')
             self.ui.prevLevel.setText('')
@@ -379,23 +391,28 @@ class CapitalBuildingWindow(QMainWindow):
             # ставим отметки о постройке зданий
             for building in temp_graph:
                 if building != '' and building not in STARTING_FORMS:
-                    b_slot = self.get_building_slot_by_name(building)
 
-                    self.builded_dict[b_slot].setPixmap(QPixmap(
-                        os.path.join(INTERF, "ok.png")))
-                    self.builded_dict[b_slot].setGeometry(
-                        *self.get_coords(b_slot))
+                    b_slot = self.get_building_slot_by_name(building)
+                    self.set_ok(b_slot)
+
+            if buildings['special']:
+                self.set_ok(10)
 
         elif self.branch == OTHERS:
             branch = FACTIONS.get(self.faction)[self.branch]
 
             for val in branch.values():
                 if val.bname in buildings.values():
+
                     b_slot = self.get_building_slot_by_name(val.bname)
-                    self.builded_dict[b_slot].setPixmap(QPixmap(
-                        os.path.join(INTERF, "ok.png")))
-                    self.builded_dict[b_slot].setGeometry(
-                        *self.get_coords(b_slot))
+                    self.set_ok(b_slot)
+
+    def set_ok(self, b_slot: int):
+
+        self.builded_dict[b_slot].setPixmap(QPixmap(
+            os.path.join(INTERF, "ok.png")))
+        self.builded_dict[b_slot].setGeometry(
+            *self.get_coords(b_slot))
 
     def set_building_possibility(self) -> None:
         """Метод определения возможности постройки"""
@@ -416,6 +433,22 @@ class CapitalBuildingWindow(QMainWindow):
             if self.building_name in temp_graph:
                 self.set_text_and_buy_slot(
                     ALREADY_BUILT,
+                    False)
+
+            # если здание входит специальные постройки и построено
+            elif self.building_name in SPECIAL_BUILDINGS \
+                    and buildings['special']:
+                self.set_text_and_buy_slot(
+                    ALREADY_BUILT,
+                    False)
+
+            # если здание входит специальные постройки и не построено
+            elif self.building_name in SPECIAL_BUILDINGS \
+                    and not buildings['special'] \
+                    and FACTIONS.get(self.faction)['special'][1].prev \
+                    not in temp_graph:
+                self.set_text_and_buy_slot(
+                    NEED_TO_BUILD_PREV,
                     False)
 
             # если граф построенных входит в текущий граф и длина текущего
@@ -538,6 +571,7 @@ class CapitalBuildingWindow(QMainWindow):
         self.unit = self.get_unit_by_b_slot(b_slot)
         self.slot_update(self.unit, self.ui.slot)
         self.button_update(self.unit, self.ui.pushButtonSlot)
+        slot_frame_update(self.unit, self.ui.slotFrame1)
         self.get_building_params(b_slot)
 
         # подсветка выбранного здания
@@ -578,6 +612,10 @@ class CapitalBuildingWindow(QMainWindow):
     def update_unit_by_b_slot9(self) -> None:
         """Обновление юнита согласно зданию 9"""
         self.update_unit_by_b_slot(9)
+
+    def update_unit_by_b_slot10(self) -> None:
+        """Обновление юнита согласно зданию 10 (special)"""
+        self.update_unit_by_b_slot(10)
 
     def slot_update(self,
                     unit: namedtuple,
@@ -659,6 +697,8 @@ class CapitalBuildingWindow(QMainWindow):
                 changed_buildings[6] = self.building_name
             elif self.building_name == 'Башня магии':
                 changed_buildings[7] = self.building_name
+            elif self.building_name in SPECIAL_BUILDINGS:
+                changed_buildings[4] = self.building_name
             else:
                 changed_buildings[BRANCHES[self.branch]] = \
                     self.building_name
