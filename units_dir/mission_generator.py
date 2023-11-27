@@ -1,7 +1,7 @@
 """Генератор миссий"""
 import random
 
-from client_dir.settings import BIG, SMALL, ACTIVE_UNITS
+from client_dir.settings import BIG, SMALL, ACTIVE_UNITS, SUPPORT
 from units_dir.units import main_db
 
 setup_6 = [
@@ -86,12 +86,22 @@ setup_4 = [
     },
     {
         1: SMALL, 2: None,
+        3: SUPPORT, 4: SMALL,
+        5: SMALL, 6: None,
+    },
+    {
+        1: SMALL, 2: None,
         3: SMALL, 4: SMALL,
         5: SMALL, 6: None,
     },
     {
         1: None, 2: SMALL,
         3: SMALL, 4: SMALL,
+        5: SMALL, 6: None,
+    },
+    {
+        1: None, 2: SMALL,
+        3: SUPPORT, 4: SMALL,
         5: SMALL, 6: None,
     },
     {
@@ -100,8 +110,18 @@ setup_4 = [
         5: None, 6: SMALL,
     },
     {
+        1: SMALL, 2: None,
+        3: SUPPORT, 4: SMALL,
+        5: None, 6: SMALL,
+    },
+    {
         1: None, 2: SMALL,
         3: SMALL, 4: SMALL,
+        5: None, 6: SMALL,
+    },
+    {
+        1: None, 2: SMALL,
+        3: SUPPORT, 4: SMALL,
         5: None, 6: SMALL,
     },
     {
@@ -120,7 +140,17 @@ setup_4 = [
         5: SMALL, 6: SMALL,
     },
     {
+        1: None, 2: None,
+        3: None, 4: BIG,
+        5: SUPPORT, 6: SMALL,
+    },
+    {
         1: SMALL, 2: SMALL,
+        3: None, 4: None,
+        5: SMALL, 6: SMALL,
+    },
+    {
+        1: SUPPORT, 2: SMALL,
         3: None, 4: None,
         5: SMALL, 6: SMALL,
     },
@@ -130,8 +160,18 @@ setup_4 = [
         5: None, 6: None,
     },
     {
+        1: SMALL, 2: SMALL,
+        3: SUPPORT, 4: SMALL,
+        5: None, 6: None,
+    },
+    {
         1: None, 2: None,
         3: SMALL, 4: SMALL,
+        5: SMALL, 6: SMALL,
+    },
+    {
+        1: None, 2: None,
+        3: SUPPORT, 4: SMALL,
         5: SMALL, 6: SMALL,
     },
 ]
@@ -168,7 +208,7 @@ setup_3 = [
     },
     {
         1: SMALL, 2: None,
-        3: SMALL, 4: SMALL,
+        3: SUPPORT, 4: SMALL,
         5: None, 6: None,
     },
     {
@@ -184,6 +224,21 @@ setup_3 = [
     {
         1: None, 2: None,
         3: SMALL, 4: SMALL,
+        5: None, 6: SMALL,
+    },
+    {
+        1: None, 2: SMALL,
+        3: SMALL, 4: None,
+        5: None, 6: SMALL,
+    },
+    {
+        1: None, 2: SMALL,
+        3: SUPPORT, 4: None,
+        5: None, 6: SMALL,
+    },
+    {
+        1: None, 2: SMALL,
+        3: None, 4: SMALL,
         5: None, 6: SMALL,
     },
 ]
@@ -225,11 +280,11 @@ setup_2 = [
     },
 ]
 boss_setup = [
-    {
-        1: None, 2: None,
-        3: None, 4: BIG,
-        5: None, 6: None,
-    },
+    # {
+    #     1: None, 2: None,
+    #     3: None, 4: BIG,
+    #     5: None, 6: None,
+    # },
     {
         1: None, 2: SMALL,
         3: None, 4: BIG,
@@ -241,12 +296,22 @@ boss_setup = [
         5: SMALL, 6: None,
     },
     {
+        1: SUPPORT, 2: None,
+        3: None, 4: BIG,
+        5: SMALL, 6: None,
+    },
+    {
         1: None, 2: SMALL,
         3: None, 4: BIG,
         5: SMALL, 6: None,
     },
     {
         1: SMALL, 2: None,
+        3: None, 4: BIG,
+        5: None, 6: SMALL,
+    },
+    {
+        1: SUPPORT, 2: None,
         3: None, 4: BIG,
         5: None, 6: SMALL,
     }
@@ -382,28 +447,61 @@ def unit_selector(level: int, setup: list) -> dict:
             # для нечетных слотов
             else:
                 # если сетап маленький, исключаем масс хилеров
-                if setup in (setup_2, setup_3) or level == 1:
-                    unit_type = random.choice(['mage',
-                                               'archer',
-                                               'support'])
-                    unit = random.choice(units[unit_type])
+                if (setup
+                    in (setup_2, setup_3)
+                    or level == 1) \
+                        and unit_type == SUPPORT:
+                    unit = random.choice(units[SUPPORT])
                     result_dict[slot] = unit
-                # иначе включаем возможность добавления в отряд масс хилеров
-                else:
-                    unit_type = random.choice(['mage',
-                                               'archer',
-                                               'support',
-                                               'mass_support'])
+
                     # если нет юнитов выбранного типа нужного уровня
                     if not units[unit_type]:
                         # получаем юнитов уровнем ниже
-                        units = get_curr_level_units(level - 1)
+                        units[unit_type] = get_lower_level_units(unit_type, level)
 
+                # иначе включаем возможность добавления в отряд масс хилеров
+                elif setup \
+                        not in (setup_2, setup_3) \
+                        and level != 1 \
+                        and unit_type == SUPPORT:
+                    unit_type = random.choice(['support',
+                                               'mass_support'])
                     unit = random.choice(units[unit_type])
-
                     result_dict[slot] = unit
+
+                    # если нет юнитов выбранного типа нужного уровня
+                    if not units[unit_type]:
+                        # получаем юнитов уровнем ниже
+                        units[unit_type] = get_lower_level_units(unit_type, level)
+
+                # выбор из магов и стрелков
+                elif unit_type == SMALL:
+                    unit_type = random.choice(['mage',
+                                               'archer'])
+                    unit = random.choice(units[unit_type])
+                    result_dict[slot] = unit
+
+                    # если нет юнитов выбранного типа нужного уровня
+                    if not units[unit_type]:
+                        # получаем юнитов уровнем ниже
+                        units[unit_type] = get_lower_level_units(unit_type, level)
+
+                    # if not units[unit_type]:
+                    #     # получаем юнитов уровнем ниже
+                    #     units = get_curr_level_units(level - 1)
+                    #
+                    # unit = random.choice(units[unit_type])
+                    #
+                    # result_dict[slot] = unit
         # если None
         else:
             result_dict[slot] = None
 
     return result_dict
+
+def get_lower_level_units(unit_type: str, level: int) -> any:
+    """Получение юнитов уровнем ниже"""
+    units = get_curr_level_units(level - 1)
+    unit = random.choice(units[unit_type])
+
+    return unit

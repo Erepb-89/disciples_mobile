@@ -1768,18 +1768,39 @@ class ServerStorage:
         self.session.commit()
 
     def update_unit_armor(self,
-                          unit_id: int) -> None:
+                          unit_id: int,
+                          bonus: int) -> None:
         """
         Метод изменения брони юнита игрока.
         Изменяет запись в таблице PlayerUnits.
         """
         unit = self.get_unit_by_id(unit_id, self.PlayerUnits)
-        unit_armor = unit.armor + 20
+        unit_armor = unit.armor + bonus
 
         changes = update(
             self.PlayerUnits).where(
             self.PlayerUnits.id == unit_id).values(
             armor=unit_armor
+        ).execution_options(
+            synchronize_session="fetch")
+
+        self.session.execute(changes)
+        self.session.commit()
+
+    def update_unit_dmg(self,
+                        unit_id: int,
+                        bonus: int) -> None:
+        """
+        Метод изменения урона юнита игрока.
+        Изменяет запись в таблице PlayerUnits.
+        """
+        unit = self.get_unit_by_id(unit_id, self.PlayerUnits)
+        unit_dmg = unit.attack_dmg + bonus
+
+        changes = update(
+            self.PlayerUnits).where(
+            self.PlayerUnits.id == unit_id).values(
+            armor=unit_dmg
         ).execution_options(
             synchronize_session="fetch")
 

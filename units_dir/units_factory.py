@@ -178,6 +178,10 @@ class EmpireSpecial:
         """Стоимость"""
         return '300'
 
+    @property
+    def upgrade_b(self):
+        return 'Разрушенный храм'
+
     @staticmethod
     def add_to_band(slot):
         """Титан. Найм в отряд игрока"""
@@ -343,6 +347,10 @@ class HordesSpecial:
     def cost(self):
         """Стоимость"""
         return '1000'
+
+    @property
+    def upgrade_b(self):
+        return 'Логово оборотней'
 
     @staticmethod
     def add_to_band(slot):
@@ -510,6 +518,10 @@ class LegionsSpecial:
         """Стоимость"""
         return '300'
 
+    @property
+    def upgrade_b(self):
+        return 'Храм Горестей'
+
     @staticmethod
     def add_to_band(slot):
         """Изверг. Найм в отряд игрока"""
@@ -675,6 +687,10 @@ class ClansSpecial:
     def cost(self):
         """Стоимость"""
         return '400'
+
+    @property
+    def upgrade_b(self):
+        return 'Горное логово'
 
     @staticmethod
     def add_to_band(slot):
@@ -886,10 +902,15 @@ class Unit:
         """Пропуск хода юнита в битве"""
         print(self.name, 'пропускает ход')
 
-    def undefence(self) -> None:
+    def off_defence(self) -> None:
         """Сброс защиты в битве"""
         self.armor = main_db.get_unit_by_name(self.name).armor + \
-            self.might * 20
+            self.nat_armor * 20
+
+    def off_boosts(self) -> None:
+        """Сброс усиления атаки в битве"""
+        self.attack_dmg = main_db.get_unit_by_name(self.name).attack_dmg + \
+            self.might * 25
 
     def defence(self) -> None:
         """Пропуск хода и защита в битве"""
@@ -947,13 +968,13 @@ class Unit:
         else:
             next_damage = int(damage * 1.10)
 
+        next_damage = min(next_damage, 300)
+
         # Увеличение доп. урона
         if self.dot_dmg:
             next_additional = self.dot_dmg + 6
         else:
             next_additional = None
-
-        next_damage = min(next_damage, 300)
 
         # Опыт за убийство
         if self.level <= 10:
@@ -1060,7 +1081,14 @@ class Unit:
             # Природная броня
             if perk == 'nat_armor':
                 main_db.update_unit_armor(
-                    self.id)
+                    self.id,
+                    20)
+
+            # Мощь
+            if perk == 'might':
+                main_db.update_unit_dmg(
+                    self.id,
+                    25)
 
             # Выносливость
             if perk == 'endurance':
@@ -1136,7 +1164,10 @@ class Unit:
         }
 
         # снимаем защиту
-        self.undefence()
+        self.off_defence()
+
+        # снимаем бонусы атаки
+        self.off_boosts()
 
         if self.branch == 'hero':
             if self.dyn_upd_level != 0:

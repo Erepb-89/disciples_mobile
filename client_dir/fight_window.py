@@ -894,16 +894,19 @@ class FightWindow(QMainWindow):
         """Автобой"""
         # пока битва не окончена
         if not self.new_battle.battle_is_over:
+            self.new_battle.auto_fight()
+            # если некого атаковать, защита
+            if self.new_battle.target_slots in ([], [None]):
+                self.unit_defence()
 
-            # если есть кого атаковать
-            if self.new_battle.target_slots != [None]:
+            # иначе атака
+            else:
                 # self.unit_gifs_update()
-                self.new_battle.auto_fight()
                 self.show_attack_and_attacked()
 
-            # иначе защита
-            else:
-                self.unit_defence()
+            # # иначе защита
+            # else:
+            #     self.unit_defence()
 
     def show_all_attacked(self, text) -> None:
         """Метод обновляющий анимацию всех атакованных юнитов"""
@@ -1481,7 +1484,8 @@ class FightWindow(QMainWindow):
             show_dot_icon(
                 icons_dict[unit.slot], dot_type)
 
-    def show_need_effect(self, icons_dict, player):
+    @staticmethod
+    def show_need_effect(icons_dict, player):
         """Показывает ограничение в апгрейде на юните"""
         for unit in player.units:
             if unit.curr_exp == unit.exp - 1:

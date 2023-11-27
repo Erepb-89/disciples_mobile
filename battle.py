@@ -242,7 +242,7 @@ class Battle:
     def next_turn(self) -> None:
         """Ход юнита"""
         self.current_unit = self.units_deque.popleft()
-        self.current_unit.undefence()
+        self.current_unit.off_defence()
 
         line = f'Ходит: {self.current_unit.name}\n'
         logging(line)
@@ -469,7 +469,7 @@ class Battle:
             else:
                 dot_rounds = random.choice(range(1, 4))
         else:
-            dot_rounds = random.choice(range(3, 7))
+            dot_rounds = random.choice(range(2, 6))
 
         if self.dotted_units.get(target):
             dot_dict = self.dotted_units[target]
@@ -513,7 +513,8 @@ class Battle:
                 not in [*HEAL_LIST, *ALCHEMIST_LIST, *PARALYZE_LIST]:
             success = curr_unit.attack(target)
 
-            if success and curr_unit.dot_dmg:
+            if (success and curr_unit.dot_dmg) \
+                    or (success and curr_unit.dot_dmg == 0):
                 dot_success = curr_unit.dot_attack(target)
                 dot_source = attack_type.split('/')[1]
 
@@ -611,14 +612,19 @@ class Battle:
                 target = self.get_priority_target(
                     self.current_unit, self.target_slots)
 
-                self.attack_1_unit(target)
+                if not target:
+                    # self.current_unit.defence()
+                    self.target_slots = []
+                else:
+                    self.attack_1_unit(target)
 
             elif self.current_unit.attack_type in HEAL_LIST:
                 # определяем приоритет для лекарей
                 target = self.get_heal_target(self.target_slots)
 
                 if target.curr_health == target.health:
-                    self.current_unit.defence()
+                    # self.current_unit.defence()
+                    self.target_slots = []
                 else:
                     self.attack_1_unit(target)
 
@@ -627,7 +633,8 @@ class Battle:
                 target = self.get_druid_target(self.target_slots)
 
                 if not target:
-                    self.current_unit.defence()
+                    # self.current_unit.defence()
+                    self.target_slots = []
                 else:
                     self.attack_1_unit(target[0])
 
@@ -636,7 +643,8 @@ class Battle:
                 target = self.get_paralyze_target(self.target_slots)
 
                 if not target:
-                    self.current_unit.defence()
+                    # self.current_unit.defence()
+                    self.target_slots = []
                 else:
                     self.attack_1_unit(target)
 
@@ -654,21 +662,28 @@ class Battle:
             target_units.append(unit_)
 
         for target_unit in target_units:
+            try:
+                attack_source = unit.attack_source.split('/')[0]
+            except IndexError:
+                attack_source = unit.attack_source
+
             target_armor = (1 - target_unit.armor * 0.01)
 
-            # убьет цель за 1 ход
-            if target_unit.curr_health <= \
-                    unit.attack_dmg * target_armor:
-                first_priority.append(target_unit)
+            if attack_source not in target_unit.immune:
 
-            # убьет цель за 2 хода
-            elif target_unit.curr_health <= \
-                    unit.attack_dmg * 2 * target_armor:
-                second_priority.append(target_unit)
+                # убьет цель за 1 ход
+                if target_unit.curr_health <= \
+                        unit.attack_dmg * target_armor:
+                    first_priority.append(target_unit)
 
-            # иначе добавляем всех попавшихся
-            else:
-                third_priority.append(target_unit)
+                # убьет цель за 2 хода
+                elif target_unit.curr_health <= \
+                        unit.attack_dmg * 2 * target_armor:
+                    second_priority.append(target_unit)
+
+                # иначе добавляем всех попавшихся
+                else:
+                    third_priority.append(target_unit)
 
         if first_priority:
             target = self.attack_priority(first_priority)
@@ -702,8 +717,11 @@ class Battle:
         # В остальных случаях
         if result_target is None:
             # выбираем слабейшего из оставшихся (по абсолютному здоровью)
-            weakest_unit = self.sorting_health(targets)[0]
-            result_target = weakest_unit
+            if targets:
+                weakest_unit = self.sorting_health(targets)[0]
+                result_target = weakest_unit
+            else:
+                result_target = None
 
         return result_target
 
@@ -878,7 +896,7 @@ class Battle:
     def _choose_targets(self,
                         unit: Unit,
                         attacker_slots: List[int],
-                        target_slots: List[int]) -> Optional[List[int]]:
+                        target_slots: List[int]) -> Optional[List]:
         """Определение следующих целей для атаки"""
         # для контактных юнитов
         if unit.attack_radius == CLOSEST_UNIT:

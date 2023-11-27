@@ -138,6 +138,20 @@ class HireMenuWindow(QMainWindow):
         """Подсветка выбранного юнита"""
         self.highlight_selected_unit(self.ui.labelSelected5,
                                      self.special)
+        buildings = main_db.get_buildings(
+            main_db.current_player.name,
+            self.faction)._asdict()
+        if self.highlighted_unit.upgrade_b \
+                not in buildings['special']:
+            ui_lock(self.ui.pushButtonBuy)
+
+            global SPECIAL_WINDOW
+            text = f'Для покупки данного юнита, постройте ' \
+                   f'{self.highlighted_unit.upgrade_b} в столице'
+            SPECIAL_WINDOW = MessageWindow(self, text)
+            SPECIAL_WINDOW.show()
+        else:
+            ui_unlock(self.ui.pushButtonBuy)
 
     def update_bg(self) -> None:
         """Обновление бэкграунда, заполнение картинкой найма"""
