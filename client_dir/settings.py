@@ -65,6 +65,7 @@ OTHERS = 'others'
 
 BIG = 'Большой'
 SMALL = 'Обычный'
+SUPPORT = 'support'
 
 HEAL_LIST = ['Лечение',
              'Лечение/Исцеление',

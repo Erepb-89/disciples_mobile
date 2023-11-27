@@ -14,7 +14,8 @@ from client_dir.capital_building_form import Ui_CapitalBuildingWindow
 from client_dir.question_window import QuestionWindow
 from client_dir.settings import CAPITAL_BUILDING, UNIT_ICONS, TOWN_ICONS, \
     SCREEN_RECT, DECLINATIONS, INTERF, ICON, COMMON, OTHERS, ALREADY_BUILT, \
-    READY_TO_BUILD, NEED_TO_BUILD_PREV, ANOTHER_BRANCH, NOT_ENOUGH_GOLD, SPECIAL_BUILDINGS
+    READY_TO_BUILD, NEED_TO_BUILD_PREV, ANOTHER_BRANCH, NOT_ENOUGH_GOLD, \
+    SPECIAL_BUILDINGS
 from client_dir.ui_functions import set_size_by_unit, get_unit_image, \
     slot_frame_update, ui_lock, ui_unlock
 from client_dir.unit_dialog import UnitDialog
@@ -407,8 +408,8 @@ class CapitalBuildingWindow(QMainWindow):
                     b_slot = self.get_building_slot_by_name(val.bname)
                     self.set_ok(b_slot)
 
-    def set_ok(self, b_slot: int):
-
+    def set_ok(self, b_slot: int) -> None:
+        """Установить флажок ОК на здании, обозначить что построено"""
         self.builded_dict[b_slot].setPixmap(QPixmap(
             os.path.join(INTERF, "ok.png")))
         self.builded_dict[b_slot].setGeometry(
