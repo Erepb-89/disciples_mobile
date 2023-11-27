@@ -896,17 +896,12 @@ class FightWindow(QMainWindow):
         if not self.new_battle.battle_is_over:
             self.new_battle.auto_fight()
             # если некого атаковать, защита
-            if self.new_battle.target_slots in ([], [None]):
+            if not self.new_battle.target_slots:
                 self.unit_defence()
 
             # иначе атака
             else:
-                # self.unit_gifs_update()
                 self.show_attack_and_attacked()
-
-            # # иначе защита
-            # else:
-            #     self.unit_defence()
 
     def show_all_attacked(self, text) -> None:
         """Метод обновляющий анимацию всех атакованных юнитов"""

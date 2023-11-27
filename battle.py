@@ -590,7 +590,7 @@ class Battle:
         """Автоматическая атака игрока по противнику"""
         # if self.autofight:
 
-        if self.target_slots == [None]:
+        if not self.target_slots:
             self.attacked_slots = []
             self.current_unit.defence()
 
@@ -815,7 +815,7 @@ class Battle:
         if slot_a not in tg_slots and slot_b not in tg_slots \
                 and slot_c in tg_slots:
             return [slot_c]
-        return [None]
+        return []
 
     @staticmethod
     def _closest_middle_slot(tg_slots: List[int],
@@ -837,14 +837,14 @@ class Battle:
             return [slot_b]
         if slot_c in tg_slots:
             return [slot_c]
-        return [None]
+        return []
 
     def _define_closest_slots(self,
                               unit: Unit,
                               target_slots: List[int],
                               alies_slots: List[int]) -> Optional[List[int]]:
         """Определение ближайшего слота для текущего юнита"""
-        result = [None]
+        result = []
         vanguard_alies_died = 2 not in alies_slots and \
             4 not in alies_slots and \
             6 not in alies_slots
@@ -896,7 +896,7 @@ class Battle:
     def _choose_targets(self,
                         unit: Unit,
                         attacker_slots: List[int],
-                        target_slots: List[int]) -> Optional[List]:
+                        target_slots: List[int]) -> Optional[List[int]]:
         """Определение следующих целей для атаки"""
         # для контактных юнитов
         if unit.attack_radius == CLOSEST_UNIT:
@@ -904,7 +904,7 @@ class Battle:
                 unit,
                 target_slots,
                 attacker_slots)
-            if targets != [None]:
+            if targets:
                 return targets
 
         # Для дальнобойных юнитов
@@ -912,7 +912,25 @@ class Battle:
                 and unit.attack_purpose in [1, 6]:
             return target_slots
 
-        return [None]
+        return []
+
+        #     # ----------------------------------------------------------
+        #     target_units = []
+        #
+        #     for slot in target_slots:
+        #         unit_ = self.get_unit_by_slot(slot, self.target_player.units)
+        #         target_units.append(unit_)
+        #
+        #     for target_unit in target_units:
+        #         try:
+        #             attack_source = unit.attack_source.split('/')[0]
+        #         except IndexError:
+        #             attack_source = unit.attack_source
+        #
+        #         if attack_source in target_unit.immune:
+        #             targets.remove(target_unit.slot)
+        # ----------------------------------------------------------
+
 
     def _auto_choose_targets(self, unit: Unit) -> Optional[List[int]]:
         """Авто определение следующих целей для атаки"""
