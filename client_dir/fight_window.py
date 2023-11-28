@@ -23,6 +23,7 @@ from client_dir.ui_functions import show_no_frame, \
     get_unit_image, show_no_circle, ui_lock, ui_unlock, \
     show_dot_icon
 from client_dir.unit_dialog import UnitDialog
+from units_dir.ranking import GOLD_GRADATION
 from units_dir.units import main_db
 from units_dir.units_factory import Unit
 
@@ -457,11 +458,8 @@ class FightWindow(QMainWindow):
 
         self.unit_gifs_update()
         self.show_no_damaged()
-        self.show_no_frames(self.unit_icons_dict, show_no_frame)
-        self.show_no_frames(self.dung_icons_dict, show_no_frame)
+        self.clear_frames_circles()
 
-        self.show_no_frames(self.unit_circles_dict, show_no_circle)
-        self.show_no_frames(self.dung_circles_dict, show_no_circle)
         if not self.new_battle.battle_is_over:
             self.show_target_frame()
             self.show_frame_attacker()
@@ -845,11 +843,7 @@ class FightWindow(QMainWindow):
         self.new_battle.current_unit.defence()
         self.update_log()
         self.show_no_damaged()
-        self.show_no_frames(self.unit_icons_dict, show_no_frame)
-        self.show_no_frames(self.dung_icons_dict, show_no_frame)
-
-        self.show_no_frames(self.unit_circles_dict, show_no_circle)
-        self.show_no_frames(self.dung_circles_dict, show_no_circle)
+        self.clear_frames_circles()
         self.are_units_in_round()
 
         self.update_log()
@@ -860,11 +854,7 @@ class FightWindow(QMainWindow):
 
         self.update_log()
         self.show_no_damaged()
-        self.show_no_frames(self.unit_icons_dict, show_no_frame)
-        self.show_no_frames(self.dung_icons_dict, show_no_frame)
-
-        self.show_no_frames(self.unit_circles_dict, show_no_circle)
-        self.show_no_frames(self.dung_circles_dict, show_no_circle)
+        self.clear_frames_circles()
 
         self.new_battle.waiting_units.append(self.new_battle.current_unit)
 
@@ -894,13 +884,14 @@ class FightWindow(QMainWindow):
         """Автобой"""
         # пока битва не окончена
         if not self.new_battle.battle_is_over:
-            self.new_battle.auto_fight()
+
             # если некого атаковать, защита
-            if not self.new_battle.target_slots:
+            if not self.new_battle.targets:
                 self.unit_defence()
 
             # иначе атака
             else:
+                self.new_battle.auto_fight()
                 self.show_attack_and_attacked()
 
     def show_all_attacked(self, text) -> None:
@@ -910,11 +901,7 @@ class FightWindow(QMainWindow):
                 target_slot,
                 self.new_battle.current_unit)
 
-        self.show_no_frames(self.unit_icons_dict, show_no_frame)
-        self.show_no_frames(self.dung_icons_dict, show_no_frame)
-
-        self.show_no_frames(self.unit_circles_dict, show_no_circle)
-        self.show_no_frames(self.dung_circles_dict, show_no_circle)
+        self.clear_frames_circles()
 
         # Очистка целей, чтобы в конце боя нельзя было атаковать повторно
         self.new_battle.target_slots = []
@@ -957,30 +944,11 @@ class FightWindow(QMainWindow):
     @staticmethod
     def add_gold(mission_number: any) -> None:
         """Добавление золота за победу"""
-        gold_gradation = {
-            'versus': 0,
-            '1': 50,
-            '2': 50,
-            '3': 100,
-            '4': 100,
-            '5': 100,
-            '6': 150,
-            '7': 150,
-            '8': 150,
-            '9': 150,
-            '10': 200,
-            '11': 200,
-            '12': 200,
-            '13': 250,
-            '14': 250,
-            '15': 500,
-        }
-
         player_gold = main_db.get_gold(
             main_db.current_player.name,
             main_db.current_faction)
 
-        changed_gold = player_gold + gold_gradation[mission_number]
+        changed_gold = player_gold + GOLD_GRADATION[mission_number]
 
         # обновление золота в базе
         main_db.update_gold(
@@ -1039,33 +1007,29 @@ class FightWindow(QMainWindow):
             )
 
             if self.new_battle.player2.name == 'Computer':
-                try:
-                    mission_number = self.dungeon.split('_')[-1]
-                    self.add_gold(mission_number)
+                mission_number = self.dungeon.split('_')[-1]
+                self.add_gold(mission_number)
 
-                    # после каждой победы день увеличивается на 1
-                    main_db.campaign_day += 1
-                    main_db.already_built = 0
+                # после каждой победы день увеличивается на 1
+                main_db.campaign_day += 1
+                main_db.already_built = 0
 
-                    # победили босса - повысился уровень кампании, день + 1
-                    if '15' in self.dungeon and main_db.campaign_level != 5:
-                        main_db.update_session(
-                            main_db.game_session_id,
-                            main_db.campaign_level + 1,
-                            main_db.campaign_day,
-                            main_db.already_built)
+                # победили босса - повысился уровень кампании, день + 1
+                if '15' in self.dungeon and main_db.campaign_level != 5:
+                    main_db.update_session(
+                        main_db.game_session_id,
+                        main_db.campaign_level + 1,
+                        main_db.campaign_day,
+                        main_db.already_built)
 
-                        main_db.campaign_level += 1
-                    # иначе просто прибавляем день
-                    else:
-                        main_db.update_session(
-                            main_db.game_session_id,
-                            main_db.campaign_level,
-                            main_db.campaign_day,
-                            main_db.already_built)
-
-                except IndexError:
-                    pass
+                    main_db.campaign_level += 1
+                # иначе просто прибавляем день
+                else:
+                    main_db.update_session(
+                        main_db.game_session_id,
+                        main_db.campaign_level,
+                        main_db.campaign_day,
+                        main_db.already_built)
 
     def show_gif_side(self,
                       unit: any,
@@ -1152,13 +1116,15 @@ class FightWindow(QMainWindow):
                             slots_dict1: dict,
                             slots_dict2: dict,
                             func: Callable) -> None:
-        """Отображает рамку в зависимости от стороны и действия"""
+        """Отображает круги в зависимости от стороны и действия"""
         if unit is None:
             pass
         elif unit in self.new_battle.player1.units:
-            func(unit, slots_dict1[unit.slot])
+            func(unit,
+                 slots_dict1[unit.slot])
         elif unit in self.new_battle.player2.units:
-            func(unit, slots_dict2[unit.slot])
+            func(unit,
+                 slots_dict2[unit.slot])
 
     @staticmethod
     def show_no_frames(slots_dict: dict, func: Callable) -> None:
@@ -1203,6 +1169,14 @@ class FightWindow(QMainWindow):
             gif.setSpeed(self.speed)
             gif_label.setMovie(gif)
             gif.start()
+
+    def clear_frames_circles(self):
+        """Очистить рамки вокруг иконок юнитов и круги под юнитами"""
+        self.show_no_frames(self.unit_icons_dict, show_no_frame)
+        self.show_no_frames(self.dung_icons_dict, show_no_frame)
+
+        self.show_no_frames(self.unit_circles_dict, show_no_circle)
+        self.show_no_frames(self.dung_circles_dict, show_no_circle)
 
     def show_level_up(self, unit: Unit, slots_dict: dict) -> None:
         """Прорисовка модели юнита, получившего уровень"""
@@ -1266,43 +1240,20 @@ class FightWindow(QMainWindow):
     def show_target_frame(self) -> None:
         """Прорисовка рамки вокруг иконки цели"""
         curr_unit = self.new_battle.current_unit
-        boosted = self.new_battle.boosted_units
 
-        for target_slot in self.new_battle.target_slots:
+        for target_slot in self.new_battle.targets:
             target = self.get_curr_target(target_slot)
 
             # цель и текущий юнит принадлежат одному игроку
             if target in self.new_battle.target_player.units and \
                     curr_unit in self.new_battle.target_player.units:
 
-                if (curr_unit.attack_type in ALCHEMIST_LIST
-                    and
-                    target not in boosted
-                    and
-                    target.attack_dmg != 0
-                    and
-                    target.attack_type not in ALCHEMIST_LIST) \
-                        or \
-                        ('Исцеление' in curr_unit.attack_type
-                         and target.dotted) \
-                        or \
-                        curr_unit.attack_type in HEAL_LIST:
-
+                if curr_unit.attack_type in (*ALCHEMIST_LIST, *HEAL_LIST):
                     # синяя рамка
                     self.show_frames_by_side(target,
                                              self.unit_icons_dict,
                                              self.dung_icons_dict,
                                              show_blue_frame)
-
-                if boosted.get(target):
-                    if (curr_unit.attack_type in ALCHEMIST_LIST
-                            and boosted[target] < curr_unit.attack_dmg):
-
-                        # синяя рамка
-                        self.show_frames_by_side(target,
-                                                 self.unit_icons_dict,
-                                                 self.dung_icons_dict,
-                                                 show_blue_frame)
 
             else:
                 # красная рамка
@@ -1716,7 +1667,10 @@ class FightWindow(QMainWindow):
         self.hbox.addWidget(button)
         self.setLayout(self.hbox)
 
-    def _slot_update(self, unit: Unit, slot: int, side: str) -> None:
+    def _slot_update(self,
+                     unit: Unit,
+                     slot: QtWidgets.QLabel,
+                     side: str) -> None:
         """Метод обновления иконки"""
         self._set_size_by_unit(unit, slot, side)
 
