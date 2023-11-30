@@ -75,11 +75,13 @@ class FightWindow(QMainWindow):
         self.front_damaged_dict = {}
         self.front_buttons_dict = {}
         self.front_circles_dict = {}
+        # self.front_field_buttons_dict = {}
 
         self.rear_icons_dict = {}
         self.rear_damaged_dict = {}
         self.rear_buttons_dict = {}
         self.rear_circles_dict = {}
+        # self.rear_field_buttons_dict = {}
 
         # словари иконок и кнопок на них
         self.unit_icons_dict = {}
@@ -93,6 +95,10 @@ class FightWindow(QMainWindow):
         # словари для кругов под юнитами
         self.unit_circles_dict = {}
         self.dung_circles_dict = {}
+
+        # словари кнопок с поля боя
+        # self.unit_field_buttons_dict = {}
+        # self.dung_field_buttons_dict = {}
 
         # временные словари лейблов для анимаций и hp юнитов игрока 1
         self.front_slots_dict = {}
@@ -176,6 +182,19 @@ class FightWindow(QMainWindow):
         self.ui.pushButtonSlot6.clicked.connect(
             self._attack_player_slot6)
 
+        self.ui.pushButtonUnit_1.clicked.connect(
+            self._attack_player_slot1)
+        self.ui.pushButtonUnit_2.clicked.connect(
+            self._attack_player_slot2)
+        self.ui.pushButtonUnit_3.clicked.connect(
+            self._attack_player_slot3)
+        self.ui.pushButtonUnit_4.clicked.connect(
+            self._attack_player_slot4)
+        self.ui.pushButtonUnit_5.clicked.connect(
+            self._attack_player_slot5)
+        self.ui.pushButtonUnit_6.clicked.connect(
+            self._attack_player_slot6)
+
         self.ui.pushButtonEnemySlot1.clicked.connect(
             self._attack_enemy_slot1)
         self.ui.pushButtonEnemySlot2.clicked.connect(
@@ -187,6 +206,19 @@ class FightWindow(QMainWindow):
         self.ui.pushButtonEnemySlot5.clicked.connect(
             self._attack_enemy_slot5)
         self.ui.pushButtonEnemySlot6.clicked.connect(
+            self._attack_enemy_slot6)
+
+        self.ui.pushButtonEnemyUnit_1.clicked.connect(
+            self._attack_enemy_slot1)
+        self.ui.pushButtonEnemyUnit_2.clicked.connect(
+            self._attack_enemy_slot2)
+        self.ui.pushButtonEnemyUnit_3.clicked.connect(
+            self._attack_enemy_slot3)
+        self.ui.pushButtonEnemyUnit_4.clicked.connect(
+            self._attack_enemy_slot4)
+        self.ui.pushButtonEnemyUnit_5.clicked.connect(
+            self._attack_enemy_slot5)
+        self.ui.pushButtonEnemyUnit_6.clicked.connect(
             self._attack_enemy_slot6)
 
         # контекстное меню для 1 слота игрока
@@ -305,6 +337,20 @@ class FightWindow(QMainWindow):
         self.ui.pushButtonEnemySlot5.installEventFilter(self)
         self.ui.pushButtonEnemySlot6.installEventFilter(self)
 
+        # self.ui.pushButtonUnit_1.installEventFilter(self)
+        # self.ui.pushButtonUnit_2.installEventFilter(self)
+        # self.ui.pushButtonUnit_3.installEventFilter(self)
+        # self.ui.pushButtonUnit_4.installEventFilter(self)
+        # self.ui.pushButtonUnit_5.installEventFilter(self)
+        # self.ui.pushButtonUnit_6.installEventFilter(self)
+
+        # self.ui.pushButtonEnemyUnit_1.installEventFilter(self)
+        # self.ui.pushButtonEnemyUnit_2.installEventFilter(self)
+        # self.ui.pushButtonEnemyUnit_3.installEventFilter(self)
+        # self.ui.pushButtonEnemyUnit_4.installEventFilter(self)
+        # self.ui.pushButtonEnemyUnit_5.installEventFilter(self)
+        # self.ui.pushButtonEnemyUnit_6.installEventFilter(self)
+
         self.unit_gifs_update()
 
         self.setWindowFlag(QtCore.Qt.WindowCloseButtonHint, False)
@@ -321,12 +367,25 @@ class FightWindow(QMainWindow):
                                      source,
                                      event)
 
+            # self.show_circle_by_unit(self.unit_field_buttons_dict,
+            #                          self.unit_circles_dict,
+            #                          FRONT,
+            #                          source,
+            #                          event)
+
             # rear side
             self.show_circle_by_unit(self.dung_buttons_dict,
                                      self.dung_circles_dict,
                                      REAR,
                                      source,
                                      event)
+
+            # self.show_circle_by_unit(self.dung_field_buttons_dict,
+            #                          self.dung_circles_dict,
+            #                          REAR,
+            #                          source,
+            #                          event)
+
 
         elif self.player_side == REAR:
             # rear side
@@ -351,6 +410,7 @@ class FightWindow(QMainWindow):
                             side: str,
                             source: any,
                             event: any):
+        """Установка gif'ки круга под юнитом"""
         for num, item in buttons_dict.items():
             unit = self._unit_by_slot_and_side(num, side)
 
@@ -359,12 +419,12 @@ class FightWindow(QMainWindow):
                     and unit.curr_health != 0:
 
                 if event.type() == QtCore.QEvent.Enter:
-                    unit = self._unit_by_slot_and_side(num, side)
-
                     if unit not in self.new_battle.current_player.units:
+                        print('red')
                         self.show_circle_r(unit, ui_dict.get(num))
 
                     if unit in self.new_battle.current_player.units:
+                        print('yellow')
                         self.show_circle_y(unit, ui_dict.get(num))
 
                 elif event.type() == QtCore.QEvent.Leave:
@@ -660,6 +720,15 @@ class FightWindow(QMainWindow):
             6: self.ui.pushButtonSlot6,
         }
 
+        # self.front_field_buttons_dict = {
+        #     1: self.ui.pushButtonUnit_1,
+        #     2: self.ui.pushButtonUnit_2,
+        #     3: self.ui.pushButtonUnit_3,
+        #     4: self.ui.pushButtonUnit_4,
+        #     5: self.ui.pushButtonUnit_5,
+        #     6: self.ui.pushButtonUnit_6,
+        # }
+
     def append_front_damaged(self) -> None:
         """Иконки атакованных юнитов FRONT стороны"""
         self.front_damaged_dict = {
@@ -704,6 +773,15 @@ class FightWindow(QMainWindow):
             6: self.ui.pushButtonEnemySlot6,
         }
 
+        # self.rear_field_buttons_dict = {
+        #     1: self.ui.pushButtonEnemyUnit_1,
+        #     2: self.ui.pushButtonEnemyUnit_2,
+        #     3: self.ui.pushButtonEnemyUnit_3,
+        #     4: self.ui.pushButtonEnemyUnit_4,
+        #     5: self.ui.pushButtonEnemyUnit_5,
+        #     6: self.ui.pushButtonEnemyUnit_6,
+        # }
+
     def append_rear_damaged(self) -> None:
         """Иконки атакованных юнитов REAR стороны"""
         self.rear_damaged_dict = {
@@ -738,8 +816,7 @@ class FightWindow(QMainWindow):
         else:
             gif_slot = self.ui.gifEnemyAreaAttack
 
-        gif = QMovie(
-            os.path.join(
+        gif = QMovie(os.path.join(
                 action,
                 f"{side}{unit.name}.gif"))
 
@@ -1038,36 +1115,29 @@ class FightWindow(QMainWindow):
                       side: str) -> None:
         """Обновление GIF в слоте"""
         if unit is None:
-            gif = QMovie(
-                os.path.join(
+            gif = QMovie(os.path.join(
                     UNIT_STAND,
                     f"{side}/empty.gif"))
-            # gif.setSpeed(self.speed)
 
         # анимация смерти
         elif unit.curr_health == 0:
             if 'neutral' in unit.subrace:
-                gif = QMovie(
-                    os.path.join(
+                gif = QMovie(os.path.join(
                         action,
                         f"{side}/neutral.gif"))
-                # gif.setSpeed(self.speed)
             else:
-                gif = QMovie(
-                    os.path.join(
+                gif = QMovie(os.path.join(
                         action,
                         f"{side}/{unit.subrace}.gif"))
-                # gif.setSpeed(self.speed)
+
         # if unit.curr_health == 0:
         #     gif = QMovie(os.path.join(COMMON, "skull.png"))
 
         # анимация действия
         else:
-            gif = QMovie(
-                os.path.join(
+            gif = QMovie(os.path.join(
                     action,
                     f"{side}{unit.name}.gif"))
-            # gif.setSpeed(self.speed)
 
         gif.setSpeed(self.speed)
         gif_slot.setMovie(gif)
@@ -1186,8 +1256,7 @@ class FightWindow(QMainWindow):
                 unit_gif = "lvl_up_big.gif"
             else:
                 unit_gif = "lvl_up.gif"
-            gif = QMovie(
-                os.path.join(
+            gif = QMovie(os.path.join(
                     BATTLE_ANIM,
                     unit_gif))
 
@@ -1298,10 +1367,9 @@ class FightWindow(QMainWindow):
             slots_dict = self.en_slots_eff_dict
 
         unit_gif = "life_drain.gif"
-        gif = QMovie(
-            os.path.join(
-                BATTLE_ANIM,
-                unit_gif))
+        gif = QMovie(os.path.join(
+            BATTLE_ANIM,
+            unit_gif))
 
         slots_dict[self.new_battle.current_unit.slot].setMovie(gif)
         gif.start()
@@ -1542,11 +1610,13 @@ class FightWindow(QMainWindow):
         self.unit_damaged_dict = self.front_damaged_dict
         self.unit_buttons_dict = self.front_buttons_dict
         self.unit_circles_dict = self.front_circles_dict
+        # self.unit_field_buttons_dict = self.front_field_buttons_dict
 
         self.dung_icons_dict = self.rear_icons_dict
         self.dung_damaged_dict = self.rear_damaged_dict
         self.dung_buttons_dict = self.rear_buttons_dict
         self.dung_circles_dict = self.rear_circles_dict
+        # self.dung_field_buttons_dict = self.rear_field_buttons_dict
 
     def set_unit_icons_player2(self) -> None:
         """Заполнение словарей иконок и кнопок юнитов FRONT - игрок 2"""
@@ -1554,11 +1624,13 @@ class FightWindow(QMainWindow):
         self.dung_damaged_dict = self.front_damaged_dict
         self.dung_buttons_dict = self.front_buttons_dict
         self.dung_circles_dict = self.front_circles_dict
+        # self.dung_field_buttons_dict = self.front_field_buttons_dict
 
         self.unit_icons_dict = self.rear_icons_dict
         self.unit_damaged_dict = self.rear_damaged_dict
         self.unit_buttons_dict = self.rear_buttons_dict
         self.unit_circles_dict = self.rear_circles_dict
+        # self.unit_field_buttons_dict = self.rear_field_buttons_dict
 
     def animate_action_side(self,
                             slots_dict: dict,

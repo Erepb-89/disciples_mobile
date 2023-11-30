@@ -3584,6 +3584,201 @@
      </rect>
     </property>
    </widget>
+   <widget class="QPushButton" name="pushButtonUnit_1">
+    <property name="geometry">
+     <rect>
+      <x>710</x>
+      <y>220</y>
+      <width>131</width>
+      <height>127</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="default">
+     <bool>false</bool>
+    </property>
+    <property name="flat">
+     <bool>true</bool>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButtonUnit_2">
+    <property name="geometry">
+     <rect>
+      <x>840</x>
+      <y>320</y>
+      <width>131</width>
+      <height>127</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="flat">
+     <bool>true</bool>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButtonUnit_3">
+    <property name="geometry">
+     <rect>
+      <x>570</x>
+      <y>300</y>
+      <width>131</width>
+      <height>127</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="flat">
+     <bool>true</bool>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButtonUnit_4">
+    <property name="geometry">
+     <rect>
+      <x>690</x>
+      <y>400</y>
+      <width>131</width>
+      <height>127</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="flat">
+     <bool>true</bool>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButtonUnit_5">
+    <property name="geometry">
+     <rect>
+      <x>410</x>
+      <y>370</y>
+      <width>131</width>
+      <height>127</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="flat">
+     <bool>true</bool>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButtonUnit_6">
+    <property name="geometry">
+     <rect>
+      <x>530</x>
+      <y>470</y>
+      <width>131</width>
+      <height>127</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="flat">
+     <bool>true</bool>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButtonEnemyUnit_2">
+    <property name="geometry">
+     <rect>
+      <x>1000</x>
+      <y>430</y>
+      <width>131</width>
+      <height>127</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="flat">
+     <bool>true</bool>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButtonEnemyUnit_1">
+    <property name="geometry">
+     <rect>
+      <x>1120</x>
+      <y>540</y>
+      <width>131</width>
+      <height>127</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="flat">
+     <bool>true</bool>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButtonEnemyUnit_4">
+    <property name="geometry">
+     <rect>
+      <x>860</x>
+      <y>510</y>
+      <width>131</width>
+      <height>127</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="flat">
+     <bool>true</bool>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButtonEnemyUnit_3">
+    <property name="geometry">
+     <rect>
+      <x>960</x>
+      <y>620</y>
+      <width>131</width>
+      <height>127</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="flat">
+     <bool>true</bool>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButtonEnemyUnit_6">
+    <property name="geometry">
+     <rect>
+      <x>700</x>
+      <y>580</y>
+      <width>131</width>
+      <height>127</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="flat">
+     <bool>true</bool>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButtonEnemyUnit_5">
+    <property name="geometry">
+     <rect>
+      <x>810</x>
+      <y>690</y>
+      <width>131</width>
+      <height>127</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="flat">
+     <bool>true</bool>
+    </property>
+   </widget>
    <zorder>FightBG</zorder>
    <zorder>leftIcons</zorder>
    <zorder>rightIcons</zorder>
@@ -3649,7 +3844,6 @@
    <zorder>gifEnemyEffSlot_3</zorder>
    <zorder>gifEnemySlot_5</zorder>
    <zorder>gifEnemyEffSlot_5</zorder>
-   <zorder>battleLog</zorder>
    <zorder>ChangeSideSlot</zorder>
    <zorder>EscapeSlot</zorder>
    <zorder>pushButtonBack</zorder>
@@ -3709,6 +3903,19 @@
    <zorder>pushButtonSlot4</zorder>
    <zorder>speedText</zorder>
    <zorder>comboSpeed</zorder>
+   <zorder>pushButtonUnit_1</zorder>
+   <zorder>pushButtonUnit_2</zorder>
+   <zorder>pushButtonUnit_3</zorder>
+   <zorder>pushButtonUnit_4</zorder>
+   <zorder>pushButtonUnit_5</zorder>
+   <zorder>pushButtonUnit_6</zorder>
+   <zorder>pushButtonEnemyUnit_2</zorder>
+   <zorder>pushButtonEnemyUnit_1</zorder>
+   <zorder>pushButtonEnemyUnit_4</zorder>
+   <zorder>pushButtonEnemyUnit_3</zorder>
+   <zorder>pushButtonEnemyUnit_6</zorder>
+   <zorder>pushButtonEnemyUnit_5</zorder>
+   <zorder>battleLog</zorder>
   </widget>
  </widget>
  <resources/>

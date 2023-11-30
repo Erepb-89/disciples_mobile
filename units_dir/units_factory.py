@@ -10,7 +10,7 @@ from battle_logging import logging
 
 from client_dir.settings import EM, UH, LD, MC, BIG, \
     HERO_FIGHTER_EXP, HERO_ARCHER_EXP, HERO_ROD_EXP, \
-    VAMPIRE_LIST
+    VAMPIRE_LIST, ALCHEMIST_LIST
 from units_dir.buildings import FACTIONS
 from units_dir.ranking import PERKS, ELDER_FORMS
 from units_dir.units import main_db
@@ -891,7 +891,7 @@ class Unit:
     @property
     def is_dead(self) -> bool:
         """Проверка на живость"""
-        return False
+        return self.curr_health == 0
 
     @property
     def is_double(self) -> bool:
@@ -966,7 +966,10 @@ class Unit:
                 next_damage = int(damage) + 5
         # Для юнитов
         else:
-            next_damage = int(damage * 1.10)
+            if self.attack_type not in ALCHEMIST_LIST:
+                next_damage = int(damage * 1.10)
+            else:
+                next_damage = damage
 
         next_damage = min(next_damage, 300)
 
