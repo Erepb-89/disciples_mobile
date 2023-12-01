@@ -59,6 +59,8 @@ class Battle:
         self.dotted_units = {}
         self.boosted_units = {}
 
+        self.next_unit = None
+
         self.player1 = Player(PLAYER1_NAME)
         self.player2 = Player(PLAYER2_NAME)
 
@@ -242,7 +244,12 @@ class Battle:
 
     def next_turn(self) -> None:
         """Ход юнита"""
-        self.current_unit = self.units_deque.popleft()
+        if self.next_unit:
+            self.current_unit = self.next_unit
+            self.next_unit = None
+        else:
+            self.current_unit = self.units_deque.popleft()
+
         self.current_unit.off_defence()
 
         line = f'Ходит: {self.current_unit.name}\n'
@@ -335,6 +342,9 @@ class Battle:
         # есть юниты, ожидающие лучшего момента
         elif self.waiting_units:
             self.waiting_round()
+            self.next_turn()
+
+        elif self.next_unit:
             self.next_turn()
 
         else:
@@ -532,6 +542,7 @@ class Battle:
 
         # Если текущий юнит - Друид/Алхимик
         elif attack_type in ALCHEMIST_LIST:
+            # Друид
             if 'Увеличение урона' in attack_type:
                 if target not in self.boosted_units:
 
@@ -548,16 +559,25 @@ class Battle:
                         self.boosted_units[target] = curr_unit.attack_dmg
 
                     elif (target in self.boosted_units
-                        or self.boosted_units[target] >=
-                        curr_unit.attack_dmg) \
+                          or self.boosted_units[target] >=
+                          curr_unit.attack_dmg) \
                             and 'Исцеление' not in attack_type:
                         success = False
                         curr_unit.defence()
 
+                # Друид с исцелением
                 if 'Исцеление' in attack_type and target.dotted:
-
                     self.dotted_units.pop(target)
                     success = curr_unit.cure(target)
+
+            # Алхимик
+            elif 'Дополнительная атака' in attack_type:
+                success = True
+                self.next_unit = target
+
+                line = f"{self.current_unit.name} дает дополнительную " \
+                       f"атаку воину {target.name}.\n"
+                logging(line)
 
         # Для воинов с основной атакой типа Паралич и Окаменение
         elif attack_type in PARALYZE_LIST:
