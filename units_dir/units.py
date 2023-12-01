@@ -1620,7 +1620,8 @@ class ServerStorage:
         if self.check_slot(
                 unit,
                 slot,
-                self.get_player_unit_by_slot) is True:  # Нужно заменить на get_unit_by_slot
+                self.get_player_unit_by_slot) is True:
+            # Нужно заменить на get_unit_by_slot
             print('Данный слот занят')
         else:
             unit_row = self.get_unit_by_name(unit)
@@ -1643,7 +1644,8 @@ class ServerStorage:
         if self.check_slot(
                 unit,
                 slot,
-                self.get_dungeon_unit_by_slot) is True:  # Нужно заменить на get_unit_by_slot
+                self.get_dungeon_unit_by_slot) is True:
+            # Нужно заменить на get_unit_by_slot
             print('Данный слот занят')
         else:
             unit_row = self.get_unit_by_name(unit)

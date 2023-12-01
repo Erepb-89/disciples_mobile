@@ -1443,7 +1443,7 @@ class Unit:
     def increase_damage(self, target: any) -> bool:
         """Увеличение урона Друида"""
         if 'Увеличение урона' in self.attack_type:
-            dmg_boost = int(self.attack_dmg * 0.01 * target.attack_dmg)
+            dmg_boost = math.floor(self.attack_dmg * 0.01 * target.attack_dmg)
             target.attack_dmg += dmg_boost
 
             line = f"{self.name} увеличивает урон на " \

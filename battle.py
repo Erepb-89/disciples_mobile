@@ -192,9 +192,11 @@ class Battle:
         """Сортировка юнитов по урону"""
         damage = {}
         for unit in units:
-            if unit.attack_type not in HEAL_LIST and \
-                    unit.attack_type not in ALCHEMIST_LIST:
-                damage[unit] = unit.attack_dmg
+            if unit.attack_type not in (*HEAL_LIST, *ALCHEMIST_LIST):
+                if unit.attack_purpose == 6:
+                    damage[unit] = unit.attack_dmg * 1.5
+                else:
+                    damage[unit] = unit.attack_dmg
 
         sorted_units_by_damage = sorted(
             damage, key=damage.get, reverse=True)
@@ -549,10 +551,11 @@ class Battle:
                     success = curr_unit.increase_damage(target)
                     self.boosted_units[target] = curr_unit.attack_dmg
 
+                # если воина уже бафали
                 elif self.boosted_units.get(target):
                     if self.boosted_units[target] < curr_unit.attack_dmg:
                         target.attack_dmg = \
-                            int(target.attack_dmg * 100 /
+                            int((target.attack_dmg + 1) * 100 /
                                 (100 + self.boosted_units[target]))
 
                         success = curr_unit.increase_damage(target)
@@ -618,6 +621,7 @@ class Battle:
             target = sorted_units[0]
 
             return target
+        return None
 
     def find_target_for_all(self, target_slots: List[int]) -> Optional[Unit]:
         """Атака/лечение/усиление/паралич определенного юнита"""
@@ -678,6 +682,7 @@ class Battle:
         third_priority = []
         target_units = []
         self.targets = []
+        target = None
 
         for slot in target_slots:
             unit_ = self.get_unit_by_slot(slot, self.target_player.units)
@@ -709,44 +714,51 @@ class Battle:
                     third_priority.append(target_unit)
 
         if first_priority:
-            target = self.attack_priority(first_priority)
+            target = self.damage_priority(first_priority, 1)
 
         elif not first_priority and second_priority:
-            target = self.attack_priority(second_priority)
+            target = self.damage_priority(second_priority, 2)
 
-        else:
-            target = self.attack_priority(third_priority)
+        if target is None:
+            target = self.hp_priority(third_priority)
 
         return target
 
-    def attack_priority(self, targets: list) -> Unit:
+    def damage_priority(self, targets: list, hits) -> Unit:
         """Определение приоритета для атаки"""
         result_target = None
 
         for target in targets:
+            target_armor = (1 - target.armor * 0.01)
+            damage = self.current_unit.attack_dmg * hits * target_armor
+
             # В первую очередь бьем лекарей
-            if target.branch == 'support' and \
-                    target.attack_source in HEAL_LIST:
+            if target.branch == 'support' \
+                    and target.attack_source in HEAL_LIST \
+                    and target.curr_health <= damage:
                 result_target = target
 
             # Во вторую - бьем магов
-            elif target.branch == 'mage':
+            elif target.branch == 'mage' \
+                    and target.curr_health <= damage:
                 result_target = target
 
-            # Во третью - бьем стрелков
-            elif target.branch == 'archer':
+            # В третью - бьем стрелков
+            elif target.branch == 'archer' \
+                    and target.curr_health <= damage:
                 result_target = target
 
-        # В остальных случаях
         if result_target is None:
-            # выбираем слабейшего из оставшихся (по абсолютному здоровью)
-            if targets:
-                weakest_unit = self.sorting_health(targets)[0]
-                result_target = weakest_unit
-            else:
-                result_target = None
+            result_target = self.hp_priority(targets)
 
         return result_target
+
+    def hp_priority(self, targets):
+        """Выбор слабейшего из оставшихся юнитов (по абсолютному здоровью)"""
+        if targets:
+            weakest_unit = self.sorting_health(targets)[0]
+            return weakest_unit
+        return None
 
     def get_heal_targets(self, target_slots: List[int]) -> List[Optional[Unit]]:
         """Получить цели для лечения"""
@@ -781,8 +793,7 @@ class Battle:
                     (unit not in self.boosted_units
                      and unit.attack_dmg != 0
                      and unit.attack_type
-                     not in (*HEAL_LIST, *ALCHEMIST_LIST, *PARALYZE_LIST)
-                    ):
+                     not in (*HEAL_LIST, *ALCHEMIST_LIST, *PARALYZE_LIST)):
                 target_units.append(unit)
                 self.targets.append(unit.slot)
 
