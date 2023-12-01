@@ -420,11 +420,9 @@ class FightWindow(QMainWindow):
 
                 if event.type() == QtCore.QEvent.Enter:
                     if unit not in self.new_battle.current_player.units:
-                        print('red')
                         self.show_circle_r(unit, ui_dict.get(num))
 
                     if unit in self.new_battle.current_player.units:
-                        print('yellow')
                         self.show_circle_y(unit, ui_dict.get(num))
 
                 elif event.type() == QtCore.QEvent.Leave:

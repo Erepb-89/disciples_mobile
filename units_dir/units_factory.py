@@ -1441,7 +1441,7 @@ class Unit:
         return True
 
     def increase_damage(self, target: any) -> bool:
-        """Увеличение урона Друида, дополнительная атака Алхимика"""
+        """Увеличение урона Друида"""
         if 'Увеличение урона' in self.attack_type:
             dmg_boost = int(self.attack_dmg * 0.01 * target.attack_dmg)
             target.attack_dmg += dmg_boost
