@@ -194,7 +194,7 @@ class Battle:
         for unit in units:
             if unit.attack_type not in (*HEAL_LIST, *ALCHEMIST_LIST):
                 if unit.attack_purpose == 6:
-                    damage[unit] = unit.attack_dmg * 1.5
+                    damage[unit] = unit.attack_dmg * 1.51
                 else:
                     damage[unit] = unit.attack_dmg
 
@@ -258,8 +258,8 @@ class Battle:
         logging(line)
 
         # Получение периодического урона
-        if self.current_unit in self.dotted_units and \
-                self.current_unit.dotted:
+        if self.current_unit in self.dotted_units \
+                and self.current_unit.dotted:
             self.take_dot_damage()
 
         # если юнит жив
@@ -810,12 +810,24 @@ class Battle:
         """Получение приоритетной для парализатора цели"""
         target_units = []
         self.targets = []
+        already_paralyzed = False
 
         for slot in target_slots:
             unit = self.get_unit_by_slot(
                 slot,
                 self.target_player.units)
-            if self.current_unit.attack_source not in unit.immune:
+
+            if unit in self.dotted_units and unit.dotted:
+                for dot_source, dot_params in self.dotted_units[unit].items():
+                    dot_rounds = dot_params[1]  # раунды
+
+                    # если остались раунды, и это паралич/окаменение
+                    if dot_source in PARALYZE_LIST:
+                        already_paralyzed = bool(dot_rounds)
+
+            if self.current_unit.attack_source \
+                    not in unit.immune \
+                    and not already_paralyzed:
                 target_units.append(unit)
                 self.targets.append(unit.slot)
 
