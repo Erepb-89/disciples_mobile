@@ -1317,11 +1317,10 @@ class Unit:
         # источник атаки
         try:
             attack_source = self.attack_source.split('/')[0]
-            attack_dict['attack_source'] = attack_source
-
         except IndexError:
             attack_source = self.attack_source
-            attack_dict['attack_source'] = attack_source
+
+        attack_dict['attack_source'] = attack_source
 
         attack_dict = self.checking_immune_ward(
             target,
@@ -1441,7 +1440,7 @@ class Unit:
         return True
 
     def increase_damage(self, target: any) -> bool:
-        """Увеличение урона Друида"""
+        """Увеличение урона Друидом"""
         if 'Увеличение урона' in self.attack_type:
             dmg_boost = math.floor(self.attack_dmg * 0.01 * target.attack_dmg)
             target.attack_dmg += dmg_boost
