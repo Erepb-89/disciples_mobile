@@ -674,8 +674,8 @@ class Battle:
             self.attack_1_unit(target)
 
     def get_priority_target(self,
-                              unit: Unit,
-                              target_slots: List[int]) -> Unit:
+                            unit: Unit,
+                            target_slots: List[int]) -> Unit:
         """Получить приоритетную для атаки цель"""
         first_priority = []
         second_priority = []
@@ -720,6 +720,36 @@ class Battle:
             target = self.damage_priority(second_priority, 2)
 
         if target is None:
+            target = self.get_third_priority_target(
+                target_units,
+                third_priority)
+
+        return target
+
+    def get_third_priority_target(self,
+                                  target_units: List[Unit],
+                                  third_priority: List[Unit]):
+        """Получить цель третьего приоритета для атаки"""
+        # если второстепенная атака - Паралич/Окаменение
+        if self.current_unit.dot_dmg == 0:
+            # ищем цель по макс. урону с учетом иммунитетов цели
+            attack_source = self.current_unit.attack_source.split('/')[1]
+            i = 0
+            targets = self.sorting_damage(target_units)
+            target = targets[0]
+            not_immune_target = bool(attack_source not in target.immune)
+
+            while not_immune_target is False and i < len(target_units) - 1:
+                i += 1
+                target = targets[i]
+                not_immune_target = bool(attack_source not in target.immune)
+
+            # ищем цель с наименьшим здоровьем
+            if not not_immune_target:
+                target = self.hp_priority(third_priority)
+
+        # если обычная атака
+        else:
             target = self.hp_priority(third_priority)
 
         return target
@@ -861,7 +891,6 @@ class Battle:
                            slot_c: int) -> Optional[List[int]]:
         """Вычисление рандомной цели для крайних слотов"""
         if slot_a in tg_slots and slot_b in tg_slots:
-            # return random.choice([slot_a, slot_b])
             return [slot_a, slot_b]
         if slot_a in tg_slots:
             return [slot_a]
@@ -901,11 +930,11 @@ class Battle:
         """Определение ближайшего слота для текущего юнита"""
         result = []
         vanguard_alies_died = 2 not in alies_slots and \
-            4 not in alies_slots and \
-            6 not in alies_slots
+                              4 not in alies_slots and \
+                              6 not in alies_slots
         vanguard_enemies_died = 2 not in target_slots and \
-            4 not in target_slots and \
-            6 not in target_slots
+                                4 not in target_slots and \
+                                6 not in target_slots
 
         targets_dict = {
             1: self._closest_side_slot(
@@ -974,7 +1003,6 @@ class Battle:
             return slots
 
         return []
-
 
     def _auto_choose_targets(self, unit: Unit) -> Optional[List[int]]:
         """Авто определение следующих целей для атаки"""
