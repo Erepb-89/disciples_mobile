@@ -5,7 +5,7 @@ import random
 from typing import Callable, Optional
 
 from PyQt5 import QtCore, QtWidgets
-from PyQt5.QtCore import QThread, pyqtSignal
+from PyQt5.QtCore import QThread, pyqtSignal, QTimer
 from PyQt5.QtGui import QPixmap, QMovie, QStandardItem, QStandardItemModel
 from PyQt5.QtWidgets import QMainWindow, QHBoxLayout
 
@@ -136,6 +136,8 @@ class FightWindow(QMainWindow):
             log.write(f'Ходит: {self.new_battle.current_unit.name}\n')
             log.write("Новая битва\n")
         self.update_log()
+
+        self.check_ai()
 
     def InitUI(self):
         """Загружаем конфигурацию окна из дизайнера"""
@@ -385,7 +387,6 @@ class FightWindow(QMainWindow):
             #                          REAR,
             #                          source,
             #                          event)
-
 
         elif self.player_side == REAR:
             # rear side
@@ -815,8 +816,8 @@ class FightWindow(QMainWindow):
             gif_slot = self.ui.gifEnemyAreaAttack
 
         gif = QMovie(os.path.join(
-                action,
-                f"{side}{unit.name}.gif"))
+            action,
+            f"{side}{unit.name}.gif"))
 
         gif_slot.setMovie(gif)
         gif.start()
@@ -912,6 +913,18 @@ class FightWindow(QMainWindow):
             self.show_target_frame()
             self.show_frame_attacker()
             self.show_circle_attacker()
+
+        self.check_ai()
+
+    def check_ai(self):
+        """Проверка, если ходит ИИ, включаем автобой"""
+        if self.new_battle.current_player.name == 'Computer':
+            ui_lock(self.ui.pushButtonAutoFight)
+            timer = QTimer(self)
+            timer.singleShot(1000, self.autofight)
+            del timer
+        else:
+            ui_unlock(self.ui.pushButtonAutoFight)
 
     def unit_defence(self) -> None:
         """Встать в Защиту выбранным юнитом"""
@@ -1114,19 +1127,19 @@ class FightWindow(QMainWindow):
         """Обновление GIF в слоте"""
         if unit is None:
             gif = QMovie(os.path.join(
-                    UNIT_STAND,
-                    f"{side}/empty.gif"))
+                UNIT_STAND,
+                f"{side}/empty.gif"))
 
         # анимация смерти
         elif unit.curr_health == 0:
             if 'neutral' in unit.subrace:
                 gif = QMovie(os.path.join(
-                        action,
-                        f"{side}/neutral.gif"))
+                    action,
+                    f"{side}/neutral.gif"))
             else:
                 gif = QMovie(os.path.join(
-                        action,
-                        f"{side}/{unit.subrace}.gif"))
+                    action,
+                    f"{side}/{unit.subrace}.gif"))
 
         # if unit.curr_health == 0:
         #     gif = QMovie(os.path.join(COMMON, "skull.png"))
@@ -1134,8 +1147,8 @@ class FightWindow(QMainWindow):
         # анимация действия
         else:
             gif = QMovie(os.path.join(
-                    action,
-                    f"{side}{unit.name}.gif"))
+                action,
+                f"{side}{unit.name}.gif"))
 
         gif.setSpeed(self.speed)
         gif_slot.setMovie(gif)
@@ -1180,10 +1193,10 @@ class FightWindow(QMainWindow):
             func(slots_dict2[unit.slot])
 
     def show_circles_by_side(self,
-                            unit: Unit,
-                            slots_dict1: dict,
-                            slots_dict2: dict,
-                            func: Callable) -> None:
+                             unit: Unit,
+                             slots_dict1: dict,
+                             slots_dict2: dict,
+                             func: Callable) -> None:
         """Отображает круги в зависимости от стороны и действия"""
         if unit is None:
             pass
@@ -1255,8 +1268,8 @@ class FightWindow(QMainWindow):
             else:
                 unit_gif = "lvl_up.gif"
             gif = QMovie(os.path.join(
-                    BATTLE_ANIM,
-                    unit_gif))
+                BATTLE_ANIM,
+                unit_gif))
 
             slots_dict[unit.slot].setMovie(gif)
             gif.start()

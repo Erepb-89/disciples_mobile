@@ -273,6 +273,9 @@ class Battle:
 
         self.target_slots = self._auto_choose_targets(self.current_unit)
 
+        # if self.current_player.name == 'Computer':
+        #     self.auto_fight()
+
     def logging_dot(self, dot_source, dot_dmg) -> None:
         """Логирование периодического урона"""
         line = f'{dot_source} наносит урон {dot_dmg} воину ' \
