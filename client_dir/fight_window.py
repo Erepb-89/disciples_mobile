@@ -920,11 +920,15 @@ class FightWindow(QMainWindow):
         """Проверка, если ходит ИИ, включаем автобой"""
         if self.new_battle.current_player.name == 'Computer':
             ui_lock(self.ui.pushButtonAutoFight)
+            ui_lock(self.ui.pushButtonDefence)
+            ui_lock(self.ui.pushButtonWaiting)
             timer = QTimer(self)
             timer.singleShot(1000, self.autofight)
             del timer
         else:
             ui_unlock(self.ui.pushButtonAutoFight)
+            ui_unlock(self.ui.pushButtonDefence)
+            ui_unlock(self.ui.pushButtonWaiting)
 
     def unit_defence(self) -> None:
         """Встать в Защиту выбранным юнитом"""
@@ -1216,7 +1220,8 @@ class FightWindow(QMainWindow):
     def show_circle_g(self, unit, gif_label: QtWidgets.QLabel) -> None:
         """Установка gif'ки круга под юнитом (зеленый)"""
         if unit is not None:
-            circle_gif = "circle_g.gif"
+            circle_gif = "big_circle_y.gif" if unit.size == BIG \
+                else "circle_g.gif"
 
             gif = QMovie(os.path.join(
                 BATTLE_ANIM, circle_gif))
@@ -1702,6 +1707,7 @@ class FightWindow(QMainWindow):
 
         # показать иконки эффектов
         self.define_dotted_units()
+        print(self.new_battle.dotted_units)
 
     def set_coords_double_slots(self, ui_obj) -> None:
         """Задание координат для 'двойных' слотов либо кнопок"""

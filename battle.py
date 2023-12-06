@@ -313,7 +313,7 @@ class Battle:
                         self.logging_dot(dot_source, dot_dmg)
 
                     # Если Паралич
-                    else:
+                    elif dot_source in ('Паралич', 'Окаменение'):
                         paralyzed = True
 
                         # уменьшаем кол-во раундов
@@ -484,6 +484,10 @@ class Battle:
                 dot_rounds = 1
             else:
                 dot_rounds = random.choice(range(1, 4))
+        elif dot_source == 'Снижение урона':
+            dot_rounds = 999
+            if target not in self.dotted_units:
+                target.attack_dmg -= int(target.attack_dmg * 0.325)
         else:
             dot_rounds = random.choice(range(2, 6))
 
@@ -503,7 +507,8 @@ class Battle:
 
         self.dotted_units[target] = dot_dict
 
-        target.dotted = max(dot_rounds, target.dotted)
+        if dot_source != 'Снижение урона':
+            target.dotted = max(dot_rounds, target.dotted)
 
         line = f"На {target.name} будет оказывать воздействие " \
                f"{dot_source} в течение " \
@@ -542,7 +547,7 @@ class Battle:
             success = curr_unit.heal(target)
 
             if 'Исцеление' in attack_type and target.dotted:
-                self.dotted_units.pop(target)
+                self.cure_target(target)
                 success = curr_unit.cure(target)
 
         # Если текущий юнит - Друид/Алхимик
@@ -573,7 +578,7 @@ class Battle:
 
                 # Друид с исцелением
                 if 'Исцеление' in attack_type and target.dotted:
-                    self.dotted_units.pop(target)
+                    self.cure_target(target)
                     success = curr_unit.cure(target)
 
             # Алхимик
@@ -595,6 +600,17 @@ class Battle:
 
         if success:
             self.attacked_slots.append(target.slot)
+
+    def cure_target(self, target: Optional[Unit]) -> None:
+        """
+        Проверка на исцеление от вредных эффектов.
+        Убираются все эффекты, кроме снижения урона
+        """
+        if 'Снижение урона' in self.dotted_units[target].values():
+            self.dotted_units.pop(target)
+            self.dotted_units[target] = {['Снижение урона']: [0, 999]}
+        else:
+            self.dotted_units.pop(target)
 
     def player_attack(self, target: Unit) -> None:
         """Атака игрока по цели"""
