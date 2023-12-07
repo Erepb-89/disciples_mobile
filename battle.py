@@ -324,11 +324,17 @@ class Battle:
 
                 # уменьшаем раунды на 1
                 dot_rounds = max(0, dot_rounds - 1)
-                if self.current_unit.dotted == 0:
-                    self.dotted_units.pop(self.current_unit)
-                else:
+
+                if self.current_unit.dotted != 0:
                     self.dotted_units[self.current_unit][dot_source] = \
                         [dot_dmg, dot_rounds]
+
+
+                # if self.current_unit.dotted == 0:
+                #     self.dotted_units.pop(self.current_unit)
+                # else:
+                #     self.dotted_units[self.current_unit][dot_source] = \
+                #         [dot_dmg, dot_rounds]
 
         # Если Паралич, пропускаем ход
         if paralyzed:
@@ -477,19 +483,11 @@ class Battle:
         # урон
         dot_dmg = self.current_unit.dot_dmg
 
-        # раунды
         if dot_source in PARALYZE_LIST:
             dot_dmg = 0
-            if self.current_unit.name in PARALYZE_UNITS:
-                dot_rounds = 1
-            else:
-                dot_rounds = random.choice(range(1, 4))
-        elif dot_source == 'Снижение урона':
-            dot_rounds = 999
-            if target not in self.dotted_units:
-                target.attack_dmg -= int(target.attack_dmg * 0.325)
-        else:
-            dot_rounds = random.choice(range(2, 6))
+
+        # раунды
+        dot_rounds = self.define_dot_rounds(target, dot_source)
 
         if self.dotted_units.get(target):
             dot_dict = self.dotted_units[target]
@@ -514,6 +512,38 @@ class Battle:
                f"{dot_source} в течение " \
                f"{dot_rounds} раунд(ов)\n"
         logging(line)
+
+    def define_dot_rounds(self, target: Unit, dot_source: str) -> int:
+        """
+        Определение количества раундов действия эффекта на цель.
+        Устанавливает пониженный урон/инициативу.
+        """
+        if dot_source in PARALYZE_LIST:
+            if self.current_unit.name in PARALYZE_UNITS:
+                dot_rounds = 1
+            else:
+                dot_rounds = random.choice(range(1, 4))
+
+        elif dot_source == 'Снижение урона':
+            dot_rounds = 999
+            if target in self.dotted_units:
+                if not self.dotted_units[target].get(dot_source):
+                    target.attack_dmg -= int(target.attack_dmg * 0.325)
+            else:
+                target.attack_dmg -= int(target.attack_dmg * 0.325)
+
+        elif dot_source == 'Снижение инициативы':
+            dot_rounds = random.choice(range(2, 5))
+
+            if target in self.dotted_units:
+                if not self.dotted_units[target].get(dot_source):
+                    target.attack_ini -= int(target.attack_ini * 0.5)
+            else:
+                target.attack_ini -= int(target.attack_ini * 0.5)
+        else:
+            dot_rounds = random.choice(range(2, 6))
+
+        return dot_rounds
 
     def attack_6_units(self, player: Player) -> None:
         """Если цели - 6 юнитов"""
@@ -606,9 +636,16 @@ class Battle:
         Проверка на исцеление от вредных эффектов.
         Убираются все эффекты, кроме снижения урона
         """
-        if 'Снижение урона' in self.dotted_units[target].values():
+        if self.dotted_units[target].get('Снижение урона'):
+            if self.dotted_units[target].get('Снижение инициативы'):
+                target.off_initiative()
+
             self.dotted_units.pop(target)
             self.dotted_units[target] = {['Снижение урона']: [0, 999]}
+
+        elif self.dotted_units[target].get('Снижение инициативы'):
+            target.off_initiative()
+            self.dotted_units.pop(target)
         else:
             self.dotted_units.pop(target)
 
@@ -665,6 +702,11 @@ class Battle:
                 target_slots,
                 self.get_druid_targets,
                 self.sorting_damage)
+            if target is None:
+                target = self.find_target(
+                    target_slots,
+                    self.get_druid_targets,
+                    self.sorting_health_percentage)
 
         elif self.current_unit.attack_type in PARALYZE_LIST:
             # определяем приоритет для парализаторов

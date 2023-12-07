@@ -907,10 +907,17 @@ class Unit:
         self.armor = main_db.get_unit_by_name(self.name).armor + \
             self.nat_armor * 20
 
+    def off_initiative(self) -> None:
+        """Сброс инициативы в битве"""
+        unit_ini = main_db.get_unit_by_name(self.name).attack_ini
+        self.attack_ini = int(
+            unit_ini + unit_ini * self.first_strike * 0.5)
+
     def off_boosts(self) -> None:
         """Сброс усиления атаки в битве"""
-        self.attack_dmg = main_db.get_unit_by_name(self.name).attack_dmg + \
-            self.might * 25
+        unit_dmg = main_db.get_unit_by_name(self.name).attack_dmg
+        self.attack_dmg = int(
+            unit_dmg + unit_dmg * self.might * 25)
 
     def defence(self) -> None:
         """Пропуск хода и защита в битве"""
@@ -1097,13 +1104,13 @@ class Unit:
             if perk == 'endurance':
                 main_db.update_unit_health(
                     self.id,
-                    self.health + self.health * 0.2)
+                    self.health * 1.2)
 
             # Первый удар
             if perk == 'first_strike':
                 main_db.update_unit_ini(
                     self.id,
-                    self.attack_ini + self.attack_ini * 0.5)
+                    self.attack_ini * 1.5)
 
             # Стихийный перк
             if 'resist' in perk:
@@ -1171,6 +1178,9 @@ class Unit:
 
         # снимаем бонусы атаки
         self.off_boosts()
+
+        # сбрасываем повышения/понижения инициативы
+        self.off_initiative()
 
         if self.branch == 'hero':
             if self.dyn_upd_level != 0:
