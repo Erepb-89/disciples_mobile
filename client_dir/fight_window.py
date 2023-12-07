@@ -839,10 +839,6 @@ class FightWindow(QMainWindow):
             # уменьшаем кол-во раундов
             curr_unit.dotted -= 1
 
-            if curr_unit.dotted == 0 \
-                    and curr_unit in self.new_battle.dotted_units:
-                self.new_battle.dotted_units.pop(curr_unit)
-
             # если отравленный юнит погиб, удаляем его
             if curr_unit.curr_health == 0:
                 self.removing_dead_unit(curr_unit)
@@ -867,6 +863,11 @@ class FightWindow(QMainWindow):
                     self.show_lvl_up_animations()
 
                 self._update_all_unit_health()
+
+            if curr_unit.dotted == 0:
+                if curr_unit in self.new_battle.dotted_units:
+                    curr_unit.off_initiative()
+                    self.new_battle.dotted_units.pop(curr_unit)
 
         # показать иконки эффектов
         self.define_dotted_units()
