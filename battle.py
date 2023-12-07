@@ -227,7 +227,10 @@ class Battle:
         self.waiting_units = []
 
     def new_round(self) -> None:
-        """Высчитывание оставшихся выживших в новом раунде"""
+        """
+        Подсчет оставшихся выживших в новом раунде.
+        Создание очередности ходов юнитов согласно инициативе.
+        """
         logging('Новый раунд\n')
 
         self.units_deque.clear()
@@ -584,7 +587,9 @@ class Battle:
         elif attack_type in ALCHEMIST_LIST:
             # Друид
             if 'Увеличение урона' in attack_type:
-                if target not in self.boosted_units:
+                if target not in self.boosted_units \
+                        and target.attack_type \
+                        not in (*HEAL_LIST, *ALCHEMIST_LIST):
 
                     success = curr_unit.increase_damage(target)
                     self.boosted_units[target] = curr_unit.attack_dmg
@@ -610,6 +615,9 @@ class Battle:
                 if 'Исцеление' in attack_type and target.dotted:
                     self.cure_target(target)
                     success = curr_unit.cure(target)
+
+                if target is None:
+                    curr_unit.defence()
 
             # Алхимик
             elif 'Дополнительная атака' in attack_type:

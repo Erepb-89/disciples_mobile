@@ -904,20 +904,26 @@ class Unit:
 
     def off_defence(self) -> None:
         """Сброс защиты в битве"""
-        self.armor = main_db.get_unit_by_name(self.name).armor + \
-            self.nat_armor * 20
+        unit = main_db.get_unit_by_id(self.id,
+                                      main_db.PlayerUnits)
+        if unit is not None:
+            self.armor = unit.armor + self.nat_armor * 20
 
     def off_initiative(self) -> None:
         """Сброс инициативы в битве"""
-        unit_ini = main_db.get_unit_by_name(self.name).attack_ini
-        self.attack_ini = int(
-            unit_ini + unit_ini * self.first_strike * 0.5)
+        unit = main_db.get_unit_by_id(self.id,
+                                      main_db.PlayerUnits)
+        if unit is not None:
+            self.attack_ini = int(
+                unit.attack_ini + unit.attack_ini * self.first_strike * 0.5)
 
     def off_boosts(self) -> None:
         """Сброс усиления атаки в битве"""
-        unit_dmg = main_db.get_unit_by_name(self.name).attack_dmg
-        self.attack_dmg = int(
-            unit_dmg + unit_dmg * self.might * 25)
+        unit = main_db.get_unit_by_id(self.id,
+                                      main_db.PlayerUnits)
+        if unit is not None:
+            self.attack_dmg = int(
+                unit.attack_dmg + unit.attack_dmg * self.might * 25)
 
     def defence(self) -> None:
         """Пропуск хода и защита в битве"""
@@ -1179,7 +1185,7 @@ class Unit:
         # снимаем бонусы атаки
         self.off_boosts()
 
-        # сбрасываем повышения/понижения инициативы
+        # сбрасываем инициативу к изначальной
         self.off_initiative()
 
         if self.branch == 'hero':
@@ -1472,7 +1478,7 @@ if __name__ == '__main__':
     new_unit1 = Unit(main_db.get_unit_by_name('Антипаладин'))
     new_unit2 = Unit(main_db.get_unit_by_name('Мраморная гаргулья'))
 
-    new_unit1.lvl_up()
+    # new_unit1.lvl_up()
 
     new_unit1.attack(new_unit2)
     # new_unit2.attack(new_unit1)
