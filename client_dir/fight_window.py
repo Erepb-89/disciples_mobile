@@ -825,16 +825,20 @@ class FightWindow(QMainWindow):
     def show_poisoned_unit(self):
         """Если ходящий юнит отравлен и т.д."""
         curr_unit = self.new_battle.current_unit
+        dot_units = self.new_battle.dotted_units
 
-        if curr_unit in self.new_battle.dotted_units and \
+        if curr_unit in dot_units and \
                 curr_unit.dotted:
-            # прорисовка модели атакованного юнита
-            self.show_attacked(curr_unit)
-            # прорисовка тени атакованного юнита
-            self.show_shadow_attacked(curr_unit)
+            if not dot_units[curr_unit].get('Снижение инициативы') \
+                    and not dot_units[curr_unit].get('Снижение урона'):
+                # прорисовка модели атакованного юнита
+                self.show_attacked(curr_unit)
 
-            # обновляем здоровье
-            self._update_all_unit_health()
+                # прорисовка тени атакованного юнита
+                self.show_shadow_attacked(curr_unit)
+
+                # обновляем здоровье
+                self._update_all_unit_health()
 
             # уменьшаем кол-во раундов
             curr_unit.dotted -= 1
@@ -843,8 +847,8 @@ class FightWindow(QMainWindow):
             if curr_unit.curr_health == 0:
                 self.removing_dead_unit(curr_unit)
 
-                if curr_unit in self.new_battle.dotted_units:
-                    self.new_battle.dotted_units.pop(curr_unit)
+                if curr_unit in dot_units:
+                    dot_units.pop(curr_unit)
 
                 # прорисовка модели атакованного юнита
                 self.show_attacked(curr_unit)
@@ -865,9 +869,9 @@ class FightWindow(QMainWindow):
                 self._update_all_unit_health()
 
             if curr_unit.dotted == 0:
-                if curr_unit in self.new_battle.dotted_units:
+                if curr_unit in dot_units:
                     curr_unit.off_initiative()
-                    self.new_battle.dotted_units.pop(curr_unit)
+                    dot_units.pop(curr_unit)
 
         # показать иконки эффектов
         self.define_dotted_units()
@@ -920,16 +924,57 @@ class FightWindow(QMainWindow):
     def check_ai(self):
         """Проверка, если ходит ИИ, включаем автобой"""
         if self.new_battle.current_player.name == 'Computer':
-            ui_lock(self.ui.pushButtonAutoFight)
-            ui_lock(self.ui.pushButtonDefence)
-            ui_lock(self.ui.pushButtonWaiting)
+            # блокировка кнопок
+            self.lock_buttons_for_ai()
+
             timer = QTimer(self)
             timer.singleShot(1000, self.autofight)
             del timer
         else:
-            ui_unlock(self.ui.pushButtonAutoFight)
-            ui_unlock(self.ui.pushButtonDefence)
-            ui_unlock(self.ui.pushButtonWaiting)
+            # Разблокировка кнопок
+            self.unlock_buttons_for_player()
+
+    def lock_buttons_for_ai(self):
+        """Блокировка кнопок на ходе компьютера"""
+        ui_lock(self.ui.pushButtonAutoFight)
+        ui_lock(self.ui.pushButtonDefence)
+        ui_lock(self.ui.pushButtonWaiting)
+
+        if self.player_side == FRONT:
+            ui_lock(self.ui.pushButtonSlot1)
+            ui_lock(self.ui.pushButtonSlot2)
+            ui_lock(self.ui.pushButtonSlot3)
+            ui_lock(self.ui.pushButtonSlot4)
+            ui_lock(self.ui.pushButtonSlot5)
+            ui_lock(self.ui.pushButtonSlot6)
+        else:
+            ui_lock(self.ui.pushButtonEnemySlot1)
+            ui_lock(self.ui.pushButtonEnemySlot2)
+            ui_lock(self.ui.pushButtonEnemySlot3)
+            ui_lock(self.ui.pushButtonEnemySlot4)
+            ui_lock(self.ui.pushButtonEnemySlot5)
+            ui_lock(self.ui.pushButtonEnemySlot6)
+
+    def unlock_buttons_for_player(self):
+        """Разблокировка кнопок на ходе игрока"""
+        ui_unlock(self.ui.pushButtonAutoFight)
+        ui_unlock(self.ui.pushButtonDefence)
+        ui_unlock(self.ui.pushButtonWaiting)
+
+        if self.player_side == FRONT:
+            ui_unlock(self.ui.pushButtonSlot1)
+            ui_unlock(self.ui.pushButtonSlot2)
+            ui_unlock(self.ui.pushButtonSlot3)
+            ui_unlock(self.ui.pushButtonSlot4)
+            ui_unlock(self.ui.pushButtonSlot5)
+            ui_unlock(self.ui.pushButtonSlot6)
+        else:
+            ui_unlock(self.ui.pushButtonEnemySlot1)
+            ui_unlock(self.ui.pushButtonEnemySlot2)
+            ui_unlock(self.ui.pushButtonEnemySlot3)
+            ui_unlock(self.ui.pushButtonEnemySlot4)
+            ui_unlock(self.ui.pushButtonEnemySlot5)
+            ui_unlock(self.ui.pushButtonEnemySlot6)
 
     def unit_defence(self) -> None:
         """Встать в Защиту выбранным юнитом"""
@@ -1708,7 +1753,6 @@ class FightWindow(QMainWindow):
 
         # показать иконки эффектов
         self.define_dotted_units()
-        print(self.new_battle.dotted_units)
 
     def set_coords_double_slots(self, ui_obj) -> None:
         """Задание координат для 'двойных' слотов либо кнопок"""
