@@ -353,6 +353,8 @@ class ServerStorage:
                      player_id: int,
                      faction: str,
                      campaign_level: int,
+                     campaign_mission: int,
+                     prev_mission: int,
                      day: int,
                      built: int
                      ):
@@ -360,6 +362,8 @@ class ServerStorage:
             self.player_id = player_id
             self.faction = faction
             self.campaign_level = campaign_level
+            self.campaign_mission = campaign_mission
+            self.prev_mission = prev_mission
             self.day = day
             self.built = built
 
@@ -667,6 +671,8 @@ class ServerStorage:
             Column('player_id', Integer),
             Column('faction', String),
             Column('campaign_level', Integer),
+            Column('campaign_mission', Integer),
+            Column('prev_mission', Integer),
             Column('day', Integer),
             Column('built', Integer)
         )
@@ -756,12 +762,16 @@ class ServerStorage:
         if curr_game_session is not None:
             self.current_faction = curr_game_session.faction
             self.campaign_level = curr_game_session.campaign_level
+            self.campaign_mission = curr_game_session.campaign_mission
+            self.prev_mission = curr_game_session.prev_mission
             self.campaign_day = curr_game_session.day
             self.already_built = curr_game_session.built
             self.game_session_id = curr_game_session.session_id
         else:
             self.current_faction = 'Empire'
             self.campaign_level = 1
+            self.campaign_mission = 0
+            self.prev_mission = 0
             self.campaign_day = 1
             self.already_built = 0
 
@@ -925,6 +935,8 @@ class ServerStorage:
             self.GameSessions.player_id,
             self.GameSessions.faction,
             self.GameSessions.campaign_level,
+            self.GameSessions.campaign_mission,
+            self.GameSessions.prev_mission,
             self.GameSessions.day,
             self.GameSessions.built,
         ).filter_by(player_id=player_id, faction=faction)
@@ -939,6 +951,8 @@ class ServerStorage:
             self.GameSessions.player_id,
             self.GameSessions.faction,
             self.GameSessions.campaign_level,
+            self.GameSessions.campaign_mission,
+            self.GameSessions.prev_mission,
             self.GameSessions.day,
             self.GameSessions.built,
         ).filter_by(player_id=player_id)
@@ -2087,6 +2101,8 @@ class ServerStorage:
                     player_id: int,
                     faction: str,
                     campaign_level: int,
+                    campaign_mission: int,
+                    prev_mission: int,
                     day: int,
                     built: int) -> None:
         """Метод сохранения выбранной фракции для текущей игровой сессии"""
@@ -2094,6 +2110,8 @@ class ServerStorage:
             player_id,
             faction,
             campaign_level,
+            campaign_mission,
+            prev_mission,
             day,
             built)
         self.current_faction = faction
@@ -2103,6 +2121,8 @@ class ServerStorage:
     def update_session(self,
                        session_id: int,
                        campaign_level: int,
+                       campaign_mission: int,
+                       prev_mission: int,
                        day: int,
                        built: int) -> None:
         """Метод изменения текущей игровой сессии"""
@@ -2111,6 +2131,8 @@ class ServerStorage:
             self.GameSessions.session_id == session_id
         ).values(
             campaign_level=campaign_level,
+            campaign_mission=campaign_mission,
+            prev_mission=prev_mission,
             day=day,
             built=built
         ).execution_options(
