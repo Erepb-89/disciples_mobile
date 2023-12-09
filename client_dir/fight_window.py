@@ -868,10 +868,14 @@ class FightWindow(QMainWindow):
 
                 self._update_all_unit_health()
 
-            if curr_unit.dotted == 0:
-                if curr_unit in dot_units:
-                    curr_unit.off_initiative()
-                    dot_units.pop(curr_unit)
+            if curr_unit.dotted == 0 and curr_unit in dot_units:
+                if curr_unit in self.new_battle.player1.units:
+                    pl_database = main_db.PlayerUnits
+                else:
+                    pl_database = main_db.CurrentDungeon
+
+                curr_unit.off_initiative(pl_database)
+                dot_units.pop(curr_unit)
 
         # показать иконки эффектов
         self.define_dotted_units()

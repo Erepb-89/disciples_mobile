@@ -41,22 +41,6 @@ class EmpireFighter:
         """Сквайр. Найм в отряд игрока"""
         main_db.hire_unit('Сквайр', slot)
 
-    @staticmethod
-    def up_to_base():
-        """Обновление характеристик юнита игрока (health, exp)"""
-        # main_db.update_unit('Сквайр', 70, 50)
-        pass
-
-    @staticmethod
-    def lvl_up(slot):
-        """Боец Империи. Повышение уровня"""
-        pass
-
-    @staticmethod
-    def say():
-        """Боевой клич"""
-        print('fight')
-
 
 class EmpireMage:
     """Маг Империи"""
@@ -80,16 +64,6 @@ class EmpireMage:
     def add_to_band(slot):
         """Ученик. Найм в отряд игрока"""
         main_db.hire_unit('Ученик', slot)
-
-    @staticmethod
-    def lvl_up(slot):
-        """Маг Империи. Повышение уровня"""
-        pass
-
-    @staticmethod
-    def say():
-        """Боевой клич"""
-        print('magic')
 
 
 class EmpireArcher:
@@ -115,16 +89,6 @@ class EmpireArcher:
         """Лучник. Найм в отряд игрока"""
         main_db.hire_unit('Лучник', slot)
 
-    @staticmethod
-    def lvl_up(slot):
-        """Стрелок Империи. Повышение уровня"""
-        pass
-
-    @staticmethod
-    def say():
-        """Боевой клич"""
-        print('bow')
-
 
 class EmpireSupport:
     """Поддержка Империи"""
@@ -148,16 +112,6 @@ class EmpireSupport:
     def add_to_band(slot):
         """Послушник. Найм в отряд игрока"""
         main_db.hire_unit('Послушник', slot)
-
-    @staticmethod
-    def lvl_up(slot):
-        """Поддержка Империи. Повышение уровня"""
-        pass
-
-    @staticmethod
-    def say():
-        """Боевой клич"""
-        print('help')
 
 
 class EmpireSpecial:
@@ -187,10 +141,6 @@ class EmpireSpecial:
         """Титан. Найм в отряд игрока"""
         main_db.hire_unit('Титан', slot)
 
-    @staticmethod
-    def lvl_up(slot):
-        """Особый юнит Империи. Повышение уровня"""
-
 
 # Hordes classes
 
@@ -217,16 +167,6 @@ class HordesFighter:
         """Боец. Найм в отряд игрока"""
         main_db.hire_unit('Боец', slot)
 
-    @staticmethod
-    def lvl_up(slot):
-        """Боец Орд нежити. Повышение уровня"""
-        pass
-
-    @staticmethod
-    def say():
-        """Боевой клич"""
-        print('fight')
-
 
 class HordesMage:
     """Маг Орд нежити"""
@@ -250,16 +190,6 @@ class HordesMage:
     def add_to_band(slot):
         """Посвящённый. Найм в отряд игрока"""
         main_db.hire_unit('Посвящённый', slot)
-
-    @staticmethod
-    def lvl_up(slot):
-        """Маг Орд нежити. Повышение уровня"""
-        pass
-
-    @staticmethod
-    def say():
-        """Боевой клич"""
-        print('magic')
 
 
 class HordesArcher:
@@ -285,16 +215,6 @@ class HordesArcher:
         """Привидение. Найм в отряд игрока"""
         main_db.hire_unit('Привидение', slot)
 
-    @staticmethod
-    def lvl_up(slot):
-        """Стрелок Орд нежити. Повышение уровня"""
-        pass
-
-    @staticmethod
-    def say():
-        """Боевой клич"""
-        print('bow')
-
 
 class HordesSupport:
     """Поддержка Орд нежити"""
@@ -318,16 +238,6 @@ class HordesSupport:
     def add_to_band(slot):
         """Виверна. Найм в отряд игрока"""
         main_db.hire_unit('Виверна', slot)
-
-    @staticmethod
-    def lvl_up(slot):
-        """Поддержка Орд нежити. Повышение уровня"""
-        pass
-
-    @staticmethod
-    def say():
-        """Боевой клич"""
-        print('help')
 
 
 class HordesSpecial:
@@ -357,10 +267,6 @@ class HordesSpecial:
         """Оборотень. Найм в отряд игрока"""
         main_db.hire_unit('Оборотень', slot)
 
-    @staticmethod
-    def lvl_up(slot):
-        """Особый юнит Орд нежити. Повышение уровня"""
-
 
 # Legions classes
 
@@ -387,16 +293,6 @@ class LegionsFighter:
         """Одержимый. Найм в отряд игрока"""
         main_db.hire_unit('Одержимый', slot)
 
-    @staticmethod
-    def lvl_up(slot):
-        """Боец Легионов проклятых. Повышение уровня"""
-        pass
-
-    @staticmethod
-    def say():
-        """Боевой клич"""
-        print('fight')
-
 
 class LegionsMage:
     """Маг Легионов проклятых"""
@@ -420,16 +316,6 @@ class LegionsMage:
     def add_to_band(slot):
         """Сектант. Найм в отряд игрока"""
         main_db.hire_unit('Сектант', slot)
-
-    @staticmethod
-    def lvl_up(slot):
-        """Маг Легионов проклятых. Повышение уровня"""
-        pass
-
-    @staticmethod
-    def say():
-        """Боевой клич"""
-        print('magic')
 
 
 class LegionsArcher:
@@ -455,16 +341,6 @@ class LegionsArcher:
         """Гаргулья. Найм в отряд игрока"""
         main_db.hire_unit('Гаргулья', slot)
 
-    @staticmethod
-    def lvl_up(slot):
-        """Стрелок Легионов проклятых. Повышение уровня"""
-        pass
-
-    @staticmethod
-    def say():
-        """Боевой клич"""
-        print('bow')
-
 
 class LegionsSupport:
     """Поддержка Легионов проклятых"""
@@ -488,16 +364,6 @@ class LegionsSupport:
     def add_to_band(slot):
         """Чёрт. Найм в отряд игрока"""
         main_db.hire_unit('Чёрт', slot)
-
-    @staticmethod
-    def lvl_up(slot):
-        """Поддержка Легионов проклятых. Повышение уровня"""
-        pass
-
-    @staticmethod
-    def say():
-        """Боевой клич"""
-        print('help')
 
 
 class LegionsSpecial:
@@ -527,10 +393,6 @@ class LegionsSpecial:
         """Изверг. Найм в отряд игрока"""
         main_db.hire_unit('Изверг', slot)
 
-    @staticmethod
-    def lvl_up(slot):
-        """Особый юнит Легионов проклятых. Повышение уровня"""
-
 
 # Clans classes
 
@@ -557,16 +419,6 @@ class ClansFighter:
         """Гном. Найм в отряд игрока"""
         main_db.hire_unit('Гном', slot)
 
-    @staticmethod
-    def lvl_up(slot):
-        """Боец Горных кланов. Повышение уровня"""
-        pass
-
-    @staticmethod
-    def say():
-        """Боевой клич"""
-        print('fight')
-
 
 class ClansMage:
     """Маг Горных кланов"""
@@ -591,16 +443,6 @@ class ClansMage:
         """Желторотик. Найм в отряд игрока"""
         main_db.hire_unit('Желторотик', slot)
 
-    @staticmethod
-    def lvl_up(slot):
-        """Маг Горных кланов. Повышение уровня"""
-        pass
-
-    @staticmethod
-    def say():
-        """Боевой клич"""
-        print('magic')
-
 
 class ClansArcher:
     """Стрелок Горных кланов"""
@@ -624,16 +466,6 @@ class ClansArcher:
     def add_to_band(slot):
         """Метатель топоров. Найм в отряд игрока"""
         main_db.hire_unit('Метатель топоров', slot)
-
-    @staticmethod
-    def lvl_up(slot):
-        """Стрелок Горных кланов. Повышение уровня"""
-        pass
-
-    @staticmethod
-    def say():
-        """Боевой клич"""
-        print('bow')
 
 
 class ClansSupport:
@@ -898,29 +730,23 @@ class Unit:
         """Проверка на двухслотовость"""
         return self.size == BIG
 
-    def skip_turn(self) -> None:
-        """Пропуск хода юнита в битве"""
-        print(self.name, 'пропускает ход')
-
     def off_defence(self) -> None:
         """Сброс защиты в битве"""
-        unit = main_db.get_unit_by_id(self.id,
-                                      main_db.PlayerUnits)
-        if unit is not None:
-            self.armor = unit.armor + self.nat_armor * 20
+        self.armor = main_db.get_unit_by_name(self.name).armor + \
+                     self.nat_armor * 20
 
-    def off_initiative(self) -> None:
+    def off_initiative(self, pl_database) -> None:
         """Сброс инициативы в битве"""
         unit = main_db.get_unit_by_id(self.id,
-                                      main_db.PlayerUnits)
+                                      pl_database)
         if unit is not None:
             self.attack_ini = int(
                 unit.attack_ini + unit.attack_ini * self.first_strike * 0.5)
 
-    def off_boosts(self) -> None:
+    def off_boosts(self, pl_database) -> None:
         """Сброс усиления атаки в битве"""
         unit = main_db.get_unit_by_id(self.id,
-                                      main_db.PlayerUnits)
+                                      pl_database)
         if unit is not None:
             self.attack_dmg = int(
                 unit.attack_dmg + unit.attack_dmg * self.might * 25)
@@ -1183,10 +1009,10 @@ class Unit:
         self.off_defence()
 
         # снимаем бонусы атаки
-        self.off_boosts()
+        self.off_boosts(main_db.PlayerUnits)
 
         # сбрасываем инициативу к изначальной
-        self.off_initiative()
+        self.off_initiative(main_db.PlayerUnits)
 
         if self.branch == 'hero':
             if self.dyn_upd_level != 0:

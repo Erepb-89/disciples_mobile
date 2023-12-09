@@ -190,7 +190,7 @@ class HireMenuWindow(QMainWindow):
             MES_GOLD_WINDOW = MessageWindow(self, text)
             MES_GOLD_WINDOW.show()
 
-        elif squad_points >= leadership:
+        elif squad_points >= leadership + 1:
             global MES_LEAD_WINDOW
             text = 'У вашего полководца недостаточно лидерства'
             MES_LEAD_WINDOW = MessageWindow(self, text)
