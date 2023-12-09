@@ -644,15 +644,20 @@ class Battle:
         Проверка на исцеление от вредных эффектов.
         Убираются все эффекты, кроме снижения урона
         """
+        if target in self.player1.units:
+            pl_database = main_db.PlayerUnits
+        else:
+            pl_database = main_db.CurrentDungeon
+
         if self.dotted_units[target].get('Снижение урона'):
             if self.dotted_units[target].get('Снижение инициативы'):
-                target.off_initiative()
+                target.off_initiative(pl_database)
 
             self.dotted_units.pop(target)
             self.dotted_units[target] = {['Снижение урона']: [0, 999]}
 
         elif self.dotted_units[target].get('Снижение инициативы'):
-            target.off_initiative()
+            target.off_initiative(pl_database)
             self.dotted_units.pop(target)
         else:
             self.dotted_units.pop(target)
@@ -958,7 +963,7 @@ class Battle:
                            slot_a: int,
                            slot_b: int,
                            slot_c: int) -> Optional[List[int]]:
-        """Вычисление рандомной цели для крайних слотов"""
+        """Вычисление цели для крайних слотов"""
         if slot_a in tg_slots and slot_b in tg_slots:
             return [slot_a, slot_b]
         if slot_a in tg_slots:
@@ -975,7 +980,7 @@ class Battle:
                              slot_a: int,
                              slot_b: int,
                              slot_c: int) -> Optional[List[int]]:
-        """Вычисление рандомной цели для среднего слота"""
+        """Вычисление цели для среднего слота"""
         if slot_a in tg_slots and slot_b in tg_slots and slot_c in tg_slots:
             return [slot_a, slot_b, slot_c]
         if slot_a in tg_slots and slot_b in tg_slots:
