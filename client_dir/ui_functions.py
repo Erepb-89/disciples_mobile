@@ -148,8 +148,20 @@ def set_borders(ui_obj: QtWidgets.QPushButton) -> None:
                          "border-right-color: rgb(181, 172, 155);"
                          "border-bottom-color: rgb(181, 172, 155)")
 
+
+def show_opened(icon_slot: QtWidgets.QLabel) -> None:
+    """Метод показывающий иконку доступности миссии"""
+    icon_slot.setPixmap(QPixmap(os.path.join(COMMON, "opened.png")))
+
+
+def show_closed(icon_slot: QtWidgets.QLabel) -> None:
+    """Метод показывающий иконку недоступности миссии"""
+    icon_slot.setPixmap(QPixmap(os.path.join(COMMON, "closed.png")))
+
+
 def ui_lock(ui_obj: any) -> None:
     ui_obj.setEnabled(False)
+
 
 def ui_unlock(ui_obj: any) -> None:
     ui_obj.setEnabled(True)

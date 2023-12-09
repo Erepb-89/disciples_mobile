@@ -1161,6 +1161,8 @@ class FightWindow(QMainWindow):
                     main_db.update_session(
                         main_db.game_session_id,
                         main_db.campaign_level + 1,
+                        0,
+                        0,
                         main_db.campaign_day,
                         main_db.already_built)
 
@@ -1170,6 +1172,8 @@ class FightWindow(QMainWindow):
                     main_db.update_session(
                         main_db.game_session_id,
                         main_db.campaign_level,
+                        mission_number,
+                        self.instance.curr_mission,
                         main_db.campaign_day,
                         main_db.already_built)
 

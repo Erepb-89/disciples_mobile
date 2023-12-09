@@ -125,6 +125,8 @@ class ChooseRaceWindow(QMainWindow):
             main_db.current_player.id,
             self.faction,
             1,
+            0,
+            0,
             1,
             0)
         main_db.already_built = 0
@@ -140,6 +142,8 @@ class ChooseRaceWindow(QMainWindow):
             self.faction)
 
         level = session.campaign_level
+        number = session.campaign_mission
+        prev_mission = session.prev_mission
         day = session.day
         already_built = session.built
 
@@ -147,6 +151,8 @@ class ChooseRaceWindow(QMainWindow):
             main_db.current_player.id,
             self.faction,
             level,
+            number,
+            prev_mission,
             day,
             already_built)
 

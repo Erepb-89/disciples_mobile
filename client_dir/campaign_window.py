@@ -10,7 +10,8 @@ from client_dir.campaign_form import Ui_CampaignWindow
 from client_dir.fight_window import FightWindow
 from client_dir.army_dialog import EnemyArmyDialog
 from client_dir.settings import BACKGROUND
-from client_dir.ui_functions import slot_update, button_update
+from client_dir.ui_functions import slot_update, button_update, \
+    ui_lock, ui_unlock, show_opened, show_closed
 from units_dir.mission_generator import unit_selector, \
     setup_6, setup_5, setup_4, setup_3, setup_2, boss_setup
 from units_dir.units import main_db
@@ -33,6 +34,8 @@ class CampaignWindow(QMainWindow):
         self.difficulty = 1
         self.faction = main_db.current_faction
         self.dungeon = ''
+        self.curr_mission = 0
+        self.prev_mission = 0
         self.campaign_buttons_dict = {}
         self.campaign_icons_dict = {}
         self.all_missions = {}
@@ -107,10 +110,8 @@ class CampaignWindow(QMainWindow):
 
         # обновляем иконки миссий кампании
         self.mission_list_update()
-        # self.highlight_selected_1()
 
-        self.show_red_frame(self.ui.pushButtonSlot_1)
-        self.dungeon = f'{self.faction}_{self.level}_{1}'
+        self.show_available_missions()
 
         self.show()
 
@@ -217,6 +218,24 @@ class CampaignWindow(QMainWindow):
             15: self.ui.slot15,
         }
 
+        self.campaign_arrows_dict = {
+            1: self.ui.line_1,
+            2: self.ui.line_2,
+            3: self.ui.line_3,
+            4: self.ui.line_4,
+            5: self.ui.line_5,
+            6: self.ui.line_6,
+            7: self.ui.line_7,
+            8: self.ui.line_8,
+            9: self.ui.line_9,
+            10: self.ui.line_10,
+            11: self.ui.line_11,
+            12: self.ui.line_12,
+            13: self.ui.line_13,
+            14: self.ui.line_14,
+            15: self.ui.line_15,
+        }
+
     def mission_list_update(self) -> None:
         """Обновление иконок миссий кампании"""
         for number, mission in self.all_missions.items():
@@ -242,6 +261,11 @@ class CampaignWindow(QMainWindow):
         gif_slot.setStyleSheet("border: 4px solid darkred;")
 
     @staticmethod
+    def show_green_frame(gif_slot: QtWidgets.QPushButton) -> None:
+        """Обновление зеленой рамки в слоте"""
+        gif_slot.setStyleSheet("border: 4px solid darkgreen;")
+
+    @staticmethod
     def show_no_frames(slots_dict: Dict[int, QtWidgets.QPushButton],
                        func: Callable) -> None:
         """Убирает все рамки"""
@@ -260,16 +284,19 @@ class CampaignWindow(QMainWindow):
     def highlight_selected(self, number) -> None:
         """Подсветка выбранной миссии"""
         self.unlight_all()
+        self.display_active_mission()
 
         for num, button in self.campaign_buttons_dict.items():
             if num == number:
+                mission_name = f'{self.faction}_{self.level}_{num}'
+                self.dungeon = mission_name
+
                 self.show_red_frame(button)
                 self.mission_slot_detailed(
-                    self.all_missions[
-                        f'{self.faction}_{self.level}_{num}'])
+                    self.all_missions[mission_name])
 
-        self.dungeon = f'{self.faction}_{self.level}_{number}'
-        # self.dungeon = number
+        # self.dungeon = f'{self.faction}_{self.level}_{number}'
+        ui_unlock(self.ui.pushButtonFight)
 
     def highlight_selected_1(self) -> None:
         """Подсветка миссии 1"""
@@ -330,6 +357,58 @@ class CampaignWindow(QMainWindow):
     def highlight_selected_15(self) -> None:
         """Подсветка миссии 15"""
         self.highlight_selected(15)
+
+    def show_available_missions(self):
+        """
+        Определение активности миссий согласно текущему
+        положению на карте приключений. Используется граф.
+        """
+        session = main_db.session_by_faction(
+            main_db.current_player.id,
+            self.faction)
+        self.curr_mission = session.campaign_mission
+        self.prev_mission = session.prev_mission
+
+        self.show_active_point()
+
+        graph = [
+            {1, 2},  # 0
+            {2, 3, 4},  # 1
+            {1, 4, 5},  # 2
+            {4, 6, 7},  # 3
+            {3, 5, 7, 8},  # 4
+            {4, 8, 9},  # 5
+            {7, 10},  # 6
+            {6, 8, 10, 11},  # 7
+            {7, 9, 11, 12},  # 8
+            {8, 12},  # 9
+            {11, 13},  # 10
+            {10, 12, 13, 14},  # 11
+            {11, 14},  # 12
+            {14, 15},  # 13
+            {13, 15},  # 14
+            {},  # 15
+        ]
+        if self.prev_mission != 0 \
+                and self.prev_mission in graph[self.curr_mission]:
+            graph[self.curr_mission].remove(self.prev_mission)
+
+        for key, val in self.campaign_buttons_dict.items():
+            if key in graph[self.curr_mission]:
+                ui_unlock(val)
+                show_opened(self.campaign_arrows_dict[key])
+            else:
+                ui_lock(val)
+                show_closed(self.campaign_arrows_dict[key])
+
+        if self.dungeon == '':
+            ui_lock(self.ui.pushButtonFight)
+
+    def show_active_point(self):
+        """Отображение текущего местоположения на карте приключений"""
+        if self.curr_mission > 0:
+            button = self.campaign_buttons_dict[self.curr_mission]
+            self.show_green_frame(button)
 
     def back(self) -> None:
         """Кнопка возврата"""
