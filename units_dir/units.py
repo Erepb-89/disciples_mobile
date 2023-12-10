@@ -756,7 +756,8 @@ class ServerStorage:
 
         self.current_player = self.get_player('Erepb-89')
 
-        # текущая игровая сессия
+    def update_game_session(self):
+        """Обновить игровую сессию"""
         curr_game_session = self.current_game_session(
             self.current_player.id)
         if curr_game_session is not None:
@@ -2172,7 +2173,7 @@ class ServerStorage:
         self.create_buildings(
             self.current_player.name,
             faction,
-            500,
+            300,
             building_levels)
 
 

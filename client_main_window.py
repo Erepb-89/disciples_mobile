@@ -41,6 +41,7 @@ class ClientMainWindow(QMainWindow):
         # основные переменные
         self.name = 'ClientMainWindow'
         self.question = False  # увольнение
+        self.difficulty = 2
 
         self.player_units_model = None
         self.player_slots_model = None
@@ -172,6 +173,9 @@ class ClientMainWindow(QMainWindow):
         self.ui.currentPlayer.setText(main_db.current_player.name)
         self.ui.currentPlayer.setStyleSheet('color: white')
 
+        main_db.update_game_session()
+        self.update_diff_checkbox()
+
         self.all_players_list_update()
         self.units_list_update()
         self.player_slots_update()
@@ -196,6 +200,26 @@ class ClientMainWindow(QMainWindow):
         self.enemy_slots_update()
 
         self.reset_player_buttons()
+
+    def update_diff_checkbox(self) -> None:
+        """Метод заполнения выпадающего списка доступных сложностей."""
+        self.ui.difficultyText.setStyleSheet('color: white')
+
+        diff_slots = [1, 2, 3]
+        self.diff_model = QStandardItemModel()
+        for slot in diff_slots:
+            item = QStandardItem(str(slot))
+            item.setEditable(False)
+            self.diff_model.appendRow(item)
+        self.ui.comboDifficulty.setModel(self.diff_model)
+
+        self.ui.comboDifficulty.setCurrentIndex(1)
+        self.check_difficulty()
+        self.ui.comboDifficulty.currentIndexChanged.connect(self.check_difficulty)
+
+    def check_difficulty(self) -> None:
+        """Устанавливает выбранную сложность"""
+        self.difficulty = int(self.ui.comboDifficulty.currentText())
 
     def reset_player_buttons(self):
         """Обновление доступности кнопок игрока"""

@@ -1074,10 +1074,10 @@ class FightWindow(QMainWindow):
             self.worker.start()
 
             if not self.new_battle.player1.slots:
-                self.show_need_effect(self.dung_damaged_dict,
+                self.show_need_upgrade_effect(self.dung_damaged_dict,
                                       self.new_battle.player2)
             if not self.new_battle.player2.slots:
-                self.show_need_effect(self.unit_damaged_dict,
+                self.show_need_upgrade_effect(self.unit_damaged_dict,
                                       self.new_battle.player1)
 
         self.update_log()
@@ -1569,10 +1569,12 @@ class FightWindow(QMainWindow):
                 icons_dict[unit.slot], dot_type)
 
     @staticmethod
-    def show_need_effect(icons_dict, player):
+    def show_need_upgrade_effect(icons_dict, player):
         """Показывает ограничение в апгрейде на юните"""
         for unit in player.units:
-            if unit.curr_exp == unit.exp - 1:
+            if unit.exp == 'Максимальный':
+                pass
+            elif unit.curr_exp == unit.exp - 1:
                 show_dot_icon(
                     icons_dict[unit.slot], 'waiting_next')
 

@@ -31,7 +31,7 @@ class CampaignWindow(QMainWindow):
         # основные переменные
         self.name = 'CampaignWindow'
         self.main = instance
-        self.difficulty = 1
+        self.difficulty = instance.difficulty
         self.faction = main_db.current_faction
         self.dungeon = ''
         self.curr_mission = 0

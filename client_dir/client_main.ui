@@ -1066,8 +1066,8 @@
    <widget class="QPushButton" name="pushButtonFight">
     <property name="geometry">
      <rect>
-      <x>727</x>
-      <y>0</y>
+      <x>560</x>
+      <y>680</y>
       <width>90</width>
       <height>28</height>
      </rect>
@@ -1448,6 +1448,39 @@
      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
     </property>
    </widget>
+   <widget class="QComboBox" name="comboDifficulty">
+    <property name="geometry">
+     <rect>
+      <x>820</x>
+      <y>3</y>
+      <width>51</width>
+      <height>22</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLabel" name="difficultyText">
+    <property name="geometry">
+     <rect>
+      <x>730</x>
+      <y>5</y>
+      <width>81</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>8</pointsize>
+      <weight>75</weight>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="text">
+     <string>Сложность</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+    </property>
+   </widget>
    <zorder>capital</zorder>
    <zorder>gifLabel</zorder>
    <zorder>listAllUnits</zorder>
@@ -1526,6 +1559,8 @@
    <zorder>pushButtonHire</zorder>
    <zorder>pushButtonDelete</zorder>
    <zorder>currentPlayer</zorder>
+   <zorder>comboDifficulty</zorder>
+   <zorder>difficultyText</zorder>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
  </widget>
