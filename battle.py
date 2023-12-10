@@ -275,9 +275,8 @@ class Battle:
                 self.define_target_player(self.player2, self.player1)
 
         self.target_slots = self._auto_choose_targets(self.current_unit)
-
-        # if self.current_player.name == 'Computer':
-        #     self.auto_fight()
+        if not self.target_slots:
+            self.targets = []
 
     def logging_dot(self, dot_source, dot_dmg) -> None:
         """Логирование периодического урона"""
@@ -1031,8 +1030,12 @@ class Battle:
                 6, 4, 2),
         }
 
+        # Юнит в заднем ряду, авангард жив
+        if unit.slot not in [2, 4, 6] and not vanguard_alies_died:
+            result = []
+
         # Авангард врага мертв, Наш авангард мертв
-        if vanguard_enemies_died and vanguard_alies_died:
+        elif vanguard_enemies_died and vanguard_alies_died:
             if unit.slot % 2 == 1:
                 result = targets_dict[unit.slot]
 

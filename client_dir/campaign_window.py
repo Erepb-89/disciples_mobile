@@ -284,7 +284,7 @@ class CampaignWindow(QMainWindow):
     def highlight_selected(self, number) -> None:
         """Подсветка выбранной миссии"""
         self.unlight_all()
-        self.display_active_mission()
+        self.show_active_point()
 
         for num, button in self.campaign_buttons_dict.items():
             if num == number:
@@ -408,6 +408,23 @@ class CampaignWindow(QMainWindow):
         """Отображение текущего местоположения на карте приключений"""
         if self.curr_mission > 0:
             button = self.campaign_buttons_dict[self.curr_mission]
+            icon = self.campaign_icons_dict[self.curr_mission]
+
+            # определяем лидера отряда
+            player_units = main_db.show_player_units()
+            leader = player_units[0]
+
+            for unit in player_units:
+                if unit.leadership >= 3:
+                    leader = unit
+
+            # обновляем иконку
+            slot_update(leader, icon)
+
+            # обновляем размер рамки вокруг кнопки
+            button_update(leader, button)
+
+            # отображаем рамку
             self.show_green_frame(button)
 
     def back(self) -> None:
