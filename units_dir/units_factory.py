@@ -891,8 +891,8 @@ class Unit:
         }
 
         # определение оставшихся свободных перков
-        for perk in PERKS.keys():
-            if perk != 'leadership':
+        for perk, val in PERKS.items():
+            if perk != 'leadership' and val != 1:
                 all_perks.append(perk)
 
         if all_perks:
@@ -908,10 +908,12 @@ class Unit:
             line = f"{self.name} получает перк {PERKS[perk]}\n"
             logging(line)
 
-            if self.leadership < 5 and self.level % 2 == 1:
+            if self.leadership < 5 and self.level % 2 == 0:
                 perks['leadership'] = self.leadership + 1
+                line = f"{self.name} получает перк Лидерство\n"
+                logging(line)
 
-            elif self.leadership == 5 or self.level % 2 == 0:
+            elif self.leadership == 5 or self.level % 2 == 1:
                 perks['leadership'] = self.leadership
 
             perks[perk] = 1

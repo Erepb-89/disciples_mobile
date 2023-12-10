@@ -184,13 +184,18 @@ class HireMenuWindow(QMainWindow):
             else:
                 squad_points += 1
 
+        if self.highlighted_unit.size == BIG:
+            squad_points += 2
+        else:
+            squad_points += 1
+
         if self.player_gold < int(self.highlighted_unit.cost):
             global MES_GOLD_WINDOW
             text = 'Недостаточно золота'
             MES_GOLD_WINDOW = MessageWindow(self, text)
             MES_GOLD_WINDOW.show()
 
-        elif squad_points >= leadership + 1:
+        elif squad_points > leadership + 1:
             global MES_LEAD_WINDOW
             text = 'У вашего полководца недостаточно лидерства'
             MES_LEAD_WINDOW = MessageWindow(self, text)
