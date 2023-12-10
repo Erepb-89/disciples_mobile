@@ -130,6 +130,7 @@ class ChooseRaceWindow(QMainWindow):
             1,
             0)
         main_db.already_built = 0
+        main_db.update_game_session()
 
         main_db.build_default(self.faction)
         main_db.campaign_level = 1

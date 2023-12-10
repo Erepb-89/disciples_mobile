@@ -408,25 +408,25 @@ class Battle:
         Получение опыта, либо уровня выжившим юнитом.
         Добавление юнита в alive_units для отображения на fight_window
         """
-        # полученный опыт < макс. опыт выжившего юнита
-        if exp_value < alive_unit.exp:
-            # полученного опыта достаточно для повышения уровня
-            if alive_unit.curr_exp + exp_value >= alive_unit.exp:
-                alive_unit.lvl_up()
-                self.alive_units.append(alive_unit.slot)
-            else:
-                alive_unit.curr_exp += exp_value
+        if player.name != 'Computer':
+            # полученный опыт < макс. опыт выжившего юнита
+            if exp_value < alive_unit.exp:
+                # полученного опыта достаточно для повышения уровня
+                if alive_unit.curr_exp + exp_value >= alive_unit.exp:
+                    alive_unit.lvl_up()
+                    self.alive_units.append(alive_unit.slot)
+                else:
+                    alive_unit.curr_exp += exp_value
 
-                if player.name != 'Computer':
                     main_db.update_unit_exp(
                         alive_unit.slot,
                         alive_unit.curr_exp,
                         pl_database)
 
-            # полученный опыт > макс. опыт выжившего юнита
-        else:
-            alive_unit.lvl_up()
-            self.alive_units.append(alive_unit.slot)
+                # полученный опыт > макс. опыт выжившего юнита
+            else:
+                alive_unit.lvl_up()
+                self.alive_units.append(alive_unit.slot)
 
     def _getting_experience(self,
                             player1: Player,
