@@ -1812,7 +1812,7 @@ class ServerStorage:
         Изменяет запись в таблице PlayerUnits.
         """
         unit = self.get_unit_by_id(unit_id, self.PlayerUnits)
-        unit_dmg = unit.attack_dmg + bonus
+        unit_dmg = unit.attack_dmg + unit.attack_dmg * bonus
 
         changes = update(
             self.PlayerUnits).where(

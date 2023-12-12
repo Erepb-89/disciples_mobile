@@ -335,7 +335,7 @@ class UnitDialog(QDialog):
         """Показать точность юнита"""
         if unit.accuracy:
             bonus = int(int(unit.attack_chance) * 0.2)
-            if int(unit.accuracy) + bonus >= 100:
+            if int(unit.attack_chance) + bonus >= 100:
                 acc = f'{unit.attack_chance}% + ' \
                       f'{100 - int(unit.attack_chance)}'
                 self.attackChance.setText(acc)

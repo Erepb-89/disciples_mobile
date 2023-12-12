@@ -324,19 +324,12 @@ class Battle:
                         # логирование
                         self.logging_paralyze(dot_source)
 
-                # уменьшаем раунды на 1
-                dot_rounds = max(0, dot_rounds - 1)
+                    # уменьшаем раунды на 1
+                    dot_rounds = max(0, dot_rounds - 1)
 
                 if self.current_unit.dotted != 0:
                     self.dotted_units[self.current_unit][dot_source] = \
                         [dot_dmg, dot_rounds]
-
-
-                # if self.current_unit.dotted == 0:
-                #     self.dotted_units.pop(self.current_unit)
-                # else:
-                #     self.dotted_units[self.current_unit][dot_source] = \
-                #         [dot_dmg, dot_rounds]
 
         # Если Паралич, пропускаем ход
         if paralyzed:
@@ -927,6 +920,8 @@ class Battle:
                     # если остались раунды, и это паралич/окаменение
                     if dot_source in PARALYZE_LIST:
                         already_paralyzed = bool(dot_rounds)
+            else:
+                already_paralyzed = False
 
             if self.current_unit.attack_source \
                     not in unit.immune \

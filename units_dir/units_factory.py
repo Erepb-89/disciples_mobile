@@ -749,7 +749,7 @@ class Unit:
                                       pl_database)
         if unit is not None:
             self.attack_dmg = int(
-                unit.attack_dmg + unit.attack_dmg * self.might * 25)
+                unit.attack_dmg + unit.attack_dmg * self.might * 0.25)
 
     def defence(self) -> None:
         """Пропуск хода и защита в битве"""
@@ -891,8 +891,8 @@ class Unit:
         }
 
         # определение оставшихся свободных перков
-        for perk, val in PERKS.items():
-            if perk != 'leadership' and val != 1:
+        for perk in PERKS.keys():
+            if perk != 'leadership' and perks[perk] != 1:
                 all_perks.append(perk)
 
         if all_perks:
@@ -932,7 +932,7 @@ class Unit:
             if perk == 'might':
                 main_db.update_unit_dmg(
                     self.id,
-                    25)
+                    0.25)
 
             # Выносливость
             if perk == 'endurance':
