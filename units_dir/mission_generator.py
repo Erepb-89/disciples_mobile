@@ -317,6 +317,39 @@ boss_setup = [
     }
 ]
 
+boss_mc_setup = [
+    {
+        1: SMALL, 2: SMALL,
+        3: None, 4: BIG,
+        5: None, 6: SMALL,
+    },
+    {
+        1: SMALL, 2: SMALL,
+        3: None, 4: BIG,
+        5: SMALL, 6: None,
+    },
+    {
+        1: SUPPORT, 2: SMALL,
+        3: None, 4: BIG,
+        5: SMALL, 6: None,
+    },
+    {
+        1: SMALL, 2: SMALL,
+        3: None, 4: BIG,
+        5: SMALL, 6: None,
+    },
+    {
+        1: SMALL, 2: None,
+        3: None, 4: BIG,
+        5: SMALL, 6: SMALL,
+    },
+    {
+        1: SUPPORT, 2: SMALL,
+        3: None, 4: BIG,
+        5: None, 6: SMALL,
+    }
+]
+
 
 def get_big(units: list) -> list:
     """Получить большие иниты из списка юнитов"""

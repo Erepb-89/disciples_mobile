@@ -519,6 +519,8 @@ class FightWindow(QMainWindow):
         self.show_no_damaged()
         self.clear_frames_circles()
 
+        self.check_ai()
+
         if not self.new_battle.battle_is_over:
             self.show_target_frame()
             self.show_frame_attacker()
@@ -932,7 +934,7 @@ class FightWindow(QMainWindow):
             self.lock_buttons_for_ai()
 
             timer = QTimer(self)
-            timer.singleShot(1000, self.autofight)
+            timer.singleShot(700, self.autofight)
             del timer
         else:
             # Разблокировка кнопок
@@ -1556,11 +1558,14 @@ class FightWindow(QMainWindow):
 
     def show_dot_effect(self, unit, dot_type, icons_dict):
         """Показывает действующий отрицательный эффект на юните"""
-        if self.new_battle.dotted_units[unit].get(dot_type):
+        if unit.dotted and self.new_battle.dotted_units[unit].get(dot_type):
             rounds = self.new_battle.dotted_units[unit][dot_type][1]
             if rounds:
                 show_dot_icon(
                     icons_dict[unit.slot], dot_type)
+            else:
+                show_dot_icon(
+                    icons_dict[unit.slot], 'spare_dot')
 
     def show_might_effect(self, unit, dot_type, icons_dict):
         """Показывает действующий положительный эффект на юните"""
