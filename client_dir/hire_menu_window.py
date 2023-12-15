@@ -109,8 +109,9 @@ class HireMenuWindow(QMainWindow):
                                 unit_type: any) -> None:
         """Подсветка выбранного юнита"""
         self.unlight_all_units()
-        ui_obj.setLineWidth(2)
-        ui_obj.setStyleSheet("color: rgb(65, 3, 2)")
+        ui_obj.setLineWidth(4)
+        # ui_obj.setStyleSheet("color: rgb(65, 3, 2)")
+        ui_obj.setStyleSheet("color: yellow")
         self.highlighted_unit = unit_type
         ui_unlock(self.ui.pushButtonBuy)
 
@@ -262,21 +263,21 @@ class HireMenuWindow(QMainWindow):
         DETAIL_WINDOW.show()
 
     def hire_slot1_detailed(self) -> None:
-        """Метод создающий окно юнита (слот 1)."""
+        """Метод создающий детальное окно юнита (слот 1)."""
         self.hire_slot_detailed(self.fighter)
 
     def hire_slot2_detailed(self) -> None:
-        """Метод создающий окно юнита (слот 2)."""
+        """Метод создающий детальное окно юнита (слот 2)."""
         self.hire_slot_detailed(self.archer)
 
     def hire_slot3_detailed(self) -> None:
-        """Метод создающий окно юнита (слот 3)."""
+        """Метод создающий детальное окно юнита (слот 3)."""
         self.hire_slot_detailed(self.mage)
 
     def hire_slot4_detailed(self) -> None:
-        """Метод создающий окно юнита (слот 4)."""
+        """Метод создающий детальное окно юнита (слот 4)."""
         self.hire_slot_detailed(self.support)
 
     def hire_slot5_detailed(self) -> None:
-        """Метод создающий окно юнита (слот 5)."""
+        """Метод создающий детальное окно юнита (слот 5)."""
         self.hire_slot_detailed(self.special)

@@ -432,33 +432,30 @@ class CapitalBuildingWindow(QMainWindow):
 
             # если здание входит в граф построенных
             if self.building_name in temp_graph:
-                self.set_text_and_buy_slot(
-                    ALREADY_BUILT,
-                    False)
+                self.set_text_and_buy_slot(ALREADY_BUILT,
+                                           False)
 
             # если здание входит специальные постройки и построено
             elif self.building_name in SPECIAL_BUILDINGS \
                     and buildings['special']:
-                self.set_text_and_buy_slot(
-                    ALREADY_BUILT,
-                    False)
+                self.set_text_and_buy_slot(ALREADY_BUILT,
+                                           False)
 
             # если здание входит специальные постройки и не построено
             elif self.building_name in SPECIAL_BUILDINGS \
                     and not buildings['special'] \
                     and FACTIONS.get(self.faction)['special'][1].prev \
                     not in temp_graph:
-                self.set_text_and_buy_slot(
-                    NEED_TO_BUILD_PREV,
-                    False)
+                self.set_text_and_buy_slot(NEED_TO_BUILD_PREV,
+                                           False)
 
             # если граф построенных входит в текущий граф и длина текущего
             # графа отличается от графа построенных более, чем на 1
             elif len(self.graph) - len(temp_graph) > 1 \
-                    and set(temp_graph).issubset(self.graph)\
+                    and set(temp_graph).issubset(self.graph) \
                     and '' not in temp_graph:
                 self.set_text_and_buy_slot(NEED_TO_BUILD_PREV,
-                    False)
+                                           False)
 
             elif '' in temp_graph \
                     and len(self.graph) < 2 \
@@ -466,43 +463,43 @@ class CapitalBuildingWindow(QMainWindow):
                 main_db.current_player.name, self.faction
             ) >= self.building_cost:
                 self.set_text_and_buy_slot(READY_TO_BUILD,
-                    True)
+                                           True)
 
             elif '' in temp_graph and len(self.graph) >= 2:
                 self.set_text_and_buy_slot(NEED_TO_BUILD_PREV,
-                    False)
+                                           False)
 
             # если граф построенных не входит в текущий граф
             elif not set(temp_graph).issubset(self.graph) \
                     and '' not in temp_graph:
                 self.set_text_and_buy_slot(ANOTHER_BRANCH,
-                    False)
+                                           False)
 
             elif main_db.get_gold(
                     main_db.current_player.name, self.faction
             ) >= self.building_cost:
                 self.set_text_and_buy_slot(READY_TO_BUILD,
-                    True)
+                                           True)
 
             else:
                 self.set_text_and_buy_slot(NOT_ENOUGH_GOLD,
-                    False)
+                                           False)
 
         elif self.branch == OTHERS:
             # если текущее здание уже в построенных
             if self.building_name in buildings.values():
                 self.set_text_and_buy_slot(ALREADY_BUILT,
-                    False)
+                                           False)
 
             elif main_db.get_gold(
                     main_db.current_player.name, self.faction
             ) >= self.building_cost:
                 self.set_text_and_buy_slot(READY_TO_BUILD,
-                    True)
+                                           True)
 
             else:
                 self.set_text_and_buy_slot(NOT_ENOUGH_GOLD,
-                    False)
+                                           False)
 
         if main_db.already_built:
             self.set_text_and_buy_slot(

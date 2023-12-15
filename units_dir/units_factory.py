@@ -142,6 +142,103 @@ class EmpireSpecial:
         main_db.hire_unit('Титан', slot)
 
 
+# герои Империи
+class EmpireHeroFighter:
+    """Герой-боец Империи"""
+
+    @property
+    def name(self):
+        """Имя"""
+        return 'Рыцарь на пегасе'
+
+    @property
+    def size(self):
+        """Размер"""
+        return 'Обычный'
+
+    @property
+    def cost(self):
+        """Стоимость"""
+        return '500'
+
+    @staticmethod
+    def add_to_band(slot):
+        """Рыцарь на пегасе. Найм в отряд игрока"""
+        main_db.hire_unit('Рыцарь на пегасе', slot)
+
+
+class EmpireHeroMage:
+    """Герой-маг Империи"""
+
+    @property
+    def name(self):
+        """Имя"""
+        return 'Архимаг'
+
+    @property
+    def size(self):
+        """Размер"""
+        return 'Обычный'
+
+    @property
+    def cost(self):
+        """Стоимость"""
+        return '500'
+
+    @staticmethod
+    def add_to_band(slot):
+        """Архимаг. Найм в отряд игрока"""
+        main_db.hire_unit('Архимаг', slot)
+
+
+class EmpireHeroArcher:
+    """Герой-стрелок Империи"""
+
+    @property
+    def name(self):
+        """Имя"""
+        return 'Рейнджер'
+
+    @property
+    def size(self):
+        """Размер"""
+        return 'Обычный'
+
+    @property
+    def cost(self):
+        """Стоимость"""
+        return '500'
+
+    @staticmethod
+    def add_to_band(slot):
+        """Рейнджер. Найм в отряд игрока"""
+        main_db.hire_unit('Рейнджер', slot)
+
+
+class EmpireHeroRog:
+    """Герой-жезловик Империи"""
+
+    @property
+    def name(self):
+        """Имя"""
+        return 'Архангел'
+
+    @property
+    def size(self):
+        """Размер"""
+        return 'Обычный'
+
+    @property
+    def cost(self):
+        """Стоимость"""
+        return '300'
+
+    @staticmethod
+    def add_to_band(slot):
+        """Архангел. Найм в отряд игрока"""
+        main_db.hire_unit('Архангел', slot)
+
+
 # Hordes classes
 
 class HordesFighter:
@@ -268,6 +365,104 @@ class HordesSpecial:
         main_db.hire_unit('Оборотень', slot)
 
 
+# герои Орд нежити
+class HordesHeroFighter:
+    """Герой-боец Орд нежити"""
+
+    @property
+    def name(self):
+        """Имя"""
+        return 'Рыцарь смерти'
+
+    @property
+    def size(self):
+        """Размер"""
+        return 'Обычный'
+
+    @property
+    def cost(self):
+        """Стоимость"""
+        return '500'
+
+    @staticmethod
+    def add_to_band(slot):
+        """Рыцарь смерти. Найм в отряд игрока"""
+        main_db.hire_unit('Рыцарь смерти', slot)
+
+
+class HordesHeroMage:
+    """Герой-маг Орд нежити"""
+
+    @property
+    def name(self):
+        """Имя"""
+        return 'Королева личей'
+
+    @property
+    def size(self):
+        """Размер"""
+        return 'Обычный'
+
+    @property
+    def cost(self):
+        """Стоимость"""
+        return '500'
+
+    @staticmethod
+    def add_to_band(slot):
+        """Королева личей. Найм в отряд игрока"""
+        main_db.hire_unit('Королева личей', slot)
+
+
+class HordesHeroArcher:
+    """Герой-стрелок Орд нежити"""
+
+    @property
+    def name(self):
+        """Имя"""
+        return 'Носферату'
+
+    @property
+    def size(self):
+        """Размер"""
+        return 'Обычный'
+
+    @property
+    def cost(self):
+        """Стоимость"""
+        return '500'
+
+    @staticmethod
+    def add_to_band(slot):
+        """Носферату. Найм в отряд игрока"""
+        main_db.hire_unit('Носферату', slot)
+
+
+class HordesHeroRog:
+    """Герой-жезловик Орд нежити"""
+
+    @property
+    def name(self):
+        """Имя"""
+        return 'Баньши'
+
+    @property
+    def size(self):
+        """Размер"""
+        return 'Обычный'
+
+    @property
+    def cost(self):
+        """Стоимость"""
+        return '300'
+
+    @staticmethod
+    def add_to_band(slot):
+        """Баньши. Найм в отряд игрока"""
+        main_db.hire_unit('Баньши', slot)
+
+
+
 # Legions classes
 
 class LegionsFighter:
@@ -392,6 +587,103 @@ class LegionsSpecial:
     def add_to_band(slot):
         """Изверг. Найм в отряд игрока"""
         main_db.hire_unit('Изверг', slot)
+
+
+# герои Легионов проклятых
+class LegionsHeroFighter:
+    """Герой-боец Легионов проклятых"""
+
+    @property
+    def name(self):
+        """Имя"""
+        return 'Герцог'
+
+    @property
+    def size(self):
+        """Размер"""
+        return 'Обычный'
+
+    @property
+    def cost(self):
+        """Стоимость"""
+        return '500'
+
+    @staticmethod
+    def add_to_band(slot):
+        """Герцог. Найм в отряд игрока"""
+        main_db.hire_unit('Герцог', slot)
+
+
+class LegionsHeroMage:
+    """Герой-маг Легионов проклятых"""
+
+    @property
+    def name(self):
+        """Имя"""
+        return 'Архидьявол'
+
+    @property
+    def size(self):
+        """Размер"""
+        return 'Обычный'
+
+    @property
+    def cost(self):
+        """Стоимость"""
+        return '500'
+
+    @staticmethod
+    def add_to_band(slot):
+        """Архидьявол. Найм в отряд игрока"""
+        main_db.hire_unit('Архидьявол', slot)
+
+
+class LegionsHeroArcher:
+    """Герой-стрелок Легионов проклятых"""
+
+    @property
+    def name(self):
+        """Имя"""
+        return 'Советник'
+
+    @property
+    def size(self):
+        """Размер"""
+        return 'Обычный'
+
+    @property
+    def cost(self):
+        """Стоимость"""
+        return '500'
+
+    @staticmethod
+    def add_to_band(slot):
+        """Советник. Найм в отряд игрока"""
+        main_db.hire_unit('Советник', slot)
+
+
+class LegionsHeroRog:
+    """Герой-жезловик Легионов проклятых"""
+
+    @property
+    def name(self):
+        """Имя"""
+        return 'Баронесса'
+
+    @property
+    def size(self):
+        """Размер"""
+        return 'Обычный'
+
+    @property
+    def cost(self):
+        """Стоимость"""
+        return '300'
+
+    @staticmethod
+    def add_to_band(slot):
+        """Баронесса. Найм в отряд игрока"""
+        main_db.hire_unit('Баронесса', slot)
 
 
 # Clans classes
@@ -533,6 +825,102 @@ class ClansSpecial:
     def lvl_up(slot):
         """Особый юнит Горных кланов. Повышение уровня"""
 
+# герои Горных кланов
+class ClansHeroFighter:
+    """Герой-боец Горных кланов"""
+
+    @property
+    def name(self):
+        """Имя"""
+        return 'Королевский страж'
+
+    @property
+    def size(self):
+        """Размер"""
+        return 'Обычный'
+
+    @property
+    def cost(self):
+        """Стоимость"""
+        return '500'
+
+    @staticmethod
+    def add_to_band(slot):
+        """Королевский страж. Найм в отряд игрока"""
+        main_db.hire_unit('Королевский страж', slot)
+
+
+class ClansHeroMage:
+    """Герой-маг Горных кланов"""
+
+    @property
+    def name(self):
+        """Имя"""
+        return 'Хранитель знаний'
+
+    @property
+    def size(self):
+        """Размер"""
+        return 'Обычный'
+
+    @property
+    def cost(self):
+        """Стоимость"""
+        return '500'
+
+    @staticmethod
+    def add_to_band(slot):
+        """Хранитель знаний. Найм в отряд игрока"""
+        main_db.hire_unit('Хранитель знаний', slot)
+
+
+class ClansHeroArcher:
+    """Герой-стрелок Горных кланов"""
+
+    @property
+    def name(self):
+        """Имя"""
+        return 'Инженер'
+
+    @property
+    def size(self):
+        """Размер"""
+        return 'Обычный'
+
+    @property
+    def cost(self):
+        """Стоимость"""
+        return '500'
+
+    @staticmethod
+    def add_to_band(slot):
+        """Инженер. Найм в отряд игрока"""
+        main_db.hire_unit('Инженер', slot)
+
+
+class ClansHeroRog:
+    """Герой-жезловик Горных кланов"""
+
+    @property
+    def name(self):
+        """Имя"""
+        return 'Гном-чемпион'
+
+    @property
+    def size(self):
+        """Размер"""
+        return 'Обычный'
+
+    @property
+    def cost(self):
+        """Стоимость"""
+        return '300'
+
+    @staticmethod
+    def add_to_band(slot):
+        """Гном-чемпион. Найм в отряд игрока"""
+        main_db.hire_unit('Гном-чемпион', slot)
+
 
 class AbstractFactory(abc.ABC):
     """Абстрактная фабрика фракций"""
@@ -569,6 +957,22 @@ class AbstractFactory(abc.ABC):
     def create_special(self):
         """Создать спец-юнита"""
 
+    @abc.abstractmethod
+    def create_hero_fighter(self):
+        """Создать героя-бойца"""
+
+    @abc.abstractmethod
+    def create_hero_mage(self):
+        """Создать героя-мага"""
+
+    @abc.abstractmethod
+    def create_hero_archer(self):
+        """Создать героя-стрелка"""
+
+    @abc.abstractmethod
+    def create_hero_rog(self):
+        """Создать героя-жезловика"""
+
 
 class EmpireFactory(AbstractFactory):
     """Фабрика Империи"""
@@ -593,6 +997,21 @@ class EmpireFactory(AbstractFactory):
         """Создать спец-юнита"""
         return EmpireSpecial()
 
+    def create_hero_fighter(self):
+        """Создать героя-бойца"""
+        return EmpireHeroFighter()
+
+    def create_hero_mage(self):
+        """Создать героя-мага"""
+        return EmpireHeroMage()
+
+    def create_hero_archer(self):
+        """Создать героя-стрелка"""
+        return EmpireHeroArcher()
+
+    def create_hero_rog(self):
+        """Создать героя-жезловика"""
+        return EmpireHeroRog()
 
 class HordesFactory(AbstractFactory):
     """Фабрика Орд нежити"""
@@ -616,6 +1035,22 @@ class HordesFactory(AbstractFactory):
     def create_special(self):
         """Создать спец-юнита"""
         return HordesSpecial()
+
+    def create_hero_fighter(self):
+        """Создать героя-бойца"""
+        return HordesHeroFighter()
+
+    def create_hero_mage(self):
+        """Создать героя-мага"""
+        return HordesHeroMage()
+
+    def create_hero_archer(self):
+        """Создать героя-стрелка"""
+        return HordesHeroArcher()
+
+    def create_hero_rog(self):
+        """Создать героя-жезловика"""
+        return HordesHeroRog()
 
 
 class LegionsFactory(AbstractFactory):
@@ -641,6 +1076,21 @@ class LegionsFactory(AbstractFactory):
         """Создать спец-юнита"""
         return LegionsSpecial()
 
+    def create_hero_fighter(self):
+        """Создать героя-бойца"""
+        return LegionsHeroFighter()
+
+    def create_hero_mage(self):
+        """Создать героя-мага"""
+        return LegionsHeroMage()
+
+    def create_hero_archer(self):
+        """Создать героя-стрелка"""
+        return LegionsHeroArcher()
+
+    def create_hero_rog(self):
+        """Создать героя-жезловика"""
+        return LegionsHeroRog()
 
 class ClansFactory(AbstractFactory):
     """Фабрика Горных кланов"""
@@ -665,6 +1115,21 @@ class ClansFactory(AbstractFactory):
         """Создать спец-юнита"""
         return ClansSpecial()
 
+    def create_hero_fighter(self):
+        """Создать героя-бойца"""
+        return ClansHeroFighter()
+
+    def create_hero_mage(self):
+        """Создать героя-мага"""
+        return ClansHeroMage()
+
+    def create_hero_archer(self):
+        """Создать героя-стрелка"""
+        return ClansHeroArcher()
+
+    def create_hero_rog(self):
+        """Создать героя-жезловика"""
+        return ClansHeroRog()
 
 # класс Unit
 
@@ -726,7 +1191,7 @@ class Unit:
         return self.curr_health == 0
 
     @property
-    def is_double(self) -> bool:
+    def double(self) -> bool:
         """Проверка на двухслотовость"""
         return self.size == BIG
 

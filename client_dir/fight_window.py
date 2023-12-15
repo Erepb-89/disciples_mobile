@@ -62,7 +62,7 @@ class FightWindow(QMainWindow):
                  instance: any):
         super().__init__()
         # основные переменные
-        self.instance = instance
+        self.parent = instance
         self.new_battle = Battle(dungeon)
         self.dungeon = dungeon
         self.computer_name = 'Computer'
@@ -497,9 +497,9 @@ class FightWindow(QMainWindow):
 
     def back(self) -> None:
         """Кнопка возврата"""
-        self.instance.reset()
-        if self.instance.name == 'CampaignWindow':
-            self.instance.main.reset()
+        self.parent.reset()
+        if self.parent.name == 'CampaignWindow':
+            self.parent.main.reset()
         self.close()
 
     def change_side(self) -> None:
@@ -1066,10 +1066,10 @@ class FightWindow(QMainWindow):
 
             self.show_lvl_up_animations()
 
-            self.instance.reset()
-            if self.instance.name == 'CampaignWindow':
-                self.instance.main.player_list_update()
-                self.instance.main.player_slots_update()
+            self.parent.reset()
+            if self.parent.name == 'CampaignWindow':
+                self.parent.main.player_list_update()
+                self.parent.main.player_slots_update()
 
             self.worker = Thread(False)
             self.worker.dataThread.connect(self.unit_gifs_update)
@@ -1175,7 +1175,7 @@ class FightWindow(QMainWindow):
                         main_db.game_session_id,
                         main_db.campaign_level,
                         mission_number,
-                        self.instance.curr_mission,
+                        self.parent.curr_mission,
                         main_db.campaign_day,
                         main_db.already_built)
 
@@ -1276,7 +1276,7 @@ class FightWindow(QMainWindow):
     def show_circle_g(self, unit, gif_label: QtWidgets.QLabel) -> None:
         """Установка gif'ки круга под юнитом (зеленый)"""
         if unit is not None:
-            circle_gif = "big_circle_y.gif" if unit.size == BIG \
+            circle_gif = "big_circle_y.gif" if unit.double \
                 else "circle_g.gif"
 
             gif = QMovie(os.path.join(
@@ -1289,7 +1289,7 @@ class FightWindow(QMainWindow):
     def show_circle_y(self, unit, gif_label: QtWidgets.QLabel) -> None:
         """Установка gif'ки круга под юнитом (желтый)"""
         if unit is not None:
-            circle_gif = "big_circle_y.gif" if unit.size == BIG \
+            circle_gif = "big_circle_y.gif" if unit.double \
                 else "circle_y.gif"
 
             gif = QMovie(os.path.join(
@@ -1302,7 +1302,7 @@ class FightWindow(QMainWindow):
     def show_circle_r(self, unit, gif_label: QtWidgets.QLabel) -> None:
         """Установка gif'ки круга под юнитом (красный)"""
         if unit is not None:
-            circle_gif = "big_circle_r.gif" if unit.size == BIG \
+            circle_gif = "big_circle_r.gif" if unit.double \
                 else "circle_r.gif"
 
             gif = QMovie(os.path.join(
@@ -1324,7 +1324,7 @@ class FightWindow(QMainWindow):
         """Прорисовка модели юнита, получившего уровень"""
         if unit.slot in self.new_battle.alive_units and \
                 self.new_battle.battle_is_over:
-            if unit.size == BIG:
+            if unit.double:
                 unit_gif = "lvl_up_big.gif"
             else:
                 unit_gif = "lvl_up.gif"
@@ -1785,7 +1785,7 @@ class FightWindow(QMainWindow):
         self.set_coords_double_slots(ui_obj)
 
         try:
-            if unit.size == BIG \
+            if unit.double \
                     and ui_obj in self.right_slots \
                     and side == FRONT:
                 ui_coords = ui_obj.geometry().getCoords()
@@ -1795,7 +1795,7 @@ class FightWindow(QMainWindow):
                 new_coords[3] = 126
                 ui_obj.setGeometry(*new_coords)
 
-            if unit.size == BIG:
+            if unit.double:
                 ui_obj.setFixedWidth(225)
                 ui_obj.setFixedHeight(127)
 
