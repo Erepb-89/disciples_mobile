@@ -7,7 +7,7 @@ from sqlalchemy import create_engine, Table, update, Column, Integer, \
     String, MetaData
 from sqlalchemy.orm import mapper, sessionmaker
 
-from client_dir.settings import BIG
+from client_dir.settings import BIG, EM, UH, LD, MC
 from units_dir.buildings import FACTIONS
 
 
@@ -22,6 +22,7 @@ class ServerStorage:
         """Класс - отображение таблицы всех юнитов."""
 
         def __init__(self,
+                     id: int,
                      name: str,
                      level: int,
                      size: str,
@@ -67,7 +68,7 @@ class ServerStorage:
                      earth_resist: int,
                      dotted: int
                      ):
-            self.id = None
+            self.id = id
             self.name = name
             self.level = level
             self.size = size
@@ -116,198 +117,91 @@ class ServerStorage:
     class PlayerUnits(AllUnits):
         """Класс - отображение таблицы юнитов игрока."""
 
-        def __init__(
-                self,
-                id,
-                name,
-                level,
-                size,
-                price,
-                exp,
-                curr_exp,
-                exp_per_kill,
-                health,
-                curr_health,
-                armor,
-                immune,
-                ward,
-                attack_type,
-                attack_chance,
-                attack_dmg,
-                dot_dmg,
-                attack_source,
-                attack_ini,
-                attack_radius,
-                attack_purpose,
-                prev_level,
-                desc,
-                photo,
-                gif,
-                slot,
-                subrace,
-                branch,
-                attack_twice,
-                regen,
-                dyn_upd_level,
-                upgrade_b,
-                leadership,
-                leader_cat,
-                nat_armor,
-                might,
-                weapon_master,
-                endurance,
-                first_strike,
-                accuracy,
-                water_resist,
-                air_resist,
-                fire_resist,
-                earth_resist,
-                dotted
-        ):
-            super().__init__(
-                name,
-                level,
-                size,
-                price,
-                exp,
-                curr_exp,
-                exp_per_kill,
-                health,
-                curr_health,
-                armor,
-                immune,
-                ward,
-                attack_type,
-                attack_chance,
-                attack_dmg,
-                dot_dmg,
-                attack_source,
-                attack_ini,
-                attack_radius,
-                attack_purpose,
-                prev_level,
-                desc,
-                photo,
-                gif,
-                slot,
-                subrace,
-                branch,
-                attack_twice,
-                regen,
-                dyn_upd_level,
-                upgrade_b,
-                leadership,
-                leader_cat,
-                nat_armor,
-                might,
-                weapon_master,
-                endurance,
-                first_strike,
-                accuracy,
-                water_resist,
-                air_resist,
-                fire_resist,
-                earth_resist,
-                dotted
-            )
+        def __repr__(self):
+            return (f'{self.__class__.__name__}('
+                    f'unit: {self.name!r},'
+                    f' slot: {self.slot!r})')
+
+        def __str__(self):
+            return f'Юнит игрока 1: {self.name}'
 
     class Player2Units(AllUnits):
         """Класс - отображение таблицы юнитов игрока 2."""
 
-        def __init__(
-                self,
-                id,
-                name,
-                level,
-                size,
-                price,
-                exp,
-                curr_exp,
-                exp_per_kill,
-                health,
-                curr_health,
-                armor,
-                immune,
-                ward,
-                attack_type,
-                attack_chance,
-                attack_dmg,
-                dot_dmg,
-                attack_source,
-                attack_ini,
-                attack_radius,
-                attack_purpose,
-                prev_level,
-                desc,
-                photo,
-                gif,
-                slot,
-                subrace,
-                branch,
-                attack_twice,
-                regen,
-                dyn_upd_level,
-                upgrade_b,
-                leadership,
-                leader_cat,
-                nat_armor,
-                might,
-                weapon_master,
-                endurance,
-                first_strike,
-                accuracy,
-                water_resist,
-                air_resist,
-                fire_resist,
-                earth_resist,
-                dotted
-        ):
-            super().__init__(
-                name,
-                level,
-                size,
-                price,
-                exp,
-                curr_exp,
-                exp_per_kill,
-                health,
-                curr_health,
-                armor,
-                immune,
-                ward,
-                attack_type,
-                attack_chance,
-                attack_dmg,
-                dot_dmg,
-                attack_source,
-                attack_ini,
-                attack_radius,
-                attack_purpose,
-                prev_level,
-                desc,
-                photo,
-                gif,
-                slot,
-                subrace,
-                branch,
-                attack_twice,
-                regen,
-                dyn_upd_level,
-                upgrade_b,
-                leadership,
-                leader_cat,
-                nat_armor,
-                might,
-                weapon_master,
-                endurance,
-                first_strike,
-                accuracy,
-                water_resist,
-                air_resist,
-                fire_resist,
-                earth_resist,
-                dotted
-            )
+        def __repr__(self):
+            return (f'{self.__class__.__name__}('
+                    f'unit: {self.name!r},'
+                    f' slot: {self.slot!r})')
+
+        def __str__(self):
+            return f'Юнит игрока 2: {self.name}'
+
+    class CurrentDungeon(AllUnits):
+        """Класс - подземелье."""
+
+        def __repr__(self):
+            return (f'{self.__class__.__name__}('
+                    f'unit: {self.name!r},'
+                    f' slot: {self.slot!r})')
+
+        def __str__(self):
+            return f'Юнит подземелья: {self.name}'
+
+    class EmpireUnits(AllUnits):
+        """
+        Класс - отображение таблицы юнитов игрока
+        в кампании при игре за Империю.
+        """
+
+        def __repr__(self):
+            return (f'{self.__class__.__name__}('
+                    f'unit: {self.name!r},'
+                    f' slot: {self.slot!r})')
+
+        def __str__(self):
+            return f'Юнит Империи: {self.name}'
+
+    class HordesUnits(AllUnits):
+        """
+        Класс - отображение таблицы юнитов игрока
+        в кампании при игре за Орды нежити.
+        """
+
+        def __repr__(self):
+            return (f'{self.__class__.__name__}('
+                    f'unit: {self.name!r},'
+                    f' slot: {self.slot!r})')
+
+        def __str__(self):
+            return f'Юнит Орд нежити: {self.name}'
+
+    class LegionsUnits(AllUnits):
+        """
+        Класс - отображение таблицы юнитов игрока
+        в кампании при игре за Легионы проклятых.
+        """
+
+        def __repr__(self):
+            return (f'{self.__class__.__name__}('
+                    f'unit: {self.name!r},'
+                    f' slot: {self.slot!r})')
+
+        def __str__(self):
+            return f'Юнит Легионов проклятых: {self.name}'
+
+    class ClansUnits(AllUnits):
+        """
+        Класс - отображение таблицы юнитов игрока
+        в кампании при игре за Горные кланы.
+        """
+
+        def __repr__(self):
+            return (f'{self.__class__.__name__}('
+                    f'unit: {self.name!r},'
+                    f' slot: {self.slot!r})')
+
+        def __str__(self):
+            return f'Юнит Горных кланов: {self.name}'
 
     class Players:
         """Класс - игроки."""
@@ -386,104 +280,6 @@ class ServerStorage:
             self.unit5 = unit5
             self.unit6 = unit6
 
-    class CurrentDungeon(AllUnits):
-        """Класс - подземелье."""
-
-        def __init__(
-                self,
-                id,
-                name,
-                level,
-                size,
-                price,
-                exp,
-                curr_exp,
-                exp_per_kill,
-                health,
-                curr_health,
-                armor,
-                immune,
-                ward,
-                attack_type,
-                attack_chance,
-                attack_dmg,
-                dot_dmg,
-                attack_source,
-                attack_ini,
-                attack_radius,
-                attack_purpose,
-                prev_level,
-                desc,
-                photo,
-                gif,
-                slot,
-                subrace,
-                branch,
-                attack_twice,
-                regen,
-                dyn_upd_level,
-                upgrade_b,
-                leadership,
-                leader_cat,
-                nat_armor,
-                might,
-                weapon_master,
-                endurance,
-                first_strike,
-                accuracy,
-                water_resist,
-                air_resist,
-                fire_resist,
-                earth_resist,
-                dotted
-        ):
-            super().__init__(
-                name,
-                level,
-                size,
-                price,
-                exp,
-                curr_exp,
-                exp_per_kill,
-                health,
-                curr_health,
-                armor,
-                immune,
-                ward,
-                attack_type,
-                attack_chance,
-                attack_dmg,
-                dot_dmg,
-                attack_source,
-                attack_ini,
-                attack_radius,
-                attack_purpose,
-                prev_level,
-                desc,
-                photo,
-                gif,
-                slot,
-                subrace,
-                branch,
-                attack_twice,
-                regen,
-                dyn_upd_level,
-                upgrade_b,
-                leadership,
-                leader_cat,
-                nat_armor,
-                might,
-                weapon_master,
-                endurance,
-                first_strike,
-                accuracy,
-                water_resist,
-                air_resist,
-                fire_resist,
-                earth_resist,
-                dotted
-            )
-
     def __init__(self, path):
         # Создаём движок базы данных
         self.database_engine = create_engine(
@@ -495,151 +291,15 @@ class ServerStorage:
 
         # Создаём объект MetaData
         self.metadata = MetaData()
-        # self.auto_id = 10
 
-        units_table = Table('units', self.metadata,
-                            Column('id', Integer, primary_key=True),
-                            Column('name', String, unique=True),
-                            Column('level', Integer),
-                            Column('size', String),
-                            Column('price', Integer),
-                            Column('exp', Integer),
-                            Column('curr_exp', Integer),
-                            Column('exp_per_kill', Integer),
-                            Column('health', Integer),
-                            Column('curr_health', Integer),
-                            Column('armor', Integer),
-                            Column('immune', String),
-                            Column('ward', String),
-                            Column('attack_type', String),
-                            Column('attack_chance', String),
-                            Column('attack_dmg', Integer),
-                            Column('dot_dmg', Integer),
-                            Column('attack_source', String),
-                            Column('attack_ini', Integer),
-                            Column('attack_radius', String),
-                            Column('attack_purpose', Integer),
-                            Column('prev_level', String),
-                            Column('desc', String),
-                            Column('photo', String),
-                            Column('gif', String),
-                            Column('slot', Integer),
-                            Column('subrace', String),
-                            Column('branch', String),
-                            Column('attack_twice', Integer),
-                            Column('regen', Integer),
-                            Column('dyn_upd_level', Integer),
-                            Column('upgrade_b', String),
-                            Column('leadership', Integer),
-                            Column('leader_cat', String),
-                            Column('nat_armor', Integer),
-                            Column('might', Integer),
-                            Column('weapon_master', Integer),
-                            Column('endurance', Integer),
-                            Column('first_strike', Integer),
-                            Column('accuracy', Integer),
-                            Column('water_resist', Integer),
-                            Column('air_resist', Integer),
-                            Column('fire_resist', Integer),
-                            Column('earth_resist', Integer),
-                            Column('dotted', Integer),
-                            )
-
-        player_units_table = Table('player_units', self.metadata,
-                                   Column('id', Integer, primary_key=True),
-                                   Column('name', String),
-                                   Column('level', Integer),
-                                   Column('size', String),
-                                   Column('price', Integer),
-                                   Column('exp', Integer),
-                                   Column('curr_exp', Integer),
-                                   Column('exp_per_kill', Integer),
-                                   Column('health', Integer),
-                                   Column('curr_health', Integer),
-                                   Column('armor', Integer),
-                                   Column('immune', String),
-                                   Column('ward', String),
-                                   Column('attack_type', String),
-                                   Column('attack_chance', String),
-                                   Column('attack_dmg', Integer),
-                                   Column('dot_dmg', Integer),
-                                   Column('attack_source', String),
-                                   Column('attack_ini', Integer),
-                                   Column('attack_radius', String),
-                                   Column('attack_purpose', Integer),
-                                   Column('prev_level', String),
-                                   Column('desc', String),
-                                   Column('photo', String),
-                                   Column('gif', String),
-                                   Column('slot', Integer),
-                                   Column('subrace', String),
-                                   Column('branch', String),
-                                   Column('attack_twice', Integer),
-                                   Column('regen', Integer),
-                                   Column('dyn_upd_level', Integer),
-                                   Column('upgrade_b', String),
-                                   Column('leadership', Integer),
-                                   Column('leader_cat', String),
-                                   Column('nat_armor', Integer),
-                                   Column('might', Integer),
-                                   Column('weapon_master', Integer),
-                                   Column('endurance', Integer),
-                                   Column('first_strike', Integer),
-                                   Column('accuracy', Integer),
-                                   Column('water_resist', Integer),
-                                   Column('air_resist', Integer),
-                                   Column('fire_resist', Integer),
-                                   Column('earth_resist', Integer),
-                                   Column('dotted', Integer),
-                                   )
-
-        player2_units_table = Table('player2_units', self.metadata,
-                                    Column('id', Integer, primary_key=True),
-                                    Column('name', String),
-                                    Column('level', Integer),
-                                    Column('size', String),
-                                    Column('price', Integer),
-                                    Column('exp', Integer),
-                                    Column('curr_exp', Integer),
-                                    Column('exp_per_kill', Integer),
-                                    Column('health', Integer),
-                                    Column('curr_health', Integer),
-                                    Column('armor', Integer),
-                                    Column('immune', String),
-                                    Column('ward', String),
-                                    Column('attack_type', String),
-                                    Column('attack_chance', String),
-                                    Column('attack_dmg', Integer),
-                                    Column('dot_dmg', Integer),
-                                    Column('attack_source', String),
-                                    Column('attack_ini', Integer),
-                                    Column('attack_radius', String),
-                                    Column('attack_purpose', Integer),
-                                    Column('prev_level', String),
-                                    Column('desc', String),
-                                    Column('photo', String),
-                                    Column('gif', String),
-                                    Column('slot', Integer),
-                                    Column('subrace', String),
-                                    Column('branch', String),
-                                    Column('attack_twice', Integer),
-                                    Column('regen', Integer),
-                                    Column('dyn_upd_level', Integer),
-                                    Column('upgrade_b', String),
-                                    Column('leadership', Integer),
-                                    Column('leader_cat', String),
-                                    Column('nat_armor', Integer),
-                                    Column('might', Integer),
-                                    Column('weapon_master', Integer),
-                                    Column('endurance', Integer),
-                                    Column('first_strike', Integer),
-                                    Column('accuracy', Integer),
-                                    Column('water_resist', Integer),
-                                    Column('air_resist', Integer),
-                                    Column('fire_resist', Integer),
-                                    Column('earth_resist', Integer),
-                                    Column('dotted', Integer),
-                                    )
+        units_table = self.create_units_table('units')
+        player_units_table = self.create_units_table('player_units')
+        player2_units_table = self.create_units_table('player2_units')
+        current_dungeon_table = self.create_units_table('current_dungeon')
+        empire_units_table = self.create_units_table('empire_units')
+        hordes_units_table = self.create_units_table('hordes_units')
+        legions_units_table = self.create_units_table('legions_units')
+        clans_units_table = self.create_units_table('clans_units')
 
         # Создаём таблицу игроков
         players_table = Table('players', self.metadata,
@@ -689,54 +349,6 @@ class ServerStorage:
                                Column('unit6', String)
                                )
 
-        current_dungeon_table = Table('current_dungeon', self.metadata,
-                                      Column('id', Integer, primary_key=True),
-                                      Column('name', String),
-                                      Column('level', Integer),
-                                      Column('size', String),
-                                      Column('price', Integer),
-                                      Column('exp', Integer),
-                                      Column('curr_exp', Integer),
-                                      Column('exp_per_kill', Integer),
-                                      Column('health', Integer),
-                                      Column('curr_health', Integer),
-                                      Column('armor', Integer),
-                                      Column('immune', String),
-                                      Column('ward', String),
-                                      Column('attack_type', String),
-                                      Column('attack_chance', String),
-                                      Column('attack_dmg', Integer),
-                                      Column('dot_dmg', Integer),
-                                      Column('attack_source', String),
-                                      Column('attack_ini', Integer),
-                                      Column('attack_radius', String),
-                                      Column('attack_purpose', Integer),
-                                      Column('prev_level', String),
-                                      Column('desc', String),
-                                      Column('photo', String),
-                                      Column('gif', String),
-                                      Column('slot', Integer),
-                                      Column('subrace', String),
-                                      Column('branch', String),
-                                      Column('attack_twice', Integer),
-                                      Column('regen', Integer),
-                                      Column('dyn_upd_level', Integer),
-                                      Column('upgrade_b', String),
-                                      Column('leadership', Integer),
-                                      Column('leader_cat', String),
-                                      Column('nat_armor', Integer),
-                                      Column('might', Integer),
-                                      Column('weapon_master', Integer),
-                                      Column('endurance', Integer),
-                                      Column('first_strike', Integer),
-                                      Column('accuracy', Integer),
-                                      Column('water_resist', Integer),
-                                      Column('air_resist', Integer),
-                                      Column('fire_resist', Integer),
-                                      Column('earth_resist', Integer),
-                                      Column('dotted', Integer),
-                                      )
-
         # Создаём таблицы
         self.metadata.create_all(self.database_engine)
 
@@ -749,12 +361,72 @@ class ServerStorage:
         mapper(self.GameSessions, game_sessions_table)
         mapper(self.Dungeons, dungeons_table)
         mapper(self.CurrentDungeon, current_dungeon_table)
+        mapper(self.EmpireUnits, empire_units_table)
+        mapper(self.HordesUnits, hordes_units_table)
+        mapper(self.LegionsUnits, legions_units_table)
+        mapper(self.ClansUnits, clans_units_table)
 
         # Создаём сессию
         session = sessionmaker(bind=self.database_engine)
         self.session = session()
 
         self.current_player = self.get_player('Erepb-89')
+
+        self.campaigns_dict = {
+            EM: self.EmpireUnits,
+            UH: self.HordesUnits,
+            LD: self.LegionsUnits,
+            MC: self.ClansUnits,
+        }
+
+    def create_units_table(self, table_name):
+        return Table(table_name, self.metadata,
+                     Column('id', Integer, primary_key=True),
+                     Column('name', String),
+                     Column('level', Integer),
+                     Column('size', String),
+                     Column('price', Integer),
+                     Column('exp', Integer),
+                     Column('curr_exp', Integer),
+                     Column('exp_per_kill', Integer),
+                     Column('health', Integer),
+                     Column('curr_health', Integer),
+                     Column('armor', Integer),
+                     Column('immune', String),
+                     Column('ward', String),
+                     Column('attack_type', String),
+                     Column('attack_chance', String),
+                     Column('attack_dmg', Integer),
+                     Column('dot_dmg', Integer),
+                     Column('attack_source', String),
+                     Column('attack_ini', Integer),
+                     Column('attack_radius', String),
+                     Column('attack_purpose', Integer),
+                     Column('prev_level', String),
+                     Column('desc', String),
+                     Column('photo', String),
+                     Column('gif', String),
+                     Column('slot', Integer),
+                     Column('subrace', String),
+                     Column('branch', String),
+                     Column('attack_twice', Integer),
+                     Column('regen', Integer),
+                     Column('dyn_upd_level', Integer),
+                     Column('upgrade_b', String),
+                     Column('leadership', Integer),
+                     Column('leader_cat', String),
+                     Column('nat_armor', Integer),
+                     Column('might', Integer),
+                     Column('weapon_master', Integer),
+                     Column('endurance', Integer),
+                     Column('first_strike', Integer),
+                     Column('accuracy', Integer),
+                     Column('water_resist', Integer),
+                     Column('air_resist', Integer),
+                     Column('fire_resist', Integer),
+                     Column('earth_resist', Integer),
+                     Column('dotted', Integer),
+                     )
 
     def update_game_session(self):
         """Обновить игровую сессию"""
@@ -1119,101 +791,105 @@ class ServerStorage:
 
     def get_player_unit_by_slot(self, slot: int) -> namedtuple:
         """Метод получающий юнита из базы игрока по слоту."""
+        database = self.campaigns_dict[self.current_faction]
+
         query = self.session.query(
-            self.PlayerUnits.id,
-            self.PlayerUnits.name,
-            self.PlayerUnits.level,
-            self.PlayerUnits.size,
-            self.PlayerUnits.price,
-            self.PlayerUnits.exp,
-            self.PlayerUnits.curr_exp,
-            self.PlayerUnits.exp_per_kill,
-            self.PlayerUnits.health,
-            self.PlayerUnits.curr_health,
-            self.PlayerUnits.armor,
-            self.PlayerUnits.immune,
-            self.PlayerUnits.ward,
-            self.PlayerUnits.attack_type,
-            self.PlayerUnits.attack_chance,
-            self.PlayerUnits.attack_dmg,
-            self.PlayerUnits.dot_dmg,
-            self.PlayerUnits.attack_source,
-            self.PlayerUnits.attack_ini,
-            self.PlayerUnits.attack_radius,
-            self.PlayerUnits.attack_purpose,
-            self.PlayerUnits.prev_level,
-            self.PlayerUnits.desc,
-            self.PlayerUnits.slot,
-            self.PlayerUnits.subrace,
-            self.PlayerUnits.branch,
-            self.PlayerUnits.attack_twice,
-            self.PlayerUnits.regen,
-            self.PlayerUnits.dyn_upd_level,
-            self.PlayerUnits.upgrade_b,
-            self.PlayerUnits.leadership,
-            self.PlayerUnits.leader_cat,
-            self.PlayerUnits.nat_armor,
-            self.PlayerUnits.might,
-            self.PlayerUnits.weapon_master,
-            self.PlayerUnits.endurance,
-            self.PlayerUnits.first_strike,
-            self.PlayerUnits.accuracy,
-            self.PlayerUnits.water_resist,
-            self.PlayerUnits.air_resist,
-            self.PlayerUnits.fire_resist,
-            self.PlayerUnits.earth_resist,
-            self.PlayerUnits.dotted
+            database.id,
+            database.name,
+            database.level,
+            database.size,
+            database.price,
+            database.exp,
+            database.curr_exp,
+            database.exp_per_kill,
+            database.health,
+            database.curr_health,
+            database.armor,
+            database.immune,
+            database.ward,
+            database.attack_type,
+            database.attack_chance,
+            database.attack_dmg,
+            database.dot_dmg,
+            database.attack_source,
+            database.attack_ini,
+            database.attack_radius,
+            database.attack_purpose,
+            database.prev_level,
+            database.desc,
+            database.slot,
+            database.subrace,
+            database.branch,
+            database.attack_twice,
+            database.regen,
+            database.dyn_upd_level,
+            database.upgrade_b,
+            database.leadership,
+            database.leader_cat,
+            database.nat_armor,
+            database.might,
+            database.weapon_master,
+            database.endurance,
+            database.first_strike,
+            database.accuracy,
+            database.water_resist,
+            database.air_resist,
+            database.fire_resist,
+            database.earth_resist,
+            database.dotted
         ).filter_by(slot=slot)
         # Возвращаем кортеж
         return query.first()
 
     def show_player_units(self) -> List[namedtuple]:
         """Метод возвращающий список юнитов игрока."""
+        database = self.campaigns_dict[self.current_faction]
+
         query = self.session.query(
-            self.PlayerUnits.id,
-            self.PlayerUnits.name,
-            self.PlayerUnits.level,
-            self.PlayerUnits.size,
-            self.PlayerUnits.price,
-            self.PlayerUnits.exp,
-            self.PlayerUnits.curr_exp,
-            self.PlayerUnits.exp_per_kill,
-            self.PlayerUnits.health,
-            self.PlayerUnits.curr_health,
-            self.PlayerUnits.armor,
-            self.PlayerUnits.immune,
-            self.PlayerUnits.ward,
-            self.PlayerUnits.attack_type,
-            self.PlayerUnits.attack_chance,
-            self.PlayerUnits.attack_dmg,
-            self.PlayerUnits.dot_dmg,
-            self.PlayerUnits.attack_source,
-            self.PlayerUnits.attack_ini,
-            self.PlayerUnits.attack_radius,
-            self.PlayerUnits.attack_purpose,
-            self.PlayerUnits.prev_level,
-            self.PlayerUnits.desc,
-            self.PlayerUnits.slot,
-            self.PlayerUnits.subrace,
-            self.PlayerUnits.branch,
-            self.PlayerUnits.attack_twice,
-            self.PlayerUnits.regen,
-            self.PlayerUnits.dyn_upd_level,
-            self.PlayerUnits.upgrade_b,
-            self.PlayerUnits.leadership,
-            self.PlayerUnits.leader_cat,
-            self.PlayerUnits.nat_armor,
-            self.PlayerUnits.might,
-            self.PlayerUnits.weapon_master,
-            self.PlayerUnits.endurance,
-            self.PlayerUnits.first_strike,
-            self.PlayerUnits.accuracy,
-            self.PlayerUnits.water_resist,
-            self.PlayerUnits.air_resist,
-            self.PlayerUnits.fire_resist,
-            self.PlayerUnits.earth_resist,
-            self.PlayerUnits.dotted
-        ).order_by(self.PlayerUnits.slot)
+            database.id,
+            database.name,
+            database.level,
+            database.size,
+            database.price,
+            database.exp,
+            database.curr_exp,
+            database.exp_per_kill,
+            database.health,
+            database.curr_health,
+            database.armor,
+            database.immune,
+            database.ward,
+            database.attack_type,
+            database.attack_chance,
+            database.attack_dmg,
+            database.dot_dmg,
+            database.attack_source,
+            database.attack_ini,
+            database.attack_radius,
+            database.attack_purpose,
+            database.prev_level,
+            database.desc,
+            database.slot,
+            database.subrace,
+            database.branch,
+            database.attack_twice,
+            database.regen,
+            database.dyn_upd_level,
+            database.upgrade_b,
+            database.leadership,
+            database.leader_cat,
+            database.nat_armor,
+            database.might,
+            database.weapon_master,
+            database.endurance,
+            database.first_strike,
+            database.accuracy,
+            database.water_resist,
+            database.air_resist,
+            database.fire_resist,
+            database.earth_resist,
+            database.dotted
+        ).order_by(database.slot)
         # Возвращаем список кортежей
         return query.all()
 
@@ -1403,12 +1079,18 @@ class ServerStorage:
         # Возвращаем кортеж
         return query.order_by(self.PlayerBuildings.id.desc()).first()
 
+    def clear_units(self,
+                    faction: str) -> None:
+        """Метод удаления юнитов в базе игрока за данную фракцию."""
+        table = self.campaigns_dict[faction]
+
+        self.session.query(table).delete()
+        self.session.commit()
+
     def clear_buildings(self,
                         player_name: str,
                         faction: str) -> None:
-        """
-        Метод удаления построек в столице игрока.
-        """
+        """Метод удаления построек в столице игрока."""
 
         self.session.query(
             self.PlayerBuildings).filter_by(
@@ -1632,6 +1314,8 @@ class ServerStorage:
 
     def hire_unit(self, unit: namedtuple, slot: int) -> None:
         """Метод добавления юнита в базу игрока."""
+        table = self.campaigns_dict[self.current_faction]
+
         if self.check_slot(
                 unit,
                 slot,
@@ -1647,7 +1331,7 @@ class ServerStorage:
             if self.is_double(unit_row.name) and slot % 2 == 1:
                 slot += 1
 
-            player_unit = self.PlayerUnits(
+            player_unit = table(
                 *unit_row[:25],
                 slot,
                 *unit_cols_after_slot)
@@ -1875,9 +1559,9 @@ class ServerStorage:
         self.session.commit()
 
     def update_unit_curr_hp(self,
-                       slot: int,
-                       curr_health: int,
-                       database: any) -> None:
+                            slot: int,
+                            curr_health: int,
+                            database: any) -> None:
         """
         Метод изменения здоровья юнита.
         Изменяет запись в таблице player_units либо в current_dungeon.
@@ -2173,7 +1857,7 @@ class ServerStorage:
         self.create_buildings(
             self.current_player.name,
             faction,
-            300,
+            800,
             building_levels)
 
 

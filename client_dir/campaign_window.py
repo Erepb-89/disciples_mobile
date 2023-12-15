@@ -323,7 +323,6 @@ class CampaignWindow(QMainWindow):
                 self.mission_slot_detailed(
                     self.all_missions[mission_name])
 
-        # self.dungeon = f'{self.faction}_{self.level}_{number}'
         ui_unlock(self.ui.pushButtonFight)
 
     def highlight_selected_1(self) -> None:

@@ -13,7 +13,7 @@ from PyQt5.QtWidgets import QMainWindow, QApplication, \
     QHBoxLayout
 
 from client_dir.capital_window import CapitalWindow
-from client_dir.choose_window import ChooseRaceWindow
+from client_dir.choose_faction_window import ChooseRaceWindow
 from client_dir.fight_window import FightWindow
 from client_dir.campaign_window import CampaignWindow
 from client_dir.client_main_form import Ui_MainWindow
