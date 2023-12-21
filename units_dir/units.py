@@ -1891,4 +1891,5 @@ if __name__ == '__main__':
     # all_buildings = main_db.get_buildings('Erepb-89', 'Undead Hordes')
     # print(all_buildings._asdict())
 
+    # print(main_db.get_unit_by_name('Антипаладин'))
     print(1)
