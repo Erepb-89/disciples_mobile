@@ -790,7 +790,57 @@ class ServerStorage:
         return query.all()
 
     def get_player_unit_by_slot(self, slot: int) -> namedtuple:
-        """Метод получающий юнита из базы игрока по слоту."""
+        """Метод получающий юнита из таблицы PlayerUnits по слоту."""
+        query = self.session.query(
+            self.PlayerUnits.id,
+            self.PlayerUnits.name,
+            self.PlayerUnits.level,
+            self.PlayerUnits.size,
+            self.PlayerUnits.price,
+            self.PlayerUnits.exp,
+            self.PlayerUnits.curr_exp,
+            self.PlayerUnits.exp_per_kill,
+            self.PlayerUnits.health,
+            self.PlayerUnits.curr_health,
+            self.PlayerUnits.armor,
+            self.PlayerUnits.immune,
+            self.PlayerUnits.ward,
+            self.PlayerUnits.attack_type,
+            self.PlayerUnits.attack_chance,
+            self.PlayerUnits.attack_dmg,
+            self.PlayerUnits.dot_dmg,
+            self.PlayerUnits.attack_source,
+            self.PlayerUnits.attack_ini,
+            self.PlayerUnits.attack_radius,
+            self.PlayerUnits.attack_purpose,
+            self.PlayerUnits.prev_level,
+            self.PlayerUnits.desc,
+            self.PlayerUnits.slot,
+            self.PlayerUnits.subrace,
+            self.PlayerUnits.branch,
+            self.PlayerUnits.attack_twice,
+            self.PlayerUnits.regen,
+            self.PlayerUnits.dyn_upd_level,
+            self.PlayerUnits.upgrade_b,
+            self.PlayerUnits.leadership,
+            self.PlayerUnits.leader_cat,
+            self.PlayerUnits.nat_armor,
+            self.PlayerUnits.might,
+            self.PlayerUnits.weapon_master,
+            self.PlayerUnits.endurance,
+            self.PlayerUnits.first_strike,
+            self.PlayerUnits.accuracy,
+            self.PlayerUnits.water_resist,
+            self.PlayerUnits.air_resist,
+            self.PlayerUnits.fire_resist,
+            self.PlayerUnits.earth_resist,
+            self.PlayerUnits.dotted
+        ).filter_by(slot=slot)
+        # Возвращаем кортеж
+        return query.first()
+
+    def get_campaign_unit_by_slot(self, slot: int) -> namedtuple:
+        """Метод получающий юнита из таблицы текущей кампании по слоту."""
         database = self.campaigns_dict[self.current_faction]
 
         query = self.session.query(
@@ -841,8 +891,8 @@ class ServerStorage:
         # Возвращаем кортеж
         return query.first()
 
-    def show_player_units(self) -> List[namedtuple]:
-        """Метод возвращающий список юнитов игрока."""
+    def show_campaign_units(self) -> List[namedtuple]:
+        """Метод возвращающий список юнитов игрока в текущей кампании."""
         database = self.campaigns_dict[self.current_faction]
 
         query = self.session.query(
@@ -890,6 +940,56 @@ class ServerStorage:
             database.earth_resist,
             database.dotted
         ).order_by(database.slot)
+        # Возвращаем список кортежей
+        return query.all()
+
+    def show_player_units(self) -> List[namedtuple]:
+        """Метод возвращающий список юнитов игрока."""
+        query = self.session.query(
+            self.PlayerUnits.id,
+            self.PlayerUnits.name,
+            self.PlayerUnits.level,
+            self.PlayerUnits.size,
+            self.PlayerUnits.price,
+            self.PlayerUnits.exp,
+            self.PlayerUnits.curr_exp,
+            self.PlayerUnits.exp_per_kill,
+            self.PlayerUnits.health,
+            self.PlayerUnits.curr_health,
+            self.PlayerUnits.armor,
+            self.PlayerUnits.immune,
+            self.PlayerUnits.ward,
+            self.PlayerUnits.attack_type,
+            self.PlayerUnits.attack_chance,
+            self.PlayerUnits.attack_dmg,
+            self.PlayerUnits.dot_dmg,
+            self.PlayerUnits.attack_source,
+            self.PlayerUnits.attack_ini,
+            self.PlayerUnits.attack_radius,
+            self.PlayerUnits.attack_purpose,
+            self.PlayerUnits.prev_level,
+            self.PlayerUnits.desc,
+            self.PlayerUnits.slot,
+            self.PlayerUnits.subrace,
+            self.PlayerUnits.branch,
+            self.PlayerUnits.attack_twice,
+            self.PlayerUnits.regen,
+            self.PlayerUnits.dyn_upd_level,
+            self.PlayerUnits.upgrade_b,
+            self.PlayerUnits.leadership,
+            self.PlayerUnits.leader_cat,
+            self.PlayerUnits.nat_armor,
+            self.PlayerUnits.might,
+            self.PlayerUnits.weapon_master,
+            self.PlayerUnits.endurance,
+            self.PlayerUnits.first_strike,
+            self.PlayerUnits.accuracy,
+            self.PlayerUnits.water_resist,
+            self.PlayerUnits.air_resist,
+            self.PlayerUnits.fire_resist,
+            self.PlayerUnits.earth_resist,
+            self.PlayerUnits.dotted
+        ).order_by(self.PlayerUnits.slot)
         # Возвращаем список кортежей
         return query.all()
 
@@ -1312,14 +1412,16 @@ class ServerStorage:
         self.session.query(self.CurrentDungeon).filter_by(slot=slot).delete()
         self.session.commit()
 
-    def hire_unit(self, unit: namedtuple, slot: int) -> None:
+    def hire_unit(self, unit: str, slot: int) -> None:
         """Метод добавления юнита в базу игрока."""
-        table = self.campaigns_dict[self.current_faction]
+        db_table = self.campaigns_dict[self.current_faction]
 
         if self.check_slot(
                 unit,
                 slot,
-                self.get_player_unit_by_slot) is True:
+                self.get_unit_by_slot,
+                db_table) is True:
+                # self.get_campaign_unit_by_slot) is True:
             # Нужно заменить на get_unit_by_slot
             print('Данный слот занят')
         else:
@@ -1331,19 +1433,43 @@ class ServerStorage:
             if self.is_double(unit_row.name) and slot % 2 == 1:
                 slot += 1
 
-            player_unit = table(
+            player_unit = db_table(
                 *unit_row[:25],
                 slot,
                 *unit_cols_after_slot)
             self.session.add(player_unit)
             self.session.commit()
 
-    def hire_enemy_unit(self, unit: namedtuple, slot: int) -> None:
+    def hire_player_unit(self, unit: str, slot: int) -> None:
         """Метод добавления юнита в базу противника."""
         if self.check_slot(
                 unit,
                 slot,
-                self.get_dungeon_unit_by_slot) is True:
+                self.get_unit_by_slot,
+                self.PlayerUnits) is True:
+            print('Данный слот занят')
+        else:
+            unit_row = self.get_unit_by_name(unit)
+            unit_cols_after_slot = main_db.get_unit_by_name(
+                unit)[26:45]
+
+            if self.is_double(unit) and slot % 2 == 1:
+                slot += 1
+
+            enemy_unit = self.PlayerUnits(
+                *unit_row[:25],
+                slot,
+                *unit_cols_after_slot)
+            self.session.add(enemy_unit)
+            self.session.commit()
+
+    def hire_enemy_unit(self, unit: str, slot: int) -> None:
+        """Метод добавления юнита в базу противника."""
+        if self.check_slot(
+                unit,
+                slot,
+                self.get_unit_by_slot,
+                self.CurrentDungeon) is True:
             # Нужно заменить на get_unit_by_slot
             print('Данный слот занят')
         else:
@@ -1366,33 +1492,29 @@ class ServerStorage:
     def check_slot(self,
                    unit: namedtuple,
                    slot: int,
-                   func: Callable[[int], any]
+                   func: Callable[[int, any], any],
+                   db_table: any
                    ) -> bool:
         """Проверка свободен ли слот для юнита"""
-        if func(slot) is not None:
+        if func(slot, db_table) is not None:
             result = True
 
         # Если слот четный и сам юнит двойной
         elif slot % 2 == 0 and self.is_double(unit):
-            if func(slot - 1) is not None:
-                result = True
-            else:
-                result = False
+            result = bool(func(slot - 1, db_table))
 
         # Если слот нечетный и сам юнит двойной
         elif slot % 2 == 1 and self.is_double(unit):
-            if func(slot + 1) is not None:
-                result = True
-            else:
-                result = False
+            result = bool(func(slot + 1, db_table))
 
         # Если (номер слота + 1) - уже занят двойным юнитом
-        elif func(slot + 1) is not None and self.is_double(func(slot + 1).name):
+        elif func(slot + 1, db_table) is not None \
+                and self.is_double(func(slot + 1, db_table).name):
             result = True
 
         # Если (номер слота - 1) - уже занят двойным юнитом
-        elif slot % 2 == 0 and func(slot - 1) is not None and \
-                self.is_double(func(slot - 1).name):
+        elif slot % 2 == 0 and func(slot - 1, db_table) is not None and \
+                self.is_double(func(slot - 1, db_table).name):
             result = True
         else:
             result = False
@@ -1606,13 +1728,21 @@ class ServerStorage:
         self.session.execute(changes)
         self.session.commit()
 
-    def replace_unit(self, slot: int, new_name: str) -> None:
+    def replace_unit(self,
+                     slot: int,
+                     new_name: str,
+                     db_table: any) -> None:
         """
         Метод замены юнита на другой юнит.
-        Изменяет запись в таблице AllUnits.
+        Изменяет запись в таблице PlayerUnits.
         """
         self.delete_player_unit(slot)
-        self.hire_unit(new_name, slot)
+        if db_table == self.PlayerUnits:
+            self.hire_player_unit(new_name, slot)
+        elif db_table == self.CurrentDungeon:
+            self.hire_enemy_unit(new_name, slot)
+        else:
+            self.hire_unit(new_name, slot)
 
     def show_dungeon_units(self, name: str) -> namedtuple:
         """Метод возвращающий список юнитов подземелья."""
