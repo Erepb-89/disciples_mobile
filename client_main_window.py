@@ -609,7 +609,7 @@ class ClientMainWindow(QMainWindow):
         try:
             selected_slot = self.ui.listPlayerSlots.currentIndex().data()
             selected = self.ui.listAllUnits.currentIndex().data()
-            main_db.hire_unit(
+            main_db.hire_player_unit(
                 selected,
                 int(selected_slot))
             self.player_list_update()
