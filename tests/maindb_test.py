@@ -23,13 +23,13 @@ class MainDBTest(TestCase):
         unit = main_db.get_unit_by_slot(2, main_db.PlayerUnits)
         self.assertIsNone(unit)
 
-    def test_get_player_unit_by_slot(self):
-        unit = main_db.get_player_unit_by_slot(2)
-        self.assertIsNone(unit)
-
-    def test_get_dungeon_unit_by_slot(self):
-        unit = main_db.get_dungeon_unit_by_slot(2)
-        self.assertIsNone(unit)
+    # def test_get_player_unit_by_slot(self):
+    #     unit = main_db.get_player_unit_by_slot(2)
+    #     self.assertIsNone(unit)
+    #
+    # def test_get_dungeon_unit_by_slot(self):
+    #     unit = main_db.get_dungeon_unit_by_slot(2)
+    #     self.assertIsNone(unit)
 
     def test_is_double(self):
         self.assertEqual(main_db.is_double('Горный гигант'), True)

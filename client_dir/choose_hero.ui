@@ -815,10 +815,6 @@
      <set>Qt::AlignCenter</set>
     </property>
    </widget>
-   <zorder>gifLabel3</zorder>
-   <zorder>gifLabel2</zorder>
-   <zorder>gifLabel1</zorder>
-   <zorder>gifLabel4</zorder>
    <zorder>heroMenuBG</zorder>
    <zorder>labelSelected3</zorder>
    <zorder>labelSelected2</zorder>
@@ -843,14 +839,18 @@
    <zorder>nameHero2</zorder>
    <zorder>nameHero3</zorder>
    <zorder>nameHero4</zorder>
-   <zorder>pushButtonSelect2</zorder>
+   <zorder>gifLabel4</zorder>
+   <zorder>gifLabel1</zorder>
+   <zorder>gifLabel3</zorder>
+   <zorder>gifLabel2</zorder>
+   <zorder>pushButtonSelect3</zorder>
    <zorder>pushButtonSelect1</zorder>
    <zorder>pushButtonSelect4</zorder>
-   <zorder>pushButtonSelect3</zorder>
+   <zorder>pushButtonSelect2</zorder>
+   <zorder>pushButtonSlot2</zorder>
    <zorder>pushButtonSlot4</zorder>
    <zorder>pushButtonSlot3</zorder>
    <zorder>pushButtonSlot1</zorder>
-   <zorder>pushButtonSlot2</zorder>
   </widget>
  </widget>
  <resources/>

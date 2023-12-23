@@ -9,7 +9,7 @@ from PyQt5.QtWidgets import QMainWindow, QHBoxLayout
 from client_dir.campaign_form import Ui_CampaignWindow
 from client_dir.fight_window import FightWindow
 from client_dir.army_dialog import EnemyArmyDialog
-from client_dir.settings import BACKGROUND, MC
+from client_dir.settings import BACKGROUND, MC, EM, UH, LD
 from client_dir.ui_functions import slot_update, button_update, \
     ui_lock, ui_unlock, show_opened, show_closed
 from units_dir.mission_generator import unit_selector, \
@@ -41,6 +41,15 @@ class CampaignWindow(QMainWindow):
         self.campaign_icons_dict = {}
         self.all_missions = {}
         self.level = main_db.campaign_level
+
+        self.campaigns_dict = {
+            EM: main_db.EmpireUnits,
+            UH: main_db.HordesUnits,
+            LD: main_db.LegionsUnits,
+            MC: main_db.ClansUnits,
+        }
+
+        self.db_table = self.campaigns_dict[self.faction]
 
         self.InitUI()
 
@@ -186,7 +195,7 @@ class CampaignWindow(QMainWindow):
         self.back()
 
         global FIGHT_WINDOW
-        FIGHT_WINDOW = FightWindow(self.dungeon, self)
+        FIGHT_WINDOW = FightWindow(self.dungeon, self.db_table, self)
         FIGHT_WINDOW.show()
 
     @staticmethod
@@ -438,7 +447,7 @@ class CampaignWindow(QMainWindow):
             icon = self.campaign_icons_dict[self.curr_mission]
 
             # определяем лидера отряда
-            player_units = main_db.show_player_units()
+            player_units = main_db.show_campaign_units()
             leader = player_units[0]
 
             for unit in player_units:

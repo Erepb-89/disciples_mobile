@@ -59,11 +59,13 @@ class FightWindow(QMainWindow):
 
     def __init__(self,
                  dungeon: str,
+                 db_table: str,
                  instance: any):
         super().__init__()
         # основные переменные
         self.parent = instance
-        self.new_battle = Battle(dungeon)
+        self.db_table = db_table
+        self.new_battle = Battle(dungeon, self.db_table)
         self.dungeon = dungeon
         self.computer_name = 'Computer'
         self.player_side = FRONT
@@ -872,7 +874,7 @@ class FightWindow(QMainWindow):
 
             if curr_unit.dotted == 0 and curr_unit in dot_units:
                 if curr_unit in self.new_battle.player1.units:
-                    pl_database = main_db.PlayerUnits
+                    pl_database = self.db_table
                 else:
                     pl_database = main_db.CurrentDungeon
 
@@ -1145,7 +1147,7 @@ class FightWindow(QMainWindow):
 
             self.add_upgraded_units(
                 self.new_battle.player1,
-                main_db.PlayerUnits,
+                self.db_table,
                 self.player_side,
                 self.pl_slots_eff_dict
             )

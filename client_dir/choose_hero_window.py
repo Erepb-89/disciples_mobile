@@ -181,7 +181,7 @@ class ChooseHeroWindow(QMainWindow):
             self.faction,
             changed_gold)
 
-        self.highlighted_hero.add_to_band(int(slot), self.faction)
+        self.highlighted_hero.add_to_band(int(slot))
 
     @staticmethod
     def hire_slot_detailed(hero_type: any) -> None:

@@ -68,7 +68,7 @@ class ServerStorage:
                      earth_resist: int,
                      dotted: int
                      ):
-            self.id = id
+            self.id = None
             self.name = name
             self.level = level
             self.size = size
@@ -550,7 +550,7 @@ class ServerStorage:
         self.session.commit()
 
     def get_unit_by_name(self, name: str) -> namedtuple:
-        """Метод получающий юнита из общей базы по имени."""
+        """Метод получающий юнита из таблицы AllUnits по имени."""
         query = self.session.query(
             self.AllUnits.id,
             self.AllUnits.name,
@@ -632,106 +632,106 @@ class ServerStorage:
         # Возвращаем кортеж
         return query.order_by(self.GameSessions.session_id.desc()).first()
 
-    def get_unit_by_id(self, _id: int, database: any) -> namedtuple:
-        """Метод получающий юнита из общей базы по id."""
+    def get_unit_by_id(self, _id: int, db_table: AllUnits) -> namedtuple:
+        """Метод получающий юнита из общей таблица юнитов по id."""
         query = self.session.query(
-            database.id,
-            database.name,
-            database.level,
-            database.size,
-            database.price,
-            database.exp,
-            database.curr_exp,
-            database.exp_per_kill,
-            database.health,
-            database.curr_health,
-            database.armor,
-            database.immune,
-            database.ward,
-            database.attack_type,
-            database.attack_chance,
-            database.attack_dmg,
-            database.dot_dmg,
-            database.attack_source,
-            database.attack_ini,
-            database.attack_radius,
-            database.attack_purpose,
-            database.prev_level,
-            database.desc,
-            database.photo,
-            database.gif,
-            database.slot,
-            database.subrace,
-            database.branch,
-            database.attack_twice,
-            database.regen,
-            database.dyn_upd_level,
-            database.upgrade_b,
-            database.leadership,
-            database.leader_cat,
-            database.nat_armor,
-            database.might,
-            database.weapon_master,
-            database.endurance,
-            database.first_strike,
-            database.accuracy,
-            database.water_resist,
-            database.air_resist,
-            database.fire_resist,
-            database.earth_resist,
-            database.dotted
+            db_table.id,
+            db_table.name,
+            db_table.level,
+            db_table.size,
+            db_table.price,
+            db_table.exp,
+            db_table.curr_exp,
+            db_table.exp_per_kill,
+            db_table.health,
+            db_table.curr_health,
+            db_table.armor,
+            db_table.immune,
+            db_table.ward,
+            db_table.attack_type,
+            db_table.attack_chance,
+            db_table.attack_dmg,
+            db_table.dot_dmg,
+            db_table.attack_source,
+            db_table.attack_ini,
+            db_table.attack_radius,
+            db_table.attack_purpose,
+            db_table.prev_level,
+            db_table.desc,
+            db_table.photo,
+            db_table.gif,
+            db_table.slot,
+            db_table.subrace,
+            db_table.branch,
+            db_table.attack_twice,
+            db_table.regen,
+            db_table.dyn_upd_level,
+            db_table.upgrade_b,
+            db_table.leadership,
+            db_table.leader_cat,
+            db_table.nat_armor,
+            db_table.might,
+            db_table.weapon_master,
+            db_table.endurance,
+            db_table.first_strike,
+            db_table.accuracy,
+            db_table.water_resist,
+            db_table.air_resist,
+            db_table.fire_resist,
+            db_table.earth_resist,
+            db_table.dotted
         ).filter_by(id=_id)
         # Возвращаем кортеж
         return query.first()
 
-    def get_unit_by_slot(self, slot: int, database: any) -> namedtuple:
-        """Метод получающий юнита из базы игрока по слоту."""
+    def get_unit_by_slot(self, slot: int, db_table: AllUnits) -> namedtuple:
+        """Метод получающий юнита из переданной таблицы по слоту."""
         query = self.session.query(
-            database.id,
-            database.name,
-            database.level,
-            database.size,
-            database.price,
-            database.exp,
-            database.curr_exp,
-            database.exp_per_kill,
-            database.health,
-            database.curr_health,
-            database.armor,
-            database.immune,
-            database.ward,
-            database.attack_type,
-            database.attack_chance,
-            database.attack_dmg,
-            database.dot_dmg,
-            database.attack_source,
-            database.attack_ini,
-            database.attack_radius,
-            database.attack_purpose,
-            database.prev_level,
-            database.desc,
-            database.photo,
-            database.gif,
-            database.slot,
-            database.subrace,
-            database.branch,
-            database.attack_twice,
-            database.regen,
-            database.dyn_upd_level,
-            database.upgrade_b,
-            database.leadership,
-            database.leader_cat,
-            database.nat_armor,
-            database.might,
-            database.weapon_master,
-            database.endurance,
-            database.first_strike,
-            database.accuracy,
-            database.water_resist,
-            database.air_resist,
-            database.fire_resist,
-            database.earth_resist,
-            database.dotted
+            db_table.id,
+            db_table.name,
+            db_table.level,
+            db_table.size,
+            db_table.price,
+            db_table.exp,
+            db_table.curr_exp,
+            db_table.exp_per_kill,
+            db_table.health,
+            db_table.curr_health,
+            db_table.armor,
+            db_table.immune,
+            db_table.ward,
+            db_table.attack_type,
+            db_table.attack_chance,
+            db_table.attack_dmg,
+            db_table.dot_dmg,
+            db_table.attack_source,
+            db_table.attack_ini,
+            db_table.attack_radius,
+            db_table.attack_purpose,
+            db_table.prev_level,
+            db_table.desc,
+            db_table.photo,
+            db_table.gif,
+            db_table.slot,
+            db_table.subrace,
+            db_table.branch,
+            db_table.attack_twice,
+            db_table.regen,
+            db_table.dyn_upd_level,
+            db_table.upgrade_b,
+            db_table.leadership,
+            db_table.leader_cat,
+            db_table.nat_armor,
+            db_table.might,
+            db_table.weapon_master,
+            db_table.endurance,
+            db_table.first_strike,
+            db_table.accuracy,
+            db_table.water_resist,
+            db_table.air_resist,
+            db_table.fire_resist,
+            db_table.earth_resist,
+            db_table.dotted
         ).filter_by(slot=slot)
         # Возвращаем кортеж
         return query.first()
@@ -789,157 +789,107 @@ class ServerStorage:
         # Возвращаем список кортежей
         return query.all()
 
-    def get_player_unit_by_slot(self, slot: int) -> namedtuple:
-        """Метод получающий юнита из таблицы PlayerUnits по слоту."""
-        query = self.session.query(
-            self.PlayerUnits.id,
-            self.PlayerUnits.name,
-            self.PlayerUnits.level,
-            self.PlayerUnits.size,
-            self.PlayerUnits.price,
-            self.PlayerUnits.exp,
-            self.PlayerUnits.curr_exp,
-            self.PlayerUnits.exp_per_kill,
-            self.PlayerUnits.health,
-            self.PlayerUnits.curr_health,
-            self.PlayerUnits.armor,
-            self.PlayerUnits.immune,
-            self.PlayerUnits.ward,
-            self.PlayerUnits.attack_type,
-            self.PlayerUnits.attack_chance,
-            self.PlayerUnits.attack_dmg,
-            self.PlayerUnits.dot_dmg,
-            self.PlayerUnits.attack_source,
-            self.PlayerUnits.attack_ini,
-            self.PlayerUnits.attack_radius,
-            self.PlayerUnits.attack_purpose,
-            self.PlayerUnits.prev_level,
-            self.PlayerUnits.desc,
-            self.PlayerUnits.slot,
-            self.PlayerUnits.subrace,
-            self.PlayerUnits.branch,
-            self.PlayerUnits.attack_twice,
-            self.PlayerUnits.regen,
-            self.PlayerUnits.dyn_upd_level,
-            self.PlayerUnits.upgrade_b,
-            self.PlayerUnits.leadership,
-            self.PlayerUnits.leader_cat,
-            self.PlayerUnits.nat_armor,
-            self.PlayerUnits.might,
-            self.PlayerUnits.weapon_master,
-            self.PlayerUnits.endurance,
-            self.PlayerUnits.first_strike,
-            self.PlayerUnits.accuracy,
-            self.PlayerUnits.water_resist,
-            self.PlayerUnits.air_resist,
-            self.PlayerUnits.fire_resist,
-            self.PlayerUnits.earth_resist,
-            self.PlayerUnits.dotted
-        ).filter_by(slot=slot)
-        # Возвращаем кортеж
-        return query.first()
-
     def get_campaign_unit_by_slot(self, slot: int) -> namedtuple:
         """Метод получающий юнита из таблицы текущей кампании по слоту."""
-        database = self.campaigns_dict[self.current_faction]
+        db_table = self.campaigns_dict[self.current_faction]
 
         query = self.session.query(
-            database.id,
-            database.name,
-            database.level,
-            database.size,
-            database.price,
-            database.exp,
-            database.curr_exp,
-            database.exp_per_kill,
-            database.health,
-            database.curr_health,
-            database.armor,
-            database.immune,
-            database.ward,
-            database.attack_type,
-            database.attack_chance,
-            database.attack_dmg,
-            database.dot_dmg,
-            database.attack_source,
-            database.attack_ini,
-            database.attack_radius,
-            database.attack_purpose,
-            database.prev_level,
-            database.desc,
-            database.slot,
-            database.subrace,
-            database.branch,
-            database.attack_twice,
-            database.regen,
-            database.dyn_upd_level,
-            database.upgrade_b,
-            database.leadership,
-            database.leader_cat,
-            database.nat_armor,
-            database.might,
-            database.weapon_master,
-            database.endurance,
-            database.first_strike,
-            database.accuracy,
-            database.water_resist,
-            database.air_resist,
-            database.fire_resist,
-            database.earth_resist,
-            database.dotted
+            db_table.id,
+            db_table.name,
+            db_table.level,
+            db_table.size,
+            db_table.price,
+            db_table.exp,
+            db_table.curr_exp,
+            db_table.exp_per_kill,
+            db_table.health,
+            db_table.curr_health,
+            db_table.armor,
+            db_table.immune,
+            db_table.ward,
+            db_table.attack_type,
+            db_table.attack_chance,
+            db_table.attack_dmg,
+            db_table.dot_dmg,
+            db_table.attack_source,
+            db_table.attack_ini,
+            db_table.attack_radius,
+            db_table.attack_purpose,
+            db_table.prev_level,
+            db_table.desc,
+            db_table.slot,
+            db_table.subrace,
+            db_table.branch,
+            db_table.attack_twice,
+            db_table.regen,
+            db_table.dyn_upd_level,
+            db_table.upgrade_b,
+            db_table.leadership,
+            db_table.leader_cat,
+            db_table.nat_armor,
+            db_table.might,
+            db_table.weapon_master,
+            db_table.endurance,
+            db_table.first_strike,
+            db_table.accuracy,
+            db_table.water_resist,
+            db_table.air_resist,
+            db_table.fire_resist,
+            db_table.earth_resist,
+            db_table.dotted
         ).filter_by(slot=slot)
         # Возвращаем кортеж
         return query.first()
 
     def show_campaign_units(self) -> List[namedtuple]:
         """Метод возвращающий список юнитов игрока в текущей кампании."""
-        database = self.campaigns_dict[self.current_faction]
+        db_table = self.campaigns_dict[self.current_faction]
 
         query = self.session.query(
-            database.id,
-            database.name,
-            database.level,
-            database.size,
-            database.price,
-            database.exp,
-            database.curr_exp,
-            database.exp_per_kill,
-            database.health,
-            database.curr_health,
-            database.armor,
-            database.immune,
-            database.ward,
-            database.attack_type,
-            database.attack_chance,
-            database.attack_dmg,
-            database.dot_dmg,
-            database.attack_source,
-            database.attack_ini,
-            database.attack_radius,
-            database.attack_purpose,
-            database.prev_level,
-            database.desc,
-            database.slot,
-            database.subrace,
-            database.branch,
-            database.attack_twice,
-            database.regen,
-            database.dyn_upd_level,
-            database.upgrade_b,
-            database.leadership,
-            database.leader_cat,
-            database.nat_armor,
-            database.might,
-            database.weapon_master,
-            database.endurance,
-            database.first_strike,
-            database.accuracy,
-            database.water_resist,
-            database.air_resist,
-            database.fire_resist,
-            database.earth_resist,
-            database.dotted
-        ).order_by(database.slot)
+            db_table.id,
+            db_table.name,
+            db_table.level,
+            db_table.size,
+            db_table.price,
+            db_table.exp,
+            db_table.curr_exp,
+            db_table.exp_per_kill,
+            db_table.health,
+            db_table.curr_health,
+            db_table.armor,
+            db_table.immune,
+            db_table.ward,
+            db_table.attack_type,
+            db_table.attack_chance,
+            db_table.attack_dmg,
+            db_table.dot_dmg,
+            db_table.attack_source,
+            db_table.attack_ini,
+            db_table.attack_radius,
+            db_table.attack_purpose,
+            db_table.prev_level,
+            db_table.desc,
+            db_table.slot,
+            db_table.subrace,
+            db_table.branch,
+            db_table.attack_twice,
+            db_table.regen,
+            db_table.dyn_upd_level,
+            db_table.upgrade_b,
+            db_table.leadership,
+            db_table.leader_cat,
+            db_table.nat_armor,
+            db_table.might,
+            db_table.weapon_master,
+            db_table.endurance,
+            db_table.first_strike,
+            db_table.accuracy,
+            db_table.water_resist,
+            db_table.air_resist,
+            db_table.fire_resist,
+            db_table.earth_resist,
+            db_table.dotted
+        ).order_by(db_table.slot)
         # Возвращаем список кортежей
         return query.all()
 
@@ -1124,11 +1074,11 @@ class ServerStorage:
     def set_unit_slot(self,
                       new_slot: int,
                       unit: namedtuple,
-                      database: any) -> None:
+                      db_table: AllUnits) -> None:
         """Установить новый номер слота юниту"""
         changes = update(
-            database).where(
-            database.id == unit.id).values(
+            db_table).where(
+            db_table.id == unit.id).values(
             slot=new_slot).execution_options(
             synchronize_session="fetch")
         self.session.execute(changes)
@@ -1137,16 +1087,16 @@ class ServerStorage:
     def update_slot(self,
                     slot: int,
                     new_slot: int,
-                    database: any) -> None:
+                    db_table: AllUnits) -> None:
         """Обновление слота у юнита"""
-        changed_unit = self.get_unit_by_slot(slot, database)
-        second_unit = self.get_unit_by_slot(new_slot, database)
+        changed_unit = self.get_unit_by_slot(slot, db_table)
+        second_unit = self.get_unit_by_slot(new_slot, db_table)
 
         if changed_unit is not None:
-            self.set_unit_slot(new_slot, changed_unit, database)
+            self.set_unit_slot(new_slot, changed_unit, db_table)
 
         if second_unit is not None:
-            self.set_unit_slot(slot, second_unit, database)
+            self.set_unit_slot(slot, second_unit, db_table)
 
     def get_gold(self,
                  player_name: str,
@@ -1402,13 +1352,20 @@ class ServerStorage:
 
         self.session.commit()
 
+    def delete_campaign_unit(self, slot: int) -> None:
+        """Метод удаляющий юнита из таблицы текущей кампании игрока по слоту."""
+        db_table = self.campaigns_dict[self.current_faction]
+
+        self.session.query(db_table).filter_by(slot=slot).delete()
+        self.session.commit()
+
     def delete_player_unit(self, slot: int) -> None:
-        """Метод удаляющий юнита из базы игрока по слоту."""
+        """Метод удаляющий юнита из таблицы player_units по слоту."""
         self.session.query(self.PlayerUnits).filter_by(slot=slot).delete()
         self.session.commit()
 
     def delete_dungeon_unit(self, slot: int) -> None:
-        """Метод удаляющий юнита из базы текущего подземелья по слоту."""
+        """Метод удаляющий юнита из теблицы текущего подземелья по слоту."""
         self.session.query(self.CurrentDungeon).filter_by(slot=slot).delete()
         self.session.commit()
 
@@ -1421,8 +1378,6 @@ class ServerStorage:
                 slot,
                 self.get_unit_by_slot,
                 db_table) is True:
-                # self.get_campaign_unit_by_slot) is True:
-            # Нужно заменить на get_unit_by_slot
             print('Данный слот занят')
         else:
             unit_row = self.get_unit_by_name(unit)
@@ -1441,7 +1396,7 @@ class ServerStorage:
             self.session.commit()
 
     def hire_player_unit(self, unit: str, slot: int) -> None:
-        """Метод добавления юнита в базу противника."""
+        """Метод добавления юнита в таблицу player_units."""
         if self.check_slot(
                 unit,
                 slot,
@@ -1464,13 +1419,12 @@ class ServerStorage:
             self.session.commit()
 
     def hire_enemy_unit(self, unit: str, slot: int) -> None:
-        """Метод добавления юнита в базу противника."""
+        """Метод добавления юнита в таблицу current_dungeon."""
         if self.check_slot(
                 unit,
                 slot,
                 self.get_unit_by_slot,
                 self.CurrentDungeon) is True:
-            # Нужно заменить на get_unit_by_slot
             print('Данный слот занят')
         else:
             unit_row = self.get_unit_by_name(unit)
@@ -1495,7 +1449,7 @@ class ServerStorage:
                    func: Callable[[int, any], any],
                    db_table: any
                    ) -> bool:
-        """Проверка свободен ли слот для юнита"""
+        """Проверка свободен ли слот для юнита при найме"""
         if func(slot, db_table) is not None:
             result = True
 
@@ -1527,15 +1481,16 @@ class ServerStorage:
 
     def update_unit(self,
                     unit_id: int,
-                    params: dict) -> None:
+                    params: dict,
+                    db_table: any) -> None:
         """
         Метод изменения характеристик юнита игрока.
-        Изменяет запись в таблице PlayerUnits.
+        Изменяет запись в переданной таблице.
         """
 
         changes = update(
-            self.PlayerUnits).where(
-            self.PlayerUnits.id == unit_id).values(
+            db_table).where(
+            db_table.id == unit_id).values(
             level=params['level'],
             exp=params['exp'],
             health=params['health'],
@@ -1555,15 +1510,16 @@ class ServerStorage:
 
     def update_unit_ini(self,
                         unit_id: int,
-                        attack_ini: int) -> None:
+                        attack_ini: int,
+                        db_table: AllUnits) -> None:
         """
         Метод изменения инициативы юнита игрока.
-        Изменяет запись в таблице PlayerUnits.
+        Изменяет запись в переданной таблице.
         """
 
         changes = update(
-            self.PlayerUnits).where(
-            self.PlayerUnits.id == unit_id).values(
+            db_table).where(
+            db_table.id == unit_id).values(
             attack_ini=attack_ini
         ).execution_options(
             synchronize_session="fetch")
@@ -1573,15 +1529,16 @@ class ServerStorage:
 
     def update_unit_health(self,
                            unit_id: int,
-                           health: int) -> None:
+                           health: int,
+                           db_table: AllUnits) -> None:
         """
         Метод изменения здоровья юнита игрока.
-        Изменяет запись в таблице PlayerUnits.
+        Изменяет запись в переданной таблице.
         """
 
         changes = update(
-            self.PlayerUnits).where(
-            self.PlayerUnits.id == unit_id).values(
+            db_table).where(
+            db_table.id == unit_id).values(
             health=health,
             curr_health=health
         ).execution_options(
@@ -1592,17 +1549,18 @@ class ServerStorage:
 
     def update_unit_armor(self,
                           unit_id: int,
-                          bonus: int) -> None:
+                          bonus: int,
+                          db_table: AllUnits) -> None:
         """
         Метод изменения брони юнита игрока.
-        Изменяет запись в таблице PlayerUnits.
+        Изменяет запись в переданной таблице.
         """
-        unit = self.get_unit_by_id(unit_id, self.PlayerUnits)
+        unit = self.get_unit_by_id(unit_id, db_table)
         unit_armor = unit.armor + bonus
 
         changes = update(
-            self.PlayerUnits).where(
-            self.PlayerUnits.id == unit_id).values(
+            db_table).where(
+            db_table.id == unit_id).values(
             armor=unit_armor
         ).execution_options(
             synchronize_session="fetch")
@@ -1612,17 +1570,18 @@ class ServerStorage:
 
     def update_unit_dmg(self,
                         unit_id: int,
-                        bonus: int) -> None:
+                        bonus: int,
+                        db_table: AllUnits) -> None:
         """
         Метод изменения урона юнита игрока.
-        Изменяет запись в таблице PlayerUnits.
+        Изменяет запись в переданной таблице.
         """
-        unit = self.get_unit_by_id(unit_id, self.PlayerUnits)
+        unit = self.get_unit_by_id(unit_id, db_table)
         unit_dmg = unit.attack_dmg + unit.attack_dmg * bonus
 
         changes = update(
-            self.PlayerUnits).where(
-            self.PlayerUnits.id == unit_id).values(
+            db_table).where(
+            db_table.id == unit_id).values(
             armor=unit_dmg
         ).execution_options(
             synchronize_session="fetch")
@@ -1632,20 +1591,21 @@ class ServerStorage:
 
     def update_ward(self,
                     unit_id: int,
-                    element: str) -> None:
+                    element: str,
+                    db_table: AllUnits) -> None:
         """
         Метод изменения брони юнита игрока.
-        Изменяет запись в таблице PlayerUnits.
+        Изменяет запись в переданной таблице.
         """
-        unit = self.get_unit_by_id(unit_id, self.PlayerUnits)
+        unit = self.get_unit_by_id(unit_id, db_table)
         if unit.ward != 'Нет':
             unit_ward = f'{unit.ward}, {element}'
         else:
             unit_ward = element
 
         changes = update(
-            self.PlayerUnits).where(
-            self.PlayerUnits.id == unit_id).values(
+            db_table).where(
+            db_table.id == unit_id).values(
             ward=unit_ward
         ).execution_options(
             synchronize_session="fetch")
@@ -1655,14 +1615,15 @@ class ServerStorage:
 
     def update_perks(self,
                      unit_id: int,
-                     perks: dict) -> None:
+                     perks: dict,
+                     db_table: AllUnits) -> None:
         """
         Метод изменения героя игрока (перки).
-        Изменяет запись в таблице PlayerUnits.
+        Изменяет запись в переданной таблице.
         """
         changes = update(
-            self.PlayerUnits).where(
-            self.PlayerUnits.id == unit_id).values(
+            db_table).where(
+            db_table.id == unit_id).values(
             leadership=perks['leadership'],
             nat_armor=perks['nat_armor'],
             might=perks['might'],
@@ -1683,14 +1644,14 @@ class ServerStorage:
     def update_unit_curr_hp(self,
                             slot: int,
                             curr_health: int,
-                            database: any) -> None:
+                            db_table: any) -> None:
         """
         Метод изменения здоровья юнита.
-        Изменяет запись в таблице player_units либо в current_dungeon.
+        Изменяет запись в переданной таблице.
         """
         changes = update(
-            database).where(
-            database.slot == slot).values(
+            db_table).where(
+            db_table.slot == slot).values(
             curr_health=curr_health).execution_options(
             synchronize_session="fetch")
         self.session.execute(changes)
@@ -1699,30 +1660,30 @@ class ServerStorage:
     def update_unit_exp(self,
                         slot: int,
                         curr_exp: int,
-                        database: any) -> None:
+                        db_table: any) -> None:
         """
         Метод изменения здоровья юнита.
-        Изменяет запись в таблице player_units либо в current_dungeon.
+        Изменяет запись в переданной таблице.
         """
         changes = update(
-            database).where(
-            database.slot == slot).values(
+            db_table).where(
+            db_table.slot == slot).values(
             curr_exp=curr_exp).execution_options(
             synchronize_session="fetch")
         self.session.execute(changes)
         self.session.commit()
 
-    def autoregen(self, slot: int) -> None:
+    def autoregen(self, slot: int, db_table: AllUnits) -> None:
         """
         Метод изменения юнита (здоровье).
-        Изменяет запись в таблице player_units.
+        Изменяет запись в переданной таблице.
         Пока сделано автолечение после каждой битвы.
         """
 
         changes = update(
-            self.PlayerUnits).where(
-            self.PlayerUnits.slot == slot).values(
-            curr_health=self.PlayerUnits.health).execution_options(
+            db_table).where(
+            db_table.slot == slot).values(
+            curr_health=db_table.health).execution_options(
             synchronize_session="fetch")
 
         self.session.execute(changes)
@@ -1734,18 +1695,20 @@ class ServerStorage:
                      db_table: any) -> None:
         """
         Метод замены юнита на другой юнит.
-        Изменяет запись в таблице PlayerUnits.
+        Изменяет запись в переданной таблице.
         """
-        self.delete_player_unit(slot)
         if db_table == self.PlayerUnits:
+            self.delete_player_unit(slot)
             self.hire_player_unit(new_name, slot)
         elif db_table == self.CurrentDungeon:
+            self.delete_player_unit(slot)
             self.hire_enemy_unit(new_name, slot)
         else:
+            self.delete_campaign_unit(slot)
             self.hire_unit(new_name, slot)
 
     def show_dungeon_units(self, name: str) -> namedtuple:
-        """Метод возвращающий список юнитов подземелья."""
+        """Метод возвращающий список имен юнитов подземелья по названию."""
         query = self.session.query(
             self.Dungeons.unit1,
             self.Dungeons.unit2,
@@ -1757,106 +1720,56 @@ class ServerStorage:
         # Возвращаем кортеж
         return query.first()
 
-    def get_dungeon_unit_by_slot(self, slot: int) -> namedtuple:
-        """Метод получающий юнита из базы подземелья по слоту."""
-        query = self.session.query(
-            self.CurrentDungeon.id,
-            self.CurrentDungeon.name,
-            self.CurrentDungeon.level,
-            self.CurrentDungeon.size,
-            self.CurrentDungeon.price,
-            self.CurrentDungeon.exp,
-            self.CurrentDungeon.curr_exp,
-            self.CurrentDungeon.exp_per_kill,
-            self.CurrentDungeon.health,
-            self.CurrentDungeon.curr_health,
-            self.CurrentDungeon.armor,
-            self.CurrentDungeon.immune,
-            self.CurrentDungeon.ward,
-            self.CurrentDungeon.attack_type,
-            self.CurrentDungeon.attack_chance,
-            self.CurrentDungeon.attack_dmg,
-            self.CurrentDungeon.dot_dmg,
-            self.CurrentDungeon.attack_source,
-            self.CurrentDungeon.attack_ini,
-            self.CurrentDungeon.attack_radius,
-            self.CurrentDungeon.attack_purpose,
-            self.CurrentDungeon.prev_level,
-            self.CurrentDungeon.desc,
-            self.CurrentDungeon.slot,
-            self.CurrentDungeon.subrace,
-            self.CurrentDungeon.branch,
-            self.CurrentDungeon.attack_twice,
-            self.CurrentDungeon.regen,
-            self.CurrentDungeon.dyn_upd_level,
-            self.CurrentDungeon.upgrade_b,
-            self.CurrentDungeon.leadership,
-            self.CurrentDungeon.leader_cat,
-            self.CurrentDungeon.nat_armor,
-            self.CurrentDungeon.might,
-            self.CurrentDungeon.weapon_master,
-            self.CurrentDungeon.endurance,
-            self.CurrentDungeon.first_strike,
-            self.CurrentDungeon.accuracy,
-            self.CurrentDungeon.water_resist,
-            self.CurrentDungeon.air_resist,
-            self.CurrentDungeon.fire_resist,
-            self.CurrentDungeon.earth_resist,
-            self.CurrentDungeon.dotted
-        ).filter_by(slot=slot)
-        # Возвращаем кортеж
-        return query.first()
-
-    def show_db_units(self, database: any) -> List[namedtuple]:
+    def show_db_units(self, db_table: AllUnits) -> List[namedtuple]:
         """
-        Метод возвращающий список юнитов
-        игрока либо юнитов противника.
+        Метод возвращающий список юнитов игрока либо юнитов
+        противника в соответствии с переданной таблицей.
         """
         query = self.session.query(
-            database.id,
-            database.name,
-            database.level,
-            database.size,
-            database.price,
-            database.exp,
-            database.curr_exp,
-            database.exp_per_kill,
-            database.health,
-            database.curr_health,
-            database.armor,
-            database.immune,
-            database.ward,
-            database.attack_type,
-            database.attack_chance,
-            database.attack_dmg,
-            database.dot_dmg,
-            database.attack_source,
-            database.attack_ini,
-            database.attack_radius,
-            database.attack_purpose,
-            database.prev_level,
-            database.desc,
-            database.slot,
-            database.subrace,
-            database.branch,
-            database.attack_twice,
-            database.regen,
-            database.dyn_upd_level,
-            database.upgrade_b,
-            database.leadership,
-            database.leader_cat,
-            database.nat_armor,
-            database.might,
-            database.weapon_master,
-            database.endurance,
-            database.first_strike,
-            database.accuracy,
-            database.water_resist,
-            database.air_resist,
-            database.fire_resist,
-            database.earth_resist,
-            database.dotted
-        ).order_by(database.slot)
+            db_table.id,
+            db_table.name,
+            db_table.level,
+            db_table.size,
+            db_table.price,
+            db_table.exp,
+            db_table.curr_exp,
+            db_table.exp_per_kill,
+            db_table.health,
+            db_table.curr_health,
+            db_table.armor,
+            db_table.immune,
+            db_table.ward,
+            db_table.attack_type,
+            db_table.attack_chance,
+            db_table.attack_dmg,
+            db_table.dot_dmg,
+            db_table.attack_source,
+            db_table.attack_ini,
+            db_table.attack_radius,
+            db_table.attack_purpose,
+            db_table.prev_level,
+            db_table.desc,
+            db_table.slot,
+            db_table.subrace,
+            db_table.branch,
+            db_table.attack_twice,
+            db_table.regen,
+            db_table.dyn_upd_level,
+            db_table.upgrade_b,
+            db_table.leadership,
+            db_table.leader_cat,
+            db_table.nat_armor,
+            db_table.might,
+            db_table.weapon_master,
+            db_table.endurance,
+            db_table.first_strike,
+            db_table.accuracy,
+            db_table.water_resist,
+            db_table.air_resist,
+            db_table.fire_resist,
+            db_table.earth_resist,
+            db_table.dotted
+        ).order_by(db_table.slot)
         # Возвращаем список кортежей
         return query.all()
 
@@ -1959,7 +1872,7 @@ class ServerStorage:
     def update_session_built(self,
                              session_id: int,
                              built: int) -> None:
-        """Метод изменения текущей игровой сессии"""
+        """Метод изменения флага постройки в текущей игровой сессии"""
         changes = update(
             self.GameSessions).where(
             self.GameSessions.session_id == session_id
@@ -1972,7 +1885,7 @@ class ServerStorage:
         self.session.commit()
 
     def build_default(self, faction: str) -> None:
-        """Базовая постройка зданий 1 уровня в выбранной столице"""
+        """Базовая постройка зданий 0 уровня в столице выбранной фракции"""
         building_levels = [
             FACTIONS[faction]['fighter'][0].bname,
             FACTIONS[faction]['mage'][0].bname,
