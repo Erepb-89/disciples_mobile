@@ -640,7 +640,7 @@ class ClientMainWindow(QMainWindow):
     def show_fight_window(self) -> None:
         """Метод создающий окно Битвы."""
         global FIGHT_WINDOW
-        FIGHT_WINDOW = FightWindow('darkest', self)
+        FIGHT_WINDOW = FightWindow('darkest', main_db.PlayerUnits, self)
         FIGHT_WINDOW.show()
 
     def show_campaign_window(self) -> None:
@@ -655,7 +655,7 @@ class ClientMainWindow(QMainWindow):
         self.reset()
 
         global FIGHT_WINDOW
-        FIGHT_WINDOW = FightWindow('versus', self)
+        FIGHT_WINDOW = FightWindow('versus', main_db.PlayerUnits, self)
         FIGHT_WINDOW.show()
 
     def show_capital(self) -> None:

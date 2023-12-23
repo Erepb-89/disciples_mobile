@@ -1233,7 +1233,7 @@ class Unit:
         """Найм в отряд игрока"""
         main_db.hire_unit(self.name, slot)
 
-    def upgrade_stats(self) -> None:
+    def upgrade_stats(self, db_table) -> None:
         """Увеличение характеристик юнита"""
         # Уровень
         next_level = self.level + 1
@@ -1308,7 +1308,8 @@ class Unit:
 
         main_db.update_unit(
             self.id,
-            characteristics)
+            characteristics,
+            db_table)
 
     def get_next_exp(self):
         """Увеличение требуемого опыта для повышения (для героев)"""
@@ -1336,7 +1337,7 @@ class Unit:
 
         return next_hp
 
-    def give_perks(self):
+    def give_perks(self, db_table):
         """Получение перков героем"""
         # Рандомное получение перков
         all_perks = []
@@ -1385,25 +1386,29 @@ class Unit:
 
             main_db.update_perks(
                 self.id,
-                perks)
+                perks,
+                db_table)
 
             # Природная броня
             if perk == 'nat_armor':
                 main_db.update_unit_armor(
                     self.id,
-                    20)
+                    20,
+                    db_table)
 
             # Мощь
             if perk == 'might':
                 main_db.update_unit_dmg(
                     self.id,
-                    0.25)
+                    0.25,
+                    db_table)
 
             # Выносливость
             if perk == 'endurance':
                 main_db.update_unit_health(
                     self.id,
-                    self.health * 1.2)
+                    self.health * 1.2,
+                    db_table)
 
             # Первый удар
             if perk == 'first_strike':
@@ -1415,7 +1420,8 @@ class Unit:
             if 'resist' in perk:
                 main_db.update_ward(
                     self.id,
-                    element_dict[perk])
+                    element_dict[perk],
+                    db_table)
 
     @property
     def race_settings(self) -> Dict[str, dict]:
@@ -1461,7 +1467,7 @@ class Unit:
 
         return faction_units
 
-    def lvl_up(self) -> None:
+    def lvl_up(self, db_table: any) -> None:
         """Повышение уровня"""
         next_unit = ''
 
@@ -1476,15 +1482,15 @@ class Unit:
         self.off_defence()
 
         # снимаем бонусы атаки
-        self.off_boosts(main_db.PlayerUnits)
+        self.off_boosts(db_table)
 
         # сбрасываем инициативу к изначальной
-        self.off_initiative(main_db.PlayerUnits)
+        self.off_initiative(db_table)
 
         if self.branch == 'hero':
             if self.dyn_upd_level != 0:
-                self.upgrade_stats()
-                self.give_perks()
+                self.upgrade_stats(db_table)
+                self.give_perks(db_table)
 
                 line = f"{self.name} повысил свой уровень\n"
                 logging(line)
@@ -1493,7 +1499,7 @@ class Unit:
                 logging(line)
 
         elif self.branch == 'special':
-            self.upgrade_stats()
+            self.upgrade_stats(db_table)
 
         else:
             # Вызываем нужную функцию в зависимости от ветви
@@ -1508,9 +1514,12 @@ class Unit:
                     # Следующая стадия
                     next_unit = building.unit_name
 
-            self.upgrade_unit(next_unit, branch_buildings)
+            self.upgrade_unit(next_unit, branch_buildings, db_table)
 
-    def upgrade_unit(self, next_unit: str, branch_buildings: List[str]):
+    def upgrade_unit(self,
+                     next_unit: str,
+                     branch_buildings: List[str],
+                     db_table: any):
         """Метод апгрейда юнита"""
         # здание для апгрейда еще не построено
         if next_unit == '' \
@@ -1519,7 +1528,7 @@ class Unit:
                 and self.name not in ELDER_FORMS:
             # ожидает апгрейда, поднять опыт до (exp - 1)
             main_db.update_unit_exp(
-                self.slot, self.exp - 1, main_db.PlayerUnits)
+                self.slot, self.exp - 1, db_table)
             line = f"{self.name} ожидает повышения в столице\n"
             logging(line)
 
@@ -1527,7 +1536,7 @@ class Unit:
         elif next_unit != '':
             # Меняем юнит на следующую стадию согласно постройкам
             # в столице
-            main_db.replace_unit(self.slot, next_unit)
+            main_db.replace_unit(self.slot, next_unit, db_table)
 
             line = f"{self.name} повысил уровень до {next_unit}\n"
             logging(line)
@@ -1536,7 +1545,7 @@ class Unit:
         else:
             # Апгрейд характеристик юнита
             if self.dyn_upd_level != 0:
-                self.upgrade_stats()
+                self.upgrade_stats(db_table)
 
                 line = f"{self.name} повысил свой уровень\n"
                 logging(line)
@@ -1589,7 +1598,7 @@ class Unit:
                        f"{target.name}. Осталось ХП: {target.curr_health}\n"
                 logging(line)
 
-    def miss_logging(self, target, attack_dict):
+    def miss_logging(self, target: any, attack_dict: dict):
         """Логирование промахов"""
         attack_source = attack_dict['attack_source']
 

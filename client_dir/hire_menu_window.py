@@ -174,7 +174,7 @@ class HireMenuWindow(QMainWindow):
         """Кнопка найма"""
         squad_points = 0
         leadership = 3
-        player_units = main_db.show_player_units()
+        player_units = main_db.show_campaign_units()
 
         for unit in player_units:
             if unit.leadership >= 3:

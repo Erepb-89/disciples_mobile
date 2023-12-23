@@ -38,7 +38,7 @@ class Battle:
     очередность ходов, действия игроков и т.д.
     """
 
-    def __init__(self, dungeon: str):
+    def __init__(self, dungeon: str, db_table: any):
         # super().__init__()
         # основные переменные
         self.autofight = False
@@ -58,6 +58,7 @@ class Battle:
         self.curr_target_slot = 1
         self.dotted_units = {}
         self.boosted_units = {}
+        self.db_table = db_table
 
         self.next_unit = None
 
@@ -75,7 +76,7 @@ class Battle:
 
         self.add_player_units(
             self.player1,
-            main_db.PlayerUnits)
+            self.db_table)
         self.new_round()
         self.next_turn()
 
@@ -127,7 +128,6 @@ class Battle:
                     *unit,
                     unit_slot + 1,
                     *unit_cols_after_slot)
-
                 unit = self.dungeon_unit_by_slot(unit_slot + 1)
                 if unit is not None:
                     self.player2.units.append(Unit(unit))
@@ -396,7 +396,7 @@ class Battle:
                           alive_unit: Unit,
                           exp_value: int,
                           player: Player,
-                          pl_database: any) -> None:
+                          db_table: any) -> None:
         """
         Получение опыта, либо уровня выжившим юнитом.
         Добавление юнита в alive_units для отображения на fight_window
@@ -406,7 +406,7 @@ class Battle:
             if exp_value < alive_unit.exp:
                 # полученного опыта достаточно для повышения уровня
                 if alive_unit.curr_exp + exp_value >= alive_unit.exp:
-                    alive_unit.lvl_up()
+                    alive_unit.lvl_up(db_table)
                     self.alive_units.append(alive_unit.slot)
                 else:
                     alive_unit.curr_exp += exp_value
@@ -414,17 +414,17 @@ class Battle:
                     main_db.update_unit_exp(
                         alive_unit.slot,
                         alive_unit.curr_exp,
-                        pl_database)
+                        db_table)
 
                 # полученный опыт > макс. опыт выжившего юнита
             else:
-                alive_unit.lvl_up()
+                alive_unit.lvl_up(db_table)
                 self.alive_units.append(alive_unit.slot)
 
     def _getting_experience(self,
                             player1: Player,
                             player2: Player,
-                            pl_database: any) -> None:
+                            db_table: any) -> None:
         """Получение опыта юнитами"""
         self.alive_units = []
         killed_units = player1.units
@@ -451,7 +451,7 @@ class Battle:
                 self.append_alive_unit(alive_unit,
                                        exp_value,
                                        player2,
-                                       pl_database)
+                                       db_table)
 
     def alive_getting_experience(self) -> None:
         """Повышение опыта или уровня выжившим юнитам"""
@@ -467,8 +467,9 @@ class Battle:
         if not self.player2.slots:
             logging('Вы победили!\n')
 
-            self._getting_experience(self.player2, self.player1,
-                                     main_db.PlayerUnits)
+            self._getting_experience(self.player2,
+                                     self.player1,
+                                     self.db_table)
             self.battle_is_over = True
 
     def dot_calculations(self,
@@ -637,7 +638,7 @@ class Battle:
         Убираются все эффекты, кроме снижения урона
         """
         if target in self.player1.units:
-            pl_database = main_db.PlayerUnits
+            pl_database = self.db_table
         else:
             pl_database = main_db.CurrentDungeon
 
@@ -1063,14 +1064,14 @@ class Battle:
                 slots,
                 attacker_slots)
             if target_slots:
-                target = self.find_target_for_all(target_slots)
+                self.find_target_for_all(target_slots)
 
                 return target_slots
 
         # Для дальнобойных юнитов
         if unit.attack_radius == ANY_UNIT \
                 and unit.attack_purpose in [1, 6]:
-            target = self.find_target_for_all(slots)
+            self.find_target_for_all(slots)
 
             return slots
 
