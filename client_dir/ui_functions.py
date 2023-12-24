@@ -159,6 +159,11 @@ def show_closed(icon_slot: QtWidgets.QLabel) -> None:
     icon_slot.setPixmap(QPixmap(os.path.join(COMMON, "closed.png")))
 
 
+def show_active(icon_slot: QtWidgets.QLabel) -> None:
+    """Метод показывающий иконку текущего местоположения"""
+    icon_slot.setPixmap(QPixmap(os.path.join(COMMON, "active.png")))
+
+
 def ui_lock(ui_obj: any) -> None:
     ui_obj.setEnabled(False)
 

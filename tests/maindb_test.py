@@ -23,14 +23,6 @@ class MainDBTest(TestCase):
         unit = main_db.get_unit_by_slot(2, main_db.PlayerUnits)
         self.assertIsNone(unit)
 
-    # def test_get_player_unit_by_slot(self):
-    #     unit = main_db.get_player_unit_by_slot(2)
-    #     self.assertIsNone(unit)
-    #
-    # def test_get_dungeon_unit_by_slot(self):
-    #     unit = main_db.get_dungeon_unit_by_slot(2)
-    #     self.assertIsNone(unit)
-
     def test_is_double(self):
         self.assertEqual(main_db.is_double('Горный гигант'), True)
 
@@ -64,11 +56,6 @@ class MainDBTest(TestCase):
         self.assertEqual(main_db.get_unit_by_slot(2, main_db.CurrentDungeon).name,
                          'Сквайр')
 
-    # def test_hire_enemy_unit(self):
-    #     main_db.hire_enemy_unit('Сквайр', 2)
-    #     self.assertEqual(main_db.get_dungeon_unit_by_slot(2).name,
-    #                      'Сквайр')
-
     def test_show_enemy_units(self):
         units = main_db.show_enemy_units()
         self.assertEqual(units[0].name, 'Сквайр')
@@ -91,9 +78,6 @@ class MainDBTest(TestCase):
         self.assertIsNone(main_db.get_unit_by_slot(2, main_db.CurrentDungeon))
 
 
-    # def test_get_unit_by_slot(self):
-    #     unit = main_db.get_unit_by_slot(1, main_db.PlayerUnits)
-    #     self.assertEqual('Ашган', unit.name)
 
 
 if __name__ == '__main__':

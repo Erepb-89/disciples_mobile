@@ -11,7 +11,7 @@ from client_dir.fight_window import FightWindow
 from client_dir.army_dialog import EnemyArmyDialog
 from client_dir.settings import BACKGROUND, MC, EM, UH, LD
 from client_dir.ui_functions import slot_update, button_update, \
-    ui_lock, ui_unlock, show_opened, show_closed
+    ui_lock, ui_unlock, show_opened, show_closed, show_active
 from units_dir.mission_generator import unit_selector, \
     setup_6, setup_5, setup_4, setup_3, setup_2, boss_setup, \
     boss_mc_setup
@@ -150,6 +150,8 @@ class CampaignWindow(QMainWindow):
 
         # миссии с 1 по 15 (сгенерированные рандомно)
         name = f'{self.faction}_{level}'
+        if diff == 3:
+            level += 1
 
         if self.faction == MC:
             self.all_missions = {
@@ -433,6 +435,8 @@ class CampaignWindow(QMainWindow):
             if key in graph[self.curr_mission]:
                 ui_unlock(val)
                 show_opened(self.campaign_arrows_dict[key])
+            elif key == self.curr_mission:
+                show_active(self.campaign_arrows_dict[key])
             else:
                 ui_lock(val)
                 show_closed(self.campaign_arrows_dict[key])
