@@ -1152,7 +1152,8 @@ class FightWindow(QMainWindow):
                 self.pl_slots_eff_dict
             )
 
-            if self.new_battle.player2.name == 'Computer':
+            if self.new_battle.player2.name == 'Computer' \
+                    and self.dungeon != 'versus':
                 mission_number = self.dungeon.split('_')[-1]
                 self.add_gold(mission_number)
 
