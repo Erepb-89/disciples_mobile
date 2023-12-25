@@ -1213,8 +1213,7 @@ class Unit:
         unit = main_db.get_unit_by_id(self.id,
                                       pl_database)
         if unit is not None:
-            self.attack_dmg = int(
-                unit.attack_dmg + unit.attack_dmg * self.might * 0.25)
+            self.attack_dmg = unit.attack_dmg
 
     def defence(self) -> None:
         """Пропуск хода и защита в битве"""
@@ -1314,7 +1313,6 @@ class Unit:
     def get_next_exp(self):
         """Увеличение требуемого опыта для повышения (для героев)"""
         next_exp = self.exp
-        # Увеличение требуемого опыта для повышения (для героев)
         if self.branch == 'hero' and self.level < 10:
             if self.leader_cat in ('fighter', 'mage'):
                 next_exp = self.exp + HERO_FIGHTER_EXP
@@ -1370,6 +1368,7 @@ class Unit:
             }
 
             perk = random.choice(all_perks)
+            perk = 'first_strike'
 
             line = f"{self.name} получает перк {PERKS[perk]}\n"
             logging(line)
@@ -1414,7 +1413,8 @@ class Unit:
             if perk == 'first_strike':
                 main_db.update_unit_ini(
                     self.id,
-                    self.attack_ini * 1.5)
+                    self.attack_ini * 1.5,
+                    db_table)
 
             # Стихийный перк
             if 'resist' in perk:
@@ -1738,12 +1738,13 @@ class Unit:
         if target.curr_health + health > target.health:
             health = target.health - target.curr_health
 
-        target.curr_health += health
+        if health != 0:
+            target.curr_health += health
 
-        line = f"{self.name} лечит {health} " \
-               f"единиц здоровья воину {target.name}. " \
-               f"Стало ХП: {target.curr_health}\n"
-        logging(line)
+            line = f"{self.name} лечит {health} " \
+                   f"единиц здоровья воину {target.name}. " \
+                   f"Стало ХП: {target.curr_health}\n"
+            logging(line)
 
         return True
 
