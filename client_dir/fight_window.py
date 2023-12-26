@@ -928,6 +928,7 @@ class FightWindow(QMainWindow):
             self.show_circle_attacker()
 
         self.check_ai()
+        self.unit_icons_update()
 
     def check_ai(self):
         """Проверка, если ходит ИИ, включаем автобой"""
@@ -1591,6 +1592,7 @@ class FightWindow(QMainWindow):
         self.show_dot_effect(unit, 'Увеличение урона', icons_dict)
         self.show_dot_effect(unit, 'Снижение урона', icons_dict)
         self.show_dot_effect(unit, 'Снижение инициативы', icons_dict)
+        self.show_dot_effect(unit, 'Полиморф', icons_dict)
         self.show_dot_effect(unit, 'Яд', icons_dict)
         self.show_dot_effect(unit, 'Ожог', icons_dict)
         self.show_dot_effect(unit, 'Обморожение', icons_dict)

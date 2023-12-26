@@ -19,6 +19,21 @@ setup_6 = [
         1: SMALL, 2: SMALL,
         3: None, 4: BIG,
         5: SMALL, 6: SMALL,
+    },
+    {
+        1: None, 2: BIG,
+        3: SUPPORT, 4: SMALL,
+        5: None, 6: BIG,
+    },
+    {
+        1: SMALL, 2: SMALL,
+        3: SUPPORT, 4: SMALL,
+        5: SMALL, 6: SMALL,
+    },
+    {
+        1: SUPPORT, 2: SMALL,
+        3: None, 4: BIG,
+        5: SMALL, 6: SMALL,
     }
 ]
 setup_5 = [
@@ -33,9 +48,24 @@ setup_5 = [
         5: None, 6: BIG,
     },
     {
+        1: None, 2: BIG,
+        3: SUPPORT, 4: None,
+        5: None, 6: BIG,
+    },
+    {
         1: SMALL, 2: None,
         3: None, 4: BIG,
         5: SMALL, 6: SMALL,
+    },
+    {
+        1: SUPPORT, 2: None,
+        3: None, 4: BIG,
+        5: SMALL, 6: SMALL,
+    },
+    {
+        1: SMALL, 2: SMALL,
+        3: None, 4: BIG,
+        5: SUPPORT, 6: None,
     },
     {
         1: SMALL, 2: SMALL,
@@ -519,13 +549,6 @@ def unit_selector(level: int, setup: list) -> dict:
                         # получаем юнитов уровнем ниже
                         units[unit_type] = get_lower_level_units(unit_type, level)
 
-                    # if not units[unit_type]:
-                    #     # получаем юнитов уровнем ниже
-                    #     units = get_curr_level_units(level - 1)
-                    #
-                    # unit = random.choice(units[unit_type])
-                    #
-                    # result_dict[slot] = unit
         # если None
         else:
             result_dict[slot] = None
