@@ -601,6 +601,70 @@ class ServerStorage:
         # Возвращаем кортеж
         return query.first()
 
+    def unit_by_name_set_params(self,
+                                name: str,
+                                slot: int,
+                                health_perc: int,
+                                db_table: any) -> namedtuple:
+        """
+        Метод получающий юнита из таблицы AllUnits по имени
+        с новым заданным слотом.
+        """
+        health = self.session.query(db_table.health)\
+            .filter_by(name=name).first()
+
+        curr_health = int(health[0] * health_perc * 0.01)
+
+        query = self.session.query(
+            db_table.id,
+            db_table.name,
+            db_table.level,
+            db_table.size,
+            db_table.price,
+            db_table.exp,
+            db_table.curr_exp,
+            db_table.exp_per_kill,
+            db_table.health,
+            curr_health,
+            db_table.armor,
+            db_table.immune,
+            db_table.ward,
+            db_table.attack_type,
+            db_table.attack_chance,
+            db_table.attack_dmg,
+            db_table.dot_dmg,
+            db_table.attack_source,
+            db_table.attack_ini,
+            db_table.attack_radius,
+            db_table.attack_purpose,
+            db_table.prev_level,
+            db_table.desc,
+            db_table.photo,
+            db_table.gif,
+            slot,
+            db_table.subrace,
+            db_table.branch,
+            db_table.attack_twice,
+            db_table.regen,
+            db_table.dyn_upd_level,
+            db_table.upgrade_b,
+            db_table.leadership,
+            db_table.leader_cat,
+            db_table.nat_armor,
+            db_table.might,
+            db_table.weapon_master,
+            db_table.endurance,
+            db_table.first_strike,
+            db_table.accuracy,
+            db_table.water_resist,
+            db_table.air_resist,
+            db_table.fire_resist,
+            db_table.earth_resist,
+            db_table.dotted
+        ).filter_by(name=name)
+        # Возвращаем кортеж
+        return query.first()
+
     def session_by_faction(self, player_id: int, faction: str) -> any:
         """Метод получающий игровую сессию по игроку и фракции."""
         query = self.session.query(

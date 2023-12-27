@@ -143,8 +143,8 @@ class CampaignWindow(QMainWindow):
             3: (setup_4, setup_5, setup_6),
         }
         squad_mc_dict = {
-            1: (setup_4, setup_5, setup_6),
-            2: (setup_5, setup_6, setup_6),
+            1: (setup_4, setup_5, setup_5),
+            2: (setup_5, setup_5, setup_6),
             3: (setup_5, setup_6, setup_6),
         }
 

@@ -4,7 +4,7 @@ from collections import deque
 from typing import List, Optional, Callable
 
 from client_dir.settings import ANY_UNIT, CLOSEST_UNIT, \
-    HEAL_LIST, ALCHEMIST_LIST, PARALYZE_LIST, PARALYZE_UNITS
+    HEAL_LIST, ALCHEMIST_LIST, PARALYZE_LIST, PARALYZE_UNITS, POLYMORPH
 from battle_logging import logging
 from units_dir.units import main_db
 from units_dir.units_factory import Unit
@@ -53,12 +53,14 @@ class Battle:
         self.units_in_round = []
         self.en_exp_killed = 0
         self.target = None
+        self.new_unit = None
         self.battle_is_over = False
         self.alive_units = []
         self.curr_target_slot = 1
         self.dotted_units = {}
         self.boosted_units = {}
         self.db_table = db_table
+        self.enemy_db_table = main_db.CurrentDungeon
 
         self.next_unit = None
 
@@ -68,11 +70,13 @@ class Battle:
         self.dungeon_units = main_db.show_dungeon_units(dungeon)
 
         if self.player2.name == "Computer":
+            self.enemy_db_table = main_db.CurrentDungeon
             self.add_dung_units()
         else:
+            self.enemy_db_table = main_db.Player2Units
             self.add_player_units(
                 self.player2,
-                main_db.Player2Units)
+                self.enemy_db_table)
 
         self.add_player_units(
             self.player1,
@@ -299,6 +303,10 @@ class Battle:
 
         for dot_source, dot_params in \
                 self.dotted_units[self.current_unit].items():
+
+            print(self.current_unit.name, dot_source, dot_params)
+            print(self.current_unit.dotted)
+
             # если юнит все еще жив
             if self.current_unit.curr_health > 0:
                 dot_dmg = dot_params[0]  # урон
@@ -314,18 +322,36 @@ class Battle:
                         # логирование
                         self.logging_dot(dot_source, dot_dmg)
 
-                    # Если Паралич
-                    elif dot_source in ('Паралич', 'Окаменение'):
-                        paralyzed = True
-
+                    # Если Паралич или Полиморф
+                    elif dot_source in PARALYZE_LIST \
+                            or dot_source == POLYMORPH:
                         # уменьшаем кол-во раундов
-                        self.current_unit.dotted -= 1
+                        # self.current_unit.dotted -= 1
 
-                        # логирование
-                        self.logging_paralyze(dot_source)
+                        if dot_source in PARALYZE_LIST:
+                            paralyzed = True
+
+                            # логирование
+                            self.logging_paralyze(dot_source)
 
                     # уменьшаем раунды на 1
                     dot_rounds = max(0, dot_rounds - 1)
+
+                # Если Полиморф закончил действие
+                if dot_rounds == 0 and dot_source == POLYMORPH:
+
+                    if self.current_unit in self.player1.units:
+                        db_table = self.db_table
+                    elif self.current_unit in self.player2.units:
+                        db_table = self.enemy_db_table
+
+                    changed_unit_name = main_db.get_unit_by_slot(
+                        self.current_unit.slot, db_table).name
+
+                    self.change_shape(self.current_unit,
+                                      changed_unit_name,
+                                      db_table)
+                    self.current_unit = self.new_unit
 
                 if self.current_unit.dotted != 0:
                     self.dotted_units[self.current_unit][dot_source] = \
@@ -334,6 +360,27 @@ class Battle:
         # Если Паралич, пропускаем ход
         if paralyzed:
             self.are_units_in_round()
+
+    def change_shape(self,
+                     unit: Unit,
+                     changed_unit_name: str,
+                     db_table: any, ) -> None:
+        """
+        Изменение формы юнита
+        (после воздействия Полиморфа)
+        """
+        self.new_unit = self.replace_polymorph_unit(
+            unit,
+            changed_unit_name,
+            db_table)
+
+        if unit in self.player1.units:
+            self.player1.units.remove(unit)
+            self.player1.units.append(self.new_unit)
+
+        elif unit in self.player2.units:
+            self.player2.units.remove(unit)
+            self.player2.units.append(self.new_unit)
 
     def are_units_in_round(self) -> None:
         """Проверка на наличие юнитов в раунде"""
@@ -389,8 +436,6 @@ class Battle:
         else:
             self.new_round()
             self.next_turn()
-
-        self.alive_getting_experience()
 
     def append_alive_unit(self,
                           alive_unit: Unit,
@@ -460,8 +505,9 @@ class Battle:
         if not self.player1.slots:
             logging('Вы проиграли!\n')
 
-            self._getting_experience(self.player1, self.player2,
-                                     main_db.Player2Units)
+            self._getting_experience(self.player1,
+                                     self.player2,
+                                     self.enemy_db_table)
             self.battle_is_over = True
 
         if not self.player2.slots:
@@ -479,7 +525,8 @@ class Battle:
         # урон
         dot_dmg = self.current_unit.dot_dmg
 
-        if dot_source in PARALYZE_LIST:
+        if dot_source in PARALYZE_LIST or \
+                dot_source == POLYMORPH:
             dot_dmg = 0
 
         # раунды
@@ -514,7 +561,7 @@ class Battle:
         Определение количества раундов действия эффекта на цель.
         Устанавливает пониженный урон/инициативу.
         """
-        if dot_source in PARALYZE_LIST:
+        if dot_source in PARALYZE_LIST or dot_source == POLYMORPH:
             if self.current_unit.name in PARALYZE_UNITS:
                 dot_rounds = 1
             else:
@@ -541,6 +588,25 @@ class Battle:
 
         return dot_rounds
 
+    def back_to_prev_form(self, target: Unit) -> None:
+        """Вернуть юниту прежнюю форму (до Полиморфа)"""
+        if target.dotted \
+                and self.dotted_units[target].get(POLYMORPH):
+
+            if target in self.player1.units:
+                db_table = self.db_table
+
+            elif target in self.player2.units:
+                db_table = self.enemy_db_table
+
+        changed_unit_name = main_db.get_unit_by_slot(
+            target.slot, db_table).name
+
+        self.change_shape(
+            target,
+            changed_unit_name,
+            db_table)
+
     def attack_6_units(self, player: Player) -> None:
         """Если цели - 6 юнитов"""
         self.attacked_slots = []
@@ -557,7 +623,10 @@ class Battle:
 
         # Если текущий юнит - атакующий
         if attack_type \
-                not in (*HEAL_LIST, *ALCHEMIST_LIST, *PARALYZE_LIST):
+                not in (*HEAL_LIST,
+                        *ALCHEMIST_LIST,
+                        *PARALYZE_LIST,
+                        POLYMORPH):
             success = curr_unit.attack(target)
 
             if (success and curr_unit.dot_dmg) \
@@ -629,8 +698,60 @@ class Battle:
             if success:
                 self.dot_calculations(dot_source, target)
 
+        # Для воинов с основной атакой типа Полиморф
+        elif attack_type == POLYMORPH:
+            success = curr_unit.dot_attack(target)
+            dot_source = attack_type
+
+            if success:
+                if target.double:
+                    changed_unit_name = 'Толстый бес'
+                    line = f"{target.name} превращен в Толстого беса.\n"
+                else:
+                    changed_unit_name = 'Бес'
+                    line = f"{target.name} превращён в Беса.\n"
+
+                logging(line)
+
+                self.change_shape(target,
+                                  changed_unit_name,
+                                  main_db.AllUnits)
+
+                self.dot_calculations(dot_source, self.new_unit)
+
         if success:
             self.attacked_slots.append(target.slot)
+
+    def replace_polymorph_unit(self,
+                               unit: Unit,
+                               changed_unit_name: str,
+                               db_table: any) -> Unit:
+        """Замена юнита на полиморф"""
+        self.remove_unit(unit)
+
+        # Процент (%) оставшегося здоровья цели
+        target_perc_hp = int(unit.curr_health / unit.health * 100)
+
+        # Получаем юнит с заданными параметрами
+        changed_unit = Unit(main_db.unit_by_name_set_params(
+            changed_unit_name,
+            unit.slot,
+            target_perc_hp,
+            db_table))
+
+        return changed_unit
+
+    def remove_unit(self, unit):
+        """Удаление юнита из битвы"""
+        if unit in self.units_deque:
+            self.units_deque.remove(
+                unit)
+        if unit in self.units_in_round:
+            self.units_in_round.remove(
+                unit)
+        if unit in self.waiting_units:
+            self.waiting_units.remove(
+                unit)
 
     def cure_target(self, target: Optional[Unit]) -> None:
         """
@@ -640,7 +761,7 @@ class Battle:
         if target in self.player1.units:
             pl_database = self.db_table
         else:
-            pl_database = main_db.CurrentDungeon
+            pl_database = self.enemy_db_table
 
         if self.dotted_units[target].get('Снижение урона'):
             if self.dotted_units[target].get('Снижение инициативы'):
@@ -669,8 +790,6 @@ class Battle:
         else:
             self.new_round()
             self.next_turn()
-
-        self.alive_getting_experience()
 
     @staticmethod
     def find_target(target_slots: List[int],
@@ -715,7 +834,7 @@ class Battle:
                     self.sorting_health_percentage)
 
         elif self.current_unit.attack_type in PARALYZE_LIST:
-            # определяем приоритет для парализаторов
+            # определяем приоритет для парализаторов и ведьм
             target = self.find_target(
                 target_slots,
                 self.get_paralyze_targets,
@@ -918,7 +1037,7 @@ class Battle:
                 for dot_source, dot_params in self.dotted_units[unit].items():
                     dot_rounds = dot_params[1]  # раунды
 
-                    # если остались раунды, и это паралич/окаменение
+                    # если остались раунды, и это паралич/окаменение/полиморф
                     if dot_source in PARALYZE_LIST:
                         already_paralyzed = bool(dot_rounds)
             else:
