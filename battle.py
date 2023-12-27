@@ -53,6 +53,7 @@ class Battle:
         self.units_in_round = []
         self.en_exp_killed = 0
         self.target = None
+        self.new_unit = None
         self.battle_is_over = False
         self.alive_units = []
         self.curr_target_slot = 1
@@ -302,6 +303,10 @@ class Battle:
 
         for dot_source, dot_params in \
                 self.dotted_units[self.current_unit].items():
+
+            print(self.current_unit.name, dot_source, dot_params)
+            print(self.current_unit.dotted)
+
             # если юнит все еще жив
             if self.current_unit.curr_health > 0:
                 dot_dmg = dot_params[0]  # урон
@@ -321,7 +326,7 @@ class Battle:
                     elif dot_source in PARALYZE_LIST \
                             or dot_source == POLYMORPH:
                         # уменьшаем кол-во раундов
-                        self.current_unit.dotted -= 1
+                        # self.current_unit.dotted -= 1
 
                         if dot_source in PARALYZE_LIST:
                             paralyzed = True
@@ -332,9 +337,21 @@ class Battle:
                     # уменьшаем раунды на 1
                     dot_rounds = max(0, dot_rounds - 1)
 
-                # # Если Полиморф закончил действие
-                # if dot_rounds == 0 and dot_source == POLYMORPH:
-                #     self.return_shape()
+                # Если Полиморф закончил действие
+                if dot_rounds == 0 and dot_source == POLYMORPH:
+
+                    if self.current_unit in self.player1.units:
+                        db_table = self.db_table
+                    elif self.current_unit in self.player2.units:
+                        db_table = self.enemy_db_table
+
+                    changed_unit_name = main_db.get_unit_by_slot(
+                        self.current_unit.slot, db_table).name
+
+                    self.change_shape(self.current_unit,
+                                      changed_unit_name,
+                                      db_table)
+                    self.current_unit = self.new_unit
 
                 if self.current_unit.dotted != 0:
                     self.dotted_units[self.current_unit][dot_source] = \
@@ -344,35 +361,26 @@ class Battle:
         if paralyzed:
             self.are_units_in_round()
 
-    def return_shape(self):
+    def change_shape(self,
+                     unit: Unit,
+                     changed_unit_name: str,
+                     db_table: any, ) -> None:
         """
-        Возвращение прежней формы юнита
+        Изменение формы юнита
         (после воздействия Полиморфа)
         """
-        if self.current_unit in self.player1.units:
-            db_table = self.db_table
-            self.player1.units.remove(self.current_unit)
-
-        elif self.current_unit in self.player2.units:
-            db_table = self.enemy_db_table
-            self.player2.units.remove(self.current_unit)
-
-        unit = main_db.get_unit_by_slot(
-            self.current_unit.slot, db_table)
-
-        changed_unit = self.replace_polymorph_unit(
-            self.current_unit,
-            unit.name,
-            main_db.unit_by_name_set_params,
+        self.new_unit = self.replace_polymorph_unit(
+            unit,
+            changed_unit_name,
             db_table)
 
-        if self.current_unit in self.player1.units:
-            self.player1.units.append(changed_unit)
+        if unit in self.player1.units:
+            self.player1.units.remove(unit)
+            self.player1.units.append(self.new_unit)
 
-        elif self.current_unit in self.player2.units:
-            self.player2.units.append(changed_unit)
-
-        self.units_deque.append(changed_unit)
+        elif unit in self.player2.units:
+            self.player2.units.remove(unit)
+            self.player2.units.append(self.new_unit)
 
     def are_units_in_round(self) -> None:
         """Проверка на наличие юнитов в раунде"""
@@ -428,8 +436,6 @@ class Battle:
         else:
             self.new_round()
             self.next_turn()
-
-        self.alive_getting_experience()
 
     def append_alive_unit(self,
                           alive_unit: Unit,
@@ -582,6 +588,25 @@ class Battle:
 
         return dot_rounds
 
+    def back_to_prev_form(self, target: Unit) -> None:
+        """Вернуть юниту прежнюю форму (до Полиморфа)"""
+        if target.dotted \
+                and self.dotted_units[target].get(POLYMORPH):
+
+            if target in self.player1.units:
+                db_table = self.db_table
+
+            elif target in self.player2.units:
+                db_table = self.enemy_db_table
+
+        changed_unit_name = main_db.get_unit_by_slot(
+            target.slot, db_table).name
+
+        self.change_shape(
+            target,
+            changed_unit_name,
+            db_table)
+
     def attack_6_units(self, player: Player) -> None:
         """Если цели - 6 юнитов"""
         self.attacked_slots = []
@@ -688,76 +713,45 @@ class Battle:
 
                 logging(line)
 
-                changed_unit = self.replace_polymorph_unit(
-                    target,
-                    changed_unit_name,
-                    main_db.unit_by_name_set_params,
-                    main_db.AllUnits)
+                self.change_shape(target,
+                                  changed_unit_name,
+                                  main_db.AllUnits)
 
-                self.units_deque.append(changed_unit)
-
-                if target in self.player1.units:
-                    self.player1.units.remove(target)
-                    self.player1.units.append(changed_unit)
-
-                elif target in self.player2.units:
-                    self.player2.units.remove(target)
-                    self.player2.units.append(changed_unit)
-
-                self.dot_calculations(dot_source, changed_unit)
-
-
-                # if target in self.units_deque:
-                #     self.units_deque.remove(target)
-                # if target in self.units_in_round:
-                #     self.units_in_round.remove(target)
-                # if target in self.waiting_units:
-                #     self.waiting_units.remove(target)
-                #
-                # # Процент (%) оставшегося здоровья цели
-                # target_perc_hp = int(target.curr_health / target.health * 100)
-                #
-                # # Получаем Беса с заданными параметрами
-                # changed_unit = Unit(main_db.unit_by_name_set_params(
-                #     changed_unit_name,
-                #     target.slot,
-                #     target_perc_hp))
-                #
-                # if target in self.player1.units:
-                #     self.player1.units.append(changed_unit)
-                #     self.player1.units.remove(target)
-                #
-                # elif target in self.player2.units:
-                #     self.player2.units.append(changed_unit)
-                #     self.player2.units.remove(target)
+                self.dot_calculations(dot_source, self.new_unit)
 
         if success:
             self.attacked_slots.append(target.slot)
 
     def replace_polymorph_unit(self,
-                               target: Unit,
+                               unit: Unit,
                                changed_unit_name: str,
-                               func: Callable,
                                db_table: any) -> Unit:
         """Замена юнита на полиморф"""
-        if target in self.units_deque:
-            self.units_deque.remove(target)
-        if target in self.units_in_round:
-            self.units_in_round.remove(target)
-        if target in self.waiting_units:
-            self.waiting_units.remove(target)
+        self.remove_unit(unit)
 
         # Процент (%) оставшегося здоровья цели
-        target_perc_hp = int(target.curr_health / target.health * 100)
+        target_perc_hp = int(unit.curr_health / unit.health * 100)
 
         # Получаем юнит с заданными параметрами
-        changed_unit = Unit(func(
+        changed_unit = Unit(main_db.unit_by_name_set_params(
             changed_unit_name,
-            target.slot,
+            unit.slot,
             target_perc_hp,
             db_table))
 
         return changed_unit
+
+    def remove_unit(self, unit):
+        """Удаление юнита из битвы"""
+        if unit in self.units_deque:
+            self.units_deque.remove(
+                unit)
+        if unit in self.units_in_round:
+            self.units_in_round.remove(
+                unit)
+        if unit in self.waiting_units:
+            self.waiting_units.remove(
+                unit)
 
     def cure_target(self, target: Optional[Unit]) -> None:
         """
@@ -796,8 +790,6 @@ class Battle:
         else:
             self.new_round()
             self.next_turn()
-
-        self.alive_getting_experience()
 
     @staticmethod
     def find_target(target_slots: List[int],

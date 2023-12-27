@@ -57,6 +57,17 @@ def show_no_circle(gif_label: QtWidgets.QLabel):
     gif.start()
 
 
+def show_polymorph(ui_label):
+    """Показывает GIF-анимацию Полиморфа"""
+    unit_gif = "polymorph.gif"
+    gif = QMovie(os.path.join(
+        BATTLE_ANIM,
+        unit_gif))
+
+    ui_label.setMovie(gif)
+    gif.start()
+
+
 def slot_frame_update(unit: any, slot_frame: QtWidgets.QLabel) -> None:
     """Метод выравнивания рамки под размер иконки юнита"""
     if unit.size == BIG:

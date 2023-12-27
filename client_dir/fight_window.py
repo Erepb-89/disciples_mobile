@@ -16,12 +16,12 @@ from client_dir.settings import UNIT_STAND, UNIT_ATTACK, \
     COMMON, BATTLE_GROUNDS, UNIT_SHADOW_ATTACK, UNIT_SHADOW_STAND, \
     UNIT_SHADOW_ATTACKED, UNIT_EFFECTS_AREA, UNIT_EFFECTS_TARGET, \
     RIGHT_ICONS, LEFT_ICONS, SCREEN_RECT, PANEL_RECT, BATTLE_LOG, \
-    BATTLE_ANIM, BIG, HEAL_LIST, ALCHEMIST_LIST
+    BATTLE_ANIM, HEAL_LIST, ALCHEMIST_LIST, POLYMORPH
 from client_dir.ui_functions import show_no_frame, \
     show_damage, show_no_damage, show_green_frame, \
     show_red_frame, show_blue_frame, update_unit_health, \
     get_unit_image, show_no_circle, ui_lock, ui_unlock, \
-    show_dot_icon
+    show_dot_icon, show_polymorph
 from client_dir.unit_dialog import UnitDialog
 from units_dir.ranking import GOLD_GRADATION
 from units_dir.units import main_db
@@ -667,7 +667,9 @@ class FightWindow(QMainWindow):
         }
 
     def set_front_gif_player1(self) -> None:
-        """Задание FRONT стороны для анимационных GIF игрока 1 (по умолчанию)"""
+        """
+        Задание FRONT стороны для анимационных GIF игрока 1 (по умолчанию)
+        """
         self.player_side = FRONT
         self.enemy_side = REAR
 
@@ -834,7 +836,9 @@ class FightWindow(QMainWindow):
         if curr_unit in dot_units and \
                 curr_unit.dotted:
             if not dot_units[curr_unit].get('Снижение инициативы') \
-                    and not dot_units[curr_unit].get('Снижение урона'):
+                    and not dot_units[curr_unit].get('Снижение урона') \
+                    and not dot_units[curr_unit].get('Паралич') \
+                    and not dot_units[curr_unit].get('Полиморф'):
                 # прорисовка модели атакованного юнита
                 self.show_attacked(curr_unit)
 
@@ -849,7 +853,7 @@ class FightWindow(QMainWindow):
 
             # если отравленный юнит погиб, удаляем его
             if curr_unit.curr_health == 0:
-                self.removing_dead_unit(curr_unit)
+                self.new_battle.remove_unit(curr_unit)
 
                 if curr_unit in dot_units:
                     dot_units.pop(curr_unit)
@@ -861,11 +865,10 @@ class FightWindow(QMainWindow):
 
                 # битва еще не закончена
                 if not self.new_battle.battle_is_over:
-                    # self._update_all_unit_health()
                     self.are_units_in_round()
 
                 # битва закончена
-                else:
+                elif self.new_battle.battle_is_over:
                     self.show_no_frames(self.unit_circles_dict, show_no_circle)
                     self.show_no_frames(self.dung_circles_dict, show_no_circle)
                     self.show_lvl_up_animations()
@@ -876,7 +879,7 @@ class FightWindow(QMainWindow):
                 if curr_unit in self.new_battle.player1.units:
                     pl_database = self.db_table
                 else:
-                    pl_database = main_db.CurrentDungeon
+                    pl_database = self.new_battle.enemy_db_table
 
                 curr_unit.off_initiative(pl_database)
                 dot_units.pop(curr_unit)
@@ -1544,21 +1547,31 @@ class FightWindow(QMainWindow):
                 show_damage(
                     self.unit_damaged_dict[curr_target.slot])
 
-        # если атакованный юнит погиб, удаляем его
+        # если атакованный юнит погиб
         if curr_target.curr_health == 0:
-            self.removing_dead_unit(curr_target)
+            # возвращаем ему прежнюю форму (до Полиморфа)
+            if curr_target.dotted \
+                    and self.new_battle.dotted_units[curr_target].get(POLYMORPH):
 
-    def removing_dead_unit(self, target):
-        """Удаление погибшего юнита из битвы"""
-        if target in self.new_battle.units_deque:
-            self.new_battle.units_deque.remove(
-                target)
-        if target in self.new_battle.units_in_round:
-            self.new_battle.units_in_round.remove(
-                target)
-        if target in self.new_battle.waiting_units:
-            self.new_battle.waiting_units.remove(
-                target)
+                if curr_target in self.new_battle.player1.units:
+                    ui_label = self.pl_slots_dict[curr_target.slot]
+
+                elif curr_target in self.new_battle.player2.units:
+                    ui_label = self.en_slots_dict[curr_target.slot]
+
+                # Сначала отображаем анимацию Полиморфа
+                show_polymorph(ui_label)
+
+                # Меняем иконку
+                self.unit_icons_update()
+
+                # Возвращаем юнит к прежней форме
+                self.new_battle.back_to_prev_form(curr_target)
+
+                self.new_battle.alive_getting_experience()
+
+            # удаляем цель
+            self.new_battle.remove_unit(curr_target)
 
     def show_dot_effect(self, unit, dot_type, icons_dict):
         """Показывает действующий отрицательный эффект на юните"""
