@@ -264,10 +264,10 @@ class Battle:
         line = f'Ходит: {self.current_unit.name}\n'
         logging(line)
 
-        # Получение периодического урона
-        if self.current_unit in self.dotted_units \
-                and self.current_unit.dotted:
-            self.take_dot_damage()
+        # # Получение периодического урона
+        # if self.current_unit in self.dotted_units \
+        #         and self.current_unit.dotted:
+        #     self.take_dot_damage()
 
         # если юнит жив
         if self.current_unit.curr_health > 0:
@@ -325,8 +325,6 @@ class Battle:
                     # Если Паралич или Полиморф
                     elif dot_source in PARALYZE_LIST \
                             or dot_source == POLYMORPH:
-                        # уменьшаем кол-во раундов
-                        # self.current_unit.dotted -= 1
 
                         if dot_source in PARALYZE_LIST:
                             paralyzed = True
@@ -367,7 +365,7 @@ class Battle:
                      db_table: any, ) -> None:
         """
         Изменение формы юнита
-        (после воздействия Полиморфа)
+        (после воздействия Полиморфа).
         """
         self.new_unit = self.replace_polymorph_unit(
             unit,
@@ -599,13 +597,13 @@ class Battle:
             elif target in self.player2.units:
                 db_table = self.enemy_db_table
 
-        changed_unit_name = main_db.get_unit_by_slot(
-            target.slot, db_table).name
+            changed_unit_name = main_db.get_unit_by_slot(
+                target.slot, db_table).name
 
-        self.change_shape(
-            target,
-            changed_unit_name,
-            db_table)
+            self.change_shape(
+                target,
+                changed_unit_name,
+                db_table)
 
     def attack_6_units(self, player: Player) -> None:
         """Если цели - 6 юнитов"""
@@ -729,14 +727,10 @@ class Battle:
         """Замена юнита на полиморф"""
         self.remove_unit(unit)
 
-        # Процент (%) оставшегося здоровья цели
-        target_perc_hp = int(unit.curr_health / unit.health * 100)
-
         # Получаем юнит с заданными параметрами
         changed_unit = Unit(main_db.unit_by_name_set_params(
+            unit,
             changed_unit_name,
-            unit.slot,
-            target_perc_hp,
             db_table))
 
         return changed_unit

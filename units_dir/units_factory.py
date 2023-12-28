@@ -1368,7 +1368,6 @@ class Unit:
             }
 
             perk = random.choice(all_perks)
-            perk = 'first_strike'
 
             line = f"{self.name} получает перк {PERKS[perk]}\n"
             logging(line)

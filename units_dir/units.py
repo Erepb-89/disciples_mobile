@@ -602,19 +602,13 @@ class ServerStorage:
         return query.first()
 
     def unit_by_name_set_params(self,
+                                unit: any,
                                 name: str,
-                                slot: int,
-                                health_perc: int,
                                 db_table: any) -> namedtuple:
         """
         Метод получающий юнита из таблицы AllUnits по имени
-        с новым заданным слотом.
+        с новыми заданными параметрами и слотом.
         """
-        health = self.session.query(db_table.health)\
-            .filter_by(name=name).first()
-
-        curr_health = int(health[0] * health_perc * 0.01)
-
         query = self.session.query(
             db_table.id,
             db_table.name,
@@ -624,11 +618,11 @@ class ServerStorage:
             db_table.exp,
             db_table.curr_exp,
             db_table.exp_per_kill,
-            db_table.health,
-            curr_health,
+            unit.health,
+            unit.curr_health,
             db_table.armor,
-            db_table.immune,
-            db_table.ward,
+            db_table.immune,  # нужно брать у исходного юнита
+            db_table.ward,  # нужно брать у исходного юнита
             db_table.attack_type,
             db_table.attack_chance,
             db_table.attack_dmg,
@@ -641,7 +635,7 @@ class ServerStorage:
             db_table.desc,
             db_table.photo,
             db_table.gif,
-            slot,
+            unit.slot,
             db_table.subrace,
             db_table.branch,
             db_table.attack_twice,

@@ -139,7 +139,9 @@ class FightWindow(QMainWindow):
             log.write("Новая битва\n")
         self.update_log()
 
-        self.check_ai()
+        timer = QTimer(self)
+        timer.singleShot(1000, self.check_ai)
+        del timer
 
     def InitUI(self):
         """Загружаем конфигурацию окна из дизайнера"""
@@ -828,6 +830,24 @@ class FightWindow(QMainWindow):
         gif_slot.setMovie(gif)
         gif.start()
 
+    def unit_is_dead(self, curr_unit):
+        """Если атакованный/отравленный юнит погибает"""
+        # прорисовка модели атакованного юнита
+        self.show_attacked(curr_unit)
+        self.show_shadow_attacked(curr_unit)
+
+        # удаление юнита из битвы
+        self.new_battle.remove_unit(curr_unit)
+
+        # анимация Полиморфа, если нужно
+        if curr_unit.dotted:
+            self.show_polymorph_animation(curr_unit)
+
+        if curr_unit in self.new_battle.dotted_units:
+            self.new_battle.dotted_units.pop(curr_unit)
+
+        self.new_battle.alive_getting_experience()
+
     def show_poisoned_unit(self):
         """Если ходящий юнит отравлен и т.д."""
         curr_unit = self.new_battle.current_unit
@@ -845,23 +865,19 @@ class FightWindow(QMainWindow):
                 # прорисовка тени атакованного юнита
                 self.show_shadow_attacked(curr_unit)
 
-                # обновляем здоровье
+                # обновление здоровья юнитов
                 self._update_all_unit_health()
 
-            # уменьшаем кол-во раундов
+            # уменьшение кол-ва раундов
             curr_unit.dotted -= 1
 
-            # если отравленный юнит погиб, удаляем его
+            self.new_battle.take_dot_damage()
+
+            self._update_all_unit_health()
+
+            # если отравленный юнит погиб
             if curr_unit.curr_health == 0:
-                self.new_battle.remove_unit(curr_unit)
-
-                if curr_unit in dot_units:
-                    dot_units.pop(curr_unit)
-
-                # прорисовка модели атакованного юнита
-                self.show_attacked(curr_unit)
-
-                self.new_battle.alive_getting_experience()
+                self.unit_is_dead(curr_unit)
 
                 # битва еще не закончена
                 if not self.new_battle.battle_is_over:
@@ -869,11 +885,11 @@ class FightWindow(QMainWindow):
 
                 # битва закончена
                 elif self.new_battle.battle_is_over:
+                    # убирает рамки
                     self.show_no_frames(self.unit_circles_dict, show_no_circle)
                     self.show_no_frames(self.dung_circles_dict, show_no_circle)
+                    # анимация левел-апа, если нужно
                     self.show_lvl_up_animations()
-
-                self._update_all_unit_health()
 
             if curr_unit.dotted == 0 and curr_unit in dot_units:
                 if curr_unit in self.new_battle.player1.units:
@@ -882,6 +898,13 @@ class FightWindow(QMainWindow):
                     pl_database = self.new_battle.enemy_db_table
 
                 curr_unit.off_initiative(pl_database)
+
+                # отображение анимации Полиморфа
+                # ------------------------------
+                # анимация Полиморфа, если нужно
+                # self.show_polymorph_animation(curr_unit)
+                # self.new_battle.current_unit = self.new_battle.new_unit
+
                 dot_units.pop(curr_unit)
 
         # показать иконки эффектов
@@ -940,7 +963,7 @@ class FightWindow(QMainWindow):
             self.lock_buttons_for_ai()
 
             timer = QTimer(self)
-            timer.singleShot(700, self.autofight)
+            timer.singleShot(1000, self.autofight)
             del timer
         else:
             # Разблокировка кнопок
@@ -1549,29 +1572,34 @@ class FightWindow(QMainWindow):
 
         # если атакованный юнит погиб
         if curr_target.curr_health == 0:
-            # возвращаем ему прежнюю форму (до Полиморфа)
-            if curr_target.dotted \
-                    and self.new_battle.dotted_units[curr_target].get(POLYMORPH):
+            if curr_target.dotted:
+                self.show_polymorph_animation(curr_target)
 
-                if curr_target in self.new_battle.player1.units:
-                    ui_label = self.pl_slots_dict[curr_target.slot]
-
-                elif curr_target in self.new_battle.player2.units:
-                    ui_label = self.en_slots_dict[curr_target.slot]
-
-                # Сначала отображаем анимацию Полиморфа
-                show_polymorph(ui_label)
-
-                # Меняем иконку
-                self.unit_icons_update()
-
-                # Возвращаем юнит к прежней форме
-                self.new_battle.back_to_prev_form(curr_target)
-
-                self.new_battle.alive_getting_experience()
+            self.new_battle.alive_getting_experience()
 
             # удаляем цель
             self.new_battle.remove_unit(curr_target)
+
+    def show_polymorph_animation(self, unit: Unit) -> None:
+        """Отображает анимацию возвращения юнита в прежнюю форму
+        (до Полиморфа). Обновляет иконки юнитов. Замена юнита в битве."""
+        # if unit.dotted:
+        if self.new_battle.dotted_units[unit].get(POLYMORPH):
+
+            if unit in self.new_battle.player1.units:
+                ui_label = self.pl_slots_dict[unit.slot]
+
+            elif unit in self.new_battle.player2.units:
+                ui_label = self.en_slots_dict[unit.slot]
+
+            # Сначала отображаем анимацию Полиморфа
+            show_polymorph(ui_label)
+
+            # Меняем иконку
+            self.unit_icons_update()
+
+            # Возвращаем юнит к прежней форме
+            self.new_battle.back_to_prev_form(unit)
 
     def show_dot_effect(self, unit, dot_type, icons_dict):
         """Показывает действующий отрицательный эффект на юните"""
