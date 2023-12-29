@@ -337,7 +337,7 @@ class Battle:
 
                 # Если Полиморф закончил действие
                 if dot_rounds == 0 and dot_source == POLYMORPH:
-
+                    db_table = self.db_table
                     if self.current_unit in self.player1.units:
                         db_table = self.db_table
                     elif self.current_unit in self.player2.units:
@@ -350,6 +350,7 @@ class Battle:
                                       changed_unit_name,
                                       db_table)
                     self.current_unit = self.new_unit
+                    self.target_slots = self._auto_choose_targets(self.current_unit)
 
                 if self.current_unit.dotted != 0:
                     self.dotted_units[self.current_unit][dot_source] = \
@@ -590,6 +591,7 @@ class Battle:
         """Вернуть юниту прежнюю форму (до Полиморфа)"""
         if target.dotted \
                 and self.dotted_units[target].get(POLYMORPH):
+            db_table = self.db_table
 
             if target in self.player1.units:
                 db_table = self.db_table
