@@ -264,10 +264,10 @@ class Battle:
         line = f'Ходит: {self.current_unit.name}\n'
         logging(line)
 
-        # Получение периодического урона
-        if self.current_unit in self.dotted_units \
-                and self.current_unit.dotted:
-            self.take_dot_damage()
+        # # Получение периодического урона
+        # if self.current_unit in self.dotted_units \
+        #         and self.current_unit.dotted:
+        #     self.take_dot_damage()
 
         # если юнит жив
         if self.current_unit.curr_health > 0:
@@ -325,8 +325,6 @@ class Battle:
                     # Если Паралич или Полиморф
                     elif dot_source in PARALYZE_LIST \
                             or dot_source == POLYMORPH:
-                        # уменьшаем кол-во раундов
-                        # self.current_unit.dotted -= 1
 
                         if dot_source in PARALYZE_LIST:
                             paralyzed = True
@@ -339,7 +337,7 @@ class Battle:
 
                 # Если Полиморф закончил действие
                 if dot_rounds == 0 and dot_source == POLYMORPH:
-
+                    db_table = self.db_table
                     if self.current_unit in self.player1.units:
                         db_table = self.db_table
                     elif self.current_unit in self.player2.units:
@@ -352,6 +350,7 @@ class Battle:
                                       changed_unit_name,
                                       db_table)
                     self.current_unit = self.new_unit
+                    self.target_slots = self._auto_choose_targets(self.current_unit)
 
                 if self.current_unit.dotted != 0:
                     self.dotted_units[self.current_unit][dot_source] = \
@@ -367,7 +366,7 @@ class Battle:
                      db_table: any, ) -> None:
         """
         Изменение формы юнита
-        (после воздействия Полиморфа)
+        (после воздействия Полиморфа).
         """
         self.new_unit = self.replace_polymorph_unit(
             unit,
@@ -592,6 +591,7 @@ class Battle:
         """Вернуть юниту прежнюю форму (до Полиморфа)"""
         if target.dotted \
                 and self.dotted_units[target].get(POLYMORPH):
+            db_table = self.db_table
 
             if target in self.player1.units:
                 db_table = self.db_table
@@ -599,13 +599,13 @@ class Battle:
             elif target in self.player2.units:
                 db_table = self.enemy_db_table
 
-        changed_unit_name = main_db.get_unit_by_slot(
-            target.slot, db_table).name
+            changed_unit_name = main_db.get_unit_by_slot(
+                target.slot, db_table).name
 
-        self.change_shape(
-            target,
-            changed_unit_name,
-            db_table)
+            self.change_shape(
+                target,
+                changed_unit_name,
+                db_table)
 
     def attack_6_units(self, player: Player) -> None:
         """Если цели - 6 юнитов"""
@@ -729,14 +729,10 @@ class Battle:
         """Замена юнита на полиморф"""
         self.remove_unit(unit)
 
-        # Процент (%) оставшегося здоровья цели
-        target_perc_hp = int(unit.curr_health / unit.health * 100)
-
         # Получаем юнит с заданными параметрами
         changed_unit = Unit(main_db.unit_by_name_set_params(
+            unit,
             changed_unit_name,
-            unit.slot,
-            target_perc_hp,
             db_table))
 
         return changed_unit
