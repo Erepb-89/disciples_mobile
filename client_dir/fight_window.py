@@ -875,22 +875,6 @@ class FightWindow(QMainWindow):
 
             self._update_all_unit_health()
 
-            # если отравленный юнит погиб
-            if curr_unit.curr_health == 0:
-                self.unit_is_dead(curr_unit)
-
-                # битва еще не закончена
-                if not self.new_battle.battle_is_over:
-                    self.are_units_in_round()
-
-                # битва закончена
-                elif self.new_battle.battle_is_over:
-                    # убирает рамки
-                    self.show_no_frames(self.unit_circles_dict, show_no_circle)
-                    self.show_no_frames(self.dung_circles_dict, show_no_circle)
-                    # анимация левел-апа, если нужно
-                    self.show_lvl_up_animations()
-
             if curr_unit.dotted == 0 and curr_unit in dot_units:
                 if curr_unit in self.new_battle.player1.units:
                     pl_database = self.db_table
@@ -906,6 +890,25 @@ class FightWindow(QMainWindow):
                 # self.new_battle.current_unit = self.new_battle.new_unit
 
                 dot_units.pop(curr_unit)
+
+            # если отравленный юнит погиб
+            if self.new_battle.current_unit.curr_health == 0:
+                self.unit_is_dead(self.new_battle.current_unit)
+
+                # битва еще не закончена
+                if not self.new_battle.battle_is_over:
+                    # если ходящий юнит отравлен и т.д.
+                    self.show_poisoned_unit()
+
+                    self.new_battle.next_turn()
+
+                # битва закончена
+                elif self.new_battle.battle_is_over:
+                    # убирает рамки
+                    self.show_no_frames(self.unit_circles_dict, show_no_circle)
+                    self.show_no_frames(self.dung_circles_dict, show_no_circle)
+                    # анимация левел-апа, если нужно
+                    self.show_lvl_up_animations()
 
         # показать иконки эффектов
         self.define_dotted_units()
@@ -1583,23 +1586,23 @@ class FightWindow(QMainWindow):
     def show_polymorph_animation(self, unit: Unit) -> None:
         """Отображает анимацию возвращения юнита в прежнюю форму
         (до Полиморфа). Обновляет иконки юнитов. Замена юнита в битве."""
-        # if unit.dotted:
-        if self.new_battle.dotted_units[unit].get(POLYMORPH):
+        if self.new_battle.dotted_units.get(unit):
+            if self.new_battle.dotted_units[unit].get(POLYMORPH):
 
-            if unit in self.new_battle.player1.units:
-                ui_label = self.pl_slots_dict[unit.slot]
+                if unit in self.new_battle.player1.units:
+                    ui_label = self.pl_slots_dict[unit.slot]
 
-            elif unit in self.new_battle.player2.units:
-                ui_label = self.en_slots_dict[unit.slot]
+                elif unit in self.new_battle.player2.units:
+                    ui_label = self.en_slots_dict[unit.slot]
 
-            # Сначала отображаем анимацию Полиморфа
-            show_polymorph(ui_label)
+                # Сначала отображаем анимацию Полиморфа
+                show_polymorph(ui_label)
 
-            # Меняем иконку
-            self.unit_icons_update()
+                # Меняем иконку
+                self.unit_icons_update()
 
-            # Возвращаем юнит к прежней форме
-            self.new_battle.back_to_prev_form(unit)
+                # Возвращаем юнит к прежней форме
+                self.new_battle.back_to_prev_form(unit)
 
     def show_dot_effect(self, unit, dot_type, icons_dict):
         """Показывает действующий отрицательный эффект на юните"""
