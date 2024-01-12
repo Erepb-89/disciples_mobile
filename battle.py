@@ -264,10 +264,10 @@ class Battle:
         line = f'Ходит: {self.current_unit.name}\n'
         logging(line)
 
-        # # Получение периодического урона
-        # if self.current_unit in self.dotted_units \
-        #         and self.current_unit.dotted:
-        #     self.take_dot_damage()
+        # Получение периодического урона
+        if self.current_unit in self.dotted_units \
+                and self.current_unit.dotted:
+            self.take_dot_damage()
 
         # если юнит жив
         if self.current_unit.curr_health > 0:
@@ -278,6 +278,7 @@ class Battle:
             else:
                 self.define_target_player(self.player2, self.player1)
 
+            # --------------------------------------------------------------
         self.target_slots = self._auto_choose_targets(self.current_unit)
         if not self.target_slots:
             self.targets = []
@@ -497,24 +498,27 @@ class Battle:
                                        player2,
                                        db_table)
 
-    def alive_getting_experience(self) -> None:
+    def alive_getting_experience(self):
         """Повышение опыта или уровня выжившим юнитам"""
+        if not self.player1.slots:
+            self._getting_experience(self.player1,
+                                     self.player2,
+                                     self.enemy_db_table)
+        if not self.player2.slots:
+            self._getting_experience(self.player2,
+                                     self.player1,
+                                     self.db_table)
+
+    def player_units_are_dead(self) -> None:
+        """Проверка живы ли юниты обоих игроков"""
         self.get_player_slots(self.player1)
         self.get_player_slots(self.player2)
         if not self.player1.slots:
             logging('Вы проиграли!\n')
-
-            self._getting_experience(self.player1,
-                                     self.player2,
-                                     self.enemy_db_table)
             self.battle_is_over = True
 
         if not self.player2.slots:
             logging('Вы победили!\n')
-
-            self._getting_experience(self.player2,
-                                     self.player1,
-                                     self.db_table)
             self.battle_is_over = True
 
     def dot_calculations(self,
