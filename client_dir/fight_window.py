@@ -846,7 +846,15 @@ class FightWindow(QMainWindow):
         if curr_unit in self.new_battle.dotted_units:
             self.new_battle.dotted_units.pop(curr_unit)
 
-        self.new_battle.alive_getting_experience()
+        self.new_battle.player_units_are_dead()
+
+        if self.new_battle.battle_is_over:
+            # возвращаем прежнюю форму
+            for unit in (*self.new_battle.player1.units,
+                         *self.new_battle.player2.units):
+                self.show_polymorph_animation(unit)
+
+            self.new_battle.alive_getting_experience()
 
     def show_poisoned_unit(self):
         """Если ходящий юнит отравлен и т.д."""
@@ -865,13 +873,8 @@ class FightWindow(QMainWindow):
                 # прорисовка тени атакованного юнита
                 self.show_shadow_attacked(curr_unit)
 
-                # обновление здоровья юнитов
-                self._update_all_unit_health()
-
             # уменьшение кол-ва раундов
             curr_unit.dotted -= 1
-
-            self.new_battle.take_dot_damage()
 
             self._update_all_unit_health()
 
@@ -892,62 +895,36 @@ class FightWindow(QMainWindow):
                 dot_units.pop(curr_unit)
 
             # если отравленный юнит погиб
-            if self.new_battle.current_unit.curr_health == 0:
-                self.unit_is_dead(self.new_battle.current_unit)
+            if curr_unit.curr_health == 0:
+                self.unit_is_dead(curr_unit)
 
                 # битва еще не закончена
                 if not self.new_battle.battle_is_over:
-                    # если ходящий юнит отравлен и т.д.
-                    self.show_poisoned_unit()
-
-                    self.new_battle.next_turn()
+                    # проверка, если отравленный юнит умер в раунде последним
+                    self.new_battle.are_units_in_round()
 
                 # битва закончена
                 elif self.new_battle.battle_is_over:
                     # убирает рамки
                     self.show_no_frames(self.unit_circles_dict, show_no_circle)
                     self.show_no_frames(self.dung_circles_dict, show_no_circle)
+
+                    # возвращаем прежнюю форму
+                    for unit in (*self.new_battle.player1.units,
+                                 *self.new_battle.player2.units):
+                        self.show_polymorph_animation(unit)
+
                     # анимация левел-апа, если нужно
                     self.show_lvl_up_animations()
 
         # показать иконки эффектов
         self.define_dotted_units()
 
-    def are_units_in_round(self) -> None:
-        """Проверка на наличие юнитов в раунде"""
-        if self.new_battle.current_unit in self.new_battle.units_in_round:
-            self.new_battle.units_in_round.remove(
-                self.new_battle.current_unit)
-
-        # есть не ходившие юниты в текущем раунде
-        if self.new_battle.units_in_round:
-            self.new_battle.next_turn()
-
-            # если ходящий юнит отравлен и т.д.
-            self.show_poisoned_unit()
-
-        # есть юниты, ожидающие лучшего момента
-        elif self.new_battle.waiting_units:
-            if self.new_battle.current_unit in self.new_battle.waiting_units:
-                # кнопка ожидания недоступна
-                ui_lock(self.ui.pushButtonWaiting)
-
-            self.new_battle.waiting_round()
-            self.new_battle.next_turn()
-
-            # если ходящий юнит отравлен и т.д.
-            self.show_poisoned_unit()
-
-        else:
-            # новый раунд
-            self.new_battle.new_round()
-            # кнопка ожидания снова доступна
-            ui_unlock(self.ui.pushButtonWaiting)
-            # следующий ход
-            self.new_battle.next_turn()
-
-            # если ходящий юнит отравлен и т.д.
-            self.show_poisoned_unit()
+    def next_unit_turn(self) -> None:
+        """Ход следующего юнита"""
+        self.new_battle.are_units_in_round()
+        # если ходящий юнит отравлен и т.д.
+        self.show_poisoned_unit()
 
         # битва еще не закончена
         if not self.new_battle.battle_is_over:
@@ -1020,7 +997,7 @@ class FightWindow(QMainWindow):
         self.update_log()
         self.show_no_damaged()
         self.clear_frames_circles()
-        self.are_units_in_round()
+        self.next_unit_turn()
 
         self.update_log()
 
@@ -1034,7 +1011,7 @@ class FightWindow(QMainWindow):
 
         self.new_battle.waiting_units.append(self.new_battle.current_unit)
 
-        self.are_units_in_round()
+        self.next_unit_turn()
 
         self.update_log()
 
@@ -1089,12 +1066,17 @@ class FightWindow(QMainWindow):
 
             self._update_all_unit_health()
 
-            self.are_units_in_round()
+            self.next_unit_turn()
 
         # битва закончена
         else:
             self.show_no_frames(self.unit_circles_dict, show_no_circle)
             self.show_no_frames(self.dung_circles_dict, show_no_circle)
+
+            # возвращаем прежнюю форму
+            for unit in (*self.new_battle.player1.units,
+                         *self.new_battle.player2.units):
+                self.show_polymorph_animation(unit)
 
             self.show_lvl_up_animations()
 
@@ -1109,10 +1091,10 @@ class FightWindow(QMainWindow):
 
             if not self.new_battle.player1.slots:
                 self.show_need_upgrade_effect(self.dung_damaged_dict,
-                                      self.new_battle.player2)
+                                              self.new_battle.player2)
             if not self.new_battle.player2.slots:
                 self.show_need_upgrade_effect(self.unit_damaged_dict,
-                                      self.new_battle.player1)
+                                              self.new_battle.player1)
 
         self.update_log()
         self.new_battle.autofight = False
@@ -1211,6 +1193,8 @@ class FightWindow(QMainWindow):
                         self.parent.curr_mission,
                         main_db.campaign_day,
                         main_db.already_built)
+
+        self.unlock_buttons_for_player()
 
     def show_gif_side(self,
                       unit: any,
@@ -1578,7 +1562,15 @@ class FightWindow(QMainWindow):
             if curr_target.dotted:
                 self.show_polymorph_animation(curr_target)
 
-            self.new_battle.alive_getting_experience()
+            self.new_battle.player_units_are_dead()
+
+            if self.new_battle.battle_is_over:
+                # возвращаем прежнюю форму
+                for unit in (*self.new_battle.player1.units,
+                             *self.new_battle.player2.units):
+                    self.show_polymorph_animation(unit)
+
+                self.new_battle.alive_getting_experience()
 
             # удаляем цель
             self.new_battle.remove_unit(curr_target)
