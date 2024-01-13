@@ -1619,7 +1619,8 @@ class Unit:
             'attack_successful': False,
             'immune_activated': False,
             'ward_activated': False,
-            'attack_source': ''
+            'attack_source': '',
+            'attack_type': ''
         }
 
         # Вычисление вероятности попадания
@@ -1661,7 +1662,8 @@ class Unit:
             'attack_successful': False,
             'immune_activated': False,
             'ward_activated': False,
-            'attack_source': ''
+            'attack_source': '',
+            'attack_type': ''
         }
 
         # Вычисление вероятности попадания
@@ -1681,6 +1683,14 @@ class Unit:
             attack_source = self.attack_source
             attack_dict['attack_source'] = attack_source
 
+        # тип атаки (для Яда и Раскола)
+        try:
+            attack_type = self.attack_type.split('/')[1]
+            attack_dict['attack_type'] = attack_type
+        except IndexError:
+            attack_type = self.attack_type
+            attack_dict['attack_type'] = attack_type
+
         attack_dict = self.checking_immune_ward(target, chance, attack_dict)
 
         # Логирование промахов
@@ -1695,12 +1705,16 @@ class Unit:
         # источник атаки
         attack_source = attack_dict['attack_source']
 
+        # тип атаки (для Яда и раскола)
+        attack_type = attack_dict['attack_type']
+
         # иммунитеты и защиты
         target_immune = target.immune.split(', ')
         target_wards = target.ward.split(', ')
 
         # у цели нет иммунитета и защиты от источника атаки
         if attack_source not in target_immune \
+                and attack_type not in target_immune \
                 and attack_source not in target_wards:
 
             # атака удачна или неудачна / промах
@@ -1709,12 +1723,14 @@ class Unit:
             attack_dict['attack_successful'] = attack_successful
 
         # у цели есть иммунитет от источника атаки
-        elif attack_source in target_immune:
+        elif attack_source in target_immune \
+                or attack_type in target_immune:
             # иммунитет остается всегда
             attack_dict['immune_activated'] = True
 
         # у цели есть защита от источника атаки
-        elif attack_source in target_wards:
+        elif attack_source in target_wards \
+                or attack_type in target_wards:
             # -1 защита из списка
             target_wards.remove(attack_source)
             target.ward = ''
