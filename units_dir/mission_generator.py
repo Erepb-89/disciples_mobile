@@ -274,8 +274,8 @@ setup_3 = [
 ]
 setup_2 = [
     {
-        1: None, 2: BIG,
-        3: None, 4: None,
+        1: None, 2: None,
+        3: None, 4: BIG,
         5: None, 6: None,
     },
     {
@@ -284,14 +284,14 @@ setup_2 = [
         5: None, 6: None,
     },
     {
-        1: SMALL, 2: SMALL,
-        3: None, 4: None,
+        1: SMALL, 2: None,
+        3: None, 4: SMALL,
         5: None, 6: None,
     },
     {
         1: None, 2: None,
-        3: None, 4: None,
-        5: SMALL, 6: SMALL,
+        3: None, 4: SMALL,
+        5: SMALL, 6: None,
     },
     {
         1: None, 2: SMALL,

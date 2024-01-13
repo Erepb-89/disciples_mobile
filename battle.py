@@ -988,8 +988,10 @@ class Battle:
                 self.targets.append(unit.slot)
 
             if 'Исцеление' in self.current_unit.attack_type and unit.dotted:
-                target_units.append(unit)
-                self.targets.append(unit.slot)
+                if len(self.dotted_units[unit]) > 2 \
+                        or not self.dotted_units[unit].get('Полиморф'):
+                    target_units.append(unit)
+                    self.targets.append(unit.slot)
 
         return target_units
 
