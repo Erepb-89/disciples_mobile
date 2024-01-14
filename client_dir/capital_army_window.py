@@ -100,10 +100,6 @@ class CapitalArmyWindow(QMainWindow):
 
         self.reset()
 
-        self.is_button_enabled(self.ui.swap12, self.db_table, 2)
-        self.is_button_enabled(self.ui.swap34, self.db_table, 4)
-        self.is_button_enabled(self.ui.swap56, self.db_table, 6)
-
         self.show()
 
     def keyPressEvent(self, event) -> None:
@@ -325,6 +321,7 @@ class CapitalArmyWindow(QMainWindow):
             slot2,
             self.db_table)
         self.player_list_update()
+        self.reset()
         self._update_all_unit_health()
 
     def swap_unit_action_12(self) -> None:

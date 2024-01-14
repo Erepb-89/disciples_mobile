@@ -388,16 +388,17 @@ class Battle:
             self.units_in_round.remove(
                 self.current_unit)
 
+        # если есть юнит с доп. атакой, данной Алхимиком
+        if self.next_unit:
+            self.next_turn()
+
         # есть не ходившие юниты в текущем раунде
-        if self.units_in_round:
+        elif self.units_in_round:
             self.next_turn()
 
         # есть юниты, ожидающие лучшего момента
         elif self.waiting_units:
             self.waiting_round()
-            self.next_turn()
-
-        elif self.next_unit:
             self.next_turn()
 
         else:
@@ -431,7 +432,8 @@ class Battle:
         """Автобой"""
         self.autofight = True
         if self.units_in_round:
-
+            self.auto_attack()
+        elif not self.units_in_round and self.current_unit:
             self.auto_attack()
         else:
             self.new_round()

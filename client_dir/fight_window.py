@@ -1019,7 +1019,8 @@ class FightWindow(QMainWindow):
         """Анимация атакующей и атакованной стороны"""
         self.update_log()
 
-        if self.new_battle.units_in_round:
+        if self.new_battle.units_in_round \
+                or (not self.new_battle.units_in_round and self.new_battle.current_unit):
             self.show_no_frames(self.unit_circles_dict, show_no_circle)
             self.show_no_frames(self.dung_circles_dict, show_no_circle)
 
