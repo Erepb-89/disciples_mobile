@@ -152,6 +152,8 @@ class ChooseHeroWindow(QMainWindow):
         if self.question:
             self.hire_hero_action(self.unit_slot)
             self.choose_faction.main.reset()
+            self.choose_faction.main.update_diff_checkbox()
+            self.choose_faction.main.unlock_campaign()
             self.close()
 
     def hero_list_update(self) -> None:
