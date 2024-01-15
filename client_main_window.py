@@ -52,6 +52,9 @@ class ClientMainWindow(QMainWindow):
 
         self.InitUI()
 
+        self.difficulty = main_db.difficulty
+        self.update_diff_checkbox()
+
     def InitUI(self):
         """Загружаем конфигурацию окна из дизайнера"""
         self.ui = Ui_MainWindow()
@@ -182,6 +185,8 @@ class ClientMainWindow(QMainWindow):
         self.reset()
         self.reset_enemy_buttons()
 
+        self.check_campaign_session()
+
         self.show()
 
     @staticmethod
@@ -201,6 +206,32 @@ class ClientMainWindow(QMainWindow):
 
         self.reset_player_buttons()
 
+    def check_campaign_session(self):
+
+        session = main_db.session_by_faction(
+            main_db.current_player.id, self.faction)
+
+        if session is not None:
+            self.unlock_campaign()
+        else:
+            self.lock_campaign()
+
+    def lock_campaign(self):
+        """
+        Проверка текущей игровой сессии.
+        Если отсутствует запись в базе, заблокировать кнопки кампании.
+        """
+        ui_lock(self.ui.pushButtonCampaign)
+        ui_lock(self.ui.pushButtonCapital)
+
+    def unlock_campaign(self):
+        """
+        Проверка текущей игровой сессии.
+        Если есть запись в базе, разблокировать кнопки кампании.
+        """
+        ui_unlock(self.ui.pushButtonCampaign)
+        ui_unlock(self.ui.pushButtonCapital)
+
     def update_diff_checkbox(self) -> None:
         """Метод заполнения выпадающего списка доступных сложностей."""
         self.ui.difficultyText.setStyleSheet('color: white')
@@ -213,13 +244,22 @@ class ClientMainWindow(QMainWindow):
             self.diff_model.appendRow(item)
         self.ui.comboDifficulty.setModel(self.diff_model)
 
-        self.ui.comboDifficulty.setCurrentIndex(1)
-        self.check_difficulty()
-        self.ui.comboDifficulty.currentIndexChanged.connect(self.check_difficulty)
+        self.ui.comboDifficulty.setCurrentIndex(self.difficulty - 1)
+
+        session = main_db.session_by_faction(
+            main_db.current_player.id, self.faction)
+
+        if session is not None:
+            self.check_difficulty()
+            self.ui.comboDifficulty.currentIndexChanged.connect(
+                self.check_difficulty)
 
     def check_difficulty(self) -> None:
         """Устанавливает выбранную сложность"""
         self.difficulty = int(self.ui.comboDifficulty.currentText())
+        main_db.update_session_difficulty(
+            main_db.game_session_id,
+            self.difficulty)
 
     def reset_player_buttons(self):
         """Обновление доступности кнопок игрока"""

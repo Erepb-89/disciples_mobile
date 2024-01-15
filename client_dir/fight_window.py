@@ -10,7 +10,9 @@ from PyQt5.QtGui import QPixmap, QMovie, QStandardItem, QStandardItemModel
 from PyQt5.QtWidgets import QMainWindow, QHBoxLayout
 
 from battle import Battle, Player
+from battle_logging import logging
 from client_dir.fight_form import Ui_FightWindow
+from client_dir.message_window import MessageWindow
 from client_dir.settings import UNIT_STAND, UNIT_ATTACK, \
     UNIT_ATTACKED, UNIT_EFFECTS_ATTACK, BATTLE_GROUND, FRONT, REAR, \
     COMMON, BATTLE_GROUNDS, UNIT_SHADOW_ATTACK, UNIT_SHADOW_STAND, \
@@ -522,6 +524,7 @@ class FightWindow(QMainWindow):
         self.unit_gifs_update()
         self.show_no_damaged()
         self.clear_frames_circles()
+        self.define_dotted_units()
 
         self.check_ai()
 
@@ -954,6 +957,7 @@ class FightWindow(QMainWindow):
         ui_lock(self.ui.pushButtonAutoFight)
         ui_lock(self.ui.pushButtonDefence)
         ui_lock(self.ui.pushButtonWaiting)
+        ui_lock(self.ui.pushButtonChange)
 
         if self.player_side == FRONT:
             ui_lock(self.ui.pushButtonSlot1)
@@ -975,6 +979,7 @@ class FightWindow(QMainWindow):
         ui_unlock(self.ui.pushButtonAutoFight)
         ui_unlock(self.ui.pushButtonDefence)
         ui_unlock(self.ui.pushButtonWaiting)
+        ui_unlock(self.ui.pushButtonChange)
 
         if self.player_side == FRONT:
             ui_unlock(self.ui.pushButtonSlot1)
@@ -1019,8 +1024,8 @@ class FightWindow(QMainWindow):
         """Анимация атакующей и атакованной стороны"""
         self.update_log()
 
-        if self.new_battle.units_in_round \
-                or (not self.new_battle.units_in_round and self.new_battle.current_unit):
+        if self.new_battle.units_in_round or (
+                not self.new_battle.units_in_round and self.new_battle.current_unit):
             self.show_no_frames(self.unit_circles_dict, show_no_circle)
             self.show_no_frames(self.dung_circles_dict, show_no_circle)
 
@@ -1107,7 +1112,9 @@ class FightWindow(QMainWindow):
             main_db.current_player.name,
             main_db.current_faction)
 
-        changed_gold = player_gold + GOLD_GRADATION[mission_number]
+        mission_gold = GOLD_GRADATION[main_db.campaign_level][mission_number]
+
+        changed_gold = player_gold + mission_gold
 
         # обновление золота в базе
         main_db.update_gold(
@@ -1175,7 +1182,11 @@ class FightWindow(QMainWindow):
                 main_db.already_built = 0
 
                 # победили босса - повысился уровень кампании, день + 1
-                if '15' in self.dungeon and main_db.campaign_level != 5:
+                if '15' in self.dungeon \
+                        and (main_db.campaign_level != 5
+                             and
+                             (main_db.difficulty == 3
+                              and main_db.campaign_level != 4)):
                     main_db.update_session(
                         main_db.game_session_id,
                         main_db.campaign_level + 1,
@@ -1185,6 +1196,18 @@ class FightWindow(QMainWindow):
                         main_db.already_built)
 
                     main_db.campaign_level += 1
+                elif '15' in self.dungeon \
+                        and (main_db.campaign_level == 5
+                             or
+                             (main_db.difficulty == 3
+                              and main_db.campaign_level == 4)):
+                    line = f"Поздравляем! Вы прошли кампанию за {main_db.current_faction}.\n"
+                    logging(line)
+
+                    global MES_END_CAMPAIGN
+                    MES_END_CAMPAIGN = MessageWindow(self, line)
+                    MES_END_CAMPAIGN.show()
+
                 # иначе просто прибавляем день
                 else:
                     main_db.update_session(

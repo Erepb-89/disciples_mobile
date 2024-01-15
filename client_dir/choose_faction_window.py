@@ -128,7 +128,8 @@ class ChooseRaceWindow(QMainWindow):
             0,
             0,
             1,
-            0)
+            0,
+            2)
         main_db.already_built = 0
         main_db.update_game_session()
 
@@ -152,6 +153,7 @@ class ChooseRaceWindow(QMainWindow):
         prev_mission = session.prev_mission
         day = session.day
         already_built = session.built
+        difficulty = session.difficulty
 
         main_db.set_faction(
             main_db.current_player.id,
@@ -160,7 +162,8 @@ class ChooseRaceWindow(QMainWindow):
             number,
             prev_mission,
             day,
-            already_built)
+            already_built,
+            difficulty)
 
     def choose_hero(self):
         """Метод создающий окно выбора героя"""

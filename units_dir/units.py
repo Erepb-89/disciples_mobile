@@ -250,7 +250,8 @@ class ServerStorage:
                      campaign_mission: int,
                      prev_mission: int,
                      day: int,
-                     built: int
+                     built: int,
+                     difficulty: int
                      ):
             self.session_id = None
             self.player_id = player_id
@@ -260,6 +261,7 @@ class ServerStorage:
             self.prev_mission = prev_mission
             self.day = day
             self.built = built
+            self.difficulty = difficulty
 
     class Dungeons:
         """Класс - подземелья."""
@@ -334,7 +336,8 @@ class ServerStorage:
             Column('campaign_mission', Integer),
             Column('prev_mission', Integer),
             Column('day', Integer),
-            Column('built', Integer)
+            Column('built', Integer),
+            Column('difficulty', Integer)
         )
 
         # Создаём таблицу всех подземелий
@@ -440,6 +443,7 @@ class ServerStorage:
             self.campaign_day = curr_game_session.day
             self.already_built = curr_game_session.built
             self.game_session_id = curr_game_session.session_id
+            self.difficulty = curr_game_session.difficulty
         else:
             self.current_faction = 'Empire'
             self.campaign_level = 1
@@ -447,6 +451,7 @@ class ServerStorage:
             self.prev_mission = 0
             self.campaign_day = 1
             self.already_built = 0
+            self.difficulty = 2
 
     def add_dungeon_unit(
             self,
@@ -670,6 +675,7 @@ class ServerStorage:
             self.GameSessions.prev_mission,
             self.GameSessions.day,
             self.GameSessions.built,
+            self.GameSessions.difficulty
         ).filter_by(player_id=player_id, faction=faction)
         # Возвращаем кортеж
         return query.order_by(self.GameSessions.session_id.desc()).first()
@@ -686,6 +692,7 @@ class ServerStorage:
             self.GameSessions.prev_mission,
             self.GameSessions.day,
             self.GameSessions.built,
+            self.GameSessions.difficulty
         ).filter_by(player_id=player_id)
         # Возвращаем кортеж
         return query.order_by(self.GameSessions.session_id.desc()).first()
@@ -1890,7 +1897,8 @@ class ServerStorage:
                     campaign_mission: int,
                     prev_mission: int,
                     day: int,
-                    built: int) -> None:
+                    built: int,
+                    difficulty: int) -> None:
         """Метод сохранения выбранной фракции для текущей игровой сессии"""
         game_session_row = self.GameSessions(
             player_id,
@@ -1899,7 +1907,8 @@ class ServerStorage:
             campaign_mission,
             prev_mission,
             day,
-            built)
+            built,
+            difficulty)
         self.current_faction = faction
         self.session.add(game_session_row)
         self.session.commit()
@@ -1936,6 +1945,21 @@ class ServerStorage:
             self.GameSessions.session_id == session_id
         ).values(
             built=built
+        ).execution_options(
+            synchronize_session="fetch")
+
+        self.session.execute(changes)
+        self.session.commit()
+
+    def update_session_difficulty(self,
+                                  session_id: int,
+                                  difficulty: int) -> None:
+        """Метод изменения сложности кампании в текущей игровой сессии"""
+        changes = update(
+            self.GameSessions).where(
+            self.GameSessions.session_id == session_id
+        ).values(
+            difficulty=difficulty
         ).execution_options(
             synchronize_session="fetch")
 
