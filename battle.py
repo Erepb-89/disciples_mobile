@@ -305,9 +305,6 @@ class Battle:
         for dot_source, dot_params in \
                 self.dotted_units[self.current_unit].items():
 
-            print(self.current_unit.name, dot_source, dot_params)
-            print(self.current_unit.dotted)
-
             # если юнит все еще жив
             if self.current_unit.curr_health > 0:
                 dot_dmg = dot_params[0]  # урон
@@ -780,7 +777,8 @@ class Battle:
 
     def player_attack(self, target: Unit) -> None:
         """Атака игрока по цели"""
-        if self.units_in_round:
+        if self.units_in_round \
+                or (not self.units_in_round and self.current_unit):
 
             if self.current_unit.attack_radius == ANY_UNIT \
                     and self.current_unit.attack_purpose == 6:
@@ -788,7 +786,6 @@ class Battle:
             else:
                 self.attacked_slots = []
                 self.attack_1_unit(target)
-
         else:
             self.new_round()
             self.next_turn()

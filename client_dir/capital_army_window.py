@@ -230,13 +230,13 @@ class CapitalArmyWindow(QMainWindow):
             self.capital.main.reset()
 
     def show_available_units(self, slot: int) -> None:
-        """Метод показывающий доступных для покупки
-        юнитов данной фракции."""
+        """
+        Метод показывающий доступных для покупки
+        юнитов данной фракции.
+        """
         global HIRE_WINDOW
         HIRE_WINDOW = HireMenuWindow(slot, self)
         HIRE_WINDOW.show()
-
-        print('Доступные для покупки юниты данной фракции')
 
     def set_coords_double_slots(self, ui_obj: any) -> None:
         """Задание координат для 'двойных' слотов либо кнопок"""

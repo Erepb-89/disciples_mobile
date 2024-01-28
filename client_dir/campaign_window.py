@@ -148,47 +148,33 @@ class CampaignWindow(QMainWindow):
             3: (setup_5, setup_6, setup_6),
         }
 
+        if self.faction == MC:
+            squad = squad_mc_dict
+        else:
+            squad = squad_dict
+
         # миссии с 1 по 15 (сгенерированные рандомно)
         name = f'{self.faction}_{level}'
         if diff == 3:
             level += 1
 
-        if self.faction == MC:
-            self.all_missions = {
-                f'{name}_1': unit_selector(level, setup_3),
-                f'{name}_2': unit_selector(level, setup_3),
-                f'{name}_3': unit_selector(level, setup_4),
-                f'{name}_4': unit_selector(level, setup_4),
-                f'{name}_5': unit_selector(level, setup_4),
-                f'{name}_6': unit_selector(level, squad_mc_dict[diff][0]),
-                f'{name}_7': unit_selector(level, squad_mc_dict[diff][0]),
-                f'{name}_8': unit_selector(level, squad_mc_dict[diff][0]),
-                f'{name}_9': unit_selector(level, squad_mc_dict[diff][0]),
-                f'{name}_10': unit_selector(level, squad_mc_dict[diff][1]),
-                f'{name}_11': unit_selector(level, squad_mc_dict[diff][1]),
-                f'{name}_12': unit_selector(level, squad_mc_dict[diff][1]),
-                f'{name}_13': unit_selector(level, squad_mc_dict[diff][2]),
-                f'{name}_14': unit_selector(level, squad_mc_dict[diff][2]),
-                f'{name}_15': unit_selector(level, boss_mc_setup)
-            }
-        else:
-            self.all_missions = {
-                f'{name}_1': unit_selector(level, setup_2),
-                f'{name}_2': unit_selector(level, setup_2),
-                f'{name}_3': unit_selector(level, setup_3),
-                f'{name}_4': unit_selector(level, setup_3),
-                f'{name}_5': unit_selector(level, setup_3),
-                f'{name}_6': unit_selector(level, squad_dict[diff][0]),
-                f'{name}_7': unit_selector(level, squad_dict[diff][0]),
-                f'{name}_8': unit_selector(level, squad_dict[diff][0]),
-                f'{name}_9': unit_selector(level, squad_dict[diff][0]),
-                f'{name}_10': unit_selector(level, squad_dict[diff][1]),
-                f'{name}_11': unit_selector(level, squad_dict[diff][1]),
-                f'{name}_12': unit_selector(level, squad_dict[diff][1]),
-                f'{name}_13': unit_selector(level, squad_dict[diff][2]),
-                f'{name}_14': unit_selector(level, squad_dict[diff][2]),
-                f'{name}_15': unit_selector(level, boss_setup)
-            }
+        self.all_missions = {
+            f'{name}_1': unit_selector(level, setup_3),
+            f'{name}_2': unit_selector(level, setup_3),
+            f'{name}_3': unit_selector(level, setup_4),
+            f'{name}_4': unit_selector(level, setup_4),
+            f'{name}_5': unit_selector(level, setup_4),
+            f'{name}_6': unit_selector(level, squad[diff][0]),
+            f'{name}_7': unit_selector(level, squad[diff][0]),
+            f'{name}_8': unit_selector(level, squad[diff][0]),
+            f'{name}_9': unit_selector(level, squad[diff][0]),
+            f'{name}_10': unit_selector(level, squad[diff][1]),
+            f'{name}_11': unit_selector(level, squad[diff][1]),
+            f'{name}_12': unit_selector(level, squad[diff][1]),
+            f'{name}_13': unit_selector(level, squad[diff][2]),
+            f'{name}_14': unit_selector(level, squad[diff][2]),
+            f'{name}_15': unit_selector(level, boss_mc_setup)
+        }
 
         main_db.add_dungeons(self.all_missions, self.level)
 
