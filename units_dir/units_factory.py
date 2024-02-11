@@ -1241,7 +1241,7 @@ class Unit:
         next_exp = self.get_next_exp()
 
         # Здоровье
-        next_hp = self.get_next_hp()
+        next_hp = self.get_next_hp(10)
         self.health = next_hp
 
         # Шанс на попадание
@@ -1322,9 +1322,9 @@ class Unit:
                 next_exp = self.exp + HERO_ROD_EXP
         return next_exp
 
-    def get_next_hp(self):
+    def get_next_hp(self, multiplier: int):
         """Увеличение здоровья"""
-        next_hp = int(self.health * 1.10)
+        next_hp = int(self.health * multiplier * 0.01)
 
         # Здоровье для героев
         if self.branch == 'hero':
@@ -1403,9 +1403,11 @@ class Unit:
 
             # Выносливость
             if perk == 'endurance':
+                next_hp = self.get_next_hp(20)
+
                 main_db.update_unit_health(
                     self.id,
-                    self.health * 1.2,
+                    next_hp,
                     db_table)
 
             # Первый удар
@@ -1700,7 +1702,9 @@ class Unit:
         return attack_dict['attack_successful']
 
     @staticmethod
-    def checking_immune_ward(target, chance: float, attack_dict: dict):
+    def checking_immune_ward(target: any,
+                             chance: float,
+                             attack_dict: dict) -> dict:
         """Проверка успешности атаки. Проверка на иммунитеты, защиты."""
         # источник атаки
         attack_source = attack_dict['attack_source']
