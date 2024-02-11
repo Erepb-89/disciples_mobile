@@ -224,10 +224,10 @@ def read_directory():
                 f'{TESTING_UNIT_SHADOW_STAND}{REAR}{unit_name}.gif')
             os.rename(
                 f'{current_path}/{gif_number[14]}',
-                f'{TESTING_UNIT_EFFECTS_TARGET}{FRONT}{unit_name}.gif')
+                f'{TESTING_UNIT_EFFECTS_TARGET}{REAR}{unit_name}.gif')
             os.rename(
                 f'{current_path}/{gif_number[15]}',
-                f'{TESTING_UNIT_EFFECTS_TARGET}{REAR}{unit_name}.gif')
+                f'{TESTING_UNIT_EFFECTS_TARGET}{FRONT}{unit_name}.gif')
 
 
         if '15' in folder and 'every' in folder and 'double' not in folder \

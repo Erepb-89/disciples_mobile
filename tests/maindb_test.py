@@ -6,13 +6,17 @@ from units_dir.units import main_db
 class MainDBTest(TestCase):
 
     def test_get_unit_by_name(self):
-        self.assertEqual(main_db.get_unit_by_name('Антипаладин').desc,
-                         'Демоны овладели душой этого некогда святого воина, их добродетельное прошлое было забыто.')
+        self.assertEqual(
+            main_db.get_unit_by_name('Антипаладин').desc,
+            'Демоны овладели душой этого некогда святого воина, '
+            'их добродетельное прошлое было забыто.')
 
         self.assertIsNone(main_db.get_unit_by_name('Кадабра'), None)
 
     def test_get_unit_by_id(self):
-        self.assertEqual(main_db.get_unit_by_id(1, main_db.AllUnits).name, 'Адепт')
+        self.assertEqual(
+            main_db.get_unit_by_id(
+                1, main_db.AllUnits).name, 'Адепт')
 
     # def test_get_units_by_level(self):
     #     units = main_db.get_units_by_level(8)
@@ -53,8 +57,11 @@ class MainDBTest(TestCase):
                          'Антипаладин')
 
         main_db.hire_enemy_unit('Сквайр', 2)
-        self.assertEqual(main_db.get_unit_by_slot(2, main_db.CurrentDungeon).name,
-                         'Сквайр')
+        self.assertEqual(
+            main_db.get_unit_by_slot(
+                2,
+                main_db.CurrentDungeon).name,
+            'Сквайр')
 
     def test_show_enemy_units(self):
         units = main_db.show_enemy_units()
@@ -76,8 +83,6 @@ class MainDBTest(TestCase):
     def test_delete_dungeon_unit(self):
         main_db.delete_dungeon_unit(2)
         self.assertIsNone(main_db.get_unit_by_slot(2, main_db.CurrentDungeon))
-
-
 
 
 if __name__ == '__main__':
