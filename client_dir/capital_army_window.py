@@ -24,10 +24,10 @@ class CapitalArmyWindow(QMainWindow):
     конвертированного файла capital_army_form.py
     """
 
-    def __init__(self, instance: any):
+    def __init__(self, parent: any):
         super().__init__()
         # основные переменные
-        self.capital = instance
+        self.capital = parent
         self.question = False
         self.faction = main_db.current_faction
         self.db_table = main_db.campaigns_dict[self.faction]

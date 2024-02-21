@@ -24,10 +24,10 @@ class HireMenuWindow(QMainWindow):
     конвертированного файла hire_menu_form.py
     """
 
-    def __init__(self, slot: int, instance: any):
+    def __init__(self, slot: int, parent: any):
         super().__init__()
         # основные переменные
-        self.capital_army = instance
+        self.capital_army = parent
         self.question = False  # Найм юнитов
         self.faction = main_db.current_faction
         self.factory = AbstractFactory.create_factory(

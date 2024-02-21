@@ -16,10 +16,10 @@ class QuestionWindow(QMainWindow):
     конвертированного файла question_form.py
     """
 
-    def __init__(self, instance: any, text: str):
+    def __init__(self, parent: any, text: str):
         super().__init__()
         # основные переменные
-        self.instance = instance
+        self.parent = parent
         self.text = text
 
         self.InitUI()
@@ -43,14 +43,14 @@ class QuestionWindow(QMainWindow):
 
     def yes_action(self):
         """Согласиться"""
-        self.instance.question = True
-        self.instance.confirmation()
+        self.parent.question = True
+        self.parent.confirmation()
         self.close()
 
     def no_action(self):
         """Отказаться"""
-        self.instance.question = False
-        self.instance.confirmation()
+        self.parent.question = False
+        self.parent.confirmation()
         self.close()
 
     def update_bg(self) -> None:
