@@ -27,12 +27,12 @@ class CampaignWindow(QMainWindow):
     конвертированного файла campaign_form.py
     """
 
-    def __init__(self, instance: any):
+    def __init__(self, parent: any):
         super().__init__()
         # основные переменные
         self.name = 'CampaignWindow'
-        self.main = instance
-        self.difficulty = instance.difficulty
+        self.main = parent
+        self.difficulty = parent.difficulty
         self.faction = main_db.current_faction
         self.dungeon = ''
         self.curr_mission = 0

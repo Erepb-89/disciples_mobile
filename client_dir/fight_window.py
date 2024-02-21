@@ -62,10 +62,10 @@ class FightWindow(QMainWindow):
     def __init__(self,
                  dungeon: str,
                  db_table: str,
-                 instance: any):
+                 parent: any):
         super().__init__()
         # основные переменные
-        self.parent = instance
+        self.parent = parent
         self.db_table = db_table
         self.new_battle = Battle(dungeon, self.db_table)
         self.dungeon = dungeon
