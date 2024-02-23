@@ -53,6 +53,7 @@ ORIGINAL_PNGS = '../images/towns/capital_building/town_icons_original/'
 RIGHT_ICONS = os.path.join(COMMON, "right_icons.png")
 LEFT_ICONS = os.path.join(COMMON, "left_icons.png")
 BACKGROUND = os.path.join(COMMON, "background.png")
+ARMY_BG = os.path.join(COMMON, "enemy_army.png")
 PLUG = "Заглушка (Disciples II)-иконка.jpg"
 ICON = "(Disciples II)-иконка.jpg"
 ELVEN_PLUG = "Elven Alliance.png"

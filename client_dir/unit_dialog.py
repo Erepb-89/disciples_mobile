@@ -285,9 +285,8 @@ class UnitDialog(QDialog):
         self.earthResist.setFont(font)
         self.earthResist.setObjectName("earthResist")
 
-        unit_frame = QPixmap(UNIT_FRAME)
         portrait_img = QPixmap(f"{PORTRAITS}{unit.name}.gif")
-        self.background.setPixmap(unit_frame)
+        self.background.setPixmap(QPixmap(UNIT_FRAME))
         self.portrait.setPixmap(portrait_img)
 
         self.unitName.setText(str(unit.name))
