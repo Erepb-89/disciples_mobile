@@ -1,12 +1,14 @@
 """Диалог показывает окно вражеской армии"""
+import os
 from collections import namedtuple
 
 from PyQt5 import QtCore, QtWidgets, QtGui
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QDialog
 
-from client_dir.settings import BACKGROUND
-from client_dir.ui_functions import slot_update, button_update, get_unit_image, ui_lock, ui_unlock
+from client_dir.settings import BACKGROUND, ARMY_BG, BIG, PORTRAITS
+from client_dir.ui_functions import slot_update, button_update, \
+    get_unit_image, ui_lock, ui_unlock
 from client_dir.unit_dialog import UnitDialog
 from units_dir.units import main_db
 
@@ -16,30 +18,76 @@ class EnemyArmyDialog(QDialog):
         super().__init__()
         self.dungeon_units = dungeon_units
 
-        self.setFixedSize(320, 490)
+        self.setFixedSize(607, 554)
         self.setWindowTitle('Окно армии противника')
 
         self.armyBG = QtWidgets.QLabel(self)
-        self.armyBG.setGeometry(QtCore.QRect(0, 0, 320, 490))
-        self.armyBG.setMinimumSize(QtCore.QSize(13, 13))
-        self.armyBG.setMaximumSize(QtCore.QSize(320, 490))
-        self.armyBG.setContextMenuPolicy(QtCore.Qt.DefaultContextMenu)
-        self.armyBG.setAutoFillBackground(True)
-        self.armyBG.setFrameShape(QtWidgets.QFrame.NoFrame)
-        self.armyBG.setFrameShadow(QtWidgets.QFrame.Plain)
-        self.armyBG.setLineWidth(3)
-        self.armyBG.setMidLineWidth(0)
+        self.armyBG.setGeometry(QtCore.QRect(0, 0, 607, 554))
+        self.armyBG.setMaximumSize(QtCore.QSize(788, 828))
         self.armyBG.setObjectName("armyBG")
-
+        self.portrait = QtWidgets.QLabel(self)
+        self.portrait.setGeometry(QtCore.QRect(30, 60, 300, 380))
+        self.portrait.setTextFormat(QtCore.Qt.PlainText)
+        self.portrait.setScaledContents(True)
+        self.portrait.setAlignment(QtCore.Qt.AlignCenter)
+        self.portrait.setObjectName("portrait")
+        self.pushButtonSlot_1 = QtWidgets.QPushButton(self)
+        self.pushButtonSlot_1.setGeometry(QtCore.QRect(340, 50, 104, 127))
+        self.pushButtonSlot_1.setText("")
+        self.pushButtonSlot_1.setFlat(True)
+        self.pushButtonSlot_1.setObjectName("pushButtonSlot_1")
+        self.pushButtonSlot_5 = QtWidgets.QPushButton(self)
+        self.pushButtonSlot_5.setGeometry(QtCore.QRect(340, 330, 104, 127))
+        self.pushButtonSlot_5.setText("")
+        self.pushButtonSlot_5.setFlat(True)
+        self.pushButtonSlot_5.setObjectName("pushButtonSlot_5")
+        self.EnemySlot6 = QtWidgets.QLabel(self)
+        self.EnemySlot6.setGeometry(QtCore.QRect(457, 330, 104, 127))
+        self.EnemySlot6.setFrameShape(QtWidgets.QFrame.Panel)
+        self.EnemySlot6.setFrameShadow(QtWidgets.QFrame.Raised)
+        self.EnemySlot6.setLineWidth(3)
+        self.EnemySlot6.setMidLineWidth(0)
+        self.EnemySlot6.setObjectName("EnemySlot6")
+        self.EnemySlot3 = QtWidgets.QLabel(self)
+        self.EnemySlot3.setGeometry(QtCore.QRect(340, 190, 104, 127))
+        self.EnemySlot3.setFrameShape(QtWidgets.QFrame.Panel)
+        self.EnemySlot3.setFrameShadow(QtWidgets.QFrame.Raised)
+        self.EnemySlot3.setLineWidth(3)
+        self.EnemySlot3.setMidLineWidth(0)
+        self.EnemySlot3.setObjectName("EnemySlot3")
+        self.pushButtonSlot_4 = QtWidgets.QPushButton(self)
+        self.pushButtonSlot_4.setGeometry(QtCore.QRect(457, 190, 104, 127))
+        self.pushButtonSlot_4.setText("")
+        self.pushButtonSlot_4.setFlat(True)
+        self.pushButtonSlot_4.setObjectName("pushButtonSlot_4")
+        self.EnemySlot2 = QtWidgets.QLabel(self)
+        self.EnemySlot2.setGeometry(QtCore.QRect(457, 50, 104, 127))
+        self.EnemySlot2.setLayoutDirection(QtCore.Qt.LeftToRight)
+        self.EnemySlot2.setFrameShape(QtWidgets.QFrame.Panel)
+        self.EnemySlot2.setFrameShadow(QtWidgets.QFrame.Raised)
+        self.EnemySlot2.setLineWidth(3)
+        self.EnemySlot2.setMidLineWidth(0)
+        self.EnemySlot2.setAlignment(QtCore.Qt.AlignLeading | QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
+        self.EnemySlot2.setObjectName("EnemySlot2")
+        self.pushButtonSlot_2 = QtWidgets.QPushButton(self)
+        self.pushButtonSlot_2.setGeometry(QtCore.QRect(457, 50, 104, 127))
+        self.pushButtonSlot_2.setText("")
+        self.pushButtonSlot_2.setFlat(True)
+        self.pushButtonSlot_2.setObjectName("pushButtonSlot_2")
+        self.pushButtonSlot_6 = QtWidgets.QPushButton(self)
+        self.pushButtonSlot_6.setGeometry(QtCore.QRect(457, 330, 104, 127))
+        self.pushButtonSlot_6.setText("")
+        self.pushButtonSlot_6.setFlat(True)
+        self.pushButtonSlot_6.setObjectName("pushButtonSlot_6")
         self.EnemySlot1 = QtWidgets.QLabel(self)
-        self.EnemySlot1.setGeometry(QtCore.QRect(170, 40, 104, 127))
+        self.EnemySlot1.setGeometry(QtCore.QRect(340, 50, 104, 127))
         self.EnemySlot1.setFrameShape(QtWidgets.QFrame.Panel)
         self.EnemySlot1.setFrameShadow(QtWidgets.QFrame.Raised)
         self.EnemySlot1.setLineWidth(3)
         self.EnemySlot1.setMidLineWidth(0)
         self.EnemySlot1.setObjectName("EnemySlot1")
         self.EnemySlot5 = QtWidgets.QLabel(self)
-        self.EnemySlot5.setGeometry(QtCore.QRect(170, 320, 104, 127))
+        self.EnemySlot5.setGeometry(QtCore.QRect(340, 330, 104, 127))
         self.EnemySlot5.setMinimumSize(QtCore.QSize(104, 127))
         self.EnemySlot5.setMaximumSize(QtCore.QSize(224, 127))
         self.EnemySlot5.setFrameShape(QtWidgets.QFrame.Panel)
@@ -47,108 +95,36 @@ class EnemyArmyDialog(QDialog):
         self.EnemySlot5.setLineWidth(3)
         self.EnemySlot5.setMidLineWidth(0)
         self.EnemySlot5.setObjectName("EnemySlot5")
-        self.EnemySlot3 = QtWidgets.QLabel(self)
-        self.EnemySlot3.setGeometry(QtCore.QRect(170, 180, 104, 127))
-        self.EnemySlot3.setFrameShape(QtWidgets.QFrame.Panel)
-        self.EnemySlot3.setFrameShadow(QtWidgets.QFrame.Raised)
-        self.EnemySlot3.setLineWidth(3)
-        self.EnemySlot3.setMidLineWidth(0)
-        self.EnemySlot3.setObjectName("EnemySlot3")
+        self.pushButtonSlot_3 = QtWidgets.QPushButton(self)
+        self.pushButtonSlot_3.setGeometry(QtCore.QRect(340, 190, 104, 127))
+        self.pushButtonSlot_3.setText("")
+        self.pushButtonSlot_3.setFlat(True)
+        self.pushButtonSlot_3.setObjectName("pushButtonSlot_3")
         self.EnemySlot4 = QtWidgets.QLabel(self)
-        self.EnemySlot4.setGeometry(QtCore.QRect(50, 180, 104, 127))
+        self.EnemySlot4.setGeometry(QtCore.QRect(457, 190, 104, 127))
         self.EnemySlot4.setFrameShape(QtWidgets.QFrame.Panel)
         self.EnemySlot4.setFrameShadow(QtWidgets.QFrame.Raised)
         self.EnemySlot4.setLineWidth(3)
         self.EnemySlot4.setMidLineWidth(0)
         self.EnemySlot4.setObjectName("EnemySlot4")
-        self.EnemySlot2 = QtWidgets.QLabel(self)
-        self.EnemySlot2.setGeometry(QtCore.QRect(50, 40, 104, 127))
-        self.EnemySlot2.setLayoutDirection(QtCore.Qt.LeftToRight)
-        self.EnemySlot2.setFrameShape(QtWidgets.QFrame.Panel)
-        self.EnemySlot2.setFrameShadow(QtWidgets.QFrame.Raised)
-        self.EnemySlot2.setLineWidth(3)
-        self.EnemySlot2.setMidLineWidth(0)
-        self.EnemySlot2.setAlignment(
-            QtCore.Qt.AlignLeading | QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
-        self.EnemySlot2.setObjectName("EnemySlot2")
-        self.EnemySlot6 = QtWidgets.QLabel(self)
-        self.EnemySlot6.setGeometry(QtCore.QRect(50, 320, 104, 127))
-        self.EnemySlot6.setFrameShape(QtWidgets.QFrame.Panel)
-        self.EnemySlot6.setFrameShadow(QtWidgets.QFrame.Raised)
-        self.EnemySlot6.setLineWidth(3)
-        self.EnemySlot6.setMidLineWidth(0)
-        self.EnemySlot6.setObjectName("EnemySlot6")
-        self.pushButtonSlot_1 = QtWidgets.QPushButton(self)
-        self.pushButtonSlot_1.setGeometry(QtCore.QRect(170, 40, 104, 127))
-        self.pushButtonSlot_1.setText("")
-        self.pushButtonSlot_1.setFlat(True)
-        self.pushButtonSlot_1.setObjectName("pushButtonSlot_1")
-        self.pushButtonSlot_2 = QtWidgets.QPushButton(self)
-        self.pushButtonSlot_2.setGeometry(QtCore.QRect(50, 40, 104, 127))
-        self.pushButtonSlot_2.setText("")
-        self.pushButtonSlot_2.setFlat(True)
-        self.pushButtonSlot_2.setObjectName("pushButtonSlot_2")
-        self.pushButtonSlot_3 = QtWidgets.QPushButton(self)
-        self.pushButtonSlot_3.setGeometry(QtCore.QRect(170, 180, 104, 127))
-        self.pushButtonSlot_3.setText("")
-        self.pushButtonSlot_3.setFlat(True)
-        self.pushButtonSlot_3.setObjectName("pushButtonSlot_3")
-        self.pushButtonSlot_4 = QtWidgets.QPushButton(self)
-        self.pushButtonSlot_4.setGeometry(QtCore.QRect(50, 180, 104, 127))
-        self.pushButtonSlot_4.setText("")
-        self.pushButtonSlot_4.setFlat(True)
-        self.pushButtonSlot_4.setObjectName("pushButtonSlot_4")
-        self.pushButtonSlot_5 = QtWidgets.QPushButton(self)
-        self.pushButtonSlot_5.setGeometry(QtCore.QRect(170, 320, 104, 127))
-        self.pushButtonSlot_5.setText("")
-        self.pushButtonSlot_5.setFlat(True)
-        self.pushButtonSlot_5.setObjectName("pushButtonSlot_5")
-        self.pushButtonSlot_6 = QtWidgets.QPushButton(self)
-        self.pushButtonSlot_6.setGeometry(QtCore.QRect(50, 320, 104, 127))
-        self.pushButtonSlot_6.setText("")
-        self.pushButtonSlot_6.setFlat(True)
-        self.pushButtonSlot_6.setObjectName("pushButtonSlot_6")
+        self.unitName = QtWidgets.QLabel(self)
+        self.unitName.setGeometry(QtCore.QRect(30, 420, 301, 41))
         font = QtGui.QFont()
-        font.setPointSize(10)
+        font.setFamily("Times New Roman")
+        font.setPointSize(14)
         font.setBold(True)
         font.setWeight(75)
-        self.EnemySlotTxt_1 = QtWidgets.QLabel(self)
-        self.EnemySlotTxt_1.setGeometry(QtCore.QRect(280, 40, 16, 16))
-        self.EnemySlotTxt_1.setFont(font)
-        self.EnemySlotTxt_1.setObjectName("EnemySlotTxt_1")
-        self.EnemySlotTxt_3 = QtWidgets.QLabel(self)
-        self.EnemySlotTxt_3.setGeometry(QtCore.QRect(280, 230, 16, 16))
-        self.EnemySlotTxt_3.setFont(font)
-        self.EnemySlotTxt_3.setObjectName("EnemySlotTxt_3")
-        self.EnemySlotTxt_6 = QtWidgets.QLabel(self)
-        self.EnemySlotTxt_6.setGeometry(QtCore.QRect(30, 430, 16, 16))
-        self.EnemySlotTxt_6.setFont(font)
-        self.EnemySlotTxt_6.setObjectName("EnemySlotTxt_6")
-        self.EnemySlotTxt_4 = QtWidgets.QLabel(self)
-        self.EnemySlotTxt_4.setGeometry(QtCore.QRect(30, 230, 16, 16))
-        self.EnemySlotTxt_4.setFont(font)
-        self.EnemySlotTxt_4.setObjectName("EnemySlotTxt_4")
-        self.EnemySlotTxt_2 = QtWidgets.QLabel(self)
-        self.EnemySlotTxt_2.setGeometry(QtCore.QRect(30, 40, 16, 16))
-        self.EnemySlotTxt_2.setFont(font)
-        self.EnemySlotTxt_2.setObjectName("EnemySlotTxt_2")
-        self.EnemySlotTxt_5 = QtWidgets.QLabel(self)
-        self.EnemySlotTxt_5.setGeometry(QtCore.QRect(280, 430, 16, 16))
-        self.EnemySlotTxt_5.setFont(font)
-        self.EnemySlotTxt_5.setObjectName("EnemySlotTxt_5")
-        self.armyBG.raise_()
+        self.unitName.setFont(font)
+        self.unitName.setAlignment(QtCore.Qt.AlignCenter)
+        self.unitName.setObjectName("unitName")
+
         self.EnemySlot1.raise_()
         self.EnemySlot5.raise_()
         self.EnemySlot3.raise_()
         self.EnemySlot2.raise_()
         self.EnemySlot4.raise_()
         self.EnemySlot6.raise_()
-        self.EnemySlotTxt_1.raise_()
-        self.EnemySlotTxt_3.raise_()
-        self.EnemySlotTxt_6.raise_()
-        self.EnemySlotTxt_4.raise_()
-        self.EnemySlotTxt_2.raise_()
-        self.EnemySlotTxt_5.raise_()
+
         self.pushButtonSlot_1.raise_()
         self.pushButtonSlot_2.raise_()
         self.pushButtonSlot_3.raise_()
@@ -156,14 +132,8 @@ class EnemyArmyDialog(QDialog):
         self.pushButtonSlot_5.raise_()
         self.pushButtonSlot_6.raise_()
 
-        self.EnemySlotTxt_1.setText("1")
-        self.EnemySlotTxt_3.setText("3")
-        self.EnemySlotTxt_6.setText("6")
-        self.EnemySlotTxt_4.setText("4")
-        self.EnemySlotTxt_2.setText("2")
-        self.EnemySlotTxt_5.setText("5")
-
-        self.armyBG.setPixmap(QPixmap(BACKGROUND))
+        # self.armyBG.setPixmap(QPixmap(BACKGROUND))
+        self.armyBG.setPixmap(QPixmap(ARMY_BG))
         self.pushButtonSlot_1.clicked.connect(self.en_slot1_detailed)
         self.pushButtonSlot_2.clicked.connect(self.en_slot2_detailed)
         self.pushButtonSlot_3.clicked.connect(self.en_slot3_detailed)
@@ -184,29 +154,22 @@ class EnemyArmyDialog(QDialog):
 
         self._dungeon_list_update()
         self._dungeon_buttons_update()
+        self.dungeon_portrait_update()
 
         QtCore.QMetaObject.connectSlotsByName(self)
 
-    def dungeon_list_update(self) -> None:
-        """Метод обновляющий список юнитов подземелья"""
-        dung_icons_dict = {
-            1: self.EnemySlot1,
-            2: self.EnemySlot2,
-            3: self.EnemySlot3,
-            4: self.EnemySlot4,
-            5: self.EnemySlot5,
-            6: self.EnemySlot6,
-        }
+    def dungeon_portrait_update(self) -> None:
+        """Метод обновляющий портрет лидера подземелья"""
+        # определяем сильнейшее существо в отряде по опыту
+        units = [main_db.get_unit_by_name(unit)
+                 for unit in self.dungeon_units.values() if unit is not None]
 
-        units_dict = {}
-        for num, unit_name in enumerate(self.dungeon_units):
-            unit = main_db.get_unit_by_name(unit_name)
-            units_dict[num + 1] = unit
+        units.sort(key=lambda x: x['exp_per_kill'], reverse=True)
+        strongest_unit = units[0]
 
-        for num, icon_slot in dung_icons_dict.items():
-            slot_update(
-                units_dict[num],
-                icon_slot)
+        self.portrait.setPixmap(QPixmap(
+            os.path.join(PORTRAITS, f"{strongest_unit.name}.gif")))
+        self.unitName.setText(strongest_unit.name)
 
     def dungeon_buttons_update(self) -> None:
         """Метод обновляющий кнопки юнитов подземелья"""
@@ -237,6 +200,23 @@ class EnemyArmyDialog(QDialog):
         for num, icon_slot in dung_icons_dict.items():
             if num in self.dungeon_units.keys():
                 unit = main_db.get_unit_by_name(self.dungeon_units[num])
+
+                try:
+                    if unit.size == BIG:
+                        ui_coords = icon_slot.geometry().getCoords()
+                        new_coords = list(ui_coords)
+                        new_coords[0] -= 119
+                        new_coords[2] = 224
+                        new_coords[3] = 126
+                        icon_slot.setGeometry(*new_coords)
+                        self.dung_buttons_dict[num].setGeometry(*new_coords)
+                    else:
+                        icon_slot.setFixedWidth(105)
+                        icon_slot.setFixedHeight(127)
+                except AttributeError:
+                    icon_slot.setFixedWidth(105)
+                    icon_slot.setFixedHeight(127)
+
                 slot_update(
                     unit,
                     icon_slot)

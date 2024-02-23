@@ -1324,7 +1324,7 @@ class Unit:
 
     def get_next_hp(self, multiplier: int):
         """Увеличение здоровья"""
-        next_hp = int(self.health * multiplier * 0.01)
+        next_hp = self.health + int(self.health * multiplier * 0.01)
 
         # Здоровье для героев
         if self.branch == 'hero':
@@ -1499,7 +1499,7 @@ class Unit:
                 line = f"{self.name} достиг предела развития\n"
                 logging(line)
 
-        elif self.branch == 'special':
+        elif self.branch in ('null', 'special', 'boss'):
             self.upgrade_stats(db_table)
 
         else:

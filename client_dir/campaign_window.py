@@ -186,12 +186,10 @@ class CampaignWindow(QMainWindow):
         FIGHT_WINDOW = FightWindow(self.dungeon, self.db_table, self)
         FIGHT_WINDOW.show()
 
-    @staticmethod
-    def mission_slot_detailed(dungeon_units: dict) -> None:
+    def mission_slot_detailed(self, dungeon_units: dict) -> None:
         """Метод создающий окно просмотра армии."""
         global DETAIL_WINDOW
-        DETAIL_WINDOW = EnemyArmyDialog(
-            dungeon_units)
+        DETAIL_WINDOW = EnemyArmyDialog(dungeon_units)
         DETAIL_WINDOW.show()
 
     @staticmethod
