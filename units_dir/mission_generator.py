@@ -490,7 +490,8 @@ def unit_selector(level: int, setup: list) -> dict:
     mask = random.choice(setup)
     for slot, unit_type in mask.items():
         # если это Босс
-        if unit_type == BIG and setup == boss_setup:
+        if unit_type == BIG \
+                and (setup == boss_setup or setup == boss_mc_setup):
             unit = random.choice(
                 get_curr_level_units(level + 2)[BIG])
             result_dict[slot] = unit

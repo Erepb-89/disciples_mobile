@@ -1,5 +1,5 @@
 """Окно кампании"""
-
+import os
 from typing import Callable, Dict
 
 from PyQt5 import QtWidgets, QtCore
@@ -7,11 +7,13 @@ from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QMainWindow, QHBoxLayout
 
 from client_dir.campaign_form import Ui_CampaignWindow
+from client_dir.capital_window import CapitalWindow
 from client_dir.fight_window import FightWindow
-from client_dir.army_dialog import EnemyArmyDialog
-from client_dir.settings import BACKGROUND, MC, EM, UH, LD
+from client_dir.army_dialog import ArmyDialog
+from client_dir.settings import BACKGROUND, MC, EM, UH, LD, BIG, PORTRAITS
 from client_dir.ui_functions import slot_update, button_update, \
     ui_lock, ui_unlock, show_opened, show_closed, show_active
+from client_dir.unit_dialog import UnitDialog
 from units_dir.mission_generator import unit_selector, \
     setup_6, setup_5, setup_4, setup_3, setup_2, boss_setup, \
     boss_mc_setup
@@ -94,6 +96,12 @@ class CampaignWindow(QMainWindow):
         self.ui.pushButtonSlot_15.clicked.connect(
             self.highlight_selected_15)
 
+        self.ui.pushButtonArmy.clicked.connect(
+            self.press_player_army)
+        self.ui.pushButtonBoss.clicked.connect(
+            self.boss_detailed)
+        self.ui.pushButtonCapital.clicked.connect(self.show_capital)
+
         self.set_campaign_image()
         self.append_campaign_buttons()
         self.append_campaign_icons()
@@ -123,6 +131,8 @@ class CampaignWindow(QMainWindow):
         self.mission_list_update()
 
         self.show_available_missions()
+        self.show_players_army()
+        self.show_boss()
 
         self.show()
 
@@ -186,10 +196,11 @@ class CampaignWindow(QMainWindow):
         FIGHT_WINDOW = FightWindow(self.dungeon, self.db_table, self)
         FIGHT_WINDOW.show()
 
-    def mission_slot_detailed(self, dungeon_units: dict) -> None:
+    @staticmethod
+    def mission_slot_detailed(units: dict, player: str) -> None:
         """Метод создающий окно просмотра армии."""
         global DETAIL_WINDOW
-        DETAIL_WINDOW = EnemyArmyDialog(dungeon_units)
+        DETAIL_WINDOW = ArmyDialog(units, player)
         DETAIL_WINDOW.show()
 
     @staticmethod
@@ -316,7 +327,8 @@ class CampaignWindow(QMainWindow):
 
                 self.show_red_frame(button)
                 self.mission_slot_detailed(
-                    self.all_missions[mission_name])
+                    self.all_missions[mission_name],
+                    "Computer")
 
         ui_unlock(self.ui.pushButtonFight)
 
@@ -380,6 +392,27 @@ class CampaignWindow(QMainWindow):
         """Подсветка миссии 15"""
         self.highlight_selected(15)
 
+    def press_player_army(self) -> None:
+        """Нажатие по портрету лидера игрока"""
+        players_dict = {}
+        player_units = main_db.show_campaign_units()
+        for unit in player_units:
+            players_dict[unit.slot] = unit.name
+
+        self.mission_slot_detailed(players_dict, "Player")
+
+    def boss_detailed(self) -> None:
+        """
+        Метод создающий детальное окно
+        при нажатии по портрету босса миссии
+        """
+        try:
+            global DETAIL_WINDOW
+            DETAIL_WINDOW = UnitDialog(self.boss)
+            DETAIL_WINDOW.show()
+        except AttributeError:
+            pass
+
     def show_available_missions(self):
         """
         Определение активности миссий согласно текущему
@@ -420,6 +453,7 @@ class CampaignWindow(QMainWindow):
                 ui_unlock(val)
                 show_opened(self.campaign_arrows_dict[key])
             elif key == self.curr_mission:
+                ui_lock(val)
                 show_active(self.campaign_arrows_dict[key])
             else:
                 ui_lock(val)
@@ -427,6 +461,51 @@ class CampaignWindow(QMainWindow):
 
         if self.dungeon == '':
             ui_lock(self.ui.pushButtonFight)
+
+    def show_boss(self):
+        """Отображение босса в окне кампании"""
+        icon = self.ui.bossSlot
+        mission_name = f'{self.faction}_{self.level}_{15}'
+        mission = self.all_missions[mission_name]
+
+        units = [main_db.get_unit_by_name(unit)
+                 for unit in mission.values() if unit is not None]
+
+        units.sort(key=lambda x: x['exp_per_kill'], reverse=True)
+        self.boss = units[0]
+
+        # обновляем портрет
+        self.slot_update(self.boss, icon)
+
+    def show_players_army(self):
+        """Отображение отряда игрока в окне кампании"""
+        icon = self.ui.armySlot
+
+        # определяем лидера отряда
+        player_units = main_db.show_campaign_units()
+
+        leader = player_units[0]
+        for unit in player_units:
+            if unit.leadership >= 3:
+                leader = unit
+
+        # обновляем портрет
+        self.slot_update(leader, icon)
+
+    def get_unit_portrait(self, unit: any):
+        """Получение иконки юнита"""
+        try:
+            return os.path.join(
+                PORTRAITS,
+                f"{unit.name}.gif")
+        except AttributeError as err:
+            print(err)
+
+    def slot_update(self, unit: any, slot: QtWidgets.QLabel) -> None:
+        """Метод обновления иконки, либо GIF"""
+        slot.setPixmap(QPixmap(
+            self.get_unit_portrait(unit)).scaled(
+            slot.width(), slot.height()))
 
     def show_active_point(self):
         """Отображение текущего местоположения на карте приключений"""
@@ -450,6 +529,12 @@ class CampaignWindow(QMainWindow):
 
             # отображаем рамку
             self.show_green_frame(button)
+
+    def show_capital(self) -> None:
+        """Метод создающий окно Столицы игрока."""
+        global CAPITAL_WINDOW
+        CAPITAL_WINDOW = CapitalWindow(self)
+        CAPITAL_WINDOW.show()
 
     def back(self) -> None:
         """Кнопка возврата"""

@@ -1064,6 +1064,107 @@
      <string/>
     </property>
    </widget>
+   <widget class="QLabel" name="armySlot">
+    <property name="geometry">
+     <rect>
+      <x>60</x>
+      <y>60</y>
+      <width>141</width>
+      <height>171</height>
+     </rect>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::NoFrame</enum>
+    </property>
+    <property name="frameShadow">
+     <enum>QFrame::Raised</enum>
+    </property>
+    <property name="lineWidth">
+     <number>0</number>
+    </property>
+    <property name="midLineWidth">
+     <number>0</number>
+    </property>
+    <property name="text">
+     <string>army</string>
+    </property>
+    <property name="scaledContents">
+     <bool>true</bool>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButtonArmy">
+    <property name="geometry">
+     <rect>
+      <x>60</x>
+      <y>60</y>
+      <width>141</width>
+      <height>171</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="flat">
+     <bool>true</bool>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButtonBoss">
+    <property name="geometry">
+     <rect>
+      <x>1260</x>
+      <y>60</y>
+      <width>224</width>
+      <height>260</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="flat">
+     <bool>true</bool>
+    </property>
+   </widget>
+   <widget class="QLabel" name="bossSlot">
+    <property name="geometry">
+     <rect>
+      <x>1260</x>
+      <y>60</y>
+      <width>224</width>
+      <height>260</height>
+     </rect>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::NoFrame</enum>
+    </property>
+    <property name="frameShadow">
+     <enum>QFrame::Raised</enum>
+    </property>
+    <property name="lineWidth">
+     <number>0</number>
+    </property>
+    <property name="midLineWidth">
+     <number>0</number>
+    </property>
+    <property name="text">
+     <string>boss</string>
+    </property>
+    <property name="scaledContents">
+     <bool>true</bool>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButtonCapital">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>0</y>
+      <width>90</width>
+      <height>28</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Столица</string>
+    </property>
+   </widget>
    <zorder>campaignBG</zorder>
    <zorder>ExitButton</zorder>
    <zorder>pushButtonFight</zorder>
@@ -1112,6 +1213,11 @@
    <zorder>line_13</zorder>
    <zorder>line_14</zorder>
    <zorder>line_15</zorder>
+   <zorder>armySlot</zorder>
+   <zorder>pushButtonArmy</zorder>
+   <zorder>bossSlot</zorder>
+   <zorder>pushButtonBoss</zorder>
+   <zorder>pushButtonCapital</zorder>
   </widget>
  </widget>
  <resources/>
