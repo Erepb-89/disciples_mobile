@@ -5,12 +5,12 @@ import sys
 from collections import namedtuple
 from typing import Callable, Optional
 
-from PyQt5 import QtCore, QtWidgets
-from PyQt5.QtCore import Qt
+from PyQt5 import QtCore
+from PyQt5.QtCore import Qt, QMimeData, QVariant, QEvent
 from PyQt5.QtGui import QPixmap, QStandardItemModel, \
-    QStandardItem, QMovie
-from PyQt5.QtWidgets import QMainWindow, QApplication, \
-    QHBoxLayout
+    QStandardItem, QMovie, QDrag
+from PyQt5.QtWidgets import QMainWindow, QApplication, QWidget, \
+    QHBoxLayout, QListView, QPushButton, QLabel, QFrame
 
 from client_dir.capital_window import CapitalWindow
 from client_dir.choose_faction_window import ChooseRaceWindow
@@ -35,6 +35,50 @@ class ClientMainWindow(QMainWindow):
     Конфигурация окна создана в QTDesigner и загружается из
     конвертированного файла client_main_form.py
     """
+
+    class Label(QLabel):
+        def __init__(self, title, parent):
+            super().__init__(title, parent)
+            self.setAcceptDrops(True)
+            self.parent = parent
+
+        def mouseMoveEvent(self, event) -> None:
+            mime_data = QMimeData()
+            mime_data.setImageData(QVariant(self.pixmap()))
+            pixmap = QWidget.grab(self)
+
+            drag = QDrag(self)
+            drag.setMimeData(mime_data)
+
+            drag.setPixmap(pixmap)
+            drag.setHotSpot(event.pos())
+
+            if drag.exec_(Qt.MoveAction) == Qt.MoveAction:
+                print('moved')
+
+        def dragEnterEvent(self, event) -> None:
+            if event.mimeData().hasImage():
+                event.accept()
+            else:
+                event.ignore()
+
+        def dropEvent(self, event) -> None:
+            first = int(self.parent.current_label[-1])
+            second = int(self.objectName()[-1])
+
+            if "enemy" not in self.parent.current_label.lower():
+                self.parent.check_and_swap(
+                    first,
+                    second,
+                    main_db.PlayerUnits)
+
+            else:
+                self.parent.check_and_swap(
+                    first,
+                    second,
+                    main_db.CurrentDungeon)
+
+            # self.parent.current_label[-1])
 
     def __init__(self):
         super().__init__()
@@ -61,13 +105,106 @@ class ClientMainWindow(QMainWindow):
         self.ui.setupUi(self)
         self.hbox = QHBoxLayout(self)
 
+        self.ui.slot1 = self.Label('', self)
+        self.ui.slot1.setGeometry(QtCore.QRect(40, 260, 104, 127))
+        self.ui.slot1.setFrameShape(QFrame.Panel)
+        self.ui.slot1.setFrameShadow(QFrame.Raised)
+        self.ui.slot1.setLineWidth(3)
+        self.ui.slot1.setMidLineWidth(0)
+        self.ui.slot1.setObjectName("slot1")
+
+        self.ui.slot2 = self.Label('', self)
+        self.ui.slot2.setGeometry(QtCore.QRect(163, 260, 101, 127))
+        self.ui.slot2.setFrameShape(QFrame.Panel)
+        self.ui.slot2.setFrameShadow(QFrame.Raised)
+        self.ui.slot2.setLineWidth(3)
+        self.ui.slot2.setMidLineWidth(0)
+        self.ui.slot2.setObjectName("slot2")
+
+        self.ui.slot3 = self.Label('', self)
+        self.ui.slot3.setGeometry(QtCore.QRect(40, 420, 104, 127))
+        self.ui.slot3.setFrameShape(QFrame.Panel)
+        self.ui.slot3.setFrameShadow(QFrame.Raised)
+        self.ui.slot3.setLineWidth(3)
+        self.ui.slot3.setMidLineWidth(0)
+        self.ui.slot3.setObjectName("slot3")
+
+        self.ui.slot4 = self.Label('', self)
+        self.ui.slot4.setGeometry(QtCore.QRect(160, 420, 104, 127))
+        self.ui.slot4.setFrameShape(QFrame.Panel)
+        self.ui.slot4.setFrameShadow(QFrame.Raised)
+        self.ui.slot4.setLineWidth(3)
+        self.ui.slot4.setMidLineWidth(0)
+        self.ui.slot4.setObjectName("slot4")
+
+        self.ui.slot5 = self.Label('', self)
+        self.ui.slot5.setGeometry(QtCore.QRect(40, 560, 104, 127))
+        self.ui.slot5.setFrameShape(QFrame.Panel)
+        self.ui.slot5.setFrameShadow(QFrame.Raised)
+        self.ui.slot5.setLineWidth(3)
+        self.ui.slot5.setMidLineWidth(0)
+        self.ui.slot5.setObjectName("slot5")
+
+        self.ui.slot6 = self.Label('', self)
+        self.ui.slot6.setGeometry(QtCore.QRect(160, 560, 104, 127))
+        self.ui.slot6.setFrameShape(QFrame.Panel)
+        self.ui.slot6.setFrameShadow(QFrame.Raised)
+        self.ui.slot6.setLineWidth(3)
+        self.ui.slot6.setMidLineWidth(0)
+        self.ui.slot6.setObjectName("slot6")
+
+        self.ui.EnemySlot1 = self.Label('', self)
+        self.ui.EnemySlot1.setGeometry(QtCore.QRect(1000, 260, 104, 127))
+        self.ui.EnemySlot1.setFrameShape(QFrame.Panel)
+        self.ui.EnemySlot1.setFrameShadow(QFrame.Raised)
+        self.ui.EnemySlot1.setLineWidth(3)
+        self.ui.EnemySlot1.setMidLineWidth(0)
+        self.ui.EnemySlot1.setObjectName("EnemySlot1")
+
+        self.ui.EnemySlot2 = self.Label('', self)
+        self.ui.EnemySlot2.setGeometry(QtCore.QRect(880, 260, 104, 127))
+        self.ui.EnemySlot2.setFrameShape(QFrame.Panel)
+        self.ui.EnemySlot2.setFrameShadow(QFrame.Raised)
+        self.ui.EnemySlot2.setLineWidth(3)
+        self.ui.EnemySlot2.setMidLineWidth(0)
+        self.ui.EnemySlot2.setObjectName("EnemySlot2")
+
+        self.ui.EnemySlot3 = self.Label('', self)
+        self.ui.EnemySlot3.setGeometry(QtCore.QRect(1000, 420, 104, 127))
+        self.ui.EnemySlot3.setFrameShape(QFrame.Panel)
+        self.ui.EnemySlot3.setFrameShadow(QFrame.Raised)
+        self.ui.EnemySlot3.setLineWidth(3)
+        self.ui.EnemySlot3.setMidLineWidth(0)
+        self.ui.EnemySlot3.setObjectName("EnemySlot3")
+
+        self.ui.EnemySlot4 = self.Label('', self)
+        self.ui.EnemySlot4.setGeometry(QtCore.QRect(880, 420, 104, 127))
+        self.ui.EnemySlot4.setFrameShape(QFrame.Panel)
+        self.ui.EnemySlot4.setFrameShadow(QFrame.Raised)
+        self.ui.EnemySlot4.setLineWidth(3)
+        self.ui.EnemySlot4.setMidLineWidth(0)
+        self.ui.EnemySlot4.setObjectName("EnemySlot4")
+
+        self.ui.EnemySlot5 = self.Label('', self)
+        self.ui.EnemySlot5.setGeometry(QtCore.QRect(1000, 560, 104, 127))
+        self.ui.EnemySlot5.setFrameShape(QFrame.Panel)
+        self.ui.EnemySlot5.setFrameShadow(QFrame.Raised)
+        self.ui.EnemySlot5.setLineWidth(3)
+        self.ui.EnemySlot5.setMidLineWidth(0)
+        self.ui.EnemySlot5.setObjectName("EnemySlot5")
+
+        self.ui.EnemySlot6 = self.Label('', self)
+        self.ui.EnemySlot6.setGeometry(QtCore.QRect(880, 560, 104, 127))
+        self.ui.EnemySlot6.setFrameShape(QFrame.Panel)
+        self.ui.EnemySlot6.setFrameShadow(QFrame.Raised)
+        self.ui.EnemySlot6.setLineWidth(3)
+        self.ui.EnemySlot6.setMidLineWidth(0)
+        self.ui.EnemySlot6.setObjectName("EnemySlot6")
+
         self.right_slots = [
             self.ui.slot2,
             self.ui.slot4,
             self.ui.slot6,
-            self.ui.pushButtonSlot2,
-            self.ui.pushButtonSlot4,
-            self.ui.pushButtonSlot6,
         ]
 
         self.ui.listAllUnits.clicked.connect(self.on_list_clicked)
@@ -95,35 +232,77 @@ class ClientMainWindow(QMainWindow):
         self.ui.pushButtonDeleteEn.setStatusTip(
             'Выберите слот, который хотите освободить')
 
-        self.ui.pushButtonSlot1.clicked.connect(self.slot1_detailed)
-        self.ui.pushButtonSlot2.clicked.connect(self.slot2_detailed)
-        self.ui.pushButtonSlot3.clicked.connect(self.slot3_detailed)
-        self.ui.pushButtonSlot4.clicked.connect(self.slot4_detailed)
-        self.ui.pushButtonSlot5.clicked.connect(self.slot5_detailed)
-        self.ui.pushButtonSlot6.clicked.connect(self.slot6_detailed)
+        self.ui.slot1.installEventFilter(self)
+        self.ui.slot1.setContextMenuPolicy(
+            QtCore.Qt.CustomContextMenu)
+        self.ui.slot1.customContextMenuRequested \
+            .connect(self.slot1_detailed)
 
-        self.ui.pushButtonEnSlot1.clicked.connect(self.en_slot1_detailed)
-        self.ui.pushButtonEnSlot2.clicked.connect(self.en_slot2_detailed)
-        self.ui.pushButtonEnSlot3.clicked.connect(self.en_slot3_detailed)
-        self.ui.pushButtonEnSlot4.clicked.connect(self.en_slot4_detailed)
-        self.ui.pushButtonEnSlot5.clicked.connect(self.en_slot5_detailed)
-        self.ui.pushButtonEnSlot6.clicked.connect(self.en_slot6_detailed)
+        self.ui.slot2.installEventFilter(self)
+        self.ui.slot2.setContextMenuPolicy(
+            QtCore.Qt.CustomContextMenu)
+        self.ui.slot2.customContextMenuRequested \
+            .connect(self.slot2_detailed)
 
-        self.ui.swap12.clicked.connect(self.swap_unit_action_12)
-        self.ui.swap13.clicked.connect(self.swap_unit_action_13)
-        self.ui.swap24.clicked.connect(self.swap_unit_action_24)
-        self.ui.swap34.clicked.connect(self.swap_unit_action_34)
-        self.ui.swap35.clicked.connect(self.swap_unit_action_35)
-        self.ui.swap46.clicked.connect(self.swap_unit_action_46)
-        self.ui.swap56.clicked.connect(self.swap_unit_action_56)
+        self.ui.slot3.installEventFilter(self)
+        self.ui.slot3.setContextMenuPolicy(
+            QtCore.Qt.CustomContextMenu)
+        self.ui.slot3.customContextMenuRequested \
+            .connect(self.slot3_detailed)
 
-        self.ui.enSwap12.clicked.connect(self.swap_enemy_action_12)
-        self.ui.enSwap13.clicked.connect(self.swap_enemy_action_13)
-        self.ui.enSwap24.clicked.connect(self.swap_enemy_action_24)
-        self.ui.enSwap34.clicked.connect(self.swap_enemy_action_34)
-        self.ui.enSwap35.clicked.connect(self.swap_enemy_action_35)
-        self.ui.enSwap46.clicked.connect(self.swap_enemy_action_46)
-        self.ui.enSwap56.clicked.connect(self.swap_enemy_action_56)
+        self.ui.slot4.installEventFilter(self)
+        self.ui.slot4.setContextMenuPolicy(
+            QtCore.Qt.CustomContextMenu)
+        self.ui.slot4.customContextMenuRequested \
+            .connect(self.slot4_detailed)
+
+        self.ui.slot5.installEventFilter(self)
+        self.ui.slot5.setContextMenuPolicy(
+            QtCore.Qt.CustomContextMenu)
+        self.ui.slot5.customContextMenuRequested \
+            .connect(self.slot5_detailed)
+
+        self.ui.slot6.installEventFilter(self)
+        self.ui.slot6.setContextMenuPolicy(
+            QtCore.Qt.CustomContextMenu)
+        self.ui.slot6.customContextMenuRequested \
+            .connect(self.slot6_detailed)
+
+        self.ui.EnemySlot1.installEventFilter(self)
+        self.ui.EnemySlot1.setContextMenuPolicy(
+            QtCore.Qt.CustomContextMenu)
+        self.ui.EnemySlot1.customContextMenuRequested \
+            .connect(self.en_slot1_detailed)
+
+        self.ui.EnemySlot2.installEventFilter(self)
+        self.ui.EnemySlot2.setContextMenuPolicy(
+            QtCore.Qt.CustomContextMenu)
+        self.ui.EnemySlot2.customContextMenuRequested \
+            .connect(self.en_slot2_detailed)
+
+        self.ui.EnemySlot3.installEventFilter(self)
+        self.ui.EnemySlot3.setContextMenuPolicy(
+            QtCore.Qt.CustomContextMenu)
+        self.ui.EnemySlot3.customContextMenuRequested \
+            .connect(self.en_slot3_detailed)
+
+        self.ui.EnemySlot4.installEventFilter(self)
+        self.ui.EnemySlot4.setContextMenuPolicy(
+            QtCore.Qt.CustomContextMenu)
+        self.ui.EnemySlot4.customContextMenuRequested \
+            .connect(self.en_slot4_detailed)
+
+        self.ui.EnemySlot5.installEventFilter(self)
+        self.ui.EnemySlot5.setContextMenuPolicy(
+            QtCore.Qt.CustomContextMenu)
+        self.ui.EnemySlot5.customContextMenuRequested \
+            .connect(self.en_slot5_detailed)
+
+        self.ui.EnemySlot6.installEventFilter(self)
+        self.ui.EnemySlot6.setContextMenuPolicy(
+            QtCore.Qt.CustomContextMenu)
+        self.ui.EnemySlot6.customContextMenuRequested \
+            .connect(self.en_slot6_detailed)
 
         self.ui.pushButtonAddPlayer.clicked.connect(self.add_player_action)
         self.ui.pushButtonDelPlayer.clicked.connect(self.delete_player_action)
@@ -131,22 +310,6 @@ class ClientMainWindow(QMainWindow):
             self.choose_player_action)
 
         # подкраска элементов
-        set_beige_colour(self.ui.swap12)
-        set_beige_colour(self.ui.swap13)
-        set_beige_colour(self.ui.swap24)
-        set_beige_colour(self.ui.swap34)
-        set_beige_colour(self.ui.swap35)
-        set_beige_colour(self.ui.swap46)
-        set_beige_colour(self.ui.swap56)
-
-        set_beige_colour(self.ui.enSwap12)
-        set_beige_colour(self.ui.enSwap13)
-        set_beige_colour(self.ui.enSwap24)
-        set_beige_colour(self.ui.enSwap34)
-        set_beige_colour(self.ui.enSwap35)
-        set_beige_colour(self.ui.enSwap46)
-        set_beige_colour(self.ui.enSwap56)
-
         set_beige_colour(self.ui.pushButtonAddPlayer)
         set_beige_colour(self.ui.pushButtonDelPlayer)
         set_beige_colour(self.ui.pushButtonChoosePlayer)
@@ -183,11 +346,19 @@ class ClientMainWindow(QMainWindow):
         self.units_list_update()
         self.player_slots_update()
         self.reset()
-        self.reset_enemy_buttons()
 
         self.check_campaign_session()
 
+        self.current_label = ''
+        self.source = ''
+
         self.show()
+
+    def eventFilter(self, source, event):
+        if event.type() == QEvent.Enter:
+            self.source = source
+            self.current_label = source.objectName()
+        return super().eventFilter(source, event)
 
     @staticmethod
     def closeEvent(event) -> None:
@@ -203,8 +374,6 @@ class ClientMainWindow(QMainWindow):
 
         self.enemy_list_update()
         self.enemy_slots_update()
-
-        self.reset_player_buttons()
 
     def check_campaign_session(self):
 
@@ -260,18 +429,6 @@ class ClientMainWindow(QMainWindow):
         main_db.update_session_difficulty(
             main_db.game_session_id,
             self.difficulty)
-
-    def reset_player_buttons(self):
-        """Обновление доступности кнопок игрока"""
-        self.button_enabled(self.ui.swap12, main_db.PlayerUnits, 2)
-        self.button_enabled(self.ui.swap34, main_db.PlayerUnits, 4)
-        self.button_enabled(self.ui.swap56, main_db.PlayerUnits, 6)
-
-    def reset_enemy_buttons(self):
-        """Обновление доступности кнопок противника"""
-        self.button_enabled(self.ui.enSwap12, main_db.CurrentDungeon, 2)
-        self.button_enabled(self.ui.enSwap34, main_db.CurrentDungeon, 4)
-        self.button_enabled(self.ui.enSwap56, main_db.CurrentDungeon, 6)
 
     def button_enabled(self, button, database, num2):
         """Определяет доступность кнопки по юнитам в слотах"""
@@ -339,18 +496,9 @@ class ClientMainWindow(QMainWindow):
             ui_obj.setFixedWidth(105)
             ui_obj.setFixedHeight(127)
 
-    def button_update(self,
-                      unit: namedtuple,
-                      button: QtWidgets.QPushButton) -> None:
-        """Установка размера кнопки на иконке"""
-        self.set_size_by_unit(unit, button)
-
-        self.hbox.addWidget(button)
-        self.setLayout(self.hbox)
-
     def slot_update(self,
                     unit: namedtuple,
-                    slot: QtWidgets.QLabel) -> None:
+                    slot: QLabel) -> None:
         """Установка gif'ки в иконку юнита"""
         self.set_size_by_unit(unit, slot)
 
@@ -369,7 +517,6 @@ class ClientMainWindow(QMainWindow):
     def set_capital_image(self) -> None:
         """Установить картинку как в столице"""
         self.ui.capital.setPixmap(QPixmap(BACKGROUND))
-        # self.ui.capital.setGeometry(QtCore.QRect(0, 0, 4, 4))
         self.ui.capital.setGeometry(QtCore.QRect(0, 0, 1380, 742))
 
     @staticmethod
@@ -426,26 +573,10 @@ class ClientMainWindow(QMainWindow):
             6: self.ui.slot6,
         }
 
-        self.player_buttons_dict = {
-            1: self.ui.pushButtonSlot1,
-            2: self.ui.pushButtonSlot2,
-            3: self.ui.pushButtonSlot3,
-            4: self.ui.pushButtonSlot4,
-            5: self.ui.pushButtonSlot5,
-            6: self.ui.pushButtonSlot6,
-        }
-
         for num, slot in self.player_slots_dict.items():
             self.slot_update(
                 self.player_unit_by_slot(num),
                 slot)
-
-        for num, button in self.player_buttons_dict.items():
-            self.button_update(
-                self.player_unit_by_slot(num),
-                button)
-
-        # self.ui.listPlayerUnits.setModel(self.player_units_model)
 
     def enemy_list_update(self) -> None:
         """Метод обновляющий список юнитов противника."""
@@ -462,24 +593,10 @@ class ClientMainWindow(QMainWindow):
             6: self.ui.EnemySlot6,
         }
 
-        self.enemy_buttons_dict = {
-            1: self.ui.pushButtonEnSlot1,
-            2: self.ui.pushButtonEnSlot2,
-            3: self.ui.pushButtonEnSlot3,
-            4: self.ui.pushButtonEnSlot4,
-            5: self.ui.pushButtonEnSlot5,
-            6: self.ui.pushButtonEnSlot6,
-        }
-
         for num, slot in self.enemy_slots_dict.items():
             self.slot_update(
                 self.enemy_unit_by_slot(num),
                 slot)
-
-        for num, button in self.enemy_buttons_dict.items():
-            self.button_update(
-                self.enemy_unit_by_slot(num),
-                button)
 
         # self.ui.listEnemyUnits.setModel(self.enemy_units_model)
 
@@ -489,10 +606,10 @@ class ClientMainWindow(QMainWindow):
             main_db.show_all_units,
             self.ui.listAllUnits)
 
-    def check_and_swap(self, num1: int, num2: int, database: any) -> bool:
+    def check_and_swap(self, num1: int, num2: int, database: any):
         """
         Проверить юниты в слотах на наличие и размер.
-        Поменять местами вместе с парным юнитом (соседний слот)
+        Поменять местами вместе с парным юнитом (соседний слот).
         """
         unit1 = main_db.get_unit_by_slot(num1, database)
         unit2 = main_db.get_unit_by_slot(num2, database)
@@ -506,21 +623,27 @@ class ClientMainWindow(QMainWindow):
                 and unit1.size == BIG \
                 and unit2.size == BIG:
             func(num1, num2)
-            return True
 
-        if unit1 is not None \
+        elif unit1 is not None \
                 and unit1.size == BIG:
-            func(num1 - 1, num2 - 1)
-            func(num1, num2)
-            return True
+            if num2 % 2 != 0:
+                func(num2, num1 - 1)
+                func(num2 + 1, num1)
+            elif num2 % 2 == 0:
+                func(num2 - 1, num1 - 1)
+                func(num2, num1)
 
-        if unit2 is not None \
+        elif unit1 is not None and unit2 is not None \
                 and unit2.size == BIG:
-            func(num1 - 1, num2 - 1)
-            func(num1, num2)
-            return True
+            if num1 % 2 != 0:
+                func(num1, num2 - 1)
+                func(num1 + 1, num2)
+            elif num1 % 2 == 0:
+                func(num1 - 1, num2 - 1)
+                func(num1, num2)
 
-        return False
+        elif unit1 is not None:
+            func(num1, num2)
 
     def swap_unit_action(self, slot1: int, slot2: int) -> None:
         """Меняет слоты двух юнитов игрока"""
@@ -529,7 +652,6 @@ class ClientMainWindow(QMainWindow):
             slot2,
             main_db.PlayerUnits)
         self.player_list_update()
-        self.reset_player_buttons()
 
     def swap_enemy_action(self, slot1: int, slot2: int) -> None:
         """Меняет слоты двух юнитов подземелья"""
@@ -538,39 +660,6 @@ class ClientMainWindow(QMainWindow):
             slot2,
             main_db.CurrentDungeon)
         self.enemy_list_update()
-        self.reset_enemy_buttons()
-
-    def swap_unit_action_12(self) -> None:
-        """Меняет местами юнитов игрока в слотах 1 и 2"""
-        self.swap_unit_action(1, 2)
-
-    def swap_unit_action_13(self) -> None:
-        """Меняет местами юнитов игрока в слотах 1 и 3"""
-        if not self.check_and_swap(2, 4, main_db.PlayerUnits):
-            self.swap_unit_action(1, 3)
-
-    def swap_unit_action_24(self) -> None:
-        """Меняет местами юнитов игрока в слотах 2 и 4"""
-        if not self.check_and_swap(2, 4, main_db.PlayerUnits):
-            self.swap_unit_action(2, 4)
-
-    def swap_unit_action_34(self) -> None:
-        """Меняет местами юнитов игрока в слотах 3 и 4"""
-        self.swap_unit_action(3, 4)
-
-    def swap_unit_action_35(self) -> None:
-        """Меняет местами юнитов игрока в слотах 3 и 5"""
-        if not self.check_and_swap(4, 6, main_db.PlayerUnits):
-            self.swap_unit_action(3, 5)
-
-    def swap_unit_action_46(self) -> None:
-        """Меняет местами юнитов игрока в слотах 4 и 6"""
-        if not self.check_and_swap(4, 6, main_db.PlayerUnits):
-            self.swap_unit_action(4, 6)
-
-    def swap_unit_action_56(self) -> None:
-        """Меняет местами юнитов игрока в слотах 5 и 6"""
-        self.swap_unit_action(5, 6)
 
     def swap_enemy_action_12(self) -> None:
         """Меняет местами юнитов подземелья в слотах 1 и 2"""
@@ -623,7 +712,7 @@ class ClientMainWindow(QMainWindow):
             selected_slot = self.ui.listPlayerSlots.currentIndex().data()
             main_db.delete_player_unit(int(selected_slot))
             self.player_list_update()
-            self.reset_player_buttons()
+            # self.reset_player_buttons()
 
     def delete_enemy_unit_action(self) -> None:
         """Метод обработчик нажатия кнопки 'Уволить' у противника"""
@@ -631,7 +720,6 @@ class ClientMainWindow(QMainWindow):
             selected_slot = self.ui.listEnemySlots.currentIndex().data()
             main_db.delete_dungeon_unit(int(selected_slot))
             self.enemy_list_update()
-            self.reset_enemy_buttons()
         except TypeError:
             print('Выберите слот, который хотите освободить')
 
@@ -724,7 +812,7 @@ class ClientMainWindow(QMainWindow):
 
     def universal_list_update(self,
                               function: Callable,
-                              ui_items_list: QtWidgets.QListView) -> None:
+                              ui_items_list: QListView) -> None:
         """Метод обновляющий список чего-нибудь."""
         all_items = function()
 
