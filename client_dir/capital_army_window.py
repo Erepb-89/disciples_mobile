@@ -3,8 +3,9 @@
 from collections import namedtuple
 
 from PyQt5 import QtCore, QtWidgets
-from PyQt5.QtGui import QPixmap, QStandardItemModel, QStandardItem
-from PyQt5.QtWidgets import QMainWindow, QHBoxLayout
+from PyQt5.QtCore import QMimeData, QVariant, Qt, QEvent
+from PyQt5.QtGui import QPixmap, QStandardItemModel, QStandardItem, QDrag
+from PyQt5.QtWidgets import QMainWindow, QHBoxLayout, QLabel, QWidget
 
 from client_dir.capital_army_form import Ui_CapitalArmyWindow
 from client_dir.hire_menu_window import HireMenuWindow
@@ -23,6 +24,39 @@ class CapitalArmyWindow(QMainWindow):
     Конфигурация окна создана в QTDesigner и загружается из
     конвертированного файла capital_army_form.py
     """
+    class Label(QLabel):
+        def __init__(self, title, parent):
+            super().__init__(title, parent)
+            self.setAcceptDrops(True)
+            self.parent = parent
+
+        def mouseMoveEvent(self, event) -> None:
+            mime_data = QMimeData()
+            mime_data.setImageData(QVariant(self.pixmap()))
+            pixmap = QWidget.grab(self)
+
+            drag = QDrag(self)
+            drag.setMimeData(mime_data)
+
+            drag.setPixmap(pixmap)
+            drag.setHotSpot(event.pos())
+
+            if drag.exec_(Qt.MoveAction) == Qt.MoveAction:
+                print('moved')
+
+        def dragEnterEvent(self, event) -> None:
+            if event.mimeData().hasImage():
+                event.accept()
+            else:
+                event.ignore()
+
+        def dropEvent(self, event) -> None:
+            first = int(self.parent.current_label[-1])
+            second = int(self.objectName()[-1])
+            self.parent.check_and_swap(
+                first,
+                second,
+                self.parent.db_table)
 
     def __init__(self, parent: any):
         super().__init__()
@@ -47,30 +81,91 @@ class CapitalArmyWindow(QMainWindow):
 
         self.hbox = QHBoxLayout(self)
 
-        self.ui.pushButtonSlot1.clicked.connect(self._slot1_detailed)
-        self.ui.pushButtonSlot2.clicked.connect(self._slot2_detailed)
-        self.ui.pushButtonSlot3.clicked.connect(self._slot3_detailed)
-        self.ui.pushButtonSlot4.clicked.connect(self._slot4_detailed)
-        self.ui.pushButtonSlot5.clicked.connect(self._slot5_detailed)
-        self.ui.pushButtonSlot6.clicked.connect(self._slot6_detailed)
+        self.ui.slot1 = self.Label('', self)
+        self.ui.slot1.setGeometry(QtCore.QRect(488, 100, 105, 127))
+        self.ui.slot1.setFrameShape(QtWidgets.QFrame.Panel)
+        self.ui.slot1.setFrameShadow(QtWidgets.QFrame.Raised)
+        self.ui.slot1.setLineWidth(1)
+        self.ui.slot1.setMidLineWidth(0)
+        self.ui.slot1.setObjectName("slot1")
 
-        self.ui.swap12.clicked.connect(self.swap_unit_action_12)
-        self.ui.swap13.clicked.connect(self.swap_unit_action_13)
-        self.ui.swap24.clicked.connect(self.swap_unit_action_24)
-        self.ui.swap34.clicked.connect(self.swap_unit_action_34)
-        self.ui.swap35.clicked.connect(self.swap_unit_action_35)
-        self.ui.swap46.clicked.connect(self.swap_unit_action_46)
-        self.ui.swap56.clicked.connect(self.swap_unit_action_56)
+        self.ui.slot2 = self.Label('', self)
+        self.ui.slot2.setGeometry(QtCore.QRect(605, 100, 105, 127))
+        self.ui.slot2.setFrameShape(QtWidgets.QFrame.Panel)
+        self.ui.slot2.setFrameShadow(QtWidgets.QFrame.Raised)
+        self.ui.slot2.setLineWidth(1)
+        self.ui.slot2.setMidLineWidth(0)
+        self.ui.slot2.setObjectName("slot2")
+
+        self.ui.slot3 = self.Label('', self)
+        self.ui.slot3.setGeometry(QtCore.QRect(488, 260, 105, 127))
+        self.ui.slot3.setFrameShape(QtWidgets.QFrame.Panel)
+        self.ui.slot3.setFrameShadow(QtWidgets.QFrame.Raised)
+        self.ui.slot3.setLineWidth(1)
+        self.ui.slot3.setMidLineWidth(0)
+        self.ui.slot3.setObjectName("slot3")
+
+        self.ui.slot4 = self.Label('', self)
+        self.ui.slot4.setGeometry(QtCore.QRect(605, 260, 105, 127))
+        self.ui.slot4.setFrameShape(QtWidgets.QFrame.Panel)
+        self.ui.slot4.setFrameShadow(QtWidgets.QFrame.Raised)
+        self.ui.slot4.setLineWidth(1)
+        self.ui.slot4.setMidLineWidth(0)
+        self.ui.slot4.setObjectName("slot4")
+
+        self.ui.slot5 = self.Label('', self)
+        self.ui.slot5.setGeometry(QtCore.QRect(488, 420, 105, 127))
+        self.ui.slot5.setFrameShape(QtWidgets.QFrame.Panel)
+        self.ui.slot5.setFrameShadow(QtWidgets.QFrame.Raised)
+        self.ui.slot5.setLineWidth(1)
+        self.ui.slot5.setMidLineWidth(0)
+        self.ui.slot5.setObjectName("slot5")
+
+        self.ui.slot6 = self.Label('', self)
+        self.ui.slot6.setGeometry(QtCore.QRect(605, 420, 105, 127))
+        self.ui.slot6.setFrameShape(QtWidgets.QFrame.Panel)
+        self.ui.slot6.setFrameShadow(QtWidgets.QFrame.Raised)
+        self.ui.slot6.setLineWidth(1)
+        self.ui.slot6.setMidLineWidth(0)
+        self.ui.slot6.setObjectName("slot6")
+
+        self.ui.slot1.installEventFilter(self)
+        self.ui.slot1.setContextMenuPolicy(
+            QtCore.Qt.CustomContextMenu)
+        self.ui.slot1.customContextMenuRequested \
+            .connect(self.slot1_detailed)
+
+        self.ui.slot2.installEventFilter(self)
+        self.ui.slot2.setContextMenuPolicy(
+            QtCore.Qt.CustomContextMenu)
+        self.ui.slot2.customContextMenuRequested \
+            .connect(self.slot2_detailed)
+
+        self.ui.slot3.installEventFilter(self)
+        self.ui.slot3.setContextMenuPolicy(
+            QtCore.Qt.CustomContextMenu)
+        self.ui.slot3.customContextMenuRequested \
+            .connect(self.slot3_detailed)
+
+        self.ui.slot4.installEventFilter(self)
+        self.ui.slot4.setContextMenuPolicy(
+            QtCore.Qt.CustomContextMenu)
+        self.ui.slot4.customContextMenuRequested \
+            .connect(self.slot4_detailed)
+
+        self.ui.slot5.installEventFilter(self)
+        self.ui.slot5.setContextMenuPolicy(
+            QtCore.Qt.CustomContextMenu)
+        self.ui.slot5.customContextMenuRequested \
+            .connect(self.slot5_detailed)
+
+        self.ui.slot6.installEventFilter(self)
+        self.ui.slot6.setContextMenuPolicy(
+            QtCore.Qt.CustomContextMenu)
+        self.ui.slot6.customContextMenuRequested \
+            .connect(self.slot6_detailed)
 
         # подкраска элементов
-        set_beige_colour(self.ui.swap12)
-        set_beige_colour(self.ui.swap13)
-        set_beige_colour(self.ui.swap24)
-        set_beige_colour(self.ui.swap34)
-        set_beige_colour(self.ui.swap35)
-        set_beige_colour(self.ui.swap46)
-        set_beige_colour(self.ui.swap56)
-
         set_beige_colour(self.ui.listPlayerUnits)
         set_beige_colour(self.ui.listPlayerSlots)
 
@@ -100,7 +195,16 @@ class CapitalArmyWindow(QMainWindow):
 
         self.reset()
 
+        self.current_label = ''
+        self.source = ''
+
         self.show()
+
+    def eventFilter(self, source, event):
+        if event.type() == QEvent.Enter:
+            self.source = source
+            self.current_label = source.objectName()
+        return super().eventFilter(source, event)
 
     def keyPressEvent(self, event) -> None:
         """Метод обработки нажатия клавиши D"""
@@ -129,13 +233,6 @@ class CapitalArmyWindow(QMainWindow):
         """Кнопка возврата"""
         self.close()
 
-    def button_update(self, unit, button: QtWidgets.QPushButton) -> None:
-        """Установка размера кнопки на иконке"""
-        self._set_size_by_unit(unit, button)
-
-        self.hbox.addWidget(button)
-        self.setLayout(self.hbox)
-
     def slot_update(self, unit: namedtuple, slot: QtWidgets.QLabel) -> None:
         """Установка gif'ки в иконку юнита"""
         self._set_size_by_unit(unit, slot)
@@ -158,7 +255,6 @@ class CapitalArmyWindow(QMainWindow):
 
     def player_list_update(self) -> None:
         """Метод обновляющий список юнитов игрока."""
-        # player_units = main_db.show_player_units()
         player_units = main_db.show_db_units(self.db_table)
         self.player_units_model = QStandardItemModel()
         for i in player_units:
@@ -179,36 +275,12 @@ class CapitalArmyWindow(QMainWindow):
         self.slot_update(self.player_unit_by_slot(6),
                          self.ui.slot6)
 
-        self.button_update(
-            self.player_unit_by_slot(1),
-            self.ui.pushButtonSlot1)
-        self.button_update(
-            self.player_unit_by_slot(2),
-            self.ui.pushButtonSlot2)
-        self.button_update(
-            self.player_unit_by_slot(3),
-            self.ui.pushButtonSlot3)
-        self.button_update(
-            self.player_unit_by_slot(4),
-            self.ui.pushButtonSlot4)
-        self.button_update(
-            self.player_unit_by_slot(5),
-            self.ui.pushButtonSlot5)
-        self.button_update(
-            self.player_unit_by_slot(6),
-            self.ui.pushButtonSlot6)
-
         self.ui.listPlayerUnits.setModel(self.player_units_model)
 
     def reset(self) -> None:
         """Обновить"""
         self._update_all_unit_health()
         self.player_list_update()
-        # self.player_slots_update()
-
-        self.is_button_enabled(self.ui.swap12, self.db_table, 2)
-        self.is_button_enabled(self.ui.swap34, self.db_table, 4)
-        self.is_button_enabled(self.ui.swap56, self.db_table, 6)
 
     def delete_unit_action(self) -> None:
         """Метод обработчик нажатия кнопки 'Уволить'"""
@@ -239,14 +311,11 @@ class CapitalArmyWindow(QMainWindow):
         HIRE_WINDOW.show()
 
     def set_coords_double_slots(self, ui_obj: any) -> None:
-        """Задание координат для 'двойных' слотов либо кнопок"""
+        """Задание координат для 'двойных' слотов"""
         if ui_obj in [
             self.ui.slot2,
             self.ui.slot4,
             self.ui.slot6,
-            self.ui.pushButtonSlot2,
-            self.ui.pushButtonSlot4,
-            self.ui.pushButtonSlot6,
         ]:
             ui_coords = ui_obj.geometry().getCoords()
             new_coords = list(ui_coords)
@@ -265,13 +334,10 @@ class CapitalArmyWindow(QMainWindow):
                 self.ui.slot2,
                 self.ui.slot4,
                 self.ui.slot6,
-                self.ui.pushButtonSlot2,
-                self.ui.pushButtonSlot4,
-                self.ui.pushButtonSlot6,
             ]:
                 ui_coords = ui_obj.geometry().getCoords()
                 new_coords = list(ui_coords)
-                new_coords[0] -= 117
+                new_coords[0] -= 118
                 new_coords[2] = 224
                 new_coords[3] = 126
                 ui_obj.setGeometry(*new_coords)
@@ -287,32 +353,68 @@ class CapitalArmyWindow(QMainWindow):
             ui_obj.setFixedWidth(105)
             ui_obj.setFixedHeight(127)
 
-    def check_and_swap(self, num1: int, num2: int) -> bool:
+    def check_and_swap(self, num1: int, num2: int, database: any):
         """
         Проверить юниты в слотах на наличие и размер.
-        Поменять местами вместе с парным юнитом (соседний слот)
+        Поменять местами вместе с парным юнитом (соседний слот).
         """
-        unit1 = main_db.get_unit_by_slot(num1, self.db_table)
-        unit2 = main_db.get_unit_by_slot(num2, self.db_table)
+        unit1 = main_db.get_unit_by_slot(num1, database)
+        unit2 = main_db.get_unit_by_slot(num2, database)
+        func = self.swap_unit_action
 
         if unit1 is not None \
                 and unit2 is not None \
                 and unit1.size == BIG \
                 and unit2.size == BIG:
-            self.swap_unit_action(num1, num2)
-            return True
+            func(num1, num2)
 
-        if unit1 is not None and unit1.size == BIG:
-            self.swap_unit_action(num1 - 1, num2 - 1)
-            self.swap_unit_action(num1, num2)
-            return True
+        elif unit1 is not None \
+                and unit1.size == BIG:
+            if num2 % 2 != 0:
+                func(num2, num1 - 1)
+                func(num2 + 1, num1)
+            elif num2 % 2 == 0:
+                func(num2 - 1, num1 - 1)
+                func(num2, num1)
 
-        if unit2 is not None and unit2.size == BIG:
-            self.swap_unit_action(num1 - 1, num2 - 1)
-            self.swap_unit_action(num1, num2)
-            return True
+        elif unit1 is not None and unit2 is not None \
+                and unit2.size == BIG:
+            if num1 % 2 != 0:
+                func(num1, num2 - 1)
+                func(num1 + 1, num2)
+            elif num1 % 2 == 0:
+                func(num1 - 1, num2 - 1)
+                func(num1, num2)
 
-        return False
+        elif unit1 is not None:
+            func(num1, num2)
+
+    # def check_and_swap(self, num1: int, num2: int) -> bool:
+    #     """
+    #     Проверить юниты в слотах на наличие и размер.
+    #     Поменять местами вместе с парным юнитом (соседний слот)
+    #     """
+    #     unit1 = main_db.get_unit_by_slot(num1, self.db_table)
+    #     unit2 = main_db.get_unit_by_slot(num2, self.db_table)
+    #
+    #     if unit1 is not None \
+    #             and unit2 is not None \
+    #             and unit1.size == BIG \
+    #             and unit2.size == BIG:
+    #         self.swap_unit_action(num1, num2)
+    #         return True
+    #
+    #     if unit1 is not None and unit1.size == BIG:
+    #         self.swap_unit_action(num1 - 1, num2 - 1)
+    #         self.swap_unit_action(num1, num2)
+    #         return True
+    #
+    #     if unit2 is not None and unit2.size == BIG:
+    #         self.swap_unit_action(num1 - 1, num2 - 1)
+    #         self.swap_unit_action(num1, num2)
+    #         return True
+    #
+    #     return False
 
     def swap_unit_action(self, slot1: int, slot2: int) -> None:
         """Меняет слоты двух юнитов игрока"""
@@ -367,27 +469,27 @@ class CapitalArmyWindow(QMainWindow):
         except AttributeError:
             self.show_available_units(slot)
 
-    def _slot1_detailed(self) -> None:
+    def slot1_detailed(self) -> None:
         """Метод создающий окно юнита игрока (слот 1)."""
         self.slot_detailed(1)
 
-    def _slot2_detailed(self) -> None:
+    def slot2_detailed(self) -> None:
         """Метод создающий окно юнита игрока (слот 2)."""
         self.slot_detailed(2)
 
-    def _slot3_detailed(self) -> None:
+    def slot3_detailed(self) -> None:
         """Метод создающий окно юнита игрока (слот 3)."""
         self.slot_detailed(3)
 
-    def _slot4_detailed(self) -> None:
+    def slot4_detailed(self) -> None:
         """Метод создающий окно юнита игрока (слот 4)."""
         self.slot_detailed(4)
 
-    def _slot5_detailed(self) -> None:
+    def slot5_detailed(self) -> None:
         """Метод создающий окно юнита игрока (слот 5)."""
         self.slot_detailed(5)
 
-    def _slot6_detailed(self) -> None:
+    def slot6_detailed(self) -> None:
         """Метод создающий окно юнита игрока (слот 6)."""
         self.slot_detailed(6)
 

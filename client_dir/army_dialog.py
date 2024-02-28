@@ -3,26 +3,66 @@ import os
 from collections import namedtuple
 
 from PyQt5 import QtCore, QtWidgets, QtGui
-from PyQt5.QtGui import QPixmap
-from PyQt5.QtWidgets import QDialog
+from PyQt5.QtCore import QMimeData, QVariant, QEvent, Qt
+from PyQt5.QtGui import QPixmap, QDrag
+from PyQt5.QtWidgets import QDialog, QLabel, QWidget
 
 from client_dir.settings import ARMY_BG, BIG, PORTRAITS
-from client_dir.ui_functions import slot_update, button_update, \
-    get_unit_image, ui_lock, ui_unlock
+from client_dir.ui_functions import slot_update, \
+    get_unit_image
 from client_dir.unit_dialog import UnitDialog
 from units_dir.units import main_db
 
 
 class ArmyDialog(QDialog):
+    """Диалог выбранной армии"""
+
+    class Label(QLabel):
+        def __init__(self, title, parent):
+            super().__init__(title, parent)
+            self.setAcceptDrops(True)
+            self.parent = parent
+
+        def mouseMoveEvent(self, event) -> None:
+            mime_data = QMimeData()
+            mime_data.setImageData(QVariant(self.pixmap()))
+            pixmap = QWidget.grab(self)
+
+            drag = QDrag(self)
+            drag.setMimeData(mime_data)
+
+            drag.setPixmap(pixmap)
+            drag.setHotSpot(event.pos())
+
+            if drag.exec_(Qt.MoveAction) == Qt.MoveAction:
+                print('moved')
+
+        def dragEnterEvent(self, event) -> None:
+            if event.mimeData().hasImage() \
+                    and self.parent.player != 'Computer':
+                event.accept()
+            else:
+                event.ignore()
+
+        def dropEvent(self, event) -> None:
+            first = int(self.parent.current_label[-1])
+            second = int(self.objectName()[-1])
+            self.parent.check_and_swap(
+                first,
+                second,
+                self.parent.db_table)
+
     def __init__(self, units: dict, player: str):
         super().__init__()
         self.units = units
         self.player = player
+        self.current_label = ''
+        self.source = ''
         self.faction = main_db.current_faction
         self.db_table = main_db.campaigns_dict[self.faction]
 
         self.setFixedSize(607, 554)
-        self.setWindowTitle('Окно армии противника')
+        self.setWindowTitle('Окно армии')
 
         self.armyBG = QtWidgets.QLabel(self)
         self.armyBG.setGeometry(QtCore.QRect(0, 0, 607, 554))
@@ -34,82 +74,55 @@ class ArmyDialog(QDialog):
         self.portrait.setScaledContents(True)
         self.portrait.setAlignment(QtCore.Qt.AlignCenter)
         self.portrait.setObjectName("portrait")
-        self.pushButtonSlot_1 = QtWidgets.QPushButton(self)
-        self.pushButtonSlot_1.setGeometry(QtCore.QRect(340, 50, 104, 127))
-        self.pushButtonSlot_1.setText("")
-        self.pushButtonSlot_1.setFlat(True)
-        self.pushButtonSlot_1.setObjectName("pushButtonSlot_1")
-        self.pushButtonSlot_5 = QtWidgets.QPushButton(self)
-        self.pushButtonSlot_5.setGeometry(QtCore.QRect(340, 330, 104, 127))
-        self.pushButtonSlot_5.setText("")
-        self.pushButtonSlot_5.setFlat(True)
-        self.pushButtonSlot_5.setObjectName("pushButtonSlot_5")
-        self.EnemySlot6 = QtWidgets.QLabel(self)
-        self.EnemySlot6.setGeometry(QtCore.QRect(457, 330, 104, 127))
-        self.EnemySlot6.setFrameShape(QtWidgets.QFrame.Panel)
-        self.EnemySlot6.setFrameShadow(QtWidgets.QFrame.Raised)
-        self.EnemySlot6.setLineWidth(3)
-        self.EnemySlot6.setMidLineWidth(0)
-        self.EnemySlot6.setObjectName("EnemySlot6")
-        self.EnemySlot3 = QtWidgets.QLabel(self)
-        self.EnemySlot3.setGeometry(QtCore.QRect(340, 190, 104, 127))
-        self.EnemySlot3.setFrameShape(QtWidgets.QFrame.Panel)
-        self.EnemySlot3.setFrameShadow(QtWidgets.QFrame.Raised)
-        self.EnemySlot3.setLineWidth(3)
-        self.EnemySlot3.setMidLineWidth(0)
-        self.EnemySlot3.setObjectName("EnemySlot3")
-        self.pushButtonSlot_4 = QtWidgets.QPushButton(self)
-        self.pushButtonSlot_4.setGeometry(QtCore.QRect(457, 190, 104, 127))
-        self.pushButtonSlot_4.setText("")
-        self.pushButtonSlot_4.setFlat(True)
-        self.pushButtonSlot_4.setObjectName("pushButtonSlot_4")
-        self.EnemySlot2 = QtWidgets.QLabel(self)
-        self.EnemySlot2.setGeometry(QtCore.QRect(457, 50, 104, 127))
-        self.EnemySlot2.setLayoutDirection(QtCore.Qt.LeftToRight)
-        self.EnemySlot2.setFrameShape(QtWidgets.QFrame.Panel)
-        self.EnemySlot2.setFrameShadow(QtWidgets.QFrame.Raised)
-        self.EnemySlot2.setLineWidth(3)
-        self.EnemySlot2.setMidLineWidth(0)
-        self.EnemySlot2.setAlignment(QtCore.Qt.AlignLeading | QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
-        self.EnemySlot2.setObjectName("EnemySlot2")
-        self.pushButtonSlot_2 = QtWidgets.QPushButton(self)
-        self.pushButtonSlot_2.setGeometry(QtCore.QRect(457, 50, 104, 127))
-        self.pushButtonSlot_2.setText("")
-        self.pushButtonSlot_2.setFlat(True)
-        self.pushButtonSlot_2.setObjectName("pushButtonSlot_2")
-        self.pushButtonSlot_6 = QtWidgets.QPushButton(self)
-        self.pushButtonSlot_6.setGeometry(QtCore.QRect(457, 330, 104, 127))
-        self.pushButtonSlot_6.setText("")
-        self.pushButtonSlot_6.setFlat(True)
-        self.pushButtonSlot_6.setObjectName("pushButtonSlot_6")
-        self.EnemySlot1 = QtWidgets.QLabel(self)
-        self.EnemySlot1.setGeometry(QtCore.QRect(340, 50, 104, 127))
-        self.EnemySlot1.setFrameShape(QtWidgets.QFrame.Panel)
-        self.EnemySlot1.setFrameShadow(QtWidgets.QFrame.Raised)
-        self.EnemySlot1.setLineWidth(3)
-        self.EnemySlot1.setMidLineWidth(0)
-        self.EnemySlot1.setObjectName("EnemySlot1")
-        self.EnemySlot5 = QtWidgets.QLabel(self)
-        self.EnemySlot5.setGeometry(QtCore.QRect(340, 330, 104, 127))
-        self.EnemySlot5.setMinimumSize(QtCore.QSize(104, 127))
-        self.EnemySlot5.setMaximumSize(QtCore.QSize(224, 127))
-        self.EnemySlot5.setFrameShape(QtWidgets.QFrame.Panel)
-        self.EnemySlot5.setFrameShadow(QtWidgets.QFrame.Raised)
-        self.EnemySlot5.setLineWidth(3)
-        self.EnemySlot5.setMidLineWidth(0)
-        self.EnemySlot5.setObjectName("EnemySlot5")
-        self.pushButtonSlot_3 = QtWidgets.QPushButton(self)
-        self.pushButtonSlot_3.setGeometry(QtCore.QRect(340, 190, 104, 127))
-        self.pushButtonSlot_3.setText("")
-        self.pushButtonSlot_3.setFlat(True)
-        self.pushButtonSlot_3.setObjectName("pushButtonSlot_3")
-        self.EnemySlot4 = QtWidgets.QLabel(self)
-        self.EnemySlot4.setGeometry(QtCore.QRect(457, 190, 104, 127))
-        self.EnemySlot4.setFrameShape(QtWidgets.QFrame.Panel)
-        self.EnemySlot4.setFrameShadow(QtWidgets.QFrame.Raised)
-        self.EnemySlot4.setLineWidth(3)
-        self.EnemySlot4.setMidLineWidth(0)
-        self.EnemySlot4.setObjectName("EnemySlot4")
+
+        self.slot1 = self.Label('', self)
+        self.slot1.setGeometry(QtCore.QRect(340, 50, 104, 127))
+        self.slot1.setFrameShape(QtWidgets.QFrame.Panel)
+        self.slot1.setFrameShadow(QtWidgets.QFrame.Raised)
+        self.slot1.setLineWidth(3)
+        self.slot1.setMidLineWidth(0)
+        self.slot1.setObjectName("Slot1")
+
+        self.slot2 = self.Label('', self)
+        self.slot2.setGeometry(QtCore.QRect(457, 50, 104, 127))
+        self.slot2.setFrameShape(QtWidgets.QFrame.Panel)
+        self.slot2.setFrameShadow(QtWidgets.QFrame.Raised)
+        self.slot2.setLineWidth(3)
+        self.slot2.setMidLineWidth(0)
+        self.slot2.setObjectName("Slot2")
+
+        self.slot3 = self.Label('', self)
+        self.slot3.setGeometry(QtCore.QRect(340, 190, 104, 127))
+        self.slot3.setFrameShape(QtWidgets.QFrame.Panel)
+        self.slot3.setFrameShadow(QtWidgets.QFrame.Raised)
+        self.slot3.setLineWidth(3)
+        self.slot3.setMidLineWidth(0)
+        self.slot3.setObjectName("Slot3")
+
+        self.slot4 = self.Label('', self)
+        self.slot4.setGeometry(QtCore.QRect(457, 190, 104, 127))
+        self.slot4.setFrameShape(QtWidgets.QFrame.Panel)
+        self.slot4.setFrameShadow(QtWidgets.QFrame.Raised)
+        self.slot4.setLineWidth(3)
+        self.slot4.setMidLineWidth(0)
+        self.slot4.setObjectName("Slot4")
+
+        self.slot5 = self.Label('', self)
+        self.slot5.setGeometry(QtCore.QRect(340, 330, 104, 127))
+        self.slot5.setFrameShape(QtWidgets.QFrame.Panel)
+        self.slot5.setFrameShadow(QtWidgets.QFrame.Raised)
+        self.slot5.setLineWidth(3)
+        self.slot5.setMidLineWidth(0)
+        self.slot5.setObjectName("Slot5")
+
+        self.slot6 = self.Label('', self)
+        self.slot6.setGeometry(QtCore.QRect(457, 330, 104, 127))
+        self.slot6.setFrameShape(QtWidgets.QFrame.Panel)
+        self.slot6.setFrameShadow(QtWidgets.QFrame.Raised)
+        self.slot6.setLineWidth(3)
+        self.slot6.setMidLineWidth(0)
+        self.slot6.setObjectName("Slot6")
+
         self.unitName = QtWidgets.QLabel(self)
         self.unitName.setGeometry(QtCore.QRect(30, 420, 301, 71))
         font = QtGui.QFont()
@@ -122,47 +135,81 @@ class ArmyDialog(QDialog):
         self.unitName.setWordWrap(True)
         self.unitName.setObjectName("unitName")
 
-        self.EnemySlot1.raise_()
-        self.EnemySlot5.raise_()
-        self.EnemySlot3.raise_()
-        self.EnemySlot2.raise_()
-        self.EnemySlot4.raise_()
-        self.EnemySlot6.raise_()
-
-        self.pushButtonSlot_1.raise_()
-        self.pushButtonSlot_2.raise_()
-        self.pushButtonSlot_3.raise_()
-        self.pushButtonSlot_4.raise_()
-        self.pushButtonSlot_5.raise_()
-        self.pushButtonSlot_6.raise_()
+        self.slot2.raise_()
+        self.slot4.raise_()
+        self.slot6.raise_()
 
         self.armyBG.setPixmap(QPixmap(ARMY_BG))
-        self.pushButtonSlot_1.clicked.connect(self.slot1_detailed)
-        self.pushButtonSlot_2.clicked.connect(self.slot2_detailed)
-        self.pushButtonSlot_3.clicked.connect(self.slot3_detailed)
-        self.pushButtonSlot_4.clicked.connect(self.slot4_detailed)
-        self.pushButtonSlot_5.clicked.connect(self.slot5_detailed)
-        self.pushButtonSlot_6.clicked.connect(self.slot6_detailed)
 
         self.faction = main_db.current_faction
 
-        self.dung_buttons_dict = {
-            1: self.pushButtonSlot_1,
-            2: self.pushButtonSlot_2,
-            3: self.pushButtonSlot_3,
-            4: self.pushButtonSlot_4,
-            5: self.pushButtonSlot_5,
-            6: self.pushButtonSlot_6,
+        self.slot1.installEventFilter(self)
+        self.slot1.setContextMenuPolicy(
+            QtCore.Qt.CustomContextMenu)
+        self.slot1.customContextMenuRequested \
+            .connect(self.slot1_detailed)
+
+        self.slot2.installEventFilter(self)
+        self.slot2.setContextMenuPolicy(
+            QtCore.Qt.CustomContextMenu)
+        self.slot2.customContextMenuRequested \
+            .connect(self.slot2_detailed)
+
+        self.slot3.installEventFilter(self)
+        self.slot3.setContextMenuPolicy(
+            QtCore.Qt.CustomContextMenu)
+        self.slot3.customContextMenuRequested \
+            .connect(self.slot3_detailed)
+
+        self.slot4.installEventFilter(self)
+        self.slot4.setContextMenuPolicy(
+            QtCore.Qt.CustomContextMenu)
+        self.slot4.customContextMenuRequested \
+            .connect(self.slot4_detailed)
+
+        self.slot5.installEventFilter(self)
+        self.slot5.setContextMenuPolicy(
+            QtCore.Qt.CustomContextMenu)
+        self.slot5.customContextMenuRequested \
+            .connect(self.slot5_detailed)
+
+        self.slot6.installEventFilter(self)
+        self.slot6.setContextMenuPolicy(
+            QtCore.Qt.CustomContextMenu)
+        self.slot6.customContextMenuRequested \
+            .connect(self.slot6_detailed)
+
+        self.slots_dict = {
+            1: self.slot1,
+            2: self.slot2,
+            3: self.slot3,
+            4: self.slot4,
+            5: self.slot5,
+            6: self.slot6,
         }
 
-        self.dungeon_list_update()
-        self.dungeon_buttons_update()
-        self.dungeon_portrait_update()
+        self.right_slots = [
+            self.slot2,
+            self.slot4,
+            self.slot6,
+        ]
+
+        if self.player == 'Computer':
+            self.dungeon_list_update()
+        else:
+            self.list_update()
+        self.portrait_update()
 
         QtCore.QMetaObject.connectSlotsByName(self)
 
-    def dungeon_portrait_update(self) -> None:
-        """Метод обновляющий портрет лидера подземелья"""
+    def eventFilter(self, source, event):
+        if event.type() == QEvent.Enter:
+            self.source = source
+            self.current_label = source.objectName()
+        return super().eventFilter(source, event)
+
+    def portrait_update(self) -> None:
+        """Метод обновляющий портрет лидера"""
         # определяем сильнейшее существо в отряде по опыту
         units = [main_db.get_unit_by_name(unit)
                  for unit in self.units.values() if unit is not None]
@@ -179,54 +226,40 @@ class ArmyDialog(QDialog):
             os.path.join(PORTRAITS, f"{strongest_unit.name}.gif")))
         self.unitName.setText(strongest_unit.name)
 
-    def dungeon_buttons_update(self) -> None:
-        """Метод обновляющий кнопки юнитов подземелья"""
-        for num, unit in self.units.items():
-            if unit is not None:
-                button_update(
-                    main_db.get_unit_by_name(unit),
-                    self.dung_buttons_dict[num])
+    def set_coords_double_slots(self, ui_obj: any) -> None:
+        """Задание координат для 'двойных' слотов"""
+        if ui_obj in self.right_slots:
+            ui_coords = ui_obj.geometry().getCoords()
+            new_coords = list(ui_coords)
+            new_coords[0] = 457
+            ui_obj.setGeometry(*new_coords)
 
-    def dungeon_list_update(self) -> None:
-        """Метод обновляющий список юнитов подземелья"""
-        dung_icons_dict = {
-            1: self.EnemySlot1,
-            2: self.EnemySlot2,
-            3: self.EnemySlot3,
-            4: self.EnemySlot4,
-            5: self.EnemySlot5,
-            6: self.EnemySlot6,
-        }
+            ui_obj.setFixedWidth(105)
+            ui_obj.setFixedHeight(127)
 
-        for num, icon_slot in dung_icons_dict.items():
-            if num in self.units.keys():
-                unit = main_db.get_unit_by_name(self.units[num])
+    def set_size_by_unit(self, unit, ui_obj: any) -> None:
+        """Установка размера иконки по размеру самого юнита"""
+        self.set_coords_double_slots(ui_obj)
 
-                try:
-                    if unit.size == BIG:
-                        ui_coords = icon_slot.geometry().getCoords()
-                        new_coords = list(ui_coords)
-                        new_coords[0] -= 119
-                        new_coords[2] = 224
-                        new_coords[3] = 126
-                        icon_slot.setGeometry(*new_coords)
-                        self.dung_buttons_dict[num].setGeometry(*new_coords)
-                    else:
-                        icon_slot.setFixedWidth(105)
-                        icon_slot.setFixedHeight(127)
-                except AttributeError:
-                    icon_slot.setFixedWidth(105)
-                    icon_slot.setFixedHeight(127)
+        try:
+            if unit.size == BIG and ui_obj in self.right_slots:
+                ui_coords = ui_obj.geometry().getCoords()
+                new_coords = list(ui_coords)
+                new_coords[0] -= 117
+                new_coords[2] = 224
+                new_coords[3] = 126
+                ui_obj.setGeometry(*new_coords)
 
-                slot_update(
-                    unit,
-                    icon_slot)
-                ui_unlock(self.dung_buttons_dict[num])
+            if unit.size == BIG:
+                ui_obj.setFixedWidth(225)
+                ui_obj.setFixedHeight(127)
+
             else:
-                icon_slot.setPixmap(QPixmap(
-                    get_unit_image(None)).scaled(
-                    icon_slot.width(), icon_slot.height()))
-                ui_lock(self.dung_buttons_dict[num])
+                ui_obj.setFixedWidth(105)
+                ui_obj.setFixedHeight(127)
+        except AttributeError:
+            ui_obj.setFixedWidth(105)
+            ui_obj.setFixedHeight(127)
 
     def player_unit_by_slot(self, slot: int) -> namedtuple:
         """Метод получающий юнита игрока по слоту."""
@@ -242,6 +275,74 @@ class ArmyDialog(QDialog):
         else:
             unit = main_db.get_unit_by_slot(slot, self.db_table)
         return unit
+
+    def check_and_swap(self, num1: int, num2: int, database: any):
+        """
+        Проверить юниты в слотах на наличие и размер.
+        Поменять местами вместе с парным юнитом (соседний слот).
+        """
+        unit1 = main_db.get_unit_by_slot(num1, database)
+        unit2 = main_db.get_unit_by_slot(num2, database)
+        func = self.swap_unit_action
+
+        if unit1 is not None \
+                and unit2 is not None \
+                and unit1.size == BIG \
+                and unit2.size == BIG:
+            func(num1, num2)
+
+        elif unit1 is not None \
+                and unit1.size == BIG:
+            if num2 % 2 != 0:
+                func(num2, num1 - 1)
+                func(num2 + 1, num1)
+            elif num2 % 2 == 0:
+                func(num2 - 1, num1 - 1)
+                func(num2, num1)
+
+        elif unit1 is not None and unit2 is not None \
+                and unit2.size == BIG:
+            if num1 % 2 != 0:
+                func(num1, num2 - 1)
+                func(num1 + 1, num2)
+            elif num1 % 2 == 0:
+                func(num1 - 1, num2 - 1)
+                func(num1, num2)
+
+        elif unit1 is not None:
+            func(num1, num2)
+
+    def swap_unit_action(self, slot1: int, slot2: int) -> None:
+        """Меняет слоты двух юнитов игрока"""
+        main_db.update_slot(
+            slot1,
+            slot2,
+            self.db_table)
+        self.list_update()
+
+    def dungeon_list_update(self) -> None:
+        """Метод обновляющий список юнитов подземелья"""
+        for num, icon_slot in self.slots_dict.items():
+            if num in self.units.keys():
+                unit = main_db.get_unit_by_name(self.units[num])
+                self.slot_update(unit, icon_slot)
+
+    def list_update(self) -> None:
+        """Метод обновляющий список юнитов."""
+        for num, slot in self.slots_dict.items():
+            self.slot_update(
+                self.player_unit_by_slot(num),
+                slot)
+
+    def slot_update(self,
+                    unit: namedtuple,
+                    slot: QLabel) -> None:
+        """Установка gif'ки в иконку юнита"""
+        self.set_size_by_unit(unit, slot)
+
+        slot.setPixmap(QPixmap(
+            get_unit_image(unit)).scaled(
+            slot.width(), slot.height()))
 
     @staticmethod
     def slot_detailed(unit: namedtuple, slot_dialog: any) -> None:

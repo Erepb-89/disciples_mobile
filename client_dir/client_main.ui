@@ -254,117 +254,6 @@
      </rect>
     </property>
    </widget>
-   <widget class="QPushButton" name="pushButtonSlot1">
-    <property name="geometry">
-     <rect>
-      <x>40</x>
-      <y>260</y>
-      <width>104</width>
-      <height>127</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string/>
-    </property>
-    <property name="flat">
-     <bool>true</bool>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="pushButtonSlot3">
-    <property name="geometry">
-     <rect>
-      <x>40</x>
-      <y>420</y>
-      <width>104</width>
-      <height>127</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string/>
-    </property>
-    <property name="flat">
-     <bool>true</bool>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="pushButtonSlot5">
-    <property name="geometry">
-     <rect>
-      <x>40</x>
-      <y>560</y>
-      <width>104</width>
-      <height>127</height>
-     </rect>
-    </property>
-    <property name="minimumSize">
-     <size>
-      <width>104</width>
-      <height>127</height>
-     </size>
-    </property>
-    <property name="maximumSize">
-     <size>
-      <width>224</width>
-      <height>127</height>
-     </size>
-    </property>
-    <property name="text">
-     <string/>
-    </property>
-    <property name="flat">
-     <bool>true</bool>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="pushButtonSlot2">
-    <property name="geometry">
-     <rect>
-      <x>160</x>
-      <y>260</y>
-      <width>104</width>
-      <height>127</height>
-     </rect>
-    </property>
-    <property name="layoutDirection">
-     <enum>Qt::LeftToRight</enum>
-    </property>
-    <property name="text">
-     <string/>
-    </property>
-    <property name="flat">
-     <bool>true</bool>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="pushButtonSlot4">
-    <property name="geometry">
-     <rect>
-      <x>160</x>
-      <y>420</y>
-      <width>104</width>
-      <height>127</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string/>
-    </property>
-    <property name="flat">
-     <bool>true</bool>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="pushButtonSlot6">
-    <property name="geometry">
-     <rect>
-      <x>160</x>
-      <y>560</y>
-      <width>104</width>
-      <height>127</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string/>
-    </property>
-    <property name="flat">
-     <bool>true</bool>
-    </property>
-   </widget>
    <widget class="QPushButton" name="pushButtonCapital">
     <property name="geometry">
      <rect>
@@ -465,19 +354,6 @@
     </property>
     <property name="alignment">
      <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="swap12">
-    <property name="geometry">
-     <rect>
-      <x>120</x>
-      <y>227</y>
-      <width>71</width>
-      <height>28</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>&lt;&gt;</string>
     </property>
    </widget>
    <widget class="QPushButton" name="pushButtonCampaign">
@@ -639,82 +515,6 @@
      <string>slot_3</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="pushButtonEnSlot4">
-    <property name="geometry">
-     <rect>
-      <x>880</x>
-      <y>420</y>
-      <width>104</width>
-      <height>127</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string/>
-    </property>
-    <property name="flat">
-     <bool>true</bool>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="pushButtonEnSlot3">
-    <property name="geometry">
-     <rect>
-      <x>1000</x>
-      <y>420</y>
-      <width>104</width>
-      <height>127</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string/>
-    </property>
-    <property name="flat">
-     <bool>true</bool>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="pushButtonEnSlot5">
-    <property name="geometry">
-     <rect>
-      <x>1000</x>
-      <y>560</y>
-      <width>104</width>
-      <height>127</height>
-     </rect>
-    </property>
-    <property name="minimumSize">
-     <size>
-      <width>104</width>
-      <height>127</height>
-     </size>
-    </property>
-    <property name="maximumSize">
-     <size>
-      <width>224</width>
-      <height>127</height>
-     </size>
-    </property>
-    <property name="text">
-     <string/>
-    </property>
-    <property name="flat">
-     <bool>true</bool>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="pushButtonEnSlot1">
-    <property name="geometry">
-     <rect>
-      <x>1000</x>
-      <y>260</y>
-      <width>104</width>
-      <height>127</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string/>
-    </property>
-    <property name="flat">
-     <bool>true</bool>
-    </property>
-   </widget>
    <widget class="QLabel" name="EnemySlot4">
     <property name="geometry">
      <rect>
@@ -761,41 +561,6 @@
       <width>51</width>
       <height>141</height>
      </rect>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="pushButtonEnSlot2">
-    <property name="geometry">
-     <rect>
-      <x>880</x>
-      <y>260</y>
-      <width>104</width>
-      <height>127</height>
-     </rect>
-    </property>
-    <property name="layoutDirection">
-     <enum>Qt::LeftToRight</enum>
-    </property>
-    <property name="text">
-     <string/>
-    </property>
-    <property name="flat">
-     <bool>true</bool>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="pushButtonEnSlot6">
-    <property name="geometry">
-     <rect>
-      <x>880</x>
-      <y>560</y>
-      <width>104</width>
-      <height>127</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string/>
-    </property>
-    <property name="flat">
-     <bool>true</bool>
     </property>
    </widget>
    <widget class="QPushButton" name="pushButtonVersus">
@@ -892,175 +657,6 @@
     </property>
     <property name="text">
      <string>E-mail</string>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="swap56">
-    <property name="geometry">
-     <rect>
-      <x>120</x>
-      <y>690</y>
-      <width>71</width>
-      <height>28</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>&lt;&gt;</string>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="swap34">
-    <property name="geometry">
-     <rect>
-      <x>120</x>
-      <y>390</y>
-      <width>71</width>
-      <height>28</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>&lt;&gt;</string>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="swap13">
-    <property name="geometry">
-     <rect>
-      <x>0</x>
-      <y>370</y>
-      <width>31</width>
-      <height>61</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>&lt;&gt;</string>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="swap24">
-    <property name="geometry">
-     <rect>
-      <x>275</x>
-      <y>370</y>
-      <width>31</width>
-      <height>61</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>&lt;&gt;</string>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="swap35">
-    <property name="geometry">
-     <rect>
-      <x>0</x>
-      <y>520</y>
-      <width>31</width>
-      <height>61</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>&lt;&gt;</string>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="swap46">
-    <property name="geometry">
-     <rect>
-      <x>275</x>
-      <y>520</y>
-      <width>31</width>
-      <height>61</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>&lt;&gt;</string>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="enSwap35">
-    <property name="geometry">
-     <rect>
-      <x>1114</x>
-      <y>520</y>
-      <width>31</width>
-      <height>61</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>&lt;&gt;</string>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="enSwap12">
-    <property name="geometry">
-     <rect>
-      <x>959</x>
-      <y>227</y>
-      <width>71</width>
-      <height>28</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>&lt;&gt;</string>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="enSwap13">
-    <property name="geometry">
-     <rect>
-      <x>1114</x>
-      <y>370</y>
-      <width>31</width>
-      <height>61</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>&lt;&gt;</string>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="enSwap34">
-    <property name="geometry">
-     <rect>
-      <x>959</x>
-      <y>390</y>
-      <width>71</width>
-      <height>28</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>&lt;&gt;</string>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="enSwap56">
-    <property name="geometry">
-     <rect>
-      <x>959</x>
-      <y>690</y>
-      <width>71</width>
-      <height>28</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>&lt;&gt;</string>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="enSwap24">
-    <property name="geometry">
-     <rect>
-      <x>840</x>
-      <y>370</y>
-      <width>31</width>
-      <height>61</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>&lt;&gt;</string>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="enSwap46">
-    <property name="geometry">
-     <rect>
-      <x>840</x>
-      <y>520</y>
-      <width>31</width>
-      <height>61</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>&lt;&gt;</string>
     </property>
    </widget>
    <widget class="QPushButton" name="pushButtonFight">
@@ -1493,7 +1089,6 @@
    <zorder>slot5</zorder>
    <zorder>slot3</zorder>
    <zorder>slot1</zorder>
-   <zorder>swap12</zorder>
    <zorder>pushButtonCampaign</zorder>
    <zorder>EnemySlot5</zorder>
    <zorder>EnemySlot1</zorder>
@@ -1501,46 +1096,21 @@
    <zorder>listEnemyUnits</zorder>
    <zorder>listEnemySlots</zorder>
    <zorder>pushButtonVersus</zorder>
-   <zorder>pushButtonSlot5</zorder>
-   <zorder>pushButtonSlot3</zorder>
-   <zorder>pushButtonSlot1</zorder>
    <zorder>pushButtonAddPlayer</zorder>
    <zorder>PlayersList</zorder>
    <zorder>PlayerName</zorder>
    <zorder>Email</zorder>
    <zorder>PlayerNameTxt</zorder>
    <zorder>EmailTxt</zorder>
-   <zorder>swap56</zorder>
-   <zorder>swap34</zorder>
-   <zorder>swap13</zorder>
-   <zorder>swap24</zorder>
-   <zorder>swap35</zorder>
-   <zorder>swap46</zorder>
-   <zorder>enSwap35</zorder>
-   <zorder>enSwap12</zorder>
-   <zorder>enSwap13</zorder>
-   <zorder>enSwap34</zorder>
-   <zorder>enSwap56</zorder>
-   <zorder>enSwap24</zorder>
-   <zorder>enSwap46</zorder>
    <zorder>pushButtonFight</zorder>
    <zorder>pushButtonDelPlayer</zorder>
    <zorder>EnemySlot2</zorder>
    <zorder>EnemySlot4</zorder>
    <zorder>EnemySlot6</zorder>
-   <zorder>pushButtonEnSlot5</zorder>
-   <zorder>pushButtonEnSlot3</zorder>
-   <zorder>pushButtonEnSlot1</zorder>
-   <zorder>pushButtonEnSlot4</zorder>
-   <zorder>pushButtonEnSlot2</zorder>
-   <zorder>pushButtonEnSlot6</zorder>
    <zorder>pushButtonChoosePlayer</zorder>
    <zorder>slot4</zorder>
    <zorder>slot2</zorder>
    <zorder>slot6</zorder>
-   <zorder>pushButtonSlot4</zorder>
-   <zorder>pushButtonSlot2</zorder>
-   <zorder>pushButtonSlot6</zorder>
    <zorder>PlayerSlotTxt_1</zorder>
    <zorder>PlayerSlotTxt_2</zorder>
    <zorder>PlayerSlotTxt_4</zorder>
