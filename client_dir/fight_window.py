@@ -5,7 +5,7 @@ import random
 from typing import Callable, Optional
 
 from PyQt5 import QtCore, QtWidgets
-from PyQt5.QtCore import QThread, pyqtSignal, QTimer, Qt
+from PyQt5.QtCore import QThread, pyqtSignal, QTimer, Qt, QEvent
 from PyQt5.QtGui import QPixmap, QMovie, QStandardItem, QStandardItemModel
 from PyQt5.QtWidgets import QMainWindow, QHBoxLayout
 
@@ -216,10 +216,7 @@ class FightWindow(QMainWindow):
                     'back.png')))
 
         self.set_front_gif_player1()
-        self.set_front_gif_player1_dict()
-
         self.set_unit_icons()
-        self.set_unit_icons_player1()
 
         self.ui.battleLog.setStyleSheet("background-color: rgb(65, 3, 2)")
 
@@ -320,23 +317,23 @@ class FightWindow(QMainWindow):
                     and unit is not None \
                     and unit.curr_health != 0:
 
-                if event.type() == QtCore.QEvent.Enter:
+                if event.type() == QEvent.Enter:
                     self.alies_or_enemies(unit, side, ui_dict, num)
 
-                elif event.type() == QtCore.QEvent.Leave:
+                elif event.type() == QEvent.Leave:
                     for key in ui_dict.keys():
                         show_no_circle(ui_dict.get(key))
                     # битва еще не закончена
                     if not self.new_battle.battle_is_over:
                         self.show_circle_attacker()
 
-                elif event.type() == QtCore.QEvent.MouseButtonPress:
-                    if event.button() == Qt.LeftButton:
-                        if num in self.new_battle.target_slots:
-                            self.attack_enemy_by_slot(num, side)
+                elif event.type() == QEvent.MouseButtonPress:
+                    if event.button() == Qt.LeftButton \
+                            and num in self.new_battle.target_slots:
+                        self.attack_enemy_by_slot(num, side)
 
             if source == item and unit is not None:
-                if event.type() == QtCore.QEvent.MouseButtonPress \
+                if event.type() == QEvent.MouseButtonPress \
                         and event.button() == Qt.RightButton:
                     self._slot_detailed(unit, UnitDialog)
 
@@ -435,16 +432,10 @@ class FightWindow(QMainWindow):
 
     def change_side(self) -> None:
         """Смена сторон"""
-        if self.player_side == FRONT:
-            self.player_side = REAR
-            self.enemy_side = FRONT
+        self.change_icons()
+        self.change_gifs()
 
-            self.set_front_gif_player2_dict()
-        else:
-            self.player_side = FRONT
-            self.enemy_side = REAR
-
-            self.set_front_gif_player1_dict()
+        self.player_side, self.enemy_side = self.enemy_side, self.player_side
 
         self.unit_gifs_update()
         self.show_no_damaged()
@@ -458,37 +449,22 @@ class FightWindow(QMainWindow):
             self.show_frame_attacker()
             self.show_circle_attacker()
 
-    def set_front_gif_player1_dict(self) -> None:
-        """Задание FRONT стороны для анимационных GIF игрока 1"""
-        self.pl_slots_dict = self.front_slots_dict
-        self.pl_slots_shad_dict = self.front_slots_shad_dict
-        self.pl_slots_eff_dict = self.front_slots_eff_dict
-        self.pl_slots_attacked_eff_dict = self.front_slots_attacked_eff_dict
-        self.pl_hp_slots_dict = self.front_hp_slots_dict
-
-        self.en_slots_dict = self.rear_slots_dict
-        self.en_slots_shad_dict = self.rear_slots_shad_dict
-        self.en_slots_eff_dict = self.rear_slots_eff_dict
-        self.en_slots_attacked_eff_dict = self.rear_slots_attacked_eff_dict
-        self.en_hp_slots_dict = self.rear_hp_slots_dict
-
-    def set_front_gif_player2_dict(self) -> None:
-        """Задание FRONT стороны для анимационных GIF игрока 2"""
-        self.pl_slots_dict = self.rear_slots_dict
-        self.pl_slots_shad_dict = self.rear_slots_shad_dict
-        self.pl_slots_eff_dict = self.rear_slots_eff_dict
-        self.pl_slots_attacked_eff_dict = self.rear_slots_attacked_eff_dict
-        self.pl_hp_slots_dict = self.rear_hp_slots_dict
-
-        self.en_slots_dict = self.front_slots_dict
-        self.en_slots_shad_dict = self.front_slots_shad_dict
-        self.en_slots_eff_dict = self.front_slots_eff_dict
-        self.en_slots_attacked_eff_dict = self.front_slots_attacked_eff_dict
-        self.en_hp_slots_dict = self.front_hp_slots_dict
+    def change_gifs(self) -> None:
+        """Меняет местами FRONT/REAR анимационные GIF юнитов игроков"""
+        self.pl_slots_dict, self.en_slots_dict = \
+            self.en_slots_dict, self.pl_slots_dict
+        self.pl_slots_shad_dict, self.en_slots_shad_dict = \
+            self.en_slots_shad_dict, self.pl_slots_shad_dict
+        self.pl_slots_eff_dict, self.en_slots_eff_dict = \
+            self.en_slots_eff_dict, self.pl_slots_eff_dict
+        self.pl_slots_attacked_eff_dict, self.en_slots_attacked_eff_dict = \
+            self.en_slots_attacked_eff_dict, self.pl_slots_attacked_eff_dict
+        self.pl_hp_slots_dict, self.en_hp_slots_dict = \
+            self.en_hp_slots_dict, self.pl_hp_slots_dict
 
     def append_front(self) -> None:
         """Основные анимационные GIF юнитов FRONT стороны"""
-        self.front_slots_dict = {
+        self.pl_slots_dict = {
             1: self.ui.gifPlayerSlot_1,
             2: self.ui.gifPlayerSlot_2,
             3: self.ui.gifPlayerSlot_3,
@@ -499,7 +475,7 @@ class FightWindow(QMainWindow):
 
     def append_front_shadows(self) -> None:
         """Анимационные GIF теней юнитов FRONT стороны"""
-        self.front_slots_shad_dict = {
+        self.pl_slots_shad_dict = {
             1: self.ui.gifShadSlot_1,
             2: self.ui.gifShadSlot_2,
             3: self.ui.gifShadSlot_3,
@@ -510,7 +486,7 @@ class FightWindow(QMainWindow):
 
     def append_front_effects(self) -> None:
         """Анимационные GIF эффектов атакующий юнитов FRONT стороны"""
-        self.front_slots_eff_dict = {
+        self.pl_slots_eff_dict = {
             1: self.ui.gifEffSlot_1,
             2: self.ui.gifEffSlot_2,
             3: self.ui.gifEffSlot_3,
@@ -521,7 +497,7 @@ class FightWindow(QMainWindow):
 
     def append_front_attacked_eff(self) -> None:
         """Анимационные GIF эффектов атакованных юнитов FRONT стороны"""
-        self.front_slots_attacked_eff_dict = {
+        self.pl_slots_attacked_eff_dict = {
             1: self.ui.gifPlayerAttEffSlot_1,
             2: self.ui.gifPlayerAttEffSlot_2,
             3: self.ui.gifPlayerAttEffSlot_3,
@@ -532,7 +508,7 @@ class FightWindow(QMainWindow):
 
     def append_front_hp(self) -> None:
         """GIF очков здоровья юнитов FRONT стороны"""
-        self.front_hp_slots_dict = {
+        self.pl_hp_slots_dict = {
             1: self.ui.hpSlot1,
             2: self.ui.hpSlot2,
             3: self.ui.hpSlot3,
@@ -543,7 +519,7 @@ class FightWindow(QMainWindow):
 
     def append_rear(self) -> None:
         """Анимационные GIF теней юнитов REAR стороны"""
-        self.rear_slots_dict = {
+        self.en_slots_dict = {
             1: self.ui.gifEnemySlot_1,
             2: self.ui.gifEnemySlot_2,
             3: self.ui.gifEnemySlot_3,
@@ -554,7 +530,7 @@ class FightWindow(QMainWindow):
 
     def append_rear_shadows(self) -> None:
         """Анимационные GIF теней юнитов REAR стороны"""
-        self.rear_slots_shad_dict = {
+        self.en_slots_shad_dict = {
             1: self.ui.gifEnemyShadSlot_1,
             2: self.ui.gifEnemyShadSlot_2,
             3: self.ui.gifEnemyShadSlot_3,
@@ -565,7 +541,7 @@ class FightWindow(QMainWindow):
 
     def append_rear_effects(self) -> None:
         """Анимационные GIF эффектов атакующий юнитов REAR стороны"""
-        self.rear_slots_eff_dict = {
+        self.en_slots_eff_dict = {
             1: self.ui.gifEnemyEffSlot_1,
             2: self.ui.gifEnemyEffSlot_2,
             3: self.ui.gifEnemyEffSlot_3,
@@ -576,7 +552,7 @@ class FightWindow(QMainWindow):
 
     def append_rear_attacked_eff(self) -> None:
         """Анимационные GIF эффектов атакованных юнитов REAR стороны"""
-        self.rear_slots_attacked_eff_dict = {
+        self.en_slots_attacked_eff_dict = {
             1: self.ui.gifEnemyAttEffSlot_1,
             2: self.ui.gifEnemyAttEffSlot_2,
             3: self.ui.gifEnemyAttEffSlot_3,
@@ -587,7 +563,7 @@ class FightWindow(QMainWindow):
 
     def append_rear_hp(self) -> None:
         """GIF очков здоровья юнитов REAR стороны"""
-        self.rear_hp_slots_dict = {
+        self.en_hp_slots_dict = {
             1: self.ui.enemyHPSlot1,
             2: self.ui.enemyHPSlot2,
             3: self.ui.enemyHPSlot3,
@@ -635,7 +611,7 @@ class FightWindow(QMainWindow):
 
     def append_front_icons(self) -> None:
         """Иконки юнитов FRONT стороны"""
-        self.front_icons_dict = {
+        self.unit_icons_dict = {
             1: self.ui.slot1,
             2: self.ui.slot2,
             3: self.ui.slot3,
@@ -646,7 +622,7 @@ class FightWindow(QMainWindow):
 
     def append_front_field(self) -> None:
         """Полевые юниты FRONT стороны"""
-        self.front_field_dict = {
+        self.unit_field_dict = {
             1: self.ui.Unit_1,
             2: self.ui.Unit_2,
             3: self.ui.Unit_3,
@@ -657,7 +633,7 @@ class FightWindow(QMainWindow):
 
     def append_front_damaged(self) -> None:
         """Иконки атакованных юнитов FRONT стороны"""
-        self.front_damaged_dict = {
+        self.unit_damaged_dict = {
             1: self.ui.damPlayerSlot_1,
             2: self.ui.damPlayerSlot_2,
             3: self.ui.damPlayerSlot_3,
@@ -668,7 +644,7 @@ class FightWindow(QMainWindow):
 
     def append_front_circles(self) -> None:
         """Круги юнитов FRONT стороны"""
-        self.front_circles_dict = {
+        self.unit_circles_dict = {
             1: self.ui.gifCircleSlot_1,
             2: self.ui.gifCircleSlot_2,
             3: self.ui.gifCircleSlot_3,
@@ -679,7 +655,7 @@ class FightWindow(QMainWindow):
 
     def append_rear_icons(self) -> None:
         """GIF иконок юнитов REAR стороны"""
-        self.rear_icons_dict = {
+        self.dung_icons_dict = {
             1: self.ui.enemySlot1,
             2: self.ui.enemySlot2,
             3: self.ui.enemySlot3,
@@ -690,7 +666,7 @@ class FightWindow(QMainWindow):
 
     def append_rear_field(self) -> None:
         """Полевые юниты REAR стороны"""
-        self.rear_field_dict = {
+        self.ding_field_dict = {
             1: self.ui.EnemyUnit_1,
             2: self.ui.EnemyUnit_2,
             3: self.ui.EnemyUnit_3,
@@ -701,7 +677,7 @@ class FightWindow(QMainWindow):
 
     def append_rear_damaged(self) -> None:
         """Иконки атакованных юнитов REAR стороны"""
-        self.rear_damaged_dict = {
+        self.dung_damaged_dict = {
             1: self.ui.damEnemySlot_1,
             2: self.ui.damEnemySlot_2,
             3: self.ui.damEnemySlot_3,
@@ -712,7 +688,7 @@ class FightWindow(QMainWindow):
 
     def append_rear_circles(self) -> None:
         """Круги юнитов REAR стороны"""
-        self.rear_circles_dict = {
+        self.dung_circles_dict = {
             1: self.ui.gifEnemyCircleSlot_1,
             2: self.ui.gifEnemyCircleSlot_2,
             3: self.ui.gifEnemyCircleSlot_3,
@@ -1117,11 +1093,11 @@ class FightWindow(QMainWindow):
             self.en_slots_eff_dict
         )
 
-    def show_gif_side(self,
-                      unit: any,
-                      gif_slot: QtWidgets.QLabel,
-                      action: str,
-                      side: str) -> None:
+    def show_gif(self,
+                 unit: any,
+                 gif_slot: QtWidgets.QLabel,
+                 action: str,
+                 side: str) -> None:
         """Обновление GIF в слоте"""
         if unit is None:
             gif = QMovie(os.path.join(
@@ -1171,7 +1147,7 @@ class FightWindow(QMainWindow):
             side = self.enemy_side
             slots_dict = slots_dict2
 
-        self.show_gif_side(
+        self.show_gif(
             unit,
             slots_dict[unit.slot],
             action,
@@ -1424,25 +1400,25 @@ class FightWindow(QMainWindow):
                 self.new_battle.current_unit in self.new_battle.target_player.units:
 
             if self.new_battle.target_player == self.new_battle.player2:
-                self.animate_action_side(
+                self.animate_action(
                     self.en_slots_dict,
                     UNIT_STAND,
                     self.enemy_side)
 
                 # прорисовка эффекта на атакованном вражеском юните
-                self.show_gif_side(
+                self.show_gif(
                     current_unit,
                     self.en_slots_attacked_eff_dict[curr_target.slot],
                     UNIT_EFFECTS_TARGET,
                     self.enemy_side)
             else:
-                self.animate_action_side(
+                self.animate_action(
                     self.pl_slots_dict,
                     UNIT_STAND,
                     self.player_side)
 
                 # прорисовка эффекта на атакованном юните игрока
-                self.show_gif_side(
+                self.show_gif(
                     current_unit,
                     self.pl_slots_attacked_eff_dict[curr_target.slot],
                     UNIT_EFFECTS_TARGET,
@@ -1457,7 +1433,7 @@ class FightWindow(QMainWindow):
 
             if self.new_battle.target_player == self.new_battle.player2:
                 # прорисовка эффекта на атакованном вражеском юните
-                self.show_gif_side(
+                self.show_gif(
                     current_unit,
                     self.en_slots_attacked_eff_dict[curr_target.slot],
                     UNIT_EFFECTS_TARGET,
@@ -1469,7 +1445,7 @@ class FightWindow(QMainWindow):
 
             else:
                 # прорисовка эффекта на атакованном юните игрока
-                self.show_gif_side(
+                self.show_gif(
                     current_unit,
                     self.pl_slots_attacked_eff_dict[curr_target.slot],
                     UNIT_EFFECTS_TARGET,
@@ -1620,8 +1596,6 @@ class FightWindow(QMainWindow):
     def unit_icons_update(self) -> None:
         """Метод обновляющий иконки и кнопки юнитов игроков"""
         if self.player_side == FRONT:
-            self.set_unit_icons_player1()
-
             self.update_icons(self.unit_icons_dict,
                               self.unit_damaged_dict,
                               FRONT)
@@ -1630,8 +1604,6 @@ class FightWindow(QMainWindow):
                               REAR)
 
         else:
-            self.set_unit_icons_player2()
-
             self.update_icons(self.unit_icons_dict,
                               self.unit_damaged_dict,
                               REAR)
@@ -1639,37 +1611,24 @@ class FightWindow(QMainWindow):
                               self.dung_damaged_dict,
                               FRONT)
 
-    def set_unit_icons_player1(self) -> None:
-        """Заполнение словарей иконок и кнопок юнитов FRONT - игрок 1"""
-        self.unit_icons_dict = self.front_icons_dict
-        self.unit_damaged_dict = self.front_damaged_dict
-        self.unit_circles_dict = self.front_circles_dict
-        self.unit_field_dict = self.front_field_dict
+    def change_icons(self) -> None:
+        """Меняет местами FRONT/REAR иконки юнитов игроков"""
+        self.unit_icons_dict, self.dung_icons_dict = \
+            self.dung_icons_dict, self.unit_icons_dict
+        self.unit_damaged_dict, self.dung_damaged_dict = \
+            self.dung_damaged_dict, self.unit_damaged_dict
+        self.unit_circles_dict, self.dung_circles_dict = \
+            self.dung_circles_dict, self.unit_circles_dict
+        self.unit_field_dict, self.dung_field_dict = \
+            self.dung_field_dict, self.unit_field_dict
 
-        self.dung_icons_dict = self.rear_icons_dict
-        self.dung_damaged_dict = self.rear_damaged_dict
-        self.dung_circles_dict = self.rear_circles_dict
-        self.dung_field_dict = self.rear_field_dict
-
-    def set_unit_icons_player2(self) -> None:
-        """Заполнение словарей иконок и кнопок юнитов FRONT - игрок 2"""
-        self.dung_icons_dict = self.front_icons_dict
-        self.dung_damaged_dict = self.front_damaged_dict
-        self.dung_circles_dict = self.front_circles_dict
-        self.dung_field_dict = self.front_field_dict
-
-        self.unit_icons_dict = self.rear_icons_dict
-        self.unit_damaged_dict = self.rear_damaged_dict
-        self.unit_circles_dict = self.rear_circles_dict
-        self.unit_field_dict = self.rear_field_dict
-
-    def animate_action_side(self,
-                            slots_dict: dict,
-                            unit_action: str,
-                            side: str) -> None:
+    def animate_action(self,
+                       slots_dict: dict,
+                       unit_action: str,
+                       side: str) -> None:
         """Анимации юнитов игрока"""
         for num, gif_slot in slots_dict.items():
-            self.show_gif_side(
+            self.show_gif(
                 self._unit_by_slot_and_side(num, side),
                 gif_slot,
                 unit_action,
@@ -1678,25 +1637,25 @@ class FightWindow(QMainWindow):
     def unit_gifs_update(self) -> None:
         """Метод обновляющий анимацию юнитов"""
         # прорисовка модели бездействующего юнита игрока
-        self.animate_action_side(
+        self.animate_action(
             self.pl_slots_dict,
             UNIT_STAND,
             self.player_side)
 
         # прорисовка тени бездействующего юнита игрока
-        self.animate_action_side(
+        self.animate_action(
             self.pl_slots_shad_dict,
             UNIT_SHADOW_STAND,
             self.player_side)
 
         # прорисовка модели бездействующего юнита врага
-        self.animate_action_side(
+        self.animate_action(
             self.en_slots_dict,
             UNIT_STAND,
             self.enemy_side)
 
         # прорисовка тени бездействующего юнита врага
-        self.animate_action_side(
+        self.animate_action(
             self.en_slots_shad_dict,
             UNIT_SHADOW_STAND,
             self.enemy_side)
