@@ -3,6 +3,7 @@ import os
 from typing import Callable, Dict
 
 from PyQt5 import QtWidgets, QtCore
+from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QMainWindow, QHBoxLayout
 
@@ -29,12 +30,12 @@ class CampaignWindow(QMainWindow):
     конвертированного файла campaign_form.py
     """
 
-    def __init__(self, parent: any):
+    def __init__(self, parent_window: any):
         super().__init__()
         # основные переменные
         self.name = 'CampaignWindow'
-        self.main = parent
-        self.difficulty = parent.difficulty
+        self.main = parent_window
+        self.difficulty = parent_window.difficulty
         self.faction = main_db.current_faction
         self.dungeon = ''
         self.curr_mission = 0
@@ -135,6 +136,13 @@ class CampaignWindow(QMainWindow):
         self.show_boss()
 
         self.show()
+
+    def keyPressEvent(self, event) -> None:
+        """Метод обработки нажатия клавиш A, B"""
+        if event.key() == Qt.Key_A:
+            self.press_player_army()
+        if event.key() == Qt.Key_B:
+            self.boss_detailed()
 
     def reset(self) -> None:
         """Обновить"""
@@ -492,7 +500,8 @@ class CampaignWindow(QMainWindow):
         # обновляем портрет
         self.slot_update(leader, icon)
 
-    def get_unit_portrait(self, unit: any):
+    @staticmethod
+    def get_unit_portrait(unit: any):
         """Получение иконки юнита"""
         try:
             return os.path.join(

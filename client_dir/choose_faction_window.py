@@ -18,10 +18,10 @@ class ChooseRaceWindow(QMainWindow):
     конвертированного файла choose_faction_form.py
     """
 
-    def __init__(self, parent: any):
+    def __init__(self, parent_window: any):
         super().__init__()
         # основные переменные
-        self.main = parent
+        self.main = parent_window
         self.question = True  # Новая игра
         self.faction_number = 1
         self.faction = EM

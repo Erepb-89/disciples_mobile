@@ -1,13 +1,14 @@
 """Главное окно столицы"""
+import os
 
-from PyQt5 import QtCore
-from PyQt5.QtGui import QPixmap
+from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QPixmap, QMovie
 from PyQt5.QtWidgets import QMainWindow, QHBoxLayout
 
 from client_dir.capital_army_window import CapitalArmyWindow
 from client_dir.capital_building_window import CapitalBuildingWindow
 from client_dir.capital_main_form import Ui_CapitalWindow
-from client_dir.settings import TOWNS, SCREEN_RECT
+from client_dir.settings import TOWNS, SCREEN_RECT, CAPITAL_ANIM, LD
 from client_dir.ui_functions import get_image
 from units_dir.units import main_db
 
@@ -27,12 +28,11 @@ class CapitalWindow(QMainWindow):
 
         self.InitUI()
 
-    def keyPPressEvent(self, event):
-        if event.key() == QtCore.Qt.Key_P:
+    def keyPressEvent(self, event):
+        """Метод обработки нажатия клавиш P, S"""
+        if event.key() == Qt.Key_P:
             self.show_army()
-
-    def keySPressEvent(self, event):
-        if event.key() == QtCore.Qt.Key_S:
+        if event.key() == Qt.Key_S:
             self.show_building()
 
     def InitUI(self):
@@ -43,6 +43,12 @@ class CapitalWindow(QMainWindow):
         self.hbox = QHBoxLayout(self)
 
         self.update_capital()
+        if self.faction != LD:
+            self.ui.animation.setScaledContents(True)
+        else:
+            self.ui.animation.setScaledContents(False)
+        self.animate_capital()
+
         self.ui.pushButtonBack.clicked.connect(self.back)
         self.ui.pushButtonArmy.clicked.connect(self.show_army)
         self.ui.pushButtonBuild.clicked.connect(self.show_building)
@@ -50,13 +56,21 @@ class CapitalWindow(QMainWindow):
         self.show()
 
     def update_capital(self):
-        """Обновление лейбла, заполнение картинкой замка"""
+        """Обновление лейбла, заполнение картинкой столицы"""
         capital_bg = self.ui.capitalBG
         capital_bg.setPixmap(
             QPixmap(get_image(TOWNS, self.faction)))
         capital_bg.setGeometry(SCREEN_RECT)
         self.hbox.addWidget(capital_bg)
         self.setLayout(self.hbox)
+
+    def animate_capital(self):
+        """Отображение GIF-анимации столицы"""
+        gif = QMovie(os.path.join(
+            CAPITAL_ANIM,
+            f"{self.faction}.gif"))
+        self.ui.animation.setMovie(gif)
+        gif.start()
 
     def show_army(self):
         """Метод создающий окно армии."""

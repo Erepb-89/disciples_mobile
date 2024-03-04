@@ -23,10 +23,10 @@ class ChooseHeroWindow(QMainWindow):
     конвертированного файла choose_hero_form.py
     """
 
-    def __init__(self, parent: any):
+    def __init__(self, parent_window: any):
         super().__init__()
         # основные переменные
-        self.choose_faction = parent
+        self.choose_faction = parent_window
         self.question = False  # Выбор героя
         self.faction = main_db.current_faction
         self.factory = AbstractFactory.create_factory(

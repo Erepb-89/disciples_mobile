@@ -8,9 +8,9 @@ from typing import Callable, Optional
 from PyQt5 import QtCore
 from PyQt5.QtCore import Qt, QMimeData, QVariant, QEvent
 from PyQt5.QtGui import QPixmap, QStandardItemModel, \
-    QStandardItem, QMovie, QDrag
+    QStandardItem, QMovie, QDrag, QCursor
 from PyQt5.QtWidgets import QMainWindow, QApplication, QWidget, \
-    QHBoxLayout, QListView, QPushButton, QLabel, QFrame
+    QHBoxLayout, QListView, QLabel, QFrame
 
 from client_dir.capital_window import CapitalWindow
 from client_dir.choose_faction_window import ChooseRaceWindow
@@ -23,7 +23,7 @@ from client_dir.settings import UNIT_ICONS, GIF_ANIMATIONS, \
     TOWN_IMG, PLUG, ICON, PORTRAITS, BACKGROUND, BIG, \
     ACTIVE_UNITS
 from client_dir.ui_functions import get_unit_image, \
-    set_beige_colour, set_borders, ui_lock, ui_unlock
+    set_beige_colour, set_borders, ui_lock, ui_unlock, get_cursor
 from client_dir.unit_dialog import UnitDialog
 from units_dir.units import main_db
 
@@ -37,10 +37,10 @@ class ClientMainWindow(QMainWindow):
     """
 
     class Label(QLabel):
-        def __init__(self, title, parent):
-            super().__init__(title, parent)
+        def __init__(self, title, parent_window):
+            super().__init__(title, parent_window)
             self.setAcceptDrops(True)
-            self.parent = parent
+            self.parent_window = parent_window
 
         def mouseMoveEvent(self, event) -> None:
             mime_data = QMimeData()
@@ -63,22 +63,22 @@ class ClientMainWindow(QMainWindow):
                 event.ignore()
 
         def dropEvent(self, event) -> None:
-            first = int(self.parent.current_label[-1])
+            first = int(self.parent_window.current_label[-1])
             second = int(self.objectName()[-1])
 
-            if "enemy" not in self.parent.current_label.lower():
-                self.parent.check_and_swap(
+            if "enemy" not in self.parent_window.current_label.lower():
+                self.parent_window.check_and_swap(
                     first,
                     second,
                     main_db.PlayerUnits)
 
             else:
-                self.parent.check_and_swap(
+                self.parent_window.check_and_swap(
                     first,
                     second,
                     main_db.CurrentDungeon)
 
-            # self.parent.current_label[-1])
+            # self.parent_window.current_label[-1])
 
     def __init__(self):
         super().__init__()
@@ -352,6 +352,9 @@ class ClientMainWindow(QMainWindow):
         self.current_label = ''
         self.source = ''
 
+        cursor_standard = QCursor(QPixmap(get_cursor('standard')))
+        QApplication.setOverrideCursor(cursor_standard)
+
         self.show()
 
     def eventFilter(self, source, event):
@@ -430,7 +433,8 @@ class ClientMainWindow(QMainWindow):
             main_db.game_session_id,
             self.difficulty)
 
-    def button_enabled(self, button, database, num2):
+    @staticmethod
+    def button_enabled(button, database, num2):
         """Определяет доступность кнопки по юнитам в слотах"""
         try:
             if main_db.get_unit_by_slot(
@@ -660,38 +664,6 @@ class ClientMainWindow(QMainWindow):
             slot2,
             main_db.CurrentDungeon)
         self.enemy_list_update()
-
-    def swap_enemy_action_12(self) -> None:
-        """Меняет местами юнитов подземелья в слотах 1 и 2"""
-        self.swap_enemy_action(1, 2)
-
-    def swap_enemy_action_13(self) -> None:
-        """Меняет местами юнитов подземелья в слотах 1 и 3"""
-        if not self.check_and_swap(2, 4, main_db.CurrentDungeon):
-            self.swap_enemy_action(1, 3)
-
-    def swap_enemy_action_24(self) -> None:
-        """Меняет местами юнитов подземелья в слотах 2 и 4"""
-        if not self.check_and_swap(2, 4, main_db.CurrentDungeon):
-            self.swap_enemy_action(2, 4)
-
-    def swap_enemy_action_34(self) -> None:
-        """Меняет местами юнитов подземелья в слотах 3 и 4"""
-        self.swap_enemy_action(3, 4)
-
-    def swap_enemy_action_35(self) -> None:
-        """Меняет местами юнитов подземелья в слотах 3 и 5"""
-        if not self.check_and_swap(4, 6, main_db.CurrentDungeon):
-            self.swap_enemy_action(3, 5)
-
-    def swap_enemy_action_46(self) -> None:
-        """Меняет местами юнитов подземелья в слотах 4 и 6"""
-        if not self.check_and_swap(4, 6, main_db.CurrentDungeon):
-            self.swap_enemy_action(4, 6)
-
-    def swap_enemy_action_56(self) -> None:
-        """Меняет местами юнитов подземелья в слотах 5 и 6"""
-        self.swap_enemy_action(5, 6)
 
     def delete_unit_action(self) -> None:
         """Метод обработчик нажатия кнопки 'Уволить' у игрока"""
