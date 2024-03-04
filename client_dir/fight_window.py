@@ -1499,7 +1499,7 @@ class FightWindow(QMainWindow):
 
     def show_dot_effect(self, unit: Unit, dot_type: str, icons_dict: dict):
         """Показывает действующий отрицательный эффект на юните"""
-        if unit.dotted and self.new_battle.dotted_units[unit].get(dot_type):
+        if self.new_battle.dotted_units[unit].get(dot_type):
             rounds = self.new_battle.dotted_units[unit][dot_type][1]
             if rounds:
                 show_dot_icon(
@@ -1526,7 +1526,6 @@ class FightWindow(QMainWindow):
 
     def define_priority_effect(self, unit: Unit, icons_dict: dict):
         """Отобразить один приоритетный эффект"""
-        self.show_dot_effect(unit, 'Увеличение урона', icons_dict)
         self.show_dot_effect(unit, 'Снижение урона', icons_dict)
         self.show_dot_effect(unit, 'Снижение инициативы', icons_dict)
         self.show_dot_effect(unit, 'Полиморф', icons_dict)
@@ -1538,23 +1537,22 @@ class FightWindow(QMainWindow):
 
     def define_dotted_units(self):
         """Определяет юнитов с наложенными эффектами"""
-        for unit in self.new_battle.player1.units:
+        self.show_dot_on_units(self.new_battle.player1.units,
+                               self.unit_damaged_dict)
+
+        self.show_dot_on_units(self.new_battle.player2.units,
+                               self.dung_damaged_dict)
+
+    def show_dot_on_units(self, units, units_dict):
+        """Показывает эффекты на юнитах"""
+        for unit in units:
             if unit in self.new_battle.dotted_units:
-                # Показывает эффект на юните игрока
-                self.define_priority_effect(unit, self.unit_damaged_dict)
+                # Показывает эффект на юните
+                self.define_priority_effect(unit, units_dict)
 
             elif unit in self.new_battle.boosted_units:
                 self.show_might_effect(
-                    unit, 'Увеличение урона', self.unit_damaged_dict)
-
-        for unit in self.new_battle.player2.units:
-            if unit in self.new_battle.dotted_units:
-                # Показывает эффект на вражеском юните
-                self.define_priority_effect(unit, self.dung_damaged_dict)
-
-            elif unit in self.new_battle.boosted_units:
-                self.show_might_effect(
-                    unit, 'Увеличение урона', self.dung_damaged_dict)
+                    unit, 'Увеличение урона', units_dict)
 
     def update_icons(self,
                      icons_dict: dict,
