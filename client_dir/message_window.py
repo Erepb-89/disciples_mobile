@@ -16,10 +16,10 @@ class MessageWindow(QMainWindow):
     конвертированного файла message_form.py
     """
 
-    def __init__(self, parent: any, text: str):
+    def __init__(self, parent_window: any, text: str):
         super().__init__()
         # основные переменные
-        self.parent = parent
+        self.parent_window = parent_window
         self.text = text
 
         self.InitUI()

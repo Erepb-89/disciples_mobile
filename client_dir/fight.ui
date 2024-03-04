@@ -36,7 +36,7 @@
      <number>0</number>
     </property>
     <property name="text">
-     <string>slot_1</string>
+     <string/>
     </property>
     <property name="alignment">
      <set>Qt::AlignBottom|Qt::AlignHCenter</set>
@@ -64,7 +64,7 @@
      <number>0</number>
     </property>
     <property name="text">
-     <string>slot_3</string>
+     <string/>
     </property>
     <property name="alignment">
      <set>Qt::AlignBottom|Qt::AlignHCenter</set>
@@ -92,7 +92,7 @@
      <number>0</number>
     </property>
     <property name="text">
-     <string>slot_5</string>
+     <string/>
     </property>
     <property name="alignment">
      <set>Qt::AlignBottom|Qt::AlignHCenter</set>
@@ -120,7 +120,7 @@
      <number>0</number>
     </property>
     <property name="text">
-     <string>slot_2</string>
+     <string/>
     </property>
     <property name="alignment">
      <set>Qt::AlignBottom|Qt::AlignHCenter</set>
@@ -148,7 +148,7 @@
      <number>0</number>
     </property>
     <property name="text">
-     <string>slot_6</string>
+     <string/>
     </property>
     <property name="alignment">
      <set>Qt::AlignBottom|Qt::AlignHCenter</set>
@@ -176,7 +176,7 @@
      <number>0</number>
     </property>
     <property name="text">
-     <string>slot_4</string>
+     <string/>
     </property>
     <property name="alignment">
      <set>Qt::AlignBottom|Qt::AlignHCenter</set>
@@ -225,22 +225,6 @@
      <string>bg</string>
     </property>
     <property name="scaledContents">
-     <bool>true</bool>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="pushButtonSlot3">
-    <property name="geometry">
-     <rect>
-      <x>30</x>
-      <y>300</y>
-      <width>104</width>
-      <height>127</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string/>
-    </property>
-    <property name="flat">
      <bool>true</bool>
     </property>
    </widget>
@@ -324,22 +308,6 @@
      <set>Qt::AlignCenter</set>
     </property>
    </widget>
-   <widget class="QPushButton" name="pushButtonSlot4">
-    <property name="geometry">
-     <rect>
-      <x>147</x>
-      <y>300</y>
-      <width>104</width>
-      <height>127</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string/>
-    </property>
-    <property name="flat">
-     <bool>true</bool>
-    </property>
-   </widget>
    <widget class="QLabel" name="slot4">
     <property name="geometry">
      <rect>
@@ -420,38 +388,6 @@
      <set>Qt::AlignCenter</set>
     </property>
    </widget>
-   <widget class="QPushButton" name="pushButtonSlot1">
-    <property name="geometry">
-     <rect>
-      <x>30</x>
-      <y>140</y>
-      <width>104</width>
-      <height>127</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string/>
-    </property>
-    <property name="flat">
-     <bool>true</bool>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="pushButtonSlot6">
-    <property name="geometry">
-     <rect>
-      <x>147</x>
-      <y>460</y>
-      <width>104</width>
-      <height>127</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string/>
-    </property>
-    <property name="flat">
-     <bool>true</bool>
-    </property>
-   </widget>
    <widget class="QLabel" name="slot5">
     <property name="geometry">
      <rect>
@@ -490,38 +426,6 @@
     </property>
     <property name="alignment">
      <set>Qt::AlignCenter</set>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="pushButtonSlot5">
-    <property name="geometry">
-     <rect>
-      <x>30</x>
-      <y>460</y>
-      <width>104</width>
-      <height>127</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string/>
-    </property>
-    <property name="flat">
-     <bool>true</bool>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="pushButtonSlot2">
-    <property name="geometry">
-     <rect>
-      <x>147</x>
-      <y>140</y>
-      <width>104</width>
-      <height>127</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string/>
-    </property>
-    <property name="flat">
-     <bool>true</bool>
     </property>
    </widget>
    <widget class="QLabel" name="slot3">
@@ -629,22 +533,6 @@
      <set>Qt::AlignCenter</set>
     </property>
    </widget>
-   <widget class="QPushButton" name="pushButtonEnemySlot6">
-    <property name="geometry">
-     <rect>
-      <x>1350</x>
-      <y>464</y>
-      <width>104</width>
-      <height>127</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string/>
-    </property>
-    <property name="flat">
-     <bool>true</bool>
-    </property>
-   </widget>
    <widget class="QLabel" name="enemySlot2">
     <property name="geometry">
      <rect>
@@ -725,22 +613,6 @@
      <set>Qt::AlignCenter</set>
     </property>
    </widget>
-   <widget class="QPushButton" name="pushButtonEnemySlot4">
-    <property name="geometry">
-     <rect>
-      <x>1350</x>
-      <y>304</y>
-      <width>104</width>
-      <height>127</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string/>
-    </property>
-    <property name="flat">
-     <bool>true</bool>
-    </property>
-   </widget>
    <widget class="QLabel" name="enemySlot5">
     <property name="geometry">
      <rect>
@@ -779,38 +651,6 @@
     </property>
     <property name="alignment">
      <set>Qt::AlignCenter</set>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="pushButtonEnemySlot2">
-    <property name="geometry">
-     <rect>
-      <x>1350</x>
-      <y>144</y>
-      <width>104</width>
-      <height>127</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string/>
-    </property>
-    <property name="flat">
-     <bool>true</bool>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="pushButtonEnemySlot5">
-    <property name="geometry">
-     <rect>
-      <x>1467</x>
-      <y>464</y>
-      <width>104</width>
-      <height>127</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string/>
-    </property>
-    <property name="flat">
-     <bool>true</bool>
     </property>
    </widget>
    <widget class="QLabel" name="enemySlot6">
@@ -853,22 +693,6 @@
      <set>Qt::AlignCenter</set>
     </property>
    </widget>
-   <widget class="QPushButton" name="pushButtonEnemySlot3">
-    <property name="geometry">
-     <rect>
-      <x>1467</x>
-      <y>304</y>
-      <width>104</width>
-      <height>127</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string/>
-    </property>
-    <property name="flat">
-     <bool>true</bool>
-    </property>
-   </widget>
    <widget class="QLabel" name="enemySlot1">
     <property name="geometry">
      <rect>
@@ -909,22 +733,6 @@
      <set>Qt::AlignCenter</set>
     </property>
    </widget>
-   <widget class="QPushButton" name="pushButtonEnemySlot1">
-    <property name="geometry">
-     <rect>
-      <x>1467</x>
-      <y>144</y>
-      <width>104</width>
-      <height>127</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string/>
-    </property>
-    <property name="flat">
-     <bool>true</bool>
-    </property>
-   </widget>
    <widget class="QLabel" name="gifEnemySlot_5">
     <property name="geometry">
      <rect>
@@ -947,7 +755,7 @@
      <number>0</number>
     </property>
     <property name="text">
-     <string>enemySlot_5</string>
+     <string/>
     </property>
     <property name="alignment">
      <set>Qt::AlignBottom|Qt::AlignHCenter</set>
@@ -975,7 +783,7 @@
      <number>0</number>
     </property>
     <property name="text">
-     <string>enemySlot_6</string>
+     <string/>
     </property>
     <property name="alignment">
      <set>Qt::AlignBottom|Qt::AlignHCenter</set>
@@ -1003,7 +811,7 @@
      <number>0</number>
     </property>
     <property name="text">
-     <string>enemySlot_3</string>
+     <string/>
     </property>
     <property name="alignment">
      <set>Qt::AlignBottom|Qt::AlignHCenter</set>
@@ -1031,7 +839,7 @@
      <number>0</number>
     </property>
     <property name="text">
-     <string>enemySlot_2</string>
+     <string/>
     </property>
     <property name="alignment">
      <set>Qt::AlignBottom|Qt::AlignHCenter</set>
@@ -1059,7 +867,7 @@
      <number>0</number>
     </property>
     <property name="text">
-     <string>enemySlot_4</string>
+     <string/>
     </property>
     <property name="alignment">
      <set>Qt::AlignBottom|Qt::AlignHCenter</set>
@@ -1087,7 +895,7 @@
      <number>0</number>
     </property>
     <property name="text">
-     <string>enemySlot_1</string>
+     <string/>
     </property>
     <property name="alignment">
      <set>Qt::AlignBottom|Qt::AlignHCenter</set>
@@ -1488,7 +1296,7 @@
      <number>0</number>
     </property>
     <property name="text">
-     <string>slot_1</string>
+     <string/>
     </property>
     <property name="alignment">
      <set>Qt::AlignBottom|Qt::AlignHCenter</set>
@@ -1516,7 +1324,7 @@
      <number>0</number>
     </property>
     <property name="text">
-     <string>slot_3</string>
+     <string/>
     </property>
     <property name="alignment">
      <set>Qt::AlignBottom|Qt::AlignHCenter</set>
@@ -1544,7 +1352,7 @@
      <number>0</number>
     </property>
     <property name="text">
-     <string>slot_5</string>
+     <string/>
     </property>
     <property name="alignment">
      <set>Qt::AlignBottom|Qt::AlignHCenter</set>
@@ -1572,7 +1380,7 @@
      <number>0</number>
     </property>
     <property name="text">
-     <string>slot_2</string>
+     <string/>
     </property>
     <property name="alignment">
      <set>Qt::AlignBottom|Qt::AlignHCenter</set>
@@ -1600,7 +1408,7 @@
      <number>0</number>
     </property>
     <property name="text">
-     <string>slot_4</string>
+     <string/>
     </property>
     <property name="alignment">
      <set>Qt::AlignBottom|Qt::AlignHCenter</set>
@@ -1628,7 +1436,7 @@
      <number>0</number>
     </property>
     <property name="text">
-     <string>slot_6</string>
+     <string/>
     </property>
     <property name="alignment">
      <set>Qt::AlignBottom|Qt::AlignHCenter</set>
@@ -2624,7 +2432,7 @@
      <number>0</number>
     </property>
     <property name="text">
-     <string>slot_6</string>
+     <string/>
     </property>
     <property name="alignment">
      <set>Qt::AlignBottom|Qt::AlignHCenter</set>
@@ -2652,7 +2460,7 @@
      <number>0</number>
     </property>
     <property name="text">
-     <string>slot_1</string>
+     <string/>
     </property>
     <property name="alignment">
      <set>Qt::AlignBottom|Qt::AlignHCenter</set>
@@ -2680,7 +2488,7 @@
      <number>0</number>
     </property>
     <property name="text">
-     <string>slot_5</string>
+     <string/>
     </property>
     <property name="alignment">
      <set>Qt::AlignBottom|Qt::AlignHCenter</set>
@@ -2708,7 +2516,7 @@
      <number>0</number>
     </property>
     <property name="text">
-     <string>slot_3</string>
+     <string/>
     </property>
     <property name="alignment">
      <set>Qt::AlignBottom|Qt::AlignHCenter</set>
@@ -2736,7 +2544,7 @@
      <number>0</number>
     </property>
     <property name="text">
-     <string>slot_2</string>
+     <string/>
     </property>
     <property name="alignment">
      <set>Qt::AlignBottom|Qt::AlignHCenter</set>
@@ -2764,7 +2572,7 @@
      <number>0</number>
     </property>
     <property name="text">
-     <string>slot_4</string>
+     <string/>
     </property>
     <property name="alignment">
      <set>Qt::AlignBottom|Qt::AlignHCenter</set>
@@ -3237,7 +3045,7 @@
      <number>0</number>
     </property>
     <property name="text">
-     <string>slot_6</string>
+     <string/>
     </property>
     <property name="alignment">
      <set>Qt::AlignBottom|Qt::AlignHCenter</set>
@@ -3265,7 +3073,7 @@
      <number>0</number>
     </property>
     <property name="text">
-     <string>slot_2</string>
+     <string/>
     </property>
     <property name="alignment">
      <set>Qt::AlignBottom|Qt::AlignHCenter</set>
@@ -3293,7 +3101,7 @@
      <number>0</number>
     </property>
     <property name="text">
-     <string>slot_4</string>
+     <string/>
     </property>
     <property name="alignment">
      <set>Qt::AlignBottom|Qt::AlignHCenter</set>
@@ -3321,7 +3129,7 @@
      <number>0</number>
     </property>
     <property name="text">
-     <string>slot_1</string>
+     <string/>
     </property>
     <property name="alignment">
      <set>Qt::AlignBottom|Qt::AlignHCenter</set>
@@ -3349,7 +3157,7 @@
      <number>0</number>
     </property>
     <property name="text">
-     <string>slot_5</string>
+     <string/>
     </property>
     <property name="alignment">
      <set>Qt::AlignBottom|Qt::AlignHCenter</set>
@@ -3377,7 +3185,7 @@
      <number>0</number>
     </property>
     <property name="text">
-     <string>slot_3</string>
+     <string/>
     </property>
     <property name="alignment">
      <set>Qt::AlignBottom|Qt::AlignHCenter</set>
@@ -3584,7 +3392,7 @@
      </rect>
     </property>
    </widget>
-   <widget class="QPushButton" name="pushButtonUnit_1">
+   <widget class="QLabel" name="Unit_1">
     <property name="geometry">
      <rect>
       <x>710</x>
@@ -3593,17 +3401,38 @@
       <height>127</height>
      </rect>
     </property>
+    <property name="minimumSize">
+     <size>
+      <width>105</width>
+      <height>127</height>
+     </size>
+    </property>
+    <property name="maximumSize">
+     <size>
+      <width>224</width>
+      <height>127</height>
+     </size>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::Panel</enum>
+    </property>
+    <property name="frameShadow">
+     <enum>QFrame::Raised</enum>
+    </property>
+    <property name="lineWidth">
+     <number>0</number>
+    </property>
+    <property name="midLineWidth">
+     <number>0</number>
+    </property>
     <property name="text">
      <string/>
     </property>
-    <property name="default">
-     <bool>false</bool>
-    </property>
-    <property name="flat">
-     <bool>true</bool>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
     </property>
    </widget>
-   <widget class="QPushButton" name="pushButtonUnit_2">
+   <widget class="QLabel" name="Unit_2">
     <property name="geometry">
      <rect>
       <x>840</x>
@@ -3612,14 +3441,38 @@
       <height>127</height>
      </rect>
     </property>
+    <property name="minimumSize">
+     <size>
+      <width>105</width>
+      <height>127</height>
+     </size>
+    </property>
+    <property name="maximumSize">
+     <size>
+      <width>224</width>
+      <height>127</height>
+     </size>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::Panel</enum>
+    </property>
+    <property name="frameShadow">
+     <enum>QFrame::Raised</enum>
+    </property>
+    <property name="lineWidth">
+     <number>0</number>
+    </property>
+    <property name="midLineWidth">
+     <number>0</number>
+    </property>
     <property name="text">
      <string/>
     </property>
-    <property name="flat">
-     <bool>true</bool>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
     </property>
    </widget>
-   <widget class="QPushButton" name="pushButtonUnit_3">
+   <widget class="QLabel" name="Unit_3">
     <property name="geometry">
      <rect>
       <x>570</x>
@@ -3628,14 +3481,38 @@
       <height>127</height>
      </rect>
     </property>
+    <property name="minimumSize">
+     <size>
+      <width>105</width>
+      <height>127</height>
+     </size>
+    </property>
+    <property name="maximumSize">
+     <size>
+      <width>224</width>
+      <height>127</height>
+     </size>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::Panel</enum>
+    </property>
+    <property name="frameShadow">
+     <enum>QFrame::Raised</enum>
+    </property>
+    <property name="lineWidth">
+     <number>0</number>
+    </property>
+    <property name="midLineWidth">
+     <number>0</number>
+    </property>
     <property name="text">
      <string/>
     </property>
-    <property name="flat">
-     <bool>true</bool>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
     </property>
    </widget>
-   <widget class="QPushButton" name="pushButtonUnit_4">
+   <widget class="QLabel" name="Unit_4">
     <property name="geometry">
      <rect>
       <x>690</x>
@@ -3644,14 +3521,38 @@
       <height>127</height>
      </rect>
     </property>
+    <property name="minimumSize">
+     <size>
+      <width>105</width>
+      <height>127</height>
+     </size>
+    </property>
+    <property name="maximumSize">
+     <size>
+      <width>224</width>
+      <height>127</height>
+     </size>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::Panel</enum>
+    </property>
+    <property name="frameShadow">
+     <enum>QFrame::Raised</enum>
+    </property>
+    <property name="lineWidth">
+     <number>0</number>
+    </property>
+    <property name="midLineWidth">
+     <number>0</number>
+    </property>
     <property name="text">
      <string/>
     </property>
-    <property name="flat">
-     <bool>true</bool>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
     </property>
    </widget>
-   <widget class="QPushButton" name="pushButtonUnit_5">
+   <widget class="QLabel" name="Unit_5">
     <property name="geometry">
      <rect>
       <x>410</x>
@@ -3660,14 +3561,38 @@
       <height>127</height>
      </rect>
     </property>
+    <property name="minimumSize">
+     <size>
+      <width>105</width>
+      <height>127</height>
+     </size>
+    </property>
+    <property name="maximumSize">
+     <size>
+      <width>224</width>
+      <height>127</height>
+     </size>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::Panel</enum>
+    </property>
+    <property name="frameShadow">
+     <enum>QFrame::Raised</enum>
+    </property>
+    <property name="lineWidth">
+     <number>0</number>
+    </property>
+    <property name="midLineWidth">
+     <number>0</number>
+    </property>
     <property name="text">
      <string/>
     </property>
-    <property name="flat">
-     <bool>true</bool>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
     </property>
    </widget>
-   <widget class="QPushButton" name="pushButtonUnit_6">
+   <widget class="QLabel" name="Unit_6">
     <property name="geometry">
      <rect>
       <x>530</x>
@@ -3676,46 +3601,38 @@
       <height>127</height>
      </rect>
     </property>
-    <property name="text">
-     <string/>
-    </property>
-    <property name="flat">
-     <bool>true</bool>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="pushButtonEnemyUnit_2">
-    <property name="geometry">
-     <rect>
-      <x>1000</x>
-      <y>430</y>
-      <width>131</width>
+    <property name="minimumSize">
+     <size>
+      <width>105</width>
       <height>127</height>
-     </rect>
+     </size>
     </property>
-    <property name="text">
-     <string/>
-    </property>
-    <property name="flat">
-     <bool>true</bool>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="pushButtonEnemyUnit_1">
-    <property name="geometry">
-     <rect>
-      <x>1120</x>
-      <y>540</y>
-      <width>131</width>
+    <property name="maximumSize">
+     <size>
+      <width>224</width>
       <height>127</height>
-     </rect>
+     </size>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::Panel</enum>
+    </property>
+    <property name="frameShadow">
+     <enum>QFrame::Raised</enum>
+    </property>
+    <property name="lineWidth">
+     <number>0</number>
+    </property>
+    <property name="midLineWidth">
+     <number>0</number>
     </property>
     <property name="text">
      <string/>
     </property>
-    <property name="flat">
-     <bool>true</bool>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
     </property>
    </widget>
-   <widget class="QPushButton" name="pushButtonEnemyUnit_4">
+   <widget class="QLabel" name="EnemyUnit_4">
     <property name="geometry">
      <rect>
       <x>860</x>
@@ -3724,46 +3641,38 @@
       <height>127</height>
      </rect>
     </property>
-    <property name="text">
-     <string/>
-    </property>
-    <property name="flat">
-     <bool>true</bool>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="pushButtonEnemyUnit_3">
-    <property name="geometry">
-     <rect>
-      <x>960</x>
-      <y>620</y>
-      <width>131</width>
+    <property name="minimumSize">
+     <size>
+      <width>105</width>
       <height>127</height>
-     </rect>
+     </size>
     </property>
-    <property name="text">
-     <string/>
-    </property>
-    <property name="flat">
-     <bool>true</bool>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="pushButtonEnemyUnit_6">
-    <property name="geometry">
-     <rect>
-      <x>700</x>
-      <y>580</y>
-      <width>131</width>
+    <property name="maximumSize">
+     <size>
+      <width>224</width>
       <height>127</height>
-     </rect>
+     </size>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::Panel</enum>
+    </property>
+    <property name="frameShadow">
+     <enum>QFrame::Raised</enum>
+    </property>
+    <property name="lineWidth">
+     <number>0</number>
+    </property>
+    <property name="midLineWidth">
+     <number>0</number>
     </property>
     <property name="text">
      <string/>
     </property>
-    <property name="flat">
-     <bool>true</bool>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
     </property>
    </widget>
-   <widget class="QPushButton" name="pushButtonEnemyUnit_5">
+   <widget class="QLabel" name="EnemyUnit_5">
     <property name="geometry">
      <rect>
       <x>810</x>
@@ -3772,11 +3681,195 @@
       <height>127</height>
      </rect>
     </property>
+    <property name="minimumSize">
+     <size>
+      <width>105</width>
+      <height>127</height>
+     </size>
+    </property>
+    <property name="maximumSize">
+     <size>
+      <width>224</width>
+      <height>127</height>
+     </size>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::Panel</enum>
+    </property>
+    <property name="frameShadow">
+     <enum>QFrame::Raised</enum>
+    </property>
+    <property name="lineWidth">
+     <number>0</number>
+    </property>
+    <property name="midLineWidth">
+     <number>0</number>
+    </property>
     <property name="text">
      <string/>
     </property>
-    <property name="flat">
-     <bool>true</bool>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="EnemyUnit_2">
+    <property name="geometry">
+     <rect>
+      <x>1000</x>
+      <y>430</y>
+      <width>131</width>
+      <height>127</height>
+     </rect>
+    </property>
+    <property name="minimumSize">
+     <size>
+      <width>105</width>
+      <height>127</height>
+     </size>
+    </property>
+    <property name="maximumSize">
+     <size>
+      <width>224</width>
+      <height>127</height>
+     </size>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::Panel</enum>
+    </property>
+    <property name="frameShadow">
+     <enum>QFrame::Raised</enum>
+    </property>
+    <property name="lineWidth">
+     <number>0</number>
+    </property>
+    <property name="midLineWidth">
+     <number>0</number>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="EnemyUnit_1">
+    <property name="geometry">
+     <rect>
+      <x>1120</x>
+      <y>540</y>
+      <width>131</width>
+      <height>127</height>
+     </rect>
+    </property>
+    <property name="minimumSize">
+     <size>
+      <width>105</width>
+      <height>127</height>
+     </size>
+    </property>
+    <property name="maximumSize">
+     <size>
+      <width>224</width>
+      <height>127</height>
+     </size>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::Panel</enum>
+    </property>
+    <property name="frameShadow">
+     <enum>QFrame::Raised</enum>
+    </property>
+    <property name="lineWidth">
+     <number>0</number>
+    </property>
+    <property name="midLineWidth">
+     <number>0</number>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="EnemyUnit_3">
+    <property name="geometry">
+     <rect>
+      <x>960</x>
+      <y>620</y>
+      <width>131</width>
+      <height>127</height>
+     </rect>
+    </property>
+    <property name="minimumSize">
+     <size>
+      <width>105</width>
+      <height>127</height>
+     </size>
+    </property>
+    <property name="maximumSize">
+     <size>
+      <width>224</width>
+      <height>127</height>
+     </size>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::Panel</enum>
+    </property>
+    <property name="frameShadow">
+     <enum>QFrame::Raised</enum>
+    </property>
+    <property name="lineWidth">
+     <number>0</number>
+    </property>
+    <property name="midLineWidth">
+     <number>0</number>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="EnemyUnit_6">
+    <property name="geometry">
+     <rect>
+      <x>700</x>
+      <y>580</y>
+      <width>131</width>
+      <height>127</height>
+     </rect>
+    </property>
+    <property name="minimumSize">
+     <size>
+      <width>105</width>
+      <height>127</height>
+     </size>
+    </property>
+    <property name="maximumSize">
+     <size>
+      <width>224</width>
+      <height>127</height>
+     </size>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::Panel</enum>
+    </property>
+    <property name="frameShadow">
+     <enum>QFrame::Raised</enum>
+    </property>
+    <property name="lineWidth">
+     <number>0</number>
+    </property>
+    <property name="midLineWidth">
+     <number>0</number>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
     </property>
    </widget>
    <zorder>FightBG</zorder>
@@ -3871,12 +3964,6 @@
    <zorder>damEnemySlot_2</zorder>
    <zorder>damEnemySlot_4</zorder>
    <zorder>damEnemySlot_6</zorder>
-   <zorder>pushButtonEnemySlot5</zorder>
-   <zorder>pushButtonEnemySlot3</zorder>
-   <zorder>pushButtonEnemySlot1</zorder>
-   <zorder>pushButtonEnemySlot6</zorder>
-   <zorder>pushButtonEnemySlot2</zorder>
-   <zorder>pushButtonEnemySlot4</zorder>
    <zorder>hpSlot3</zorder>
    <zorder>hpSlot5</zorder>
    <zorder>hpSlot1</zorder>
@@ -3895,26 +3982,20 @@
    <zorder>damPlayerSlot_4</zorder>
    <zorder>damPlayerSlot_2</zorder>
    <zorder>damPlayerSlot_6</zorder>
-   <zorder>pushButtonSlot3</zorder>
-   <zorder>pushButtonSlot1</zorder>
-   <zorder>pushButtonSlot5</zorder>
-   <zorder>pushButtonSlot6</zorder>
-   <zorder>pushButtonSlot2</zorder>
-   <zorder>pushButtonSlot4</zorder>
    <zorder>speedText</zorder>
    <zorder>comboSpeed</zorder>
-   <zorder>pushButtonUnit_1</zorder>
-   <zorder>pushButtonUnit_2</zorder>
-   <zorder>pushButtonUnit_3</zorder>
-   <zorder>pushButtonUnit_4</zorder>
-   <zorder>pushButtonUnit_5</zorder>
-   <zorder>pushButtonUnit_6</zorder>
-   <zorder>pushButtonEnemyUnit_2</zorder>
-   <zorder>pushButtonEnemyUnit_1</zorder>
-   <zorder>pushButtonEnemyUnit_4</zorder>
-   <zorder>pushButtonEnemyUnit_3</zorder>
-   <zorder>pushButtonEnemyUnit_6</zorder>
-   <zorder>pushButtonEnemyUnit_5</zorder>
+   <zorder>Unit_1</zorder>
+   <zorder>Unit_2</zorder>
+   <zorder>Unit_3</zorder>
+   <zorder>Unit_4</zorder>
+   <zorder>Unit_5</zorder>
+   <zorder>Unit_6</zorder>
+   <zorder>EnemyUnit_2</zorder>
+   <zorder>EnemyUnit_1</zorder>
+   <zorder>EnemyUnit_4</zorder>
+   <zorder>EnemyUnit_3</zorder>
+   <zorder>EnemyUnit_6</zorder>
+   <zorder>EnemyUnit_5</zorder>
    <zorder>battleLog</zorder>
   </widget>
  </widget>

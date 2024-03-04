@@ -1781,7 +1781,7 @@ class Unit:
         """Увеличение урона Друидом"""
         if 'Увеличение урона' in self.attack_type:
             dmg_boost = math.floor(self.attack_dmg * 0.01 * target.attack_dmg)
-            target.attack_dmg += dmg_boost
+            target.attack_dmg = min(300, target.attack_dmg + dmg_boost)
 
             line = f"{self.name} увеличивает урон на " \
                    f"{self.attack_dmg}% воину {target.name}.\n"

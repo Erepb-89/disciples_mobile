@@ -6,7 +6,7 @@ from PyQt5 import QtWidgets
 from PyQt5.QtGui import QMovie, QPixmap
 
 from client_dir.settings import UNIT_ICONS, PLUG, ICON, GIF_ANIMATIONS, \
-    HIRE_SCREEN, COMMON, UNIT_STAND, BIG, BATTLE_ANIM
+    HIRE_SCREEN, COMMON, UNIT_STAND, BIG, BATTLE_ANIM, UNIT_FACES, CURSOR
 
 
 def get_image(folder: str, faction: str):
@@ -39,7 +39,27 @@ def get_unit_image(unit: any):
             UNIT_ICONS, PLUG)
 
 
-def show_gif(unit: any, gif_label: QtWidgets.QLabel):
+def get_unit_face(unit: any):
+    """Получение лица юнита (круг)"""
+    try:
+        return os.path.join(
+            UNIT_FACES,
+            f"{unit.name}.png")
+    except AttributeError as err:
+        print(err)
+
+
+def get_cursor(cursor_name: str):
+    """Получение курсора"""
+    try:
+        return os.path.join(
+            CURSOR,
+            f"{cursor_name}.gif")
+    except AttributeError as err:
+        print(err)
+
+
+def show_gif(unit: any, gif_label: QtWidgets.QLabel) -> None:
     """Установка gif'ки общего вида юнита"""
     gif = QMovie(os.path.join(
         GIF_ANIMATIONS, f"{unit.name}.gif"))
@@ -47,7 +67,7 @@ def show_gif(unit: any, gif_label: QtWidgets.QLabel):
     gif.start()
 
 
-def show_no_circle(gif_label: QtWidgets.QLabel):
+def show_no_circle(gif_label: QtWidgets.QLabel) -> None:
     """Убирает круг под юнитом"""
     gif = QMovie(
         os.path.join(
@@ -57,7 +77,7 @@ def show_no_circle(gif_label: QtWidgets.QLabel):
     gif.start()
 
 
-def show_polymorph(ui_label):
+def show_polymorph(ui_label) -> None:
     """Показывает GIF-анимацию Полиморфа"""
     unit_gif = "polymorph.gif"
     gif = QMovie(os.path.join(

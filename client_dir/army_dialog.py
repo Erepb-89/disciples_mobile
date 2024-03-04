@@ -8,8 +8,7 @@ from PyQt5.QtGui import QPixmap, QDrag
 from PyQt5.QtWidgets import QDialog, QLabel, QWidget
 
 from client_dir.settings import ARMY_BG, BIG, PORTRAITS
-from client_dir.ui_functions import slot_update, \
-    get_unit_image
+from client_dir.ui_functions import get_unit_image
 from client_dir.unit_dialog import UnitDialog
 from units_dir.units import main_db
 
@@ -18,10 +17,10 @@ class ArmyDialog(QDialog):
     """Диалог выбранной армии"""
 
     class Label(QLabel):
-        def __init__(self, title, parent):
-            super().__init__(title, parent)
+        def __init__(self, title, parent_window):
+            super().__init__(title, parent_window)
             self.setAcceptDrops(True)
-            self.parent = parent
+            self.parent_window = parent_window
 
         def mouseMoveEvent(self, event) -> None:
             mime_data = QMimeData()
@@ -39,18 +38,18 @@ class ArmyDialog(QDialog):
 
         def dragEnterEvent(self, event) -> None:
             if event.mimeData().hasImage() \
-                    and self.parent.player != 'Computer':
+                    and self.parent_window.player != 'Computer':
                 event.accept()
             else:
                 event.ignore()
 
         def dropEvent(self, event) -> None:
-            first = int(self.parent.current_label[-1])
+            first = int(self.parent_window.current_label[-1])
             second = int(self.objectName()[-1])
-            self.parent.check_and_swap(
+            self.parent_window.check_and_swap(
                 first,
                 second,
-                self.parent.db_table)
+                self.parent_window.db_table)
 
     def __init__(self, units: dict, player: str):
         super().__init__()
