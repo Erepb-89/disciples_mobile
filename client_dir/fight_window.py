@@ -942,45 +942,47 @@ class FightWindow(QMainWindow):
         # Очистка целей, чтобы в конце боя нельзя было атаковать повторно
         self.new_battle.target_slots = []
 
-        # битва еще не закончена
+        if 'жизни' in self.new_battle.current_unit.attack_type:
+            self.show_life_drain()
+
         if not self.new_battle.battle_is_over:
-            if 'жизни' in self.new_battle.current_unit.attack_type:
-                self.show_life_drain()
-
-            self._update_all_unit_health()
-
-            self.next_unit_turn()
-
-        # битва закончена
+            self.battle_not_over()
         else:
-            self.show_no_frames(self.unit_circles_dict, show_no_circle)
-            self.show_no_frames(self.dung_circles_dict, show_no_circle)
-
-            # возвращаем прежнюю форму
-            for unit in (*self.new_battle.player1.units,
-                         *self.new_battle.player2.units):
-                self.show_polymorph_animation(unit)
-
-            self.show_lvl_up_animations()
-
-            self.parent_window.reset()
-            if self.parent_window.name == 'CampaignWindow':
-                self.parent_window.main.player_list_update()
-                self.parent_window.main.player_slots_update()
-
-            self.worker = Thread(False)
-            self.worker.dataThread.connect(self.unit_gifs_update)
-            self.worker.start()
-
-            if not self.new_battle.player1.slots:
-                self.show_need_upgrade_effect(self.dung_damaged_dict,
-                                              self.new_battle.player2)
-            if not self.new_battle.player2.slots:
-                self.show_need_upgrade_effect(self.unit_damaged_dict,
-                                              self.new_battle.player1)
+            self.battle_over()
 
         self.update_log()
         self.new_battle.autofight = False
+
+    def battle_over(self):
+        """Битва закончена"""
+        self.show_no_frames(self.unit_circles_dict, show_no_circle)
+        self.show_no_frames(self.dung_circles_dict, show_no_circle)
+        # возвращаем прежнюю форму
+        for unit in (*self.new_battle.player1.units,
+                     *self.new_battle.player2.units):
+            self.show_polymorph_animation(unit)
+        self.show_lvl_up_animations()
+        self.parent_window.reset()
+        if self.parent_window.name == 'CampaignWindow':
+            self.parent_window.main.player_list_update()
+            self.parent_window.main.player_slots_update()
+        self.worker = Thread(False)
+        self.worker.dataThread.connect(self.unit_gifs_update)
+        self.worker.start()
+        if not self.new_battle.player1.slots:
+            self.show_need_upgrade_effect(self.dung_damaged_dict,
+                                          self.new_battle.player2)
+        if not self.new_battle.player2.slots:
+            self.show_need_upgrade_effect(self.unit_damaged_dict,
+                                          self.new_battle.player1)
+
+    def battle_not_over(self):
+        """Битва не закончена"""
+        # if 'жизни' in self.new_battle.current_unit.attack_type:
+        #     self.show_life_drain()
+
+        self._update_all_unit_health()
+        self.next_unit_turn()
 
     @staticmethod
     def add_gold(mission_number: any) -> None:
@@ -1379,6 +1381,7 @@ class FightWindow(QMainWindow):
             BATTLE_ANIM,
             unit_gif))
 
+        gif.setSpeed(self.speed)
         slots_dict[self.new_battle.current_unit.slot].setMovie(gif)
         gif.start()
 
