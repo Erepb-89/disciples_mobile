@@ -1032,22 +1032,11 @@ class FightWindow(QMainWindow):
         """Анимация всех получивших уровень юнитов"""
         # если юниты игрока1 мертвы
         if not self.new_battle.player1.slots:
-            self.add_upgraded_units(
-                self.new_battle.player2,
-                main_db.Player2Units,
-                self.enemy_side,
-                self.en_slots_eff_dict
-            )
+            self.upgrade_player2_units()
 
         # если юниты игрока2 мертвы
         elif not self.new_battle.player2.slots:
-
-            self.add_upgraded_units(
-                self.new_battle.player1,
-                self.db_table,
-                self.player_side,
-                self.pl_slots_eff_dict
-            )
+            self.upgrade_player1_units()
 
             if self.new_battle.player2.name == 'Computer' \
                     and self.dungeon != 'versus':
@@ -1064,38 +1053,67 @@ class FightWindow(QMainWindow):
                              and
                              (main_db.difficulty == 3
                               and main_db.campaign_level != 4)):
-                    main_db.update_session(
-                        main_db.game_session_id,
-                        main_db.campaign_level + 1,
-                        0,
-                        0,
-                        main_db.campaign_day,
-                        main_db.already_built)
-
-                    main_db.campaign_level += 1
+                    self.next_campaign_level()
+                # Кампания пройдена
                 elif '15' in self.dungeon \
                         and (main_db.campaign_level == 5
                              or
                              (main_db.difficulty == 3
                               and main_db.campaign_level == 4)):
-                    line = f"Поздравляем! Вы прошли кампанию за {main_db.current_faction}.\n"
-                    logging(line)
-
-                    global MES_END_CAMPAIGN
-                    MES_END_CAMPAIGN = MessageWindow(self, line)
-                    MES_END_CAMPAIGN.show()
-
-                # иначе просто прибавляем день
+                    self.finish_campaign()
+                # Повышение игрового дня
                 else:
-                    main_db.update_session(
-                        main_db.game_session_id,
-                        main_db.campaign_level,
-                        mission_number,
-                        self.parent_window.curr_mission,
-                        main_db.campaign_day,
-                        main_db.already_built)
+                    self.plus_1_day(mission_number)
 
         self.unlock_buttons_for_player()
+
+    @staticmethod
+    def next_campaign_level():
+        """Повышение уровня кампании, день + 1"""
+        main_db.update_session(
+            main_db.game_session_id,
+            main_db.campaign_level + 1,
+            0,
+            0,
+            main_db.campaign_day,
+            main_db.already_built)
+        main_db.campaign_level += 1
+
+    def finish_campaign(self):
+        """Кампания пройдена"""
+        line = f"Поздравляем! Вы прошли кампанию за {main_db.current_faction}.\n"
+        logging(line)
+        global MES_END_CAMPAIGN
+        MES_END_CAMPAIGN = MessageWindow(self, line)
+        MES_END_CAMPAIGN.show()
+
+    def plus_1_day(self, mission_number):
+        """Прибавление 1 игрового дня"""
+        main_db.update_session(
+            main_db.game_session_id,
+            main_db.campaign_level,
+            mission_number,
+            self.parent_window.curr_mission,
+            main_db.campaign_day,
+            main_db.already_built)
+
+    def upgrade_player1_units(self):
+        """Левел ап юнитов Игрока 1"""
+        self.add_upgraded_units(
+            self.new_battle.player1,
+            self.db_table,
+            self.player_side,
+            self.pl_slots_eff_dict
+        )
+
+    def upgrade_player2_units(self):
+        """Левел ап юнитов Игрока 2"""
+        self.add_upgraded_units(
+            self.new_battle.player2,
+            main_db.Player2Units,
+            self.enemy_side,
+            self.en_slots_eff_dict
+        )
 
     def show_gif_side(self,
                       unit: any,
