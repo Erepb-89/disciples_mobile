@@ -62,6 +62,9 @@ ELVEN_PLUG = "Elven Alliance.png"
 ANY_UNIT = 'Любой юнит'
 CLOSEST_UNIT = 'Ближайший юнит'
 
+PLAYER = 'player'
+ENEMY = 'enemy'
+
 FRONT = 'front/'
 REAR = 'rear/'
 OTHERS = 'others'
