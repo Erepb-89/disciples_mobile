@@ -1353,61 +1353,21 @@ class FightWindow(QMainWindow):
 
         # цель и текущий юнит принадлежат одному игроку
         elif self.unit_is_allied(curr_target):
-            if self.new_battle.target_player == self.new_battle.player2:
-                self.animate_action(
-                    self.en_slots_dict,
-                    UNIT_STAND,
-                    self.enemy_side)
-
-                # прорисовка эффекта на атакованном вражеском юните
-                self.show_gif(
-                    current_unit,
-                    self.en_slots_attacked_eff_dict[curr_target.slot],
-                    UNIT_EFFECTS_TARGET,
-                    self.enemy_side)
-            else:
-                self.animate_action(
-                    self.pl_slots_dict,
-                    UNIT_STAND,
-                    self.player_side)
-
-                # прорисовка эффекта на атакованном юните игрока
-                self.show_gif(
-                    current_unit,
-                    self.pl_slots_attacked_eff_dict[curr_target.slot],
-                    UNIT_EFFECTS_TARGET,
-                    self.player_side)
-
+            self.show_effects_on_player(curr_target, current_unit)
         else:
-            # прорисовка модели атакованного юнита
             self.show_attacked(curr_target)
-
-            # прорисовка тени атакованного юнита
             self.show_shadow_attacked(curr_target)
 
-            if self.new_battle.target_player == self.new_battle.player2:
-                # прорисовка эффекта на атакованном вражеском юните
-                self.show_gif(
-                    current_unit,
-                    self.en_slots_attacked_eff_dict[curr_target.slot],
-                    UNIT_EFFECTS_TARGET,
-                    self.enemy_side)
+            self.show_effects_on_player(curr_target, current_unit)
 
-                # Показывает атакованный вражеский юнит
-                show_damage(
-                    self.dung_damaged_dict[curr_target.slot])
-
-            else:
-                # прорисовка эффекта на атакованном юните игрока
-                self.show_gif(
-                    current_unit,
-                    self.pl_slots_attacked_eff_dict[curr_target.slot],
-                    UNIT_EFFECTS_TARGET,
-                    self.player_side)
-
-                # Показывает атакованный юнит игрока
+            if self.new_battle.target_player == self.new_battle.player1:
+                # self.show_effects_on_player(curr_target, current_unit)
                 show_damage(
                     self.unit_damaged_dict[curr_target.slot])
+            else:
+                # self.show_effects_on_player(curr_target, current_unit)
+                show_damage(
+                    self.dung_damaged_dict[curr_target.slot])
 
         # если атакованный юнит погиб
         if curr_target.curr_health == 0:
@@ -1426,6 +1386,33 @@ class FightWindow(QMainWindow):
 
             # удаляем цель
             self.new_battle.remove_unit(curr_target)
+
+    def show_effect_on_enemy(self,
+                             curr_target: Unit,
+                             current_unit: Unit):
+        """Показывает эффекты от атаки на юните противника"""
+        self.show_gif(
+            current_unit,
+            self.en_slots_attacked_eff_dict[curr_target.slot],
+            UNIT_EFFECTS_TARGET,
+            self.enemy_side)
+
+    def show_effects_on_player(self,
+                               curr_target: Unit,
+                               current_unit: Unit):
+        """Показывает эффекты от атаки на юните"""
+        if self.new_battle.target_player == self.new_battle.player1:
+            icons_dict = self.pl_slots_attacked_eff_dict
+            side = self.player_side
+        elif self.new_battle.target_player == self.new_battle.player2:
+            icons_dict = self.en_slots_attacked_eff_dict
+            side = self.enemy_side
+
+        self.show_gif(
+            current_unit,
+            icons_dict[curr_target.slot],
+            UNIT_EFFECTS_TARGET,
+            side)
 
     def unit_is_allied(self, curr_target):
         return curr_target in self.new_battle.target_player.units and \
