@@ -431,6 +431,33 @@ class ServerStorage:
                      Column('dotted', Integer),
                      )
 
+    def increase_campaign_level(self):
+        """Увеличивает уровень кампании"""
+        self.campaign_level += 1
+        self.campaign_day += 1
+        self.already_built = 0
+
+        self.update_session(
+            self.game_session_id,
+            self.campaign_level,
+            0,
+            0,
+            self.campaign_day,
+            self.already_built)
+
+    def increase_campaign_mission(self, mission_number: int):
+        """Переходит на следующую миссию кампании"""
+        self.campaign_day += 1
+        self.already_built = 0
+
+        self.update_session(
+            self.game_session_id,
+            self.campaign_level,
+            mission_number,
+            self.campaign_mission,
+            self.campaign_day,
+            self.already_built)
+
     def update_game_session(self):
         """Обновить игровую сессию"""
         curr_game_session = self.current_game_session(

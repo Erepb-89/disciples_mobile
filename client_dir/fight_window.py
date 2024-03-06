@@ -108,7 +108,7 @@ class FightWindow(QMainWindow):
         self.InitUI()
 
         with open(BATTLE_LOG, 'w', encoding='utf-8') as log:
-            log.write(f'Ходит: {self.new_battle.current_unit.name}\n')
+            log.write(f'Ходит: {self.curr_unit.name}\n')
             log.write("Новая битва\n")
         self.update_log()
 
@@ -303,7 +303,7 @@ class FightWindow(QMainWindow):
         Установка gif'ки круга определенног цвета под юнитом
         """
         if unit not in self.new_battle.current_player.units:
-            if self.new_battle.current_unit.attack_purpose == 6:
+            if self.curr_unit.attack_purpose == 6:
                 for key in ui_dict.keys():
                     unit = self._unit_by_slot_and_side(key, side)
                     if unit is not None \
@@ -655,7 +655,7 @@ class FightWindow(QMainWindow):
 
     def show_splash_area(self, unit: any, action: str) -> None:
         """Атака по площади"""
-        if unit in self.new_battle.player1.units:
+        if unit in self.player1.units:
             side = self.player_side
         else:
             side = self.enemy_side
@@ -665,80 +665,100 @@ class FightWindow(QMainWindow):
         else:
             gif_slot = self.ui.gifEnemyAreaAttack
 
-        gif = QMovie(os.path.join(
-            action,
-            f"{side}{unit.name}.gif"))
+        gif = self.action_gif(action, side, unit)
 
         gif_slot.setMovie(gif)
         gif.start()
 
-    def unit_is_dead(self, curr_unit):
+    @staticmethod
+    def action_gif(action: str, side: str, unit: Unit):
+        """Анимация действия"""
+        return QMovie(os.path.join(
+            action,
+            f"{side}{unit.name}.gif"))
+
+    def unit_is_dead(self, unit):
         """Если атакованный/отравленный юнит погибает"""
         # прорисовка модели атакованного юнита
-        self.show_attacked(curr_unit)
-        self.show_shadow_attacked(curr_unit)
+        self.show_attacked(unit)
+        self.show_shadow_attacked(unit)
 
         # удаление юнита из битвы
-        self.new_battle.remove_unit(curr_unit)
+        self.new_battle.remove_unit(unit)
 
         # анимация Полиморфа, если нужно
-        if curr_unit.dotted:
-            self.show_polymorph_animation(curr_unit)
+        if unit.dotted:
+            self.show_polymorph_animation(unit)
 
-        if curr_unit in self.new_battle.dotted_units:
-            self.new_battle.dotted_units.pop(curr_unit)
+        if unit in self.new_battle.dotted_units:
+            self.new_battle.dotted_units.pop(unit)
 
         self.new_battle.player_units_are_dead()
 
         if self.new_battle.battle_is_over:
             # возвращаем прежнюю форму
-            for unit in (*self.new_battle.player1.units,
-                         *self.new_battle.player2.units):
+            for unit in (*self.player1.units,
+                         *self.player2.units):
                 self.show_polymorph_animation(unit)
 
             self.new_battle.alive_getting_experience()
 
+    @property
+    def player1(self):
+        """Игрок 1"""
+        return self.new_battle.player1
+
+    @property
+    def player2(self):
+        """Игрок 2"""
+        return self.new_battle.player2
+
+    @property
+    def target_player(self):
+        """Целевой игрок"""
+        return self.new_battle.target_player
+
+    @property
+    def curr_unit(self):
+        """Текущий юнит"""
+        return self.new_battle.current_unit
+
+    @property
+    def campaign_level(self):
+        """Уровень кампании"""
+        return main_db.campaign_level
+
+    @property
+    def difficulty(self):
+        """Уровень сложности"""
+        return main_db.difficulty
+
     def show_poisoned_unit(self):
         """Если ходящий юнит отравлен и т.д."""
-        curr_unit = self.new_battle.current_unit
+        unit = self.curr_unit
         dot_units = self.new_battle.dotted_units
 
-        if curr_unit in dot_units and \
-                curr_unit.dotted:
-            if not dot_units[curr_unit].get('Снижение инициативы') \
-                    and not dot_units[curr_unit].get('Снижение урона') \
-                    and not dot_units[curr_unit].get('Паралич') \
-                    and not dot_units[curr_unit].get('Полиморф'):
-                # прорисовка модели атакованного юнита
-                self.show_attacked(curr_unit)
+        if unit in dot_units and unit.dotted:
+            if self.dot_not_cause_damage(dot_units, unit):
+                self.show_attacked(unit)
+                self.show_shadow_attacked(unit)
 
-                # прорисовка тени атакованного юнита
-                self.show_shadow_attacked(curr_unit)
-
-            # уменьшение кол-ва раундов
-            curr_unit.dotted -= 1
-
+            unit.minus_dot_round()
             self._update_all_unit_health()
 
-            if curr_unit.dotted == 0 and curr_unit in dot_units:
-                if curr_unit in self.new_battle.player1.units:
-                    pl_database = self.db_table
-                else:
-                    pl_database = self.new_battle.enemy_db_table
-
-                curr_unit.off_initiative(pl_database)
+            if unit.dotted == 0 and unit in dot_units:
+                unit.off_initiative(self.get_db_table(unit))
+                dot_units.pop(unit)
 
                 # отображение анимации Полиморфа
                 # ------------------------------
                 # анимация Полиморфа, если нужно
-                # self.show_polymorph_animation(curr_unit)
-                # self.new_battle.current_unit = self.new_battle.new_unit
-
-                dot_units.pop(curr_unit)
+                # self.show_polymorph_animation(unit)
+                # self.curr_unit = self.new_battle.new_unit
 
             # если отравленный юнит погиб
-            if curr_unit.curr_health == 0:
-                self.unit_is_dead(curr_unit)
+            if unit.curr_health == 0:
+                self.unit_is_dead(unit)
 
                 # битва еще не закончена
                 if not self.new_battle.battle_is_over:
@@ -752,15 +772,30 @@ class FightWindow(QMainWindow):
                     self.show_no_frames(self.dung_circles_dict, show_no_circle)
 
                     # возвращаем прежнюю форму
-                    for unit in (*self.new_battle.player1.units,
-                                 *self.new_battle.player2.units):
+                    for unit in (*self.player1.units,
+                                 *self.player2.units):
                         self.show_polymorph_animation(unit)
 
-                    # анимация левел-апа, если нужно
                     self.show_lvl_up_animations()
 
         # показать иконки эффектов
         self.define_dotted_units()
+
+    def get_db_table(self, unit: Unit):
+        """Определение текущей таблицы БД для игрока"""
+        if unit in self.player1.units:
+            pl_database = self.db_table
+        else:
+            pl_database = self.new_battle.enemy_db_table
+        return pl_database
+
+    @staticmethod
+    def dot_not_cause_damage(dot_units: dict, unit: Unit):
+        """Проверка что доп эффект не наносит урона"""
+        return not dot_units[unit].get('Снижение инициативы') \
+               and not dot_units[unit].get('Снижение урона') \
+               and not dot_units[unit].get('Паралич') \
+               and not dot_units[unit].get('Полиморф')
 
     def next_unit_turn(self) -> None:
         """Ход следующего юнита"""
@@ -807,7 +842,7 @@ class FightWindow(QMainWindow):
 
     def unit_defence(self) -> None:
         """Встать в Защиту выбранным юнитом"""
-        self.new_battle.current_unit.defence()
+        self.curr_unit.defence()
         self.update_log()
         self.show_no_damaged()
         self.clear_frames_circles()
@@ -817,13 +852,13 @@ class FightWindow(QMainWindow):
 
     def unit_waiting(self) -> None:
         """Ожидать выбранным юнитом"""
-        self.new_battle.current_unit.waiting()
+        self.curr_unit.waiting()
 
         self.update_log()
         self.show_no_damaged()
         self.clear_frames_circles()
 
-        self.new_battle.waiting_units.append(self.new_battle.current_unit)
+        self.new_battle.waiting_units.append(self.curr_unit)
 
         self.next_unit_turn()
 
@@ -834,13 +869,13 @@ class FightWindow(QMainWindow):
         self.update_log()
 
         if self.new_battle.units_in_round or (
-                not self.new_battle.units_in_round and self.new_battle.current_unit):
+                not self.new_battle.units_in_round and self.curr_unit):
             self.show_no_frames(self.unit_circles_dict, show_no_circle)
             self.show_no_frames(self.dung_circles_dict, show_no_circle)
 
             self.who_attack()
 
-            if 'жизни' in self.new_battle.current_unit.attack_type:
+            if 'жизни' in self.curr_unit.attack_type:
                 self.worker = Thread(False)
             else:
                 self.worker = Thread(True)
@@ -867,52 +902,51 @@ class FightWindow(QMainWindow):
         for target_slot in self.new_battle.attacked_slots:
             self.who_attacked(
                 target_slot,
-                self.new_battle.current_unit)
+                self.curr_unit)
 
         self.clear_frames_circles()
 
         # Очистка целей, чтобы в конце боя нельзя было атаковать повторно
         self.new_battle.target_slots = []
 
-        if 'жизни' in self.new_battle.current_unit.attack_type:
+        if 'жизни' in self.curr_unit.attack_type:
             self.show_life_drain()
 
         if not self.new_battle.battle_is_over:
             self.battle_not_over()
         else:
-            self.battle_over()
+            self.battle_over_animations()
 
         self.update_log()
         self.new_battle.autofight = False
 
-    def battle_over(self):
+    def battle_over_animations(self):
         """Битва закончена"""
         self.show_no_frames(self.unit_circles_dict, show_no_circle)
         self.show_no_frames(self.dung_circles_dict, show_no_circle)
         # возвращаем прежнюю форму
-        for unit in (*self.new_battle.player1.units,
-                     *self.new_battle.player2.units):
+        for unit in (*self.player1.units,
+                     *self.player2.units):
             self.show_polymorph_animation(unit)
         self.show_lvl_up_animations()
         self.parent_window.reset()
+
         if self.parent_window.name == 'CampaignWindow':
             self.parent_window.main.player_list_update()
             self.parent_window.main.player_slots_update()
+
         self.worker = Thread(False)
         self.worker.dataThread.connect(self.unit_gifs_update)
         self.worker.start()
-        if not self.new_battle.player1.slots:
+        if not self.player1.slots:
             self.show_need_upgrade_effect(self.dung_damaged_dict,
-                                          self.new_battle.player2)
-        if not self.new_battle.player2.slots:
+                                          self.player2)
+        if not self.player2.slots:
             self.show_need_upgrade_effect(self.unit_damaged_dict,
-                                          self.new_battle.player1)
+                                          self.player1)
 
     def battle_not_over(self):
         """Битва не закончена"""
-        # if 'жизни' in self.new_battle.current_unit.attack_type:
-        #     self.show_life_drain()
-
         self._update_all_unit_health()
         self.next_unit_turn()
 
@@ -964,54 +998,47 @@ class FightWindow(QMainWindow):
 
     def show_lvl_up_animations(self) -> None:
         """Анимация всех получивших уровень юнитов"""
-        # если юниты игрока1 мертвы
-        if not self.new_battle.player1.slots:
+        # если юниты игрока 1 мертвы
+        if not self.player1.slots:
             self.upgrade_player2_units()
 
-        # если юниты игрока2 мертвы
-        elif not self.new_battle.player2.slots:
+        # если юниты игрока 2 мертвы
+        elif not self.player2.slots:
             self.upgrade_player1_units()
 
-            if self.new_battle.player2.name == 'Computer' \
+            if self.player2.name == 'Computer' \
                     and self.dungeon != 'versus':
                 mission_number = self.dungeon.split('_')[-1]
                 self.add_gold(mission_number)
 
-                # после каждой победы день увеличивается на 1
-                main_db.campaign_day += 1
-                main_db.already_built = 0
-
-                # победили босса - повысился уровень кампании, день + 1
-                if '15' in self.dungeon \
-                        and (main_db.campaign_level != 5
-                             and
-                             (main_db.difficulty == 3
-                              and main_db.campaign_level != 4)):
+                if self.boss_killed():
                     self.next_campaign_level()
-                # Кампания пройдена
-                elif '15' in self.dungeon \
-                        and (main_db.campaign_level == 5
-                             or
-                             (main_db.difficulty == 3
-                              and main_db.campaign_level == 4)):
+                elif self.last_boss_killed():
                     self.finish_campaign()
-                # Повышение игрового дня
                 else:
-                    self.plus_1_day(mission_number)
+                    self.next_mission(mission_number)
 
         self.unlock_buttons_for_player()
 
-    @staticmethod
-    def next_campaign_level():
+    def last_boss_killed(self):
+        """Последний Босс кампании повержен"""
+        return '15' in self.dungeon \
+               and (main_db.campaign_level == 5
+                    or
+                    (self.difficulty == 3
+                     and self.campaign_level == 4))
+
+    def boss_killed(self):
+        """Босс кампании повержен"""
+        return '15' in self.dungeon \
+               and (self.campaign_level != 5
+                    and
+                    (self.difficulty == 3
+                     and self.campaign_level != 4))
+
+    def next_campaign_level(self):
         """Повышение уровня кампании, день + 1"""
-        main_db.update_session(
-            main_db.game_session_id,
-            main_db.campaign_level + 1,
-            0,
-            0,
-            main_db.campaign_day,
-            main_db.already_built)
-        main_db.campaign_level += 1
+        main_db.increase_campaign_level()
 
     def finish_campaign(self):
         """Кампания пройдена"""
@@ -1021,20 +1048,15 @@ class FightWindow(QMainWindow):
         MES_END_CAMPAIGN = MessageWindow(self, line)
         MES_END_CAMPAIGN.show()
 
-    def plus_1_day(self, mission_number):
-        """Прибавление 1 игрового дня"""
-        main_db.update_session(
-            main_db.game_session_id,
-            main_db.campaign_level,
-            mission_number,
-            self.parent_window.curr_mission,
-            main_db.campaign_day,
-            main_db.already_built)
+    @staticmethod
+    def next_mission(mission_number):
+        """Переходит на следующую миссию кампании"""
+        main_db.increase_campaign_mission(mission_number)
 
     def upgrade_player1_units(self):
         """Левел ап юнитов Игрока 1"""
         self.add_upgraded_units(
-            self.new_battle.player1,
+            self.player1,
             self.db_table,
             self.player_side,
             self.pl_slots_eff_dict
@@ -1043,7 +1065,7 @@ class FightWindow(QMainWindow):
     def upgrade_player2_units(self):
         """Левел ап юнитов Игрока 2"""
         self.add_upgraded_units(
-            self.new_battle.player2,
+            self.player2,
             main_db.Player2Units,
             self.enemy_side,
             self.en_slots_eff_dict
@@ -1056,33 +1078,42 @@ class FightWindow(QMainWindow):
                  side: str) -> None:
         """Обновление GIF в слоте"""
         if unit is None:
-            gif = QMovie(os.path.join(
-                UNIT_STAND,
-                f"{side}/empty.gif"))
+            gif = self.empty_gif(side)
 
-        # анимация смерти
         elif unit.curr_health == 0:
-            if 'neutral' in unit.subrace:
-                gif = QMovie(os.path.join(
-                    action,
-                    f"{side}/neutral.gif"))
-            else:
-                gif = QMovie(os.path.join(
-                    action,
-                    f"{side}/{unit.subrace}.gif"))
+            gif = self.death_animation(action, side, unit)
 
         # if unit.curr_health == 0:
         #     gif = QMovie(os.path.join(COMMON, "skull.png"))
 
-        # анимация действия
         else:
-            gif = QMovie(os.path.join(
-                action,
-                f"{side}{unit.name}.gif"))
+            gif = self.action_gif(action, side, unit)
 
         gif.setSpeed(self.speed)
         gif_slot.setMovie(gif)
         gif.start()
+
+    @staticmethod
+    def empty_gif(side):
+        gif = QMovie(os.path.join(
+            UNIT_STAND,
+            f"{side}/empty.gif"))
+        return gif
+
+    @staticmethod
+    def death_animation(action: str,
+                        side: str,
+                        unit: Unit) -> QMovie:
+        """Анимация смерти"""
+        if 'neutral' in unit.subrace:
+            gif = QMovie(os.path.join(
+                action,
+                f"{side}/neutral.gif"))
+        else:
+            gif = QMovie(os.path.join(
+                action,
+                f"{side}/{unit.subrace}.gif"))
+        return gif
 
     def show_gif_by_side(self,
                          unit: Unit,
@@ -1096,10 +1127,10 @@ class FightWindow(QMainWindow):
         if unit is None:
             pass
 
-        elif unit in self.new_battle.player1.units:
+        elif unit in self.player1.units:
             slots_dict = slots_dict1
 
-        elif unit in self.new_battle.player2.units:
+        elif unit in self.player2.units:
             side = self.enemy_side
             slots_dict = slots_dict2
 
@@ -1117,9 +1148,9 @@ class FightWindow(QMainWindow):
         """Отображает рамку в зависимости от стороны и действия"""
         if unit is None:
             pass
-        elif unit in self.new_battle.player1.units:
+        elif unit in self.player1.units:
             func(slots_dict1[unit.slot])
-        elif unit in self.new_battle.player2.units:
+        elif unit in self.player2.units:
             func(slots_dict2[unit.slot])
 
     def show_circles_by_side(self,
@@ -1130,10 +1161,10 @@ class FightWindow(QMainWindow):
         """Отображает круги в зависимости от стороны и действия"""
         if unit is None:
             pass
-        elif unit in self.new_battle.player1.units:
+        elif unit in self.player1.units:
             func(unit,
                  slots_dict1[unit.slot])
-        elif unit in self.new_battle.player2.units:
+        elif unit in self.player2.units:
             func(unit,
                  slots_dict2[unit.slot])
 
@@ -1215,14 +1246,14 @@ class FightWindow(QMainWindow):
     def show_frame_attacker(self) -> None:
         """Прорисовка рамки вокруг иконки атакующего юнита"""
         # QtCore.QTimer.singleShot(3000, lambda: print(1))
-        self.show_frames_by_side(self.new_battle.current_unit,
+        self.show_frames_by_side(self.curr_unit,
                                  self.unit_icons_dict,
                                  self.dung_icons_dict,
                                  show_green_frame)
 
     def show_circle_attacker(self) -> None:
         """Прорисовка круга под активным юнитом"""
-        self.show_circles_by_side(self.new_battle.current_unit,
+        self.show_circles_by_side(self.curr_unit,
                                   self.unit_circles_dict,
                                   self.dung_circles_dict,
                                   self.show_circle_g)
@@ -1250,16 +1281,16 @@ class FightWindow(QMainWindow):
 
     def show_target_frame(self) -> None:
         """Прорисовка рамки вокруг иконки цели"""
-        curr_unit = self.new_battle.current_unit
+        unit = self.curr_unit
 
         for target_slot in self.new_battle.targets:
             target = self.get_curr_target(target_slot)
 
             # цель и текущий юнит принадлежат одному игроку
-            if target in self.new_battle.target_player.units and \
-                    curr_unit in self.new_battle.target_player.units:
+            if target in self.target_player.units and \
+                    unit in self.target_player.units:
 
-                if curr_unit.attack_type in (*ALCHEMIST_LIST, *HEAL_LIST):
+                if unit.attack_type in (*ALCHEMIST_LIST, *HEAL_LIST):
                     # синяя рамка
                     self.show_frames_by_side(target,
                                              self.unit_icons_dict,
@@ -1290,22 +1321,22 @@ class FightWindow(QMainWindow):
 
     def get_curr_target(self, target_slot: int) -> Unit:
         """Получение текущей цели"""
-        if self.new_battle.target_player == self.new_battle.player2:
-            curr_target = self._unit_by_slot_and_side(
+        if self.target_player == self.player2:
+            target = self._unit_by_slot_and_side(
                 target_slot, self.enemy_side)
         else:
-            curr_target = self._unit_by_slot_and_side(
+            target = self._unit_by_slot_and_side(
                 target_slot, self.player_side)
-        return curr_target
+        return target
 
     def show_life_drain(self) -> None:
         """Прорисовка анимации высасывания жизни"""
         slots_dict = {}
 
-        if self.new_battle.current_unit in self.new_battle.player1.units:
+        if self.curr_unit in self.player1.units:
             slots_dict = self.pl_slots_eff_dict
 
-        elif self.new_battle.current_unit in self.new_battle.player2.units:
+        elif self.curr_unit in self.player2.units:
             slots_dict = self.en_slots_eff_dict
 
         unit_gif = "life_drain.gif"
@@ -1314,30 +1345,27 @@ class FightWindow(QMainWindow):
             unit_gif))
 
         gif.setSpeed(self.speed)
-        slots_dict[self.new_battle.current_unit.slot].setMovie(gif)
+        slots_dict[self.curr_unit.slot].setMovie(gif)
         gif.start()
 
     def who_attack(self) -> None:
         """Метод обновляющий анимацию атакующего юнита"""
-        # получение текущего юнита
-        curr_unit = self.new_battle.current_unit
-
         # очищает иконки атакованных юнитов
         self.show_no_damaged()
 
         # прорисовка модели атакующего юнита
-        self.show_attacker(curr_unit)
+        self.show_attacker(self.curr_unit)
 
         # прорисовка эффектов атакующего юнита
-        self.show_attacker_eff(curr_unit)
+        self.show_attacker_eff(self.curr_unit)
 
         # прорисовка тени атакующего юнита
-        self.show_shadow_attacker(curr_unit)
+        self.show_shadow_attacker(self.curr_unit)
 
         # прорисовка атаки по области для атакующего юнита
-        if curr_unit.attack_purpose == 6:
+        if self.curr_unit.attack_purpose == 6:
             self.show_splash_area(
-                curr_unit,
+                self.curr_unit,
                 UNIT_EFFECTS_AREA)
 
     def who_attacked(self, target_slot: int, current_unit: Unit) -> None:
@@ -1346,77 +1374,64 @@ class FightWindow(QMainWindow):
             return
 
         # получение текущей цели
-        curr_target = self.get_curr_target(target_slot)
+        target = self.get_curr_target(target_slot)
 
-        if curr_target is None:
+        if target is None:
             pass
 
         # цель и текущий юнит принадлежат одному игроку
-        elif self.unit_is_allied(curr_target):
-            self.show_effects_on_player(curr_target, current_unit)
+        elif self.unit_is_allied(target):
+            self.show_effects(target, current_unit)
         else:
-            self.show_attacked(curr_target)
-            self.show_shadow_attacked(curr_target)
+            self.show_attacked(target)
+            self.show_shadow_attacked(target)
+            self.show_effects(target, current_unit)
 
-            self.show_effects_on_player(curr_target, current_unit)
-
-            if self.new_battle.target_player == self.new_battle.player1:
-                # self.show_effects_on_player(curr_target, current_unit)
+            if self.target_player == self.player1:
                 show_damage(
-                    self.unit_damaged_dict[curr_target.slot])
+                    self.unit_damaged_dict[target.slot])
             else:
-                # self.show_effects_on_player(curr_target, current_unit)
                 show_damage(
-                    self.dung_damaged_dict[curr_target.slot])
+                    self.dung_damaged_dict[target.slot])
 
         # если атакованный юнит погиб
-        if curr_target.curr_health == 0:
-            if curr_target.dotted:
-                self.show_polymorph_animation(curr_target)
+        if target.is_dead:
+            if target.dotted:
+                self.show_polymorph_animation(target)
 
             self.new_battle.player_units_are_dead()
 
             if self.new_battle.battle_is_over:
                 # возвращаем прежнюю форму
-                for unit in (*self.new_battle.player1.units,
-                             *self.new_battle.player2.units):
+                for unit in (*self.player1.units,
+                             *self.player2.units):
                     self.show_polymorph_animation(unit)
 
                 self.new_battle.alive_getting_experience()
 
             # удаляем цель
-            self.new_battle.remove_unit(curr_target)
+            self.new_battle.remove_unit(target)
 
-    def show_effect_on_enemy(self,
-                             curr_target: Unit,
-                             current_unit: Unit):
-        """Показывает эффекты от атаки на юните противника"""
-        self.show_gif(
-            current_unit,
-            self.en_slots_attacked_eff_dict[curr_target.slot],
-            UNIT_EFFECTS_TARGET,
-            self.enemy_side)
-
-    def show_effects_on_player(self,
-                               curr_target: Unit,
-                               current_unit: Unit):
+    def show_effects(self,
+                     target: Unit,
+                     current_unit: Unit):
         """Показывает эффекты от атаки на юните"""
-        if self.new_battle.target_player == self.new_battle.player1:
+        if self.target_player == self.player1:
             icons_dict = self.pl_slots_attacked_eff_dict
             side = self.player_side
-        elif self.new_battle.target_player == self.new_battle.player2:
+        elif self.target_player == self.player2:
             icons_dict = self.en_slots_attacked_eff_dict
             side = self.enemy_side
 
         self.show_gif(
             current_unit,
-            icons_dict[curr_target.slot],
+            icons_dict[target.slot],
             UNIT_EFFECTS_TARGET,
             side)
 
-    def unit_is_allied(self, curr_target):
-        return curr_target in self.new_battle.target_player.units and \
-               self.new_battle.current_unit in self.new_battle.target_player.units
+    def unit_is_allied(self, target: Unit):
+        return target in self.target_player.units and \
+               self.curr_unit in self.target_player.units
 
     def show_polymorph_animation(self, unit: Unit) -> None:
         """Отображает анимацию возвращения юнита в прежнюю форму
@@ -1424,10 +1439,10 @@ class FightWindow(QMainWindow):
         if self.new_battle.dotted_units.get(unit):
             if self.new_battle.dotted_units[unit].get(POLYMORPH):
 
-                if unit in self.new_battle.player1.units:
+                if unit in self.player1.units:
                     ui_label = self.pl_slots_dict[unit.slot]
 
-                elif unit in self.new_battle.player2.units:
+                elif unit in self.player2.units:
                     ui_label = self.en_slots_dict[unit.slot]
 
                 # Сначала отображаем анимацию Полиморфа
@@ -1479,10 +1494,10 @@ class FightWindow(QMainWindow):
 
     def define_dotted_units(self):
         """Определяет юнитов с наложенными эффектами"""
-        self.show_dot_on_units(self.new_battle.player1.units,
+        self.show_dot_on_units(self.player1.units,
                                self.unit_damaged_dict)
 
-        self.show_dot_on_units(self.new_battle.player2.units,
+        self.show_dot_on_units(self.player2.units,
                                self.dung_damaged_dict)
 
     def show_dot_on_units(self, units, units_dict):
@@ -1685,12 +1700,11 @@ class FightWindow(QMainWindow):
         """Атака и анимация по выбранному слоту противника"""
         # self.unit_gifs_update()
         target = self._unit_by_slot_and_side(slot, side)
-        curr_unit = self.new_battle.current_unit
 
         # невозможность атаковать своих
         if target is not None:
             if target not in self.new_battle.current_player.units \
-                    and curr_unit.attack_type \
+                    and self.curr_unit.attack_type \
                     not in [*HEAL_LIST, *ALCHEMIST_LIST]:
 
                 self.new_battle.player_attack(target)
@@ -1698,20 +1712,22 @@ class FightWindow(QMainWindow):
 
             # если текущий юнит лекарь - можно выбрать целью свой юнит
             elif target in self.new_battle.current_player.units \
-                    and curr_unit.attack_type \
+                    and self.curr_unit.attack_type \
                     in [*HEAL_LIST, *ALCHEMIST_LIST]:
 
                 self.new_battle.player_attack(target)
                 self.show_attack_and_attacked()
 
-    def _unit_by_slot_and_side(self, slot: int, side: str) -> Optional[Unit]:
+    def _unit_by_slot_and_side(self,
+                               slot: int,
+                               side: str) -> Optional[Unit]:
         """Метод получающий юнита игрока по слоту и стороне."""
         if side == self.player_side:
-            for unit in self.new_battle.player1.units:
+            for unit in self.player1.units:
                 if unit.slot == slot:
                     return unit
         else:
-            for unit in self.new_battle.player2.units:
+            for unit in self.player2.units:
                 if unit.slot == slot:
                     return unit
         return None

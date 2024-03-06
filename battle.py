@@ -623,6 +623,7 @@ class Battle:
         """Если цель - 1 юнит"""
         attack_type = self.current_unit.attack_type
         curr_unit = self.current_unit
+        success = False
 
         # Если текущий юнит - атакующий
         if attack_type \
