@@ -147,8 +147,8 @@ def show_damage(icon_slot: QtWidgets.QLabel) -> None:
     icon_slot.setPixmap(QPixmap(os.path.join(COMMON, "fire.gif")))
 
 
-def show_no_damage(icon_slot: QtWidgets.QLabel) -> None:
-    """Метод скрывающий нанесенный урон на иконке"""
+def clear_dot(icon_slot: QtWidgets.QLabel) -> None:
+    """Метод скрывающий доты и нанесенный урон на иконке"""
     icon_slot.setPixmap(QPixmap(os.path.join(COMMON, "transparent.gif")))
 
 

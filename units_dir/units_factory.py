@@ -1215,6 +1215,10 @@ class Unit:
         if unit is not None:
             self.attack_dmg = unit.attack_dmg
 
+    def minus_dot_round(self):
+        """Усеньшение количества раундов действия на 1"""
+        self.dotted -= 1
+
     def defence(self) -> None:
         """Пропуск хода и защита в битве"""
         self.armor = round(self.armor / 2 + 50)

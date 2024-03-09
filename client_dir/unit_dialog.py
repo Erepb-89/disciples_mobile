@@ -377,10 +377,7 @@ class UnitDialog(QDialog):
     @staticmethod
     def check_perk(unit_perk: int, ui_obj: QtWidgets.QLabel) -> None:
         """Проверка перка с выводом на окно характеристик"""
-        if unit_perk:
-            ui_obj.setVisible(True)
-        else:
-            ui_obj.setVisible(False)
+        ui_obj.setVisible(True) if unit_perk else ui_obj.setVisible(False)
 
     def retranslateUi(self, Dialog):
         _translate = QtCore.QCoreApplication.translate
