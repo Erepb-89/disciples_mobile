@@ -4,7 +4,8 @@ from collections import deque
 from typing import List, Optional, Callable
 
 from client_dir.settings import ANY_UNIT, CLOSEST_UNIT, \
-    HEAL_LIST, ALCHEMIST_LIST, PARALYZE_LIST, PARALYZE_UNITS, POLYMORPH
+    HEAL_LIST, ALCHEMIST_LIST, PARALYZE_LIST, PARALYZE_UNITS, \
+    POLYMORPH, INCREASE_DMG, ADDITIONAL_ATTACK
 from battle_logging import logging
 from units_dir.units import main_db
 from units_dir.units_factory import Unit
@@ -283,14 +284,36 @@ class Battle:
         if not self.target_slots:
             self.targets = []
 
-    def logging_dot(self, dot_source, dot_dmg) -> None:
+    @staticmethod
+    def logging_polymorph(target: Unit) -> str:
+        """Логирование Полиморфа"""
+        if target.double:
+            changed_unit_name = 'Толстый бес'
+            line = f"{target.name} превращен в Толстого беса.\n"
+        else:
+            changed_unit_name = 'Бес'
+            line = f"{target.name} превращён в Беса.\n"
+        logging(line)
+        return changed_unit_name
+
+    @staticmethod
+    def logging_dot(dot_rounds: int,
+                    dot_source: str,
+                    target: Unit) -> None:
+        """Логирование дополнительного эффекта"""
+        line = f"На {target.name} будет оказывать воздействие " \
+               f"{dot_source} в течение " \
+               f"{dot_rounds} раунд(ов)\n"
+        logging(line)
+
+    def logging_dmg_dot(self, dot_source: str, dot_dmg: int) -> None:
         """Логирование периодического урона"""
         line = f'{dot_source} наносит урон {dot_dmg} воину ' \
                f'{self.current_unit.name}. ' \
                f'Осталось ХП: {self.current_unit.curr_health}\n'
         logging(line)
 
-    def logging_paralyze(self, dot_source) -> None:
+    def logging_paralyze(self, dot_source: str) -> None:
         """Логирование паралича и окаменения"""
         line = f'На воина {self.current_unit.name} ' \
                f'действует {dot_source}. ' \
@@ -318,7 +341,7 @@ class Battle:
 
                         self.current_unit.curr_health -= dot_dmg
                         # логирование
-                        self.logging_dot(dot_source, dot_dmg)
+                        self.logging_dmg_dot(dot_source, dot_dmg)
 
                     # Если Паралич или Полиморф
                     elif dot_source in PARALYZE_LIST \
@@ -335,20 +358,7 @@ class Battle:
 
                 # Если Полиморф закончил действие
                 if dot_rounds == 0 and dot_source == POLYMORPH:
-                    db_table = self.db_table
-                    if self.current_unit in self.player1.units:
-                        db_table = self.db_table
-                    elif self.current_unit in self.player2.units:
-                        db_table = self.enemy_db_table
-
-                    changed_unit_name = main_db.get_unit_by_slot(
-                        self.current_unit.slot, db_table).name
-
-                    self.change_shape(self.current_unit,
-                                      changed_unit_name,
-                                      db_table)
-                    self.current_unit = self.new_unit
-                    self.target_slots = self._auto_choose_targets(self.current_unit)
+                    self.end_of_polymorph()
 
                 if self.current_unit.dotted != 0:
                     self.dotted_units[self.current_unit][dot_source] = \
@@ -357,6 +367,21 @@ class Battle:
         # Если Паралич, пропускаем ход
         if paralyzed:
             self.are_units_in_round()
+
+    def end_of_polymorph(self):
+        """Полиморф закончил действие"""
+        db_table = self.db_table
+        if self.current_unit in self.player1.units:
+            db_table = self.db_table
+        elif self.current_unit in self.player2.units:
+            db_table = self.enemy_db_table
+        changed_unit_name = main_db.get_unit_by_slot(
+            self.current_unit.slot, db_table).name
+        self.change_shape(self.current_unit,
+                          changed_unit_name,
+                          db_table)
+        self.current_unit = self.new_unit
+        self.target_slots = self._auto_choose_targets(self.current_unit)
 
     def change_shape(self,
                      unit: Unit,
@@ -473,7 +498,7 @@ class Battle:
         self.alive_units = []
         killed_units = player1.units
         exp_enhanced = 0
-        self.get_player_slots(player2)
+        self.update_player_slots(player2)
 
         for unit in player2.units:
             if unit.weapon_master:
@@ -508,10 +533,13 @@ class Battle:
                                      self.player1,
                                      self.db_table)
 
-    def player_units_are_dead(self) -> None:
-        """Проверка живы ли юниты обоих игроков"""
-        self.get_player_slots(self.player1)
-        self.get_player_slots(self.player2)
+    def check_player_is_alive(self) -> None:
+        """
+        Проверка живы ли юниты обоих игроков.
+        Флаг окончания битвы. Логирование.
+        """
+        self.update_player_slots(self.player1)
+        self.update_player_slots(self.player2)
         if not self.player1.slots:
             logging('Вы проиграли!\n')
             self.battle_is_over = True
@@ -534,29 +562,32 @@ class Battle:
         # раунды
         dot_rounds = self.define_dot_rounds(target, dot_source)
 
-        if self.dotted_units.get(target):
-            dot_dict = self.dotted_units[target]
-
-            if dot_dict.get(dot_source):
-                if dot_dict[dot_source][0] < dot_dmg:
-                    dot_dict[dot_source][0] = dot_dmg
-
-                if dot_dict[dot_source][1] < dot_rounds:
-                    dot_dict[dot_source][1] = dot_rounds
-            else:
-                dot_dict[dot_source] = [dot_dmg, dot_rounds]
-        else:
-            dot_dict = {dot_source: [dot_dmg, dot_rounds]}
-
-        self.dotted_units[target] = dot_dict
+        self.update_dotted_units(dot_dmg, dot_rounds, dot_source, target)
 
         if dot_source != 'Снижение урона':
             target.dotted = max(dot_rounds, target.dotted)
 
-        line = f"На {target.name} будет оказывать воздействие " \
-               f"{dot_source} в течение " \
-               f"{dot_rounds} раунд(ов)\n"
-        logging(line)
+        self.logging_dot(dot_rounds, dot_source, target)
+
+    def update_dotted_units(self,
+                            dot_dmg: int,
+                            dot_rounds: int,
+                            dot_source: str,
+                            target: Unit) -> None:
+        """Обновление словаря юнитов с наложенными эффектами"""
+        if self.dotted_units.get(target):
+            dot_dict = self.dotted_units[target]
+
+            if dot_dict.get(dot_source):
+                dot_dict[dot_source][0] = \
+                    max(dot_dmg, dot_dict[dot_source][0])
+                dot_dict[dot_source][1] = \
+                    max(dot_rounds, dot_dict[dot_source][1])
+            else:
+                dot_dict[dot_source] = [dot_dmg, dot_rounds]
+        else:
+            dot_dict = {dot_source: [dot_dmg, dot_rounds]}
+        self.dotted_units[target] = dot_dict
 
     def define_dot_rounds(self, target: Unit, dot_source: str) -> int:
         """
@@ -564,30 +595,49 @@ class Battle:
         Устанавливает пониженный урон/инициативу.
         """
         if dot_source in PARALYZE_LIST or dot_source == POLYMORPH:
-            if self.current_unit.name in PARALYZE_UNITS:
-                dot_rounds = 1
-            else:
-                dot_rounds = random.choice(range(1, 4))
+            dot_rounds = self.define_paralyze_rounds()
 
         elif dot_source == 'Снижение урона':
-            dot_rounds = 999
-            if target in self.dotted_units:
-                if not self.dotted_units[target].get(dot_source):
-                    target.attack_dmg -= int(target.attack_dmg * 0.325)
-            else:
-                target.attack_dmg -= int(target.attack_dmg * 0.325)
+            dot_rounds = self.define_decrease_dmg_rounds(dot_source, target)
 
         elif dot_source == 'Снижение инициативы':
-            dot_rounds = random.choice(range(2, 5))
+            dot_rounds = self.define_decrease_ini_rounds(dot_source, target)
 
-            if target in self.dotted_units:
-                if not self.dotted_units[target].get(dot_source):
-                    target.attack_ini -= int(target.attack_ini * 0.5)
-            else:
-                target.attack_ini -= int(target.attack_ini * 0.5)
         else:
             dot_rounds = random.choice(range(2, 6))
 
+        return dot_rounds
+
+    def define_decrease_ini_rounds(self,
+                                   dot_source: str,
+                                   target: Unit) -> int:
+        """Определение длительности снижения инициативы"""
+        dot_rounds = random.choice(range(2, 5))
+        if target in self.dotted_units:
+            if not self.dotted_units[target].get(dot_source):
+                target.attack_ini -= int(target.attack_ini * 0.5)
+        else:
+            target.attack_ini -= int(target.attack_ini * 0.5)
+        return dot_rounds
+
+    def define_decrease_dmg_rounds(self,
+                                   dot_source: str,
+                                   target: Unit) -> int:
+        """Определение длительности снижения урона"""
+        dot_rounds = 999
+        if target in self.dotted_units:
+            if not self.dotted_units[target].get(dot_source):
+                target.attack_dmg -= int(target.attack_dmg * 0.325)
+        else:
+            target.attack_dmg -= int(target.attack_dmg * 0.325)
+        return dot_rounds
+
+    def define_paralyze_rounds(self) -> int:
+        """Определение длительности паралича"""
+        if self.current_unit.name in PARALYZE_UNITS:
+            dot_rounds = 1
+        else:
+            dot_rounds = random.choice(range(1, 4))
         return dot_rounds
 
     def back_to_prev_form(self, target: Unit) -> None:
@@ -625,106 +675,158 @@ class Battle:
         curr_unit = self.current_unit
         success = False
 
-        # Если текущий юнит - атакующий
-        if attack_type \
-                not in (*HEAL_LIST,
-                        *ALCHEMIST_LIST,
-                        *PARALYZE_LIST,
-                        POLYMORPH):
-            success = curr_unit.attack(target)
+        if attack_type not in (*HEAL_LIST,
+                               *ALCHEMIST_LIST,
+                               *PARALYZE_LIST,
+                               POLYMORPH):
+            success = self.damagger_attack(attack_type,
+                                           curr_unit,
+                                           target)
 
-            if (success and curr_unit.dot_dmg) \
-                    or (success and curr_unit.dot_dmg == 0):
-                dot_success = curr_unit.dot_attack(target)
-                dot_source = attack_type.split('/')[1]
-
-                if dot_success:
-                    self.dot_calculations(dot_source, target)
-
-        # Если текущий юнит - лекарь
         elif attack_type in HEAL_LIST:
-            success = curr_unit.heal(target)
+            success = self.healers_attack(attack_type,
+                                          curr_unit,
+                                          target)
 
-            if 'Исцеление' in attack_type and target.dotted:
-                self.cure_target(target)
-                success = curr_unit.cure(target)
-
-        # Если текущий юнит - Друид/Алхимик
         elif attack_type in ALCHEMIST_LIST:
-            # Друид
-            if 'Увеличение урона' in attack_type:
-                if target not in self.boosted_units \
-                        and target.attack_type \
-                        not in (*HEAL_LIST, *ALCHEMIST_LIST):
+            if INCREASE_DMG in attack_type:
+                success = self.druid_attack(attack_type,
+                                            curr_unit,
+                                            target)
 
-                    success = curr_unit.increase_damage(target)
-                    self.boosted_units[target] = curr_unit.attack_dmg
+            elif ADDITIONAL_ATTACK in attack_type:
+                success = self.alchemist_attack(target)
 
-                # если воина уже бафали
-                elif self.boosted_units.get(target):
-                    if self.boosted_units[target] < curr_unit.attack_dmg:
-                        target.attack_dmg = \
-                            int((target.attack_dmg + 1) * 100 /
-                                (100 + self.boosted_units[target]))
-
-                        success = curr_unit.increase_damage(target)
-                        self.boosted_units[target] = curr_unit.attack_dmg
-
-                    elif (target in self.boosted_units
-                          or self.boosted_units[target] >=
-                          curr_unit.attack_dmg) \
-                            and 'Исцеление' not in attack_type:
-                        success = False
-                        curr_unit.defence()
-
-                # Друид с исцелением
-                if 'Исцеление' in attack_type and target.dotted:
-                    self.cure_target(target)
-                    success = curr_unit.cure(target)
-
-                if target is None:
-                    curr_unit.defence()
-
-            # Алхимик
-            elif 'Дополнительная атака' in attack_type:
-                success = True
-                self.next_unit = target
-
-                line = f"{self.current_unit.name} дает дополнительную " \
-                       f"атаку воину {target.name}.\n"
-                logging(line)
-
-        # Для воинов с основной атакой типа Паралич и Окаменение
         elif attack_type in PARALYZE_LIST:
-            success = curr_unit.dot_attack(target)
-            dot_source = attack_type
+            success = self.paralyzer_attack(attack_type,
+                                            curr_unit,
+                                            target)
 
-            if success:
-                self.dot_calculations(dot_source, target)
-
-        # Для воинов с основной атакой типа Полиморф
         elif attack_type == POLYMORPH:
-            success = curr_unit.dot_attack(target)
-            dot_source = attack_type
-
-            if success:
-                if target.double:
-                    changed_unit_name = 'Толстый бес'
-                    line = f"{target.name} превращен в Толстого беса.\n"
-                else:
-                    changed_unit_name = 'Бес'
-                    line = f"{target.name} превращён в Беса.\n"
-
-                logging(line)
-
-                self.change_shape(target,
-                                  changed_unit_name,
-                                  main_db.AllUnits)
-
-                self.dot_calculations(dot_source, self.new_unit)
+            success = self.polymorph_attack(attack_type,
+                                            curr_unit,
+                                            target)
 
         if success:
             self.attacked_slots.append(target.slot)
+
+    def damagger_attack(self,
+                        attack_type: str,
+                        curr_unit: Unit,
+                        target: Unit) -> bool:
+
+        success = curr_unit.attack(target)
+        if (success and curr_unit.dot_dmg) \
+                or (success and curr_unit.dot_dmg == 0):
+            dot_success = curr_unit.dot_attack(target)
+            dot_source = attack_type.split('/')[1]
+
+            if dot_success:
+                self.dot_calculations(dot_source, target)
+        return success
+
+    def healers_attack(self,
+                       attack_type: str,
+                       curr_unit: Unit,
+                       target: Unit) -> bool:
+        """Если текущий юнит - лекарь"""
+        success = curr_unit.heal(target)
+        if 'Исцеление' in attack_type and target.dotted:
+            success = self.cure(curr_unit, target)
+        return success
+
+    def polymorph_attack(self,
+                         attack_type: str,
+                         curr_unit: Unit,
+                         target: Unit) -> bool:
+        """Для воинов с основной атакой типа Полиморф"""
+        success = curr_unit.dot_attack(target)
+        dot_source = attack_type
+        if success:
+            changed_unit_name = self.logging_polymorph(target)
+
+            self.change_shape(target,
+                              changed_unit_name,
+                              main_db.AllUnits)
+
+            self.dot_calculations(dot_source, self.new_unit)
+        return success
+
+    def paralyzer_attack(self,
+                         attack_type: str,
+                         curr_unit: Unit,
+                         target: Unit) -> bool:
+        """Для воинов с основной атакой типа Паралич и Окаменение"""
+        success = curr_unit.dot_attack(target)
+        dot_source = attack_type
+
+        if success:
+            self.dot_calculations(dot_source, target)
+        return success
+
+    def druid_attack(self,
+                     attack_type: str,
+                     curr_unit: Unit,
+                     target: Unit) -> bool:
+        """Для воинов с атакой, увеличивающей урон (Друидов)"""
+        if target not in self.boosted_units \
+                and target.attack_type \
+                not in (*HEAL_LIST, *ALCHEMIST_LIST):
+
+            success = curr_unit.increase_damage(target)
+            self.boosted_units[target] = curr_unit.attack_dmg
+
+        # если воина уже бафали
+        elif self.boosted_units.get(target):
+            success = self.already_boosted_action(attack_type,
+                                                  curr_unit,
+                                                  target)
+
+        # Друид с исцелением
+        if 'Исцеление' in attack_type and target.dotted:
+            success = self.cure(curr_unit, target)
+        if target is None:
+            curr_unit.defence()
+
+        return success
+
+    def alchemist_attack(self, target: Unit) -> bool:
+        """Для воинов с атакой, дающей дополнительный ход (Алхимик)"""
+        success = True
+        self.next_unit = target
+        line = f"{self.current_unit.name} дает дополнительную " \
+               f"атаку воину {target.name}.\n"
+        logging(line)
+        return success
+
+    def already_boosted_action(self,
+                               attack_type: str,
+                               curr_unit: Unit,
+                               target: Unit) -> bool:
+        """Если юнит уже усилен Друидом"""
+        success = False
+
+        if self.boosted_units[target] < curr_unit.attack_dmg:
+            target.attack_dmg = \
+                int((target.attack_dmg + 1) * 100 /
+                    (100 + self.boosted_units[target]))
+
+            success = curr_unit.increase_damage(target)
+            self.boosted_units[target] = curr_unit.attack_dmg
+
+        elif (target in self.boosted_units
+              or self.boosted_units[target] >=
+              curr_unit.attack_dmg) \
+                and 'Исцеление' not in attack_type:
+            success = False
+            curr_unit.defence()
+        return success
+
+    def cure(self, curr_unit: Unit, target: Unit) -> bool:
+        """Для юнитов с Исцелением"""
+        self.cure_target(target)
+        success = curr_unit.cure(target)
+        return success
 
     def replace_polymorph_unit(self,
                                unit: Unit,
@@ -1023,7 +1125,8 @@ class Battle:
 
         return target_units
 
-    def get_paralyze_targets(self, target_slots: List[int]) -> \
+    def get_paralyze_targets(self,
+                             target_slots: List[int]) -> \
             List[Optional[Unit]]:
         """Получение приоритетной для парализатора цели"""
         target_units = []
@@ -1200,8 +1303,8 @@ class Battle:
 
     def _auto_choose_targets(self, unit: Unit) -> Optional[List[int]]:
         """Авто определение следующих целей для атаки"""
-        self.get_player_slots(self.player1)
-        self.get_player_slots(self.player2)
+        self.update_player_slots(self.player1)
+        self.update_player_slots(self.player2)
 
         return self._choose_targets(
             unit,
@@ -1209,7 +1312,7 @@ class Battle:
             self.target_player.slots)
 
     @staticmethod
-    def get_player_slots(player: Player) -> None:
+    def update_player_slots(player: Player) -> None:
         """Получение слотов с живыми юнитами игрока"""
         player.slots = []
         for unit in player.units:

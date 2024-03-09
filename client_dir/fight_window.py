@@ -20,7 +20,7 @@ from client_dir.settings import UNIT_STAND, UNIT_ATTACK, \
     RIGHT_ICONS, LEFT_ICONS, SCREEN_RECT, PANEL_RECT, BATTLE_LOG, \
     BATTLE_ANIM, HEAL_LIST, ALCHEMIST_LIST, POLYMORPH, PLAYER, ENEMY
 from client_dir.ui_functions import show_no_frame, \
-    show_damage, show_no_damage, show_green_frame, \
+    show_damage, clear_dot, show_green_frame, \
     show_red_frame, show_blue_frame, update_unit_health, \
     get_unit_image, show_no_circle, ui_lock, ui_unlock, \
     show_dot_icon, show_polymorph
@@ -394,7 +394,7 @@ class FightWindow(QMainWindow):
         self.player_side, self.enemy_side = self.enemy_side, self.player_side
 
         self.unit_gifs_update()
-        self.show_no_damaged()
+        self.clear_effects()
         self.clear_frames_circles()
         self.define_dotted_units()
 
@@ -690,10 +690,10 @@ class FightWindow(QMainWindow):
         if unit.dotted:
             self.show_polymorph_animation(unit)
 
-        if unit in self.new_battle.dotted_units:
-            self.new_battle.dotted_units.pop(unit)
+        if unit in self.dotted_units:
+            self.pop_dotted_unit(unit)
 
-        self.new_battle.player_units_are_dead()
+        self.new_battle.check_player_is_alive()
 
         if self.new_battle.battle_is_over:
             # возвращаем прежнюю форму
@@ -702,6 +702,10 @@ class FightWindow(QMainWindow):
                 self.show_polymorph_animation(unit)
 
             self.new_battle.alive_getting_experience()
+
+    def pop_dotted_unit(self, unit):
+        """Убирает юнит из словаря dotted_units"""
+        self.new_battle.dotted_units.pop(unit)
 
     @property
     def player1(self):
@@ -724,6 +728,11 @@ class FightWindow(QMainWindow):
         return self.new_battle.current_unit
 
     @property
+    def dotted_units(self):
+        """Юниты под воздействием доп эффектов"""
+        return self.new_battle.dotted_units
+
+    @property
     def campaign_level(self):
         """Уровень кампании"""
         return main_db.campaign_level
@@ -736,7 +745,7 @@ class FightWindow(QMainWindow):
     def show_poisoned_unit(self):
         """Если ходящий юнит отравлен и т.д."""
         unit = self.curr_unit
-        dot_units = self.new_battle.dotted_units
+        dot_units = self.dotted_units
 
         if unit in dot_units and unit.dotted:
             if self.dot_not_cause_damage(dot_units, unit):
@@ -844,7 +853,7 @@ class FightWindow(QMainWindow):
         """Встать в Защиту выбранным юнитом"""
         self.curr_unit.defence()
         self.update_log()
-        self.show_no_damaged()
+        self.clear_effects()
         self.clear_frames_circles()
         self.next_unit_turn()
 
@@ -855,7 +864,7 @@ class FightWindow(QMainWindow):
         self.curr_unit.waiting()
 
         self.update_log()
-        self.show_no_damaged()
+        self.clear_effects()
         self.clear_frames_circles()
 
         self.new_battle.waiting_units.append(self.curr_unit)
@@ -1304,13 +1313,13 @@ class FightWindow(QMainWindow):
                                          self.dung_icons_dict,
                                          show_red_frame)
 
-    def show_no_damaged(self) -> None:
-        """Метод скрывающий нанесенный урон"""
+    def clear_effects(self) -> None:
+        """Метод скрывающий доты и нанесенный урон"""
         for icon_slot in self.unit_damaged_dict.values():
-            show_no_damage(icon_slot)
+            clear_dot(icon_slot)
 
         for icon_slot in self.dung_damaged_dict.values():
-            show_no_damage(icon_slot)
+            clear_dot(icon_slot)
 
     def show_shadow_attacked(self, target: Unit) -> None:
         """Прорисовка тени атакованного юнита"""
@@ -1351,7 +1360,7 @@ class FightWindow(QMainWindow):
     def who_attack(self) -> None:
         """Метод обновляющий анимацию атакующего юнита"""
         # очищает иконки атакованных юнитов
-        self.show_no_damaged()
+        self.clear_effects()
 
         # прорисовка модели атакующего юнита
         self.show_attacker(self.curr_unit)
@@ -1399,7 +1408,7 @@ class FightWindow(QMainWindow):
             if target.dotted:
                 self.show_polymorph_animation(target)
 
-            self.new_battle.player_units_are_dead()
+            self.new_battle.check_player_is_alive()
 
             if self.new_battle.battle_is_over:
                 # возвращаем прежнюю форму
@@ -1436,8 +1445,8 @@ class FightWindow(QMainWindow):
     def show_polymorph_animation(self, unit: Unit) -> None:
         """Отображает анимацию возвращения юнита в прежнюю форму
         (до Полиморфа). Обновляет иконки юнитов. Замена юнита в битве."""
-        if self.new_battle.dotted_units.get(unit):
-            if self.new_battle.dotted_units[unit].get(POLYMORPH):
+        if self.dotted_units.get(unit):
+            if self.dotted_units[unit].get(POLYMORPH):
 
                 if unit in self.player1.units:
                     ui_label = self.pl_slots_dict[unit.slot]
@@ -1456,8 +1465,8 @@ class FightWindow(QMainWindow):
 
     def show_dot_effect(self, unit: Unit, dot_type: str, icons_dict: dict):
         """Показывает действующий отрицательный эффект на юните"""
-        if self.new_battle.dotted_units[unit].get(dot_type):
-            rounds = self.new_battle.dotted_units[unit][dot_type][1]
+        if self.dotted_units[unit].get(dot_type):
+            rounds = self.dotted_units[unit][dot_type][1]
             if rounds:
                 show_dot_icon(
                     icons_dict[unit.slot], dot_type)
@@ -1503,7 +1512,7 @@ class FightWindow(QMainWindow):
     def show_dot_on_units(self, units, units_dict):
         """Показывает эффекты на юнитах"""
         for unit in units:
-            if unit in self.new_battle.dotted_units:
+            if unit in self.dotted_units:
                 # Показывает эффект на юните
                 self.define_priority_effect(unit, units_dict)
 

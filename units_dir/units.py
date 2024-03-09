@@ -633,6 +633,61 @@ class ServerStorage:
         # Возвращаем кортеж
         return query.first()
 
+    def get_units_by_branch_and_level(self,
+                                      branch: str,
+                                      level: int) -> namedtuple:
+        """Метод получающий юнита из таблицы AllUnits по ветви."""
+        query = self.session.query(
+            self.AllUnits.id,
+            self.AllUnits.name,
+            self.AllUnits.level,
+            self.AllUnits.size,
+            self.AllUnits.price,
+            self.AllUnits.exp,
+            self.AllUnits.curr_exp,
+            self.AllUnits.exp_per_kill,
+            self.AllUnits.health,
+            self.AllUnits.curr_health,
+            self.AllUnits.armor,
+            self.AllUnits.immune,
+            self.AllUnits.ward,
+            self.AllUnits.attack_type,
+            self.AllUnits.attack_chance,
+            self.AllUnits.attack_dmg,
+            self.AllUnits.dot_dmg,
+            self.AllUnits.attack_source,
+            self.AllUnits.attack_ini,
+            self.AllUnits.attack_radius,
+            self.AllUnits.attack_purpose,
+            self.AllUnits.prev_level,
+            self.AllUnits.desc,
+            self.AllUnits.photo,
+            self.AllUnits.gif,
+            self.AllUnits.slot,
+            self.AllUnits.subrace,
+            self.AllUnits.branch,
+            self.AllUnits.attack_twice,
+            self.AllUnits.regen,
+            self.AllUnits.dyn_upd_level,
+            self.AllUnits.upgrade_b,
+            self.AllUnits.leadership,
+            self.AllUnits.leader_cat,
+            self.AllUnits.nat_armor,
+            self.AllUnits.might,
+            self.AllUnits.weapon_master,
+            self.AllUnits.endurance,
+            self.AllUnits.first_strike,
+            self.AllUnits.accuracy,
+            self.AllUnits.water_resist,
+            self.AllUnits.air_resist,
+            self.AllUnits.fire_resist,
+            self.AllUnits.earth_resist,
+            self.AllUnits.dotted
+        ).filter_by(branch=branch, level=level)
+        # return query.order_by(self.AllUnits.level.desc()).first()
+        # Возвращаем кортеж
+        return query.all()
+
     def unit_by_name_set_params(self,
                                 unit: any,
                                 name: str,

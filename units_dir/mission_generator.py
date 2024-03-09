@@ -1,7 +1,7 @@
 """Генератор миссий"""
 import random
 
-from client_dir.settings import BIG, SMALL, ACTIVE_UNITS, SUPPORT
+from client_dir.settings import BIG, SMALL, ACTIVE_UNITS, SUPPORT, ADDITIONAL_ATTACK, INCREASE_DMG, HEAL
 from units_dir.units import main_db
 
 setup_6 = [
@@ -381,73 +381,64 @@ boss_mc_setup = [
 ]
 
 
+def unit_is_active(unit):
+    """Проверяет активность юнита (по наличию моделек))"""
+    return f'{unit.name}.gif' in ACTIVE_UNITS
+
+
 def get_big(units: list) -> list:
     """Получить большие иниты из списка юнитов"""
     big = [unit.name for unit in units
            if unit.size == BIG
-           and f'{unit.name}.gif' in ACTIVE_UNITS
+           and unit_is_active(unit)
            ]
     return big
 
 
-def get_fighters(units: list) -> list:
+def get_fighters(branch: str, level: int) -> list:
     """Получить бойцов из списка юнитов"""
-    fighter = [unit.name for unit in units
-               if unit.size == SMALL
-               and unit.attack_radius == 'Ближайший юнит'
-               and f'{unit.name}.gif' in ACTIVE_UNITS
-               ]
-    return fighter
+    fighters = main_db.get_units_by_branch_and_level(branch, level)
+    fighters = [unit.name for unit in fighters if unit_is_active(unit)]
+
+    return fighters
 
 
-def get_mages(units: list) -> list:
-    """Получить магов из списка юнитов"""
-    mage = [unit.name for unit in units
-            if unit.size == SMALL
-            and unit.attack_radius == 'Любой юнит'
-            and unit.attack_purpose == 6
-            and 'Лечение' not in unit.attack_type
-            and 'Увеличение урона' not in unit.attack_type
-            and 'Дополнительная атака' not in unit.attack_type
-            and f'{unit.name}.gif' in ACTIVE_UNITS
-            ]
-    return mage
-
-
-def get_archers(units: list) -> list:
+def get_archers(branch: str, level: int) -> list:
     """Получить стрелков из списка юнитов"""
-    archer = [unit.name for unit in units if unit.size == SMALL
-              and unit.attack_radius == 'Любой юнит'
-              and unit.attack_purpose == 1
-              and 'Лечение' not in unit.attack_type
-              and 'Увеличение урона' not in unit.attack_type
-              and 'Дополнительная атака' not in unit.attack_type
-              and f'{unit.name}.gif' in ACTIVE_UNITS
-              ]
-    return archer
+    archers = main_db.get_units_by_branch_and_level(branch, level)
+    archers = [unit.name for unit in archers
+               if unit_is_active(unit) and unit.size != BIG]
+
+    return archers
 
 
-def get_supports(units: list) -> list:
+def get_mages(branch: str, level: int) -> list:
+    """Получить магов из списка юнитов"""
+    mages = main_db.get_units_by_branch_and_level(branch, level)
+    mages = [unit.name for unit in mages
+             if unit_is_active(unit) and unit.attack_purpose == 6]
+
+    return mages
+
+
+def get_supports(branch: str, level: int) -> list:
     """Получить юнитов поддержки (без масс хила) из списка юнитов"""
-    support = [unit.name for unit in units if unit.size == SMALL
-               and unit.attack_radius == 'Любой юнит'
-               and unit.attack_purpose == 1
-               and ('Лечение' in unit.attack_type
-                    or 'Увеличение урона' in unit.attack_type
-                    or 'Дополнительная атака' in unit.attack_type)
-               and f'{unit.name}.gif' in ACTIVE_UNITS
-               ]
-    return support
+    supports = main_db.get_units_by_branch_and_level(branch, level)
+    supports = [unit.name for unit in supports
+                if unit_is_active(unit) and unit.attack_purpose == 1
+                and unit.size != BIG]
+
+    return supports
 
 
-def get_mass_supports(units: list) -> list:
+def get_mass_supports(branch: str, level: int) -> list:
     """Получить юнитов поддержки (масс хил) из списка юнитов"""
-    mass_support = [unit.name for unit in units if unit.size == SMALL
-                    and unit.attack_purpose == 6
-                    and 'Лечение' in unit.attack_type
-                    and f'{unit.name}.gif' in ACTIVE_UNITS
-                    ]
-    return mass_support
+    mass_supports = main_db.get_units_by_branch_and_level(branch, level)
+    mass_supports = [unit.name for unit in mass_supports
+                     if unit_is_active(unit) and unit.attack_purpose == 6
+                     and unit.size != BIG]
+
+    return mass_supports
 
 
 def get_curr_level_units(level: int) -> dict:
@@ -456,27 +447,26 @@ def get_curr_level_units(level: int) -> dict:
     curr_level_units = {}
 
     big_units = get_big(units)
-    fighter = get_fighters(units)
-    mage = get_mages(units)
-    archer = get_archers(units)
-    support = get_supports(units)
-    mass_support = get_mass_supports(units)
+    fighters = get_fighters('fighter', level)
+    mages = get_mages('mage', level)
+    archers = get_archers('archer', level)
+    supports = get_supports('support', level)
+    mass_supports = get_mass_supports('support', level)
 
     # если нет ни стрелков, ни саппортов нужного уровня
-    if not archer and not support and not mass_support:
+    if not archers and not supports and not mass_supports:
         # берем нужных с уровня ниже
-        units = main_db.get_units_by_level(level - 1)
-        archer = get_archers(units)
-        support = get_supports(units)
-        mass_support = get_mass_supports(units)
+        archers = get_archers('archer', level - 1)
+        supports = get_supports('support', level - 1)
+        mass_supports = get_mass_supports('support', level - 1)
 
     # заполняем словарь
     curr_level_units[BIG] = big_units
-    curr_level_units['fighter'] = fighter
-    curr_level_units['mage'] = mage
-    curr_level_units['archer'] = archer
-    curr_level_units['support'] = support
-    curr_level_units['mass_support'] = mass_support
+    curr_level_units['fighter'] = fighters
+    curr_level_units['mage'] = mages
+    curr_level_units['archer'] = archers
+    curr_level_units['support'] = supports
+    curr_level_units['mass_support'] = mass_supports
 
     return curr_level_units
 
@@ -491,7 +481,7 @@ def unit_selector(level: int, setup: list) -> dict:
     for slot, unit_type in mask.items():
         # если это Босс
         if unit_type == BIG \
-                and (setup == boss_setup or setup == boss_mc_setup):
+                and setup in (boss_setup, boss_mc_setup):
             unit = random.choice(
                 get_curr_level_units(level + 2)[BIG])
             result_dict[slot] = unit
@@ -511,44 +501,35 @@ def unit_selector(level: int, setup: list) -> dict:
             # для нечетных слотов
             else:
                 # если сетап маленький, исключаем масс хилеров
-                if (setup
-                    in (setup_2, setup_3)
-                    or level == 1) \
-                        and unit_type == SUPPORT:
-                    unit = random.choice(units[SUPPORT])
+                if small_support_setup(level, setup, unit_type):
+                    unit = random.choice(units[unit_type])
                     result_dict[slot] = unit
 
                     # если нет юнитов выбранного типа нужного уровня
-                    if not units[unit_type]:
-                        # получаем юнитов уровнем ниже
-                        units[unit_type] = get_lower_level_units(unit_type, level)
+                    units = lower_level_units(level, unit_type, units)
 
                 # иначе включаем возможность добавления в отряд масс хилеров
-                elif setup \
-                        not in (setup_2, setup_3) \
-                        and level != 1 \
-                        and unit_type == SUPPORT:
+                elif big_support_setup(level, setup, unit_type):
                     unit_type = random.choice(['support',
                                                'mass_support'])
                     unit = random.choice(units[unit_type])
                     result_dict[slot] = unit
 
                     # если нет юнитов выбранного типа нужного уровня
-                    if not units[unit_type]:
-                        # получаем юнитов уровнем ниже
-                        units[unit_type] = get_lower_level_units(unit_type, level)
+                    units = lower_level_units(level, unit_type, units)
 
                 # выбор из магов и стрелков
                 elif unit_type == SMALL:
                     unit_type = random.choice(['mage',
                                                'archer'])
-                    unit = random.choice(units[unit_type])
+                    if units['archer']:
+                        unit = random.choice(units[unit_type])
+                    else:
+                        unit = random.choice(units['mage'])
                     result_dict[slot] = unit
 
                     # если нет юнитов выбранного типа нужного уровня
-                    if not units[unit_type]:
-                        # получаем юнитов уровнем ниже
-                        units[unit_type] = get_lower_level_units(unit_type, level)
+                    units = lower_level_units(level, unit_type, units)
 
         # если None
         else:
@@ -556,8 +537,34 @@ def unit_selector(level: int, setup: list) -> dict:
 
     return result_dict
 
-def get_lower_level_units(unit_type: str, level: int) -> any:
-    """Получение юнитов уровнем ниже"""
+
+def lower_level_units(level, unit_type, units) -> dict:
+    if not units[unit_type]:
+        # получаем юнита уровнем ниже
+        units[unit_type] = get_lower_level_unit(unit_type, level)
+    return units
+
+
+def small_support_setup(level: int,
+                        setup: list,
+                        unit_type: str) -> bool:
+    return (setup
+            in (setup_2, setup_3)
+            or level == 1) \
+           and unit_type == SUPPORT
+
+
+def big_support_setup(level: int,
+                      setup: list,
+                      unit_type: str) -> bool:
+    return setup \
+           not in (setup_2, setup_3) \
+           and level != 1 \
+           and unit_type == SUPPORT
+
+
+def get_lower_level_unit(unit_type: str, level: int) -> any:
+    """Получение юнита уровнем ниже"""
     units = get_curr_level_units(level - 1)
     unit = random.choice(units[unit_type])
 
