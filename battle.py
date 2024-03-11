@@ -1,4 +1,5 @@
 """Battle"""
+
 import random
 from collections import deque
 from typing import List, Optional, Callable
@@ -253,7 +254,7 @@ class Battle:
             self.units_in_round.append(unit)
 
     def next_turn(self) -> None:
-        """Ход юнита"""
+        """Следующий ход"""
         if self.next_unit:
             self.current_unit = self.next_unit
             self.next_unit = None
@@ -714,7 +715,7 @@ class Battle:
                         attack_type: str,
                         curr_unit: Unit,
                         target: Unit) -> bool:
-
+        """Если текущий юнит - атакующий"""
         success = curr_unit.attack(target)
         if (success and curr_unit.dot_dmg) \
                 or (success and curr_unit.dot_dmg == 0):
@@ -965,9 +966,10 @@ class Battle:
                             unit: Unit,
                             target_slots: List[int]) -> Unit:
         """Получить приоритетную для атаки цель"""
-        first_priority = []
-        second_priority = []
-        third_priority = []
+        prior_dict = {
+            'first_priority': [],
+            'second_priority': [],
+            'third_priority': []}
         target_units = []
         self.targets = []
         target = None
@@ -976,6 +978,26 @@ class Battle:
             unit_ = self.get_unit_by_slot(slot, self.target_player.units)
             target_units.append(unit_)
 
+        self.get_priority_dict(prior_dict, target_units, unit)
+
+        if prior_dict['first_priority']:
+            target = self.damage_priority(prior_dict['first_priority'], 1)
+
+        elif not prior_dict['first_priority'] and prior_dict['second_priority']:
+            target = self.damage_priority(prior_dict['second_priority'], 2)
+
+        if target is None:
+            target = self.get_third_priority_target(
+                target_units,
+                prior_dict['third_priority'])
+
+        return target
+
+    def get_priority_dict(self,
+                          prior_dict: dict,
+                          target_units: List[Unit],
+                          unit: Unit) -> dict:
+        """Получение словаря целей по приоритетам"""
         for target_unit in target_units:
             try:
                 attack_source = unit.attack_source.split('/')[0]
@@ -990,33 +1012,22 @@ class Battle:
                 # убьет цель за 1 ход
                 if target_unit.curr_health <= \
                         unit.attack_dmg * target_armor:
-                    first_priority.append(target_unit)
+                    prior_dict['first_priority'].append(target_unit)
 
                 # убьет цель за 2 хода
                 elif target_unit.curr_health <= \
                         unit.attack_dmg * 2 * target_armor:
-                    second_priority.append(target_unit)
+                    prior_dict['second_priority'].append(target_unit)
 
                 # иначе добавляем всех попавшихся
                 else:
-                    third_priority.append(target_unit)
+                    prior_dict['third_priority'].append(target_unit)
 
-        if first_priority:
-            target = self.damage_priority(first_priority, 1)
-
-        elif not first_priority and second_priority:
-            target = self.damage_priority(second_priority, 2)
-
-        if target is None:
-            target = self.get_third_priority_target(
-                target_units,
-                third_priority)
-
-        return target
+        return prior_dict
 
     def get_third_priority_target(self,
                                   target_units: List[Unit],
-                                  third_priority: List[Unit]):
+                                  third_priority: List[Unit]) -> Unit:
         """Получить цель третьего приоритета для атаки"""
         # если второстепенная атака - Паралич/Окаменение
         if self.current_unit.dot_dmg == 0:
@@ -1042,36 +1053,48 @@ class Battle:
 
         return target
 
-    def damage_priority(self, targets: list, hits) -> Unit:
-        """Определение приоритета для атаки"""
+    def damage_priority(self, targets: List[Unit], hits: int) -> Unit:
+        """Определение приоритетной цели для атаки"""
         result_target = None
 
         for target in targets:
             target_armor = (1 - target.armor * 0.01)
             damage = self.current_unit.attack_dmg * hits * target_armor
 
-            # В первую очередь бьем лекарей
-            if target.branch == 'support' \
-                    and target.attack_source in HEAL_LIST \
-                    and target.curr_health <= damage:
-                result_target = target
-
-            # Во вторую - бьем магов
-            elif target.branch == 'mage' \
-                    and target.curr_health <= damage:
-                result_target = target
-
-            # В третью - бьем стрелков
-            elif target.branch == 'archer' \
-                    and target.curr_health <= damage:
-                result_target = target
+            result_target = self.get_high_priority_target(damage, target)
 
         if result_target is None:
             result_target = self.hp_priority(targets)
 
         return result_target
 
-    def hp_priority(self, targets):
+    @staticmethod
+    def get_high_priority_target(damage: int,
+                                 target: Unit) -> Optional[Unit]:
+        """
+        Получение наиболее приоритетной цели из
+        лекарей, магов, стрелков
+        """
+        result_target = None
+        # В первую очередь бьем лекарей
+        if target.branch == 'support' \
+                and target.attack_source in HEAL_LIST \
+                and target.curr_health <= damage:
+            result_target = target
+
+        # Во вторую - бьем магов
+        elif target.branch == 'mage' \
+                and target.curr_health <= damage:
+            result_target = target
+
+        # В третью - бьем стрелков
+        elif target.branch == 'archer' \
+                and target.curr_health <= damage:
+            result_target = target
+
+        return result_target
+
+    def hp_priority(self, targets: List[Unit]) -> Unit:
         """Выбор слабейшего из оставшихся юнитов (по абсолютному здоровью)"""
         if targets:
             weakest_unit = self.sorting_health(targets)[0]
@@ -1107,13 +1130,7 @@ class Battle:
                 slot,
                 self.target_player.units)
 
-            if (unit.dotted
-                and 'Исцеление' in self.current_unit.attack_type) \
-                    or \
-                    (unit not in self.boosted_units
-                     and unit.attack_dmg != 0
-                     and unit.attack_type
-                     not in (*HEAL_LIST, *ALCHEMIST_LIST, *PARALYZE_LIST)):
+            if self.is_target_for_druid(unit):
                 target_units.append(unit)
                 self.targets.append(unit.slot)
 
@@ -1124,6 +1141,16 @@ class Battle:
                     self.targets.append(unit.slot)
 
         return target_units
+
+    def is_target_for_druid(self, unit: Unit) -> bool:
+        """Является ли юнит целью для Друида"""
+        return (unit.dotted
+                and 'Исцеление' in self.current_unit.attack_type) \
+               or (unit not in self.boosted_units
+                   and unit.attack_dmg != 0
+                   and '300' not in str(unit.attack_dmg)
+                   and unit.attack_type
+                   not in (*HEAL_LIST, *ALCHEMIST_LIST, *PARALYZE_LIST))
 
     def get_paralyze_targets(self,
                              target_slots: List[int]) -> \
@@ -1166,16 +1193,15 @@ class Battle:
         main_db.delete_dungeon_unit(5)
         main_db.delete_dungeon_unit(6)
 
-    @staticmethod
-    def regen() -> None:
+    def regen(self) -> None:
         """Восстановление здоровья всех юнитов игрока"""
         # self.clear_dungeon()
-        main_db.autoregen(1)
-        main_db.autoregen(2)
-        main_db.autoregen(3)
-        main_db.autoregen(4)
-        main_db.autoregen(5)
-        main_db.autoregen(6)
+        main_db.autoregen(1, self.db_table)
+        main_db.autoregen(2, self.db_table)
+        main_db.autoregen(3, self.db_table)
+        main_db.autoregen(4, self.db_table)
+        main_db.autoregen(5, self.db_table)
+        main_db.autoregen(6, self.db_table)
 
     @staticmethod
     def _closest_side_slot(tg_slots: List[int],
@@ -1221,13 +1247,12 @@ class Battle:
                               target_slots: List[int],
                               alies_slots: List[int]) -> Optional[List[int]]:
         """Определение ближайшего слота для текущего юнита"""
-        result = []
-        vanguard_alies_died = 2 not in alies_slots and \
-                              4 not in alies_slots and \
-                              6 not in alies_slots
-        vanguard_enemies_died = 2 not in target_slots and \
-                                4 not in target_slots and \
-                                6 not in target_slots
+        vanguard_alies_died = 2 not in alies_slots \
+                              and 4 not in alies_slots \
+                              and 6 not in alies_slots
+        vanguard_enemies_died = 2 not in target_slots \
+                                and 4 not in target_slots \
+                                and 6 not in target_slots
 
         targets_dict = {
             1: self._closest_side_slot(
@@ -1249,6 +1274,20 @@ class Battle:
                 target_slots,
                 6, 4, 2),
         }
+
+        result = self.define_closest_targets(targets_dict,
+                                             unit,
+                                             vanguard_alies_died,
+                                             vanguard_enemies_died)
+
+        return result
+
+    @staticmethod
+    def define_closest_targets(targets_dict: dict,
+                               unit: Unit,
+                               vanguard_alies_died: bool,
+                               vanguard_enemies_died: bool) -> Optional[List]:
+        result = []
 
         # Юнит в заднем ряду, авангард жив
         if unit.slot not in [2, 4, 6] and not vanguard_alies_died:
@@ -1273,7 +1312,6 @@ class Battle:
         elif not vanguard_enemies_died:
             if unit.slot % 2 == 0:
                 result = targets_dict[unit.slot]
-
         return result
 
     def _choose_targets(self,
