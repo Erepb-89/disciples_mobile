@@ -1,4 +1,5 @@
 """Battle"""
+
 import random
 from collections import deque
 from typing import List, Optional, Callable
@@ -253,7 +254,7 @@ class Battle:
             self.units_in_round.append(unit)
 
     def next_turn(self) -> None:
-        """Ход юнита"""
+        """Следующий ход"""
         if self.next_unit:
             self.current_unit = self.next_unit
             self.next_unit = None
@@ -1246,13 +1247,12 @@ class Battle:
                               target_slots: List[int],
                               alies_slots: List[int]) -> Optional[List[int]]:
         """Определение ближайшего слота для текущего юнита"""
-        result = []
-        vanguard_alies_died = 2 not in alies_slots and \
-                              4 not in alies_slots and \
-                              6 not in alies_slots
-        vanguard_enemies_died = 2 not in target_slots and \
-                                4 not in target_slots and \
-                                6 not in target_slots
+        vanguard_alies_died = 2 not in alies_slots \
+                              and 4 not in alies_slots \
+                              and 6 not in alies_slots
+        vanguard_enemies_died = 2 not in target_slots \
+                                and 4 not in target_slots \
+                                and 6 not in target_slots
 
         targets_dict = {
             1: self._closest_side_slot(
@@ -1274,6 +1274,20 @@ class Battle:
                 target_slots,
                 6, 4, 2),
         }
+
+        result = self.define_closest_targets(targets_dict,
+                                             unit,
+                                             vanguard_alies_died,
+                                             vanguard_enemies_died)
+
+        return result
+
+    @staticmethod
+    def define_closest_targets(targets_dict: dict,
+                               unit: Unit,
+                               vanguard_alies_died: bool,
+                               vanguard_enemies_died: bool) -> Optional[List]:
+        result = []
 
         # Юнит в заднем ряду, авангард жив
         if unit.slot not in [2, 4, 6] and not vanguard_alies_died:
@@ -1298,7 +1312,6 @@ class Battle:
         elif not vanguard_enemies_died:
             if unit.slot % 2 == 0:
                 result = targets_dict[unit.slot]
-
         return result
 
     def _choose_targets(self,

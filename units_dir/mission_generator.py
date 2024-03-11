@@ -539,8 +539,8 @@ def unit_selector(level: int, setup: list) -> dict:
 
 
 def lower_level_units(level, unit_type, units) -> dict:
+    """Получение юнита уровнем ниже"""
     if not units[unit_type]:
-        # получаем юнита уровнем ниже
         units[unit_type] = get_lower_level_unit(unit_type, level)
     return units
 
@@ -548,6 +548,7 @@ def lower_level_units(level, unit_type, units) -> dict:
 def small_support_setup(level: int,
                         setup: list,
                         unit_type: str) -> bool:
+    """Проверка, является ли сетап маленьким"""
     return (setup
             in (setup_2, setup_3)
             or level == 1) \
@@ -557,6 +558,7 @@ def small_support_setup(level: int,
 def big_support_setup(level: int,
                       setup: list,
                       unit_type: str) -> bool:
+    """Проверка, является ли сетап большим"""
     return setup \
            not in (setup_2, setup_3) \
            and level != 1 \
