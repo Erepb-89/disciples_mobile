@@ -461,10 +461,10 @@ class CampaignWindow(QMainWindow):
                 ui_unlock(val)
                 show_opened(self.campaign_arrows_dict[key])
             elif key == self.curr_mission:
-                # ui_lock(val)
+                ui_lock(val)
                 show_active(self.campaign_arrows_dict[key])
             else:
-                # ui_lock(val)
+                ui_lock(val)
                 show_closed(self.campaign_arrows_dict[key])
 
         if self.dungeon == '':
