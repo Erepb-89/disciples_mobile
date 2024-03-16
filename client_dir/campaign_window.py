@@ -461,10 +461,10 @@ class CampaignWindow(QMainWindow):
                 ui_unlock(val)
                 show_opened(self.campaign_arrows_dict[key])
             elif key == self.curr_mission:
-                # ui_lock(val)
+                ui_lock(val)
                 show_active(self.campaign_arrows_dict[key])
             else:
-                # ui_lock(val)
+                ui_lock(val)
                 show_closed(self.campaign_arrows_dict[key])
 
         if self.dungeon == '':
@@ -492,7 +492,10 @@ class CampaignWindow(QMainWindow):
         # определяем лидера отряда
         player_units = main_db.show_campaign_units()
 
+        # определяем сильнейшее существо в отряде по опыту
+        player_units.sort(key=lambda x: x['exp_per_kill'], reverse=True)
         leader = player_units[0]
+
         for unit in player_units:
             if unit.leadership >= 3:
                 leader = unit

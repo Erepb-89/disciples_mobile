@@ -1186,12 +1186,12 @@ class Battle:
     @staticmethod
     def clear_dungeon() -> None:
         """Очистка текущего подземелья от вражеских юнитов"""
-        main_db.delete_dungeon_unit(1)
-        main_db.delete_dungeon_unit(2)
-        main_db.delete_dungeon_unit(3)
-        main_db.delete_dungeon_unit(4)
-        main_db.delete_dungeon_unit(5)
-        main_db.delete_dungeon_unit(6)
+        main_db.delete_player_unit(1, main_db.CurrentDungeon)
+        main_db.delete_player_unit(2, main_db.CurrentDungeon)
+        main_db.delete_player_unit(3, main_db.CurrentDungeon)
+        main_db.delete_player_unit(4, main_db.CurrentDungeon)
+        main_db.delete_player_unit(5, main_db.CurrentDungeon)
+        main_db.delete_player_unit(6, main_db.CurrentDungeon)
 
     def regen(self) -> None:
         """Восстановление здоровья всех юнитов игрока"""

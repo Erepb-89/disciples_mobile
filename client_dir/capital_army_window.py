@@ -25,10 +25,10 @@ class CapitalArmyWindow(QMainWindow):
     """
 
     class Label(QLabel):
-        def __init__(self, title, parent_window):
-            super().__init__(title, parent_window)
+        def __init__(self, title, parent):
+            super().__init__(title, parent)
             self.setAcceptDrops(True)
-            self.parent_window = parent_window
+            self.parent = parent
 
         def mouseMoveEvent(self, event) -> None:
             mime_data = QMimeData()
@@ -51,12 +51,40 @@ class CapitalArmyWindow(QMainWindow):
                 event.ignore()
 
         def dropEvent(self, event) -> None:
-            first = int(self.parent_window.current_label[-1])
+            first = int(self.parent.current_label[-1])
             second = int(self.objectName()[-1])
-            self.parent_window.check_and_swap(
-                first,
-                second,
-                self.parent_window.db_table)
+
+            if "res" not in self.objectName() \
+                    and "res" not in self.parent.current_label:
+                self.parent.check_and_swap(
+                    first,
+                    second,
+                    self.parent.db_table)
+
+            elif "res" in self.objectName() \
+                    and "res" in self.parent.current_label:
+                self.parent.check_and_swap(
+                    first,
+                    second,
+                    self.parent.res_db_table)
+
+            elif "res" in self.objectName() \
+                    and "res" not in self.parent.current_label:
+
+                self.parent.check_tables_and_swap(
+                    first,
+                    second,
+                    self.parent.db_table,
+                    self.parent.res_db_table)
+
+            elif "res" not in self.objectName() \
+                    and "res" in self.parent.current_label:
+
+                self.parent.check_tables_and_swap(
+                    first,
+                    second,
+                    self.parent.res_db_table,
+                    self.parent.db_table)
 
     def __init__(self, parent_window: any):
         super().__init__()
@@ -65,6 +93,7 @@ class CapitalArmyWindow(QMainWindow):
         self.question = False
         self.faction = main_db.current_faction
         self.db_table = main_db.campaigns_dict[self.faction]
+        self.res_db_table = main_db.res_campaigns_dict[self.faction]
         self.factory = AbstractFactory.create_factory(
             self.faction)
         self.support = self.factory.create_support()
@@ -133,6 +162,46 @@ class CapitalArmyWindow(QMainWindow):
         self.ui.slot6.setMidLineWidth(0)
         self.ui.slot6.setObjectName("slot6")
 
+        self.ui.resSlot_1 = self.Label('', self)
+        self.ui.resSlot_1.setGeometry(QRect(1003, 100, 105, 127))
+        self.ui.resSlot_1.setFrameShape(QFrame.Panel)
+        self.ui.resSlot_1.setFrameShadow(QFrame.Raised)
+        self.ui.resSlot_1.setLineWidth(1)
+        self.ui.resSlot_1.setMidLineWidth(0)
+        self.ui.resSlot_1.setObjectName("resSlot_1")
+
+        self.ui.resSlot_2 = self.Label('', self)
+        self.ui.resSlot_2.setGeometry(QRect(886, 100, 105, 127))
+        self.ui.resSlot_2.setFrameShape(QFrame.Panel)
+        self.ui.resSlot_2.setFrameShadow(QFrame.Raised)
+        self.ui.resSlot_2.setLineWidth(1)
+        self.ui.resSlot_2.setMidLineWidth(0)
+        self.ui.resSlot_2.setObjectName("resSlot_2")
+
+        self.ui.resSlot_4 = self.Label('', self)
+        self.ui.resSlot_4.setGeometry(QRect(886, 260, 105, 127))
+        self.ui.resSlot_4.setFrameShape(QFrame.Panel)
+        self.ui.resSlot_4.setFrameShadow(QFrame.Raised)
+        self.ui.resSlot_4.setLineWidth(1)
+        self.ui.resSlot_4.setMidLineWidth(0)
+        self.ui.resSlot_4.setObjectName("resSlot_4")
+
+        self.ui.resSlot_5 = self.Label('', self)
+        self.ui.resSlot_5.setGeometry(QRect(1003, 420, 105, 127))
+        self.ui.resSlot_5.setFrameShape(QFrame.Panel)
+        self.ui.resSlot_5.setFrameShadow(QFrame.Raised)
+        self.ui.resSlot_5.setLineWidth(1)
+        self.ui.resSlot_5.setMidLineWidth(0)
+        self.ui.resSlot_5.setObjectName("resSlot_5")
+
+        self.ui.resSlot_6 = self.Label('', self)
+        self.ui.resSlot_6.setGeometry(QRect(886, 420, 105, 127))
+        self.ui.resSlot_6.setFrameShape(QFrame.Panel)
+        self.ui.resSlot_6.setFrameShadow(QFrame.Raised)
+        self.ui.resSlot_6.setLineWidth(1)
+        self.ui.resSlot_6.setMidLineWidth(0)
+        self.ui.resSlot_6.setObjectName("resSlot_6")
+
         self.ui.slot1.installEventFilter(self)
         self.ui.slot1.setContextMenuPolicy(
             Qt.CustomContextMenu)
@@ -169,6 +238,42 @@ class CapitalArmyWindow(QMainWindow):
         self.ui.slot6.customContextMenuRequested \
             .connect(self.slot6_detailed)
 
+        self.ui.resSlot_1.installEventFilter(self)
+        # self.ui.resSlot_1.setContextMenuPolicy(
+        #     Qt.CustomContextMenu)
+        # self.ui.resSlot_1.customContextMenuRequested \
+        #     .connect(self.slot1_detailed)
+
+        self.ui.resSlot_2.installEventFilter(self)
+        # self.ui.resSlot_2.setContextMenuPolicy(
+        #     Qt.CustomContextMenu)
+        # self.ui.resSlot_2.customContextMenuRequested \
+        #     .connect(self.slot2_detailed)
+
+        # self.ui.resSlot_3.installEventFilter(self)
+        # self.ui.resSlot_3.setContextMenuPolicy(
+        #     Qt.CustomContextMenu)
+        # self.ui.resSlot_3.customContextMenuRequested \
+        #     .connect(self.slot3_detailed)
+
+        self.ui.resSlot_4.installEventFilter(self)
+        # self.ui.resSlot_4.setContextMenuPolicy(
+        #     Qt.CustomContextMenu)
+        # self.ui.resSlot_4.customContextMenuRequested \
+        #     .connect(self.slot4_detailed)
+
+        self.ui.resSlot_5.installEventFilter(self)
+        # self.ui.resSlot_5.setContextMenuPolicy(
+        #     Qt.CustomContextMenu)
+        # self.ui.resSlot_5.customContextMenuRequested \
+        #     .connect(self.slot5_detailed)
+
+        self.ui.resSlot_6.installEventFilter(self)
+        # self.ui.resSlot_6.setContextMenuPolicy(
+        #     Qt.CustomContextMenu)
+        # self.ui.resSlot_6.customContextMenuRequested \
+        #     .connect(self.slot6_detailed)
+
         # подкраска элементов
         set_beige_colour(self.ui.listPlayerUnits)
         set_beige_colour(self.ui.listPlayerSlots)
@@ -180,17 +285,8 @@ class CapitalArmyWindow(QMainWindow):
         self.player_slots_update()
 
         self.update_capital()
-        self.show_hero_face()
+        # self.show_hero_face()
         self.ui.pushButtonBack.clicked.connect(self.back)
-
-        self.pl_hp_slots_dict = {
-            1: self.ui.hpSlot1,
-            2: self.ui.hpSlot2,
-            3: self.ui.hpSlot3,
-            4: self.ui.hpSlot4,
-            5: self.ui.hpSlot5,
-            6: self.ui.hpSlot6,
-        }
 
         self._update_all_unit_health()
 
@@ -210,7 +306,8 @@ class CapitalArmyWindow(QMainWindow):
                 source.objectName()[-1]))
 
         if event.type() == QEvent.MouseButtonPress \
-                and self.current_unit is None:
+                and self.current_unit is None \
+                and 'res' not in self.current_label:
             self.slot_detailed(self.current_label[-1])
 
         return super().eventFilter(source, event)
@@ -246,11 +343,34 @@ class CapitalArmyWindow(QMainWindow):
 
     def _update_all_unit_health(self) -> None:
         """Метод обновляющий текущее здоровье всех юнитов"""
+        # прорисовка здоровья юнитов основного состава
+        self.pl_hp_slots_dict = {
+            1: self.ui.hpSlot1,
+            2: self.ui.hpSlot2,
+            3: self.ui.hpSlot3,
+            4: self.ui.hpSlot4,
+            5: self.ui.hpSlot5,
+            6: self.ui.hpSlot6,
+        }
 
-        # прорисовка здоровья юнитов игрока
+        self.res_hp_slots_dict = {
+            1: self.ui.hpSlot1_2,
+            2: self.ui.hpSlot2_2,
+            # 3: self.ui.hpSlot3_2,
+            4: self.ui.hpSlot4_2,
+            5: self.ui.hpSlot5_2,
+            6: self.ui.hpSlot6_2,
+        }
+
         for num, hp_slot in self.pl_hp_slots_dict.items():
             update_unit_health(
                 self.player_unit_by_slot(num),
+                hp_slot)
+
+        # прорисовка здоровья юнитов резервного состава
+        for num, hp_slot in self.res_hp_slots_dict.items():
+            update_unit_health(
+                self.reserve_unit_by_slot(num),
                 hp_slot)
 
     def back(self) -> None:
@@ -296,6 +416,13 @@ class CapitalArmyWindow(QMainWindow):
             item.setEditable(False)
             self.player_units_model.appendRow(item)
 
+        self.player_icons_update()
+        self.reserve_icons_update()
+
+        self.ui.listPlayerUnits.setModel(self.player_units_model)
+
+    def player_icons_update(self):
+        """Обновление иконок юнитов игрока"""
         self.slot_update(self.player_unit_by_slot(1),
                          self.ui.slot1)
         self.slot_update(self.player_unit_by_slot(2),
@@ -309,7 +436,20 @@ class CapitalArmyWindow(QMainWindow):
         self.slot_update(self.player_unit_by_slot(6),
                          self.ui.slot6)
 
-        self.ui.listPlayerUnits.setModel(self.player_units_model)
+    def reserve_icons_update(self):
+        """Обновление иконок резервных юнитов"""
+        self.slot_update(self.reserve_unit_by_slot(1),
+                         self.ui.resSlot_1)
+        self.slot_update(self.reserve_unit_by_slot(2),
+                         self.ui.resSlot_2)
+        # self.slot_update(self.reserve_unit_by_slot(3),
+        #                  self.ui.resSlot_3)
+        self.slot_update(self.reserve_unit_by_slot(4),
+                         self.ui.resSlot_4)
+        self.slot_update(self.reserve_unit_by_slot(5),
+                         self.ui.resSlot_5)
+        self.slot_update(self.reserve_unit_by_slot(6),
+                         self.ui.resSlot_6)
 
     def reset(self) -> None:
         """Обновить"""
@@ -331,7 +471,7 @@ class CapitalArmyWindow(QMainWindow):
         """Подтверждение 'Увольнения' юнита"""
         if self.question:
             selected_slot = self.ui.listPlayerSlots.currentIndex().data()
-            main_db.delete_campaign_unit(int(selected_slot))
+            main_db.delete_player_unit(int(selected_slot), self.db_table)
             self.reset()
             self.capital.main.reset()
 
@@ -387,48 +527,103 @@ class CapitalArmyWindow(QMainWindow):
             ui_obj.setFixedWidth(105)
             ui_obj.setFixedHeight(127)
 
-    def check_and_swap(self, num1: int, num2: int, database: any):
+    def check_and_swap(self, num1: int, num2: int, db_table: any):
         """
         Проверить юниты в слотах на наличие и размер.
         Поменять местами вместе с парным юнитом (соседний слот).
         """
-        unit1 = main_db.get_unit_by_slot(num1, database)
-        unit2 = main_db.get_unit_by_slot(num2, database)
+        unit1 = main_db.get_unit_by_slot(num1, db_table)
+        unit2 = main_db.get_unit_by_slot(num2, db_table)
         func = self.swap_unit_action
 
         if unit1 is not None \
                 and unit2 is not None \
                 and unit1.size == BIG \
                 and unit2.size == BIG:
-            func(num1, num2)
+            func(num1, num2, db_table)
 
         elif unit1 is not None \
                 and unit1.size == BIG:
             if num2 % 2 != 0:
-                func(num2, num1 - 1)
-                func(num2 + 1, num1)
+                func(num2, num1 - 1, db_table)
+                func(num2 + 1, num1, db_table)
             elif num2 % 2 == 0:
-                func(num2 - 1, num1 - 1)
-                func(num2, num1)
+                func(num2 - 1, num1 - 1, db_table)
+                func(num2, num1, db_table)
 
         elif unit1 is not None and unit2 is not None \
                 and unit2.size == BIG:
             if num1 % 2 != 0:
-                func(num1, num2 - 1)
-                func(num1 + 1, num2)
+                func(num1, num2 - 1, db_table)
+                func(num1 + 1, num2, db_table)
             elif num1 % 2 == 0:
-                func(num1 - 1, num2 - 1)
-                func(num1, num2)
+                func(num1 - 1, num2 - 1, db_table)
+                func(num1, num2, db_table)
 
         elif unit1 is not None:
-            func(num1, num2)
+            func(num1, num2, db_table)
 
-    def swap_unit_action(self, slot1: int, slot2: int) -> None:
+    def check_tables_and_swap(self,
+                              num1: int,
+                              num2: int,
+                              db_table1: any,
+                              db_table2: any) -> None:
+        """
+        Проверить юниты в слотах на наличие и размер.
+        Поменять местами вместе с парным юнитом (соседний слот).
+        """
+        unit1 = main_db.get_unit_by_slot(num1, db_table1)
+        unit2 = main_db.get_unit_by_slot(num2, db_table2)
+        func = self.swap_unit_tables_action
+
+        if unit1 is not None \
+                and unit2 is not None \
+                and unit1.size == BIG \
+                and unit2.size == BIG:
+            func(num1, num2, db_table1, db_table2)
+
+        elif unit1 is not None \
+                and unit1.size == BIG:
+            if num2 % 2 != 0:
+                func(num2, num1 - 1, db_table2, db_table1)
+                func(num2 + 1, num1, db_table2, db_table1)
+            elif num2 % 2 == 0:
+                func(num2 - 1, num1 - 1, db_table2, db_table1)
+                func(num2, num1, db_table2, db_table1)
+
+        elif unit1 is not None and unit2 is not None \
+                and unit2.size == BIG:
+            if num1 % 2 != 0:
+                func(num1, num2 - 1, db_table1, db_table2)
+                func(num1 + 1, num2, db_table1, db_table2)
+            elif num1 % 2 == 0:
+                func(num1 - 1, num2 - 1, db_table1, db_table2)
+                func(num1, num2, db_table1, db_table2)
+
+        elif unit1 is not None:
+            func(num1, num2, db_table1, db_table2)
+
+    def swap_unit_action(self, slot1: int, slot2: int, db_table: any) -> None:
         """Меняет слоты двух юнитов игрока"""
         main_db.update_slot(
             slot1,
             slot2,
-            self.db_table)
+            db_table)
+        self.player_list_update()
+        self.reset()
+        self._update_all_unit_health()
+
+    def swap_unit_tables_action(self,
+                                slot1: int,
+                                slot2: int,
+                                db_table1: any,
+                                db_table2: any) -> None:
+        """Меняет слоты двух юнитов игрока между таблицами"""
+        main_db.update_slots_between_tables(
+            slot1,
+            slot2,
+            db_table1,
+            db_table2)
         self.player_list_update()
         self.reset()
         self._update_all_unit_health()
@@ -469,19 +664,14 @@ class CapitalArmyWindow(QMainWindow):
         self.slot_detailed(6)
 
     def player_unit_by_slot(self, slot: int) -> namedtuple:
-        """Метод получающий юнита игрока по слоту."""
+        """Метод получающий юнит игрока по слоту."""
         return main_db.get_unit_by_slot(
             slot,
             self.db_table)
 
-    @staticmethod
-    def is_button_enabled(button, db_table, num2):
-        """Определяет доступность кнопки по юнитам в слотах"""
-        try:
-            if main_db.get_unit_by_slot(
-                    num2, db_table).size == BIG:
-                ui_lock(button)
-            else:
-                ui_unlock(button)
-        except AttributeError:
-            ui_unlock(button)
+    def reserve_unit_by_slot(self, slot: int) -> namedtuple:
+        """Метод получающий резервный юнит по слоту в столице."""
+        return main_db.get_unit_by_slot(
+            slot,
+            self.res_db_table)
+

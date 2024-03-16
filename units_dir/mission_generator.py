@@ -416,7 +416,7 @@ def get_mages(branch: str, level: int) -> list:
     """Получить магов из списка юнитов"""
     mages = main_db.get_units_by_branch_and_level(branch, level)
     mages = [unit.name for unit in mages
-             if unit_is_active(unit) and unit.attack_purpose == 6]
+             if unit_is_active(unit) and 'Жизнь' not in unit.attack_source]
 
     return mages
 
@@ -522,14 +522,17 @@ def unit_selector(level: int, setup: list) -> dict:
                 elif unit_type == SMALL:
                     unit_type = random.choice(['mage',
                                                'archer'])
-                    if units['archer']:
-                        unit = random.choice(units[unit_type])
-                    else:
-                        unit = random.choice(units['mage'])
-                    result_dict[slot] = unit
 
-                    # если нет юнитов выбранного типа нужного уровня
-                    units = lower_level_units(level, unit_type, units)
+                    if units.get('archer') and unit_type == 'archer':
+                        unit = random.choice(units[unit_type])
+                        result_dict[slot] = unit
+
+                    elif unit_type in ('archer', 'mage'):
+                        unit = random.choice(units['mage'])
+                        result_dict[slot] = unit
+
+                        # если нет юнитов выбранного типа нужного уровня
+                        units = lower_level_units(level, 'mage', units)
 
         # если None
         else:
@@ -538,7 +541,7 @@ def unit_selector(level: int, setup: list) -> dict:
     return result_dict
 
 
-def lower_level_units(level, unit_type, units) -> dict:
+def lower_level_units(level: int, unit_type: str, units: dict) -> dict:
     """Получение юнита уровнем ниже"""
     if not units[unit_type]:
         units[unit_type] = get_lower_level_unit(unit_type, level)
@@ -552,17 +555,15 @@ def small_support_setup(level: int,
     return (setup
             in (setup_2, setup_3)
             or level == 1) \
-           and unit_type == SUPPORT
+        and unit_type == SUPPORT
 
 
 def big_support_setup(level: int,
                       setup: list,
                       unit_type: str) -> bool:
     """Проверка, является ли сетап большим"""
-    return setup \
-           not in (setup_2, setup_3) \
-           and level != 1 \
-           and unit_type == SUPPORT
+    return setup not in (setup_2, setup_3) \
+        and level != 1 and unit_type == SUPPORT
 
 
 def get_lower_level_unit(unit_type: str, level: int) -> any:
