@@ -569,7 +569,8 @@ class CapitalBuildingWindow(QMainWindow):
         self.unit = self.get_unit_by_b_slot(b_slot)
         self.slot_update(self.unit, self.ui.slot)
         self.button_update(self.unit, self.ui.pushButtonSlot)
-        slot_frame_update(self.unit, self.ui.slotFrame1)
+        if self.unit is not None:
+            slot_frame_update(self.unit, self.ui.slotFrame1)
         self.get_building_params(b_slot)
 
         # подсветка выбранного здания

@@ -161,10 +161,38 @@ class ServerStorage:
         def __str__(self):
             return f'Юнит Империи: {self.name}'
 
+    class ReserveEmpireUnits(AllUnits):
+        """
+        Класс - отображение таблицы резервных юнитов игрока
+        в кампании в окне столицы при игре за Империю.
+        """
+
+        def __repr__(self):
+            return (f'{self.__class__.__name__}('
+                    f'unit: {self.name!r},'
+                    f' slot: {self.slot!r})')
+
+        def __str__(self):
+            return f'Юнит Империи: {self.name}'
+
     class HordesUnits(AllUnits):
         """
         Класс - отображение таблицы юнитов игрока
         в кампании при игре за Орды нежити.
+        """
+
+        def __repr__(self):
+            return (f'{self.__class__.__name__}('
+                    f'unit: {self.name!r},'
+                    f' slot: {self.slot!r})')
+
+        def __str__(self):
+            return f'Юнит Орд нежити: {self.name}'
+
+    class ReserveHordesUnits(AllUnits):
+        """
+        Класс - отображение таблицы резервных юнитов игрока
+        в кампании в окне столицы при игре за Орды нежити.
         """
 
         def __repr__(self):
@@ -189,10 +217,38 @@ class ServerStorage:
         def __str__(self):
             return f'Юнит Легионов проклятых: {self.name}'
 
+    class ReserveLegionsUnits(AllUnits):
+        """
+        Класс - отображение таблицы резервных юнитов игрока
+        в кампании в окне столицы при игре за Легионы проклятых.
+        """
+
+        def __repr__(self):
+            return (f'{self.__class__.__name__}('
+                    f'unit: {self.name!r},'
+                    f' slot: {self.slot!r})')
+
+        def __str__(self):
+            return f'Юнит Легионов проклятых: {self.name}'
+
     class ClansUnits(AllUnits):
         """
         Класс - отображение таблицы юнитов игрока
         в кампании при игре за Горные кланы.
+        """
+
+        def __repr__(self):
+            return (f'{self.__class__.__name__}('
+                    f'unit: {self.name!r},'
+                    f' slot: {self.slot!r})')
+
+        def __str__(self):
+            return f'Юнит Горных кланов: {self.name}'
+
+    class ReserveClansUnits(AllUnits):
+        """
+        Класс - отображение таблицы резервных юнитов игрока
+        в кампании в окне столицы при игре за Горные кланы.
         """
 
         def __repr__(self):
@@ -302,6 +358,10 @@ class ServerStorage:
         hordes_units_table = self.create_units_table('hordes_units')
         legions_units_table = self.create_units_table('legions_units')
         clans_units_table = self.create_units_table('clans_units')
+        reserve_empire_table = self.create_units_table('reserve_empire_units')
+        reserve_hordes_table = self.create_units_table('reserve_hordes_units')
+        reserve_legions_table = self.create_units_table('reserve_legions_units')
+        reserve_clans_table = self.create_units_table('reserve_clans_units')
 
         # Создаём таблицу игроков
         players_table = Table('players', self.metadata,
@@ -368,6 +428,10 @@ class ServerStorage:
         mapper(self.HordesUnits, hordes_units_table)
         mapper(self.LegionsUnits, legions_units_table)
         mapper(self.ClansUnits, clans_units_table)
+        mapper(self.ReserveEmpireUnits, reserve_empire_table)
+        mapper(self.ReserveHordesUnits, reserve_hordes_table)
+        mapper(self.ReserveLegionsUnits, reserve_legions_table)
+        mapper(self.ReserveClansUnits, reserve_clans_table)
 
         # Создаём сессию
         session = sessionmaker(bind=self.database_engine)
@@ -380,6 +444,13 @@ class ServerStorage:
             UH: self.HordesUnits,
             LD: self.LegionsUnits,
             MC: self.ClansUnits,
+        }
+
+        self.res_campaigns_dict = {
+            EM: self.ReserveEmpireUnits,
+            UH: self.ReserveHordesUnits,
+            LD: self.ReserveLegionsUnits,
+            MC: self.ReserveClansUnits,
         }
 
     def create_units_table(self, table_name):
@@ -936,58 +1007,6 @@ class ServerStorage:
         # Возвращаем список кортежей
         return query.all()
 
-    def get_campaign_unit_by_slot(self, slot: int) -> namedtuple:
-        """Метод получающий юнита из таблицы текущей кампании по слоту."""
-        db_table = self.campaigns_dict[self.current_faction]
-
-        query = self.session.query(
-            db_table.id,
-            db_table.name,
-            db_table.level,
-            db_table.size,
-            db_table.price,
-            db_table.exp,
-            db_table.curr_exp,
-            db_table.exp_per_kill,
-            db_table.health,
-            db_table.curr_health,
-            db_table.armor,
-            db_table.immune,
-            db_table.ward,
-            db_table.attack_type,
-            db_table.attack_chance,
-            db_table.attack_dmg,
-            db_table.dot_dmg,
-            db_table.attack_source,
-            db_table.attack_ini,
-            db_table.attack_radius,
-            db_table.attack_purpose,
-            db_table.prev_level,
-            db_table.desc,
-            db_table.slot,
-            db_table.subrace,
-            db_table.branch,
-            db_table.attack_twice,
-            db_table.regen,
-            db_table.dyn_upd_level,
-            db_table.upgrade_b,
-            db_table.leadership,
-            db_table.leader_cat,
-            db_table.nat_armor,
-            db_table.might,
-            db_table.weapon_master,
-            db_table.endurance,
-            db_table.first_strike,
-            db_table.accuracy,
-            db_table.water_resist,
-            db_table.air_resist,
-            db_table.fire_resist,
-            db_table.earth_resist,
-            db_table.dotted
-        ).filter_by(slot=slot)
-        # Возвращаем кортеж
-        return query.first()
-
     def show_campaign_units(self) -> List[namedtuple]:
         """Метод возвращающий список юнитов игрока в текущей кампании."""
         db_table = self.campaigns_dict[self.current_faction]
@@ -1245,6 +1264,54 @@ class ServerStorage:
         if second_unit is not None:
             self.set_unit_slot(slot, second_unit, db_table)
 
+    def update_db_table(self,
+                        unit: any,
+                        db_table: AllUnits,
+                        new_db_table: AllUnits) -> None:
+        """Обновление таблицы у юнита"""
+        player_unit = new_db_table(*unit)
+        self.session.add(player_unit)
+        self.session.commit()
+
+        self.delete_unit_by_id(unit.id, db_table)
+
+    def update_slots_between_tables(self,
+                                    slot: int,
+                                    new_slot: int,
+                                    db_table: AllUnits,
+                                    new_db_table: AllUnits) -> None:
+        """Обновление слота у юнита"""
+        changed_unit = self.get_unit_by_slot(slot, db_table)
+        second_unit = self.get_unit_by_slot(new_slot, new_db_table)
+
+        if slot == new_slot \
+                and changed_unit is not None \
+                and second_unit is not None:
+            self.update_db_table(changed_unit, db_table, new_db_table)
+            self.update_db_table(second_unit, new_db_table, db_table)
+
+        else:
+            source_unit = None
+            new_unit = None
+
+            if changed_unit is not None:
+                source_unit = new_db_table(*changed_unit)
+                source_unit.slot = new_slot
+                self.delete_player_unit(slot, db_table)
+
+            if second_unit is not None:
+                new_unit = db_table(*second_unit)
+                new_unit.slot = slot
+                self.delete_player_unit(new_slot, new_db_table)
+
+            if source_unit is not None:
+                self.session.add(source_unit)
+                self.session.commit()
+
+            if new_unit is not None:
+                self.session.add(new_unit)
+                self.session.commit()
+
     def get_gold(self,
                  player_name: str,
                  faction: str) -> int:
@@ -1499,21 +1566,14 @@ class ServerStorage:
 
         self.session.commit()
 
-    def delete_campaign_unit(self, slot: int) -> None:
-        """Метод удаляющий юнита из таблицы текущей кампании игрока по слоту."""
-        db_table = self.campaigns_dict[self.current_faction]
-
+    def delete_player_unit(self, slot: int, db_table: any) -> None:
+        """Метод удаляющий юнита из выбранной таблицы по слоту."""
         self.session.query(db_table).filter_by(slot=slot).delete()
         self.session.commit()
 
-    def delete_player_unit(self, slot: int) -> None:
-        """Метод удаляющий юнита из таблицы player_units по слоту."""
-        self.session.query(self.PlayerUnits).filter_by(slot=slot).delete()
-        self.session.commit()
-
-    def delete_dungeon_unit(self, slot: int) -> None:
-        """Метод удаляющий юнита из теблицы текущего подземелья по слоту."""
-        self.session.query(self.CurrentDungeon).filter_by(slot=slot).delete()
+    def delete_unit_by_id(self, id_: int, db_table: any) -> None:
+        """Метод удаляющий юнита из выбранной таблицы по слоту."""
+        self.session.query(db_table).filter_by(id=id_).delete()
         self.session.commit()
 
     def hire_unit(self, unit: str, slot: int) -> None:
@@ -1528,41 +1588,30 @@ class ServerStorage:
             print('Данный слот занят')
         else:
             unit_row = self.get_unit_by_name(unit)
-            unit_cols_after_slot = main_db.get_unit_by_name(
-                unit)[26:45]
-
-            # print(unit_row._asdict())
             if self.is_double(unit_row.name) and slot % 2 == 1:
                 slot += 1
 
-            player_unit = db_table(
-                *unit_row[:25],
-                slot,
-                *unit_cols_after_slot)
+            player_unit = db_table(*unit_row)
+            player_unit.slot = slot
             self.session.add(player_unit)
             self.session.commit()
 
-    def hire_player_unit(self, unit: str, slot: int) -> None:
+    def hire_player_unit(self, unit: str, slot: int, db_table: any) -> None:
         """Метод добавления юнита в таблицу player_units."""
         if self.check_slot(
                 unit,
                 slot,
                 self.get_unit_by_slot,
-                self.PlayerUnits) is True:
+                db_table) is True:
             print('Данный слот занят')
         else:
             unit_row = self.get_unit_by_name(unit)
-            unit_cols_after_slot = main_db.get_unit_by_name(
-                unit)[26:45]
-
             if self.is_double(unit) and slot % 2 == 1:
                 slot += 1
 
-            enemy_unit = self.PlayerUnits(
-                *unit_row[:25],
-                slot,
-                *unit_cols_after_slot)
-            self.session.add(enemy_unit)
+            player_unit = db_table(*unit_row)
+            player_unit.slot = slot
+            self.session.add(player_unit)
             self.session.commit()
 
     def hire_enemy_unit(self, unit: str, slot: int) -> None:
@@ -1575,18 +1624,11 @@ class ServerStorage:
             print('Данный слот занят')
         else:
             unit_row = self.get_unit_by_name(unit)
-            unit_cols_after_slot = main_db.get_unit_by_name(
-                unit)[26:45]
-
-            # print(unit_row._asdict())
             if self.is_double(unit) and slot % 2 == 1:
                 slot += 1
 
-            enemy_unit = self.CurrentDungeon(
-                *unit_row[:25],
-                slot,
-                *unit_cols_after_slot)
-            # enemy_unit = self.Dungeons(unit_id)
+            enemy_unit = self.CurrentDungeon(*unit_row)
+            enemy_unit.slot = slot
             self.session.add(enemy_unit)
             self.session.commit()
 
@@ -1844,14 +1886,11 @@ class ServerStorage:
         Метод замены юнита на другой юнит.
         Изменяет запись в переданной таблице.
         """
-        if db_table == self.PlayerUnits:
-            self.delete_player_unit(slot)
-            self.hire_player_unit(new_name, slot)
-        elif db_table == self.CurrentDungeon:
-            self.delete_player_unit(slot)
-            self.hire_enemy_unit(new_name, slot)
+        self.delete_player_unit(slot, db_table)
+
+        if db_table in (self.PlayerUnits, self.CurrentDungeon):
+            self.hire_player_unit(new_name, slot, db_table)
         else:
-            self.delete_campaign_unit(slot)
             self.hire_unit(new_name, slot)
 
     def show_dungeon_units(self, name: str) -> namedtuple:

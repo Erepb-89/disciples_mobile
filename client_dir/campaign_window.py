@@ -492,7 +492,10 @@ class CampaignWindow(QMainWindow):
         # определяем лидера отряда
         player_units = main_db.show_campaign_units()
 
+        # определяем сильнейшее существо в отряде по опыту
+        player_units.sort(key=lambda x: x['exp_per_kill'], reverse=True)
         leader = player_units[0]
+
         for unit in player_units:
             if unit.leadership >= 3:
                 leader = unit

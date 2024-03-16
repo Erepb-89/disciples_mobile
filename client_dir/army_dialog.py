@@ -59,6 +59,7 @@ class ArmyDialog(QDialog):
         self.source = ''
         self.faction = main_db.current_faction
         self.db_table = main_db.campaigns_dict[self.faction]
+        self.res_db_table = main_db.res_campaigns_dict[self.faction]
 
         self.setFixedSize(607, 554)
         self.setWindowTitle('Окно армии')
@@ -275,13 +276,13 @@ class ArmyDialog(QDialog):
             unit = main_db.get_unit_by_slot(slot, self.db_table)
         return unit
 
-    def check_and_swap(self, num1: int, num2: int, database: any):
+    def check_and_swap(self, num1: int, num2: int, db_table: any):
         """
         Проверить юниты в слотах на наличие и размер.
         Поменять местами вместе с парным юнитом (соседний слот).
         """
-        unit1 = main_db.get_unit_by_slot(num1, database)
-        unit2 = main_db.get_unit_by_slot(num2, database)
+        unit1 = main_db.get_unit_by_slot(num1, db_table)
+        unit2 = main_db.get_unit_by_slot(num2, db_table)
         func = self.swap_unit_action
 
         if unit1 is not None \

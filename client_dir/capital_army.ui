@@ -567,6 +567,311 @@
      <string/>
     </property>
    </widget>
+   <widget class="QLabel" name="hpSlot2_2">
+    <property name="geometry">
+     <rect>
+      <x>889</x>
+      <y>234</y>
+      <width>101</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Arial</family>
+      <pointsize>11</pointsize>
+      <weight>75</weight>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="text">
+     <string>hpSlot2</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="hpSlot5_2">
+    <property name="geometry">
+     <rect>
+      <x>1001</x>
+      <y>552</y>
+      <width>101</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Arial</family>
+      <pointsize>11</pointsize>
+      <weight>75</weight>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="text">
+     <string>hpSlot5</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="resSlot_2">
+    <property name="geometry">
+     <rect>
+      <x>886</x>
+      <y>100</y>
+      <width>105</width>
+      <height>127</height>
+     </rect>
+    </property>
+    <property name="minimumSize">
+     <size>
+      <width>105</width>
+      <height>127</height>
+     </size>
+    </property>
+    <property name="maximumSize">
+     <size>
+      <width>224</width>
+      <height>127</height>
+     </size>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::Panel</enum>
+    </property>
+    <property name="frameShadow">
+     <enum>QFrame::Raised</enum>
+    </property>
+    <property name="lineWidth">
+     <number>1</number>
+    </property>
+    <property name="midLineWidth">
+     <number>0</number>
+    </property>
+    <property name="text">
+     <string>slot_2</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="hpSlot1_2">
+    <property name="geometry">
+     <rect>
+      <x>1001</x>
+      <y>234</y>
+      <width>101</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Arial</family>
+      <pointsize>11</pointsize>
+      <weight>75</weight>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="text">
+     <string>hpSlot1</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="resSlot_5">
+    <property name="geometry">
+     <rect>
+      <x>1003</x>
+      <y>420</y>
+      <width>105</width>
+      <height>127</height>
+     </rect>
+    </property>
+    <property name="minimumSize">
+     <size>
+      <width>105</width>
+      <height>127</height>
+     </size>
+    </property>
+    <property name="maximumSize">
+     <size>
+      <width>224</width>
+      <height>127</height>
+     </size>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::Panel</enum>
+    </property>
+    <property name="frameShadow">
+     <enum>QFrame::Raised</enum>
+    </property>
+    <property name="lineWidth">
+     <number>1</number>
+    </property>
+    <property name="midLineWidth">
+     <number>0</number>
+    </property>
+    <property name="text">
+     <string>slot_5</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="hpSlot6_2">
+    <property name="geometry">
+     <rect>
+      <x>889</x>
+      <y>552</y>
+      <width>101</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Arial</family>
+      <pointsize>11</pointsize>
+      <weight>75</weight>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="text">
+     <string>hpSlot6</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="resSlot_1">
+    <property name="geometry">
+     <rect>
+      <x>1003</x>
+      <y>100</y>
+      <width>105</width>
+      <height>127</height>
+     </rect>
+    </property>
+    <property name="minimumSize">
+     <size>
+      <width>105</width>
+      <height>127</height>
+     </size>
+    </property>
+    <property name="maximumSize">
+     <size>
+      <width>224</width>
+      <height>127</height>
+     </size>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::Panel</enum>
+    </property>
+    <property name="frameShadow">
+     <enum>QFrame::Raised</enum>
+    </property>
+    <property name="lineWidth">
+     <number>1</number>
+    </property>
+    <property name="midLineWidth">
+     <number>0</number>
+    </property>
+    <property name="text">
+     <string>slot_1</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="resSlot_4">
+    <property name="geometry">
+     <rect>
+      <x>886</x>
+      <y>260</y>
+      <width>105</width>
+      <height>127</height>
+     </rect>
+    </property>
+    <property name="minimumSize">
+     <size>
+      <width>105</width>
+      <height>127</height>
+     </size>
+    </property>
+    <property name="maximumSize">
+     <size>
+      <width>224</width>
+      <height>127</height>
+     </size>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::Panel</enum>
+    </property>
+    <property name="frameShadow">
+     <enum>QFrame::Raised</enum>
+    </property>
+    <property name="lineWidth">
+     <number>1</number>
+    </property>
+    <property name="midLineWidth">
+     <number>0</number>
+    </property>
+    <property name="text">
+     <string>slot_4</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="resSlot_6">
+    <property name="geometry">
+     <rect>
+      <x>886</x>
+      <y>420</y>
+      <width>105</width>
+      <height>127</height>
+     </rect>
+    </property>
+    <property name="minimumSize">
+     <size>
+      <width>105</width>
+      <height>127</height>
+     </size>
+    </property>
+    <property name="maximumSize">
+     <size>
+      <width>224</width>
+      <height>127</height>
+     </size>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::Panel</enum>
+    </property>
+    <property name="frameShadow">
+     <enum>QFrame::Raised</enum>
+    </property>
+    <property name="lineWidth">
+     <number>1</number>
+    </property>
+    <property name="midLineWidth">
+     <number>0</number>
+    </property>
+    <property name="text">
+     <string>slot_6</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="hpSlot4_2">
+    <property name="geometry">
+     <rect>
+      <x>889</x>
+      <y>393</y>
+      <width>101</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Arial</family>
+      <pointsize>11</pointsize>
+      <weight>75</weight>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="text">
+     <string>hpSlot4</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
+    </property>
+   </widget>
    <zorder>capitalArmyBG</zorder>
    <zorder>pushButtonBack</zorder>
    <zorder>pushButtonDelete</zorder>
@@ -587,6 +892,16 @@
    <zorder>slot2</zorder>
    <zorder>gold</zorder>
    <zorder>heroFace</zorder>
+   <zorder>hpSlot2_2</zorder>
+   <zorder>hpSlot5_2</zorder>
+   <zorder>resSlot_2</zorder>
+   <zorder>hpSlot1_2</zorder>
+   <zorder>resSlot_5</zorder>
+   <zorder>hpSlot6_2</zorder>
+   <zorder>resSlot_1</zorder>
+   <zorder>resSlot_4</zorder>
+   <zorder>resSlot_6</zorder>
+   <zorder>hpSlot4_2</zorder>
   </widget>
  </widget>
  <resources/>

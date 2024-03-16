@@ -610,16 +610,16 @@ class ClientMainWindow(QMainWindow):
             main_db.show_all_units,
             self.ui.listAllUnits)
 
-    def check_and_swap(self, num1: int, num2: int, database: any):
+    def check_and_swap(self, num1: int, num2: int, db_table: any):
         """
         Проверить юниты в слотах на наличие и размер.
         Поменять местами вместе с парным юнитом (соседний слот).
         """
-        unit1 = main_db.get_unit_by_slot(num1, database)
-        unit2 = main_db.get_unit_by_slot(num2, database)
+        unit1 = main_db.get_unit_by_slot(num1, db_table)
+        unit2 = main_db.get_unit_by_slot(num2, db_table)
         func = self.swap_unit_action
 
-        if database == main_db.CurrentDungeon:
+        if db_table == main_db.CurrentDungeon:
             func = self.swap_enemy_action
 
         if unit1 is not None \
@@ -682,15 +682,14 @@ class ClientMainWindow(QMainWindow):
         """Подтверждение 'Увольнения' юнита игрока"""
         if self.question:
             selected_slot = self.ui.listPlayerSlots.currentIndex().data()
-            main_db.delete_player_unit(int(selected_slot))
+            main_db.delete_player_unit(int(selected_slot), main_db.PlayerUnits)
             self.player_list_update()
-            # self.reset_player_buttons()
 
     def delete_enemy_unit_action(self) -> None:
         """Метод обработчик нажатия кнопки 'Уволить' у противника"""
         try:
             selected_slot = self.ui.listEnemySlots.currentIndex().data()
-            main_db.delete_dungeon_unit(int(selected_slot))
+            main_db.delete_player_unit(int(selected_slot), main_db.CurrentDungeon)
             self.enemy_list_update()
         except TypeError:
             print('Выберите слот, который хотите освободить')
@@ -711,7 +710,8 @@ class ClientMainWindow(QMainWindow):
             selected = self.ui.listAllUnits.currentIndex().data()
             main_db.hire_player_unit(
                 selected,
-                int(selected_slot))
+                int(selected_slot),
+                main_db.PlayerUnits)
             self.player_list_update()
         except TypeError:
             print('Выберите номер слота для найма')
@@ -721,9 +721,10 @@ class ClientMainWindow(QMainWindow):
         try:
             selected_slot = self.ui.listEnemySlots.currentIndex().data()
             selected = self.ui.listAllUnits.currentIndex().data()
-            main_db.hire_enemy_unit(
+            main_db.hire_player_unit(
                 selected,
-                int(selected_slot))
+                int(selected_slot),
+                main_db.CurrentDungeon)
             self.enemy_list_update()
         except TypeError:
             print('Выберите номер слота для найма')
