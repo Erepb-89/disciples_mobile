@@ -11,12 +11,12 @@ from client_dir.campaign_form import Ui_CampaignWindow
 from client_dir.capital_window import CapitalWindow
 from client_dir.fight_window import FightWindow
 from client_dir.army_dialog import ArmyDialog
-from client_dir.settings import BACKGROUND, MC, EM, UH, LD, BIG, PORTRAITS
+from client_dir.settings import BACKGROUND, MC, EM, UH, LD, PORTRAITS
 from client_dir.ui_functions import slot_update, button_update, \
     ui_lock, ui_unlock, show_opened, show_closed, show_active
 from client_dir.unit_dialog import UnitDialog
 from units_dir.mission_generator import unit_selector, \
-    setup_6, setup_5, setup_4, setup_3, setup_2, boss_setup, \
+    setup_6, setup_5, setup_4, setup_3, boss_setup, \
     boss_mc_setup
 from units_dir.units import main_db
 from units_dir.units_factory import Unit

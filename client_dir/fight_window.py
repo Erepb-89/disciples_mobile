@@ -1057,10 +1057,11 @@ class FightWindow(QMainWindow):
         MES_END_CAMPAIGN = MessageWindow(self, line)
         MES_END_CAMPAIGN.show()
 
-    @staticmethod
-    def next_mission(mission_number):
+    def next_mission(self, mission_number):
         """Переходит на следующую миссию кампании"""
-        main_db.increase_campaign_mission(mission_number)
+        main_db.increase_campaign_mission(
+            mission_number,
+            self.parent_window.curr_mission)
 
     def upgrade_player1_units(self):
         """Левел ап юнитов Игрока 1"""

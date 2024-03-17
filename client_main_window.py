@@ -610,7 +610,10 @@ class ClientMainWindow(QMainWindow):
             main_db.show_all_units,
             self.ui.listAllUnits)
 
-    def check_and_swap(self, num1: int, num2: int, db_table: any):
+    def check_and_swap(self,
+                       num1: int,
+                       num2: int,
+                       db_table: any) -> None:
         """
         Проверить юниты в слотах на наличие и размер.
         Поменять местами вместе с парным юнитом (соседний слот).

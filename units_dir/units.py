@@ -516,7 +516,9 @@ class ServerStorage:
             self.campaign_day,
             self.already_built)
 
-    def increase_campaign_mission(self, mission_number: int):
+    def increase_campaign_mission(self,
+                                  mission_number: int,
+                                  curr_mission: int):
         """Переходит на следующую миссию кампании"""
         self.campaign_day += 1
         self.already_built = 0
@@ -525,7 +527,7 @@ class ServerStorage:
             self.game_session_id,
             self.campaign_level,
             mission_number,
-            self.campaign_mission,
+            curr_mission,
             self.campaign_day,
             self.already_built)
 
