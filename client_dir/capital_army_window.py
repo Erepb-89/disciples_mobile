@@ -527,7 +527,10 @@ class CapitalArmyWindow(QMainWindow):
             ui_obj.setFixedWidth(105)
             ui_obj.setFixedHeight(127)
 
-    def check_and_swap(self, num1: int, num2: int, db_table: any):
+    def check_and_swap(self,
+                       num1: int,
+                       num2: int,
+                       db_table: any) -> None:
         """
         Проверить юниты в слотах на наличие и размер.
         Поменять местами вместе с парным юнитом (соседний слот).
