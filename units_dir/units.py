@@ -7,7 +7,7 @@ from sqlalchemy import create_engine, Table, update, Column, Integer, \
     String, MetaData
 from sqlalchemy.orm import mapper, sessionmaker
 
-from client_dir.settings import BIG, EM, UH, LD, MC
+from client_dir.settings import BIG, EM, UH, LD, MC, GUARDS
 from units_dir.buildings import FACTIONS
 
 
@@ -451,6 +451,13 @@ class ServerStorage:
             UH: self.ReserveHordesUnits,
             LD: self.ReserveLegionsUnits,
             MC: self.ReserveClansUnits,
+        }
+
+        self.guards_dict = {
+            EM: "Мизраэль",
+            UH: "Ашган",
+            LD: "Ашкаэль",
+            MC: "Видар",
         }
 
     def create_units_table(self, table_name):
@@ -1288,7 +1295,9 @@ class ServerStorage:
 
         if slot == new_slot \
                 and changed_unit is not None \
-                and second_unit is not None:
+                and second_unit is not None \
+                and changed_unit.name not in GUARDS \
+                and second_unit.name not in GUARDS:
             self.update_db_table(changed_unit, db_table, new_db_table)
             self.update_db_table(second_unit, new_db_table, db_table)
 
@@ -1296,21 +1305,25 @@ class ServerStorage:
             source_unit = None
             new_unit = None
 
-            if changed_unit is not None:
+            if changed_unit is not None \
+                    and changed_unit.name not in GUARDS:
                 source_unit = new_db_table(*changed_unit)
                 source_unit.slot = new_slot
                 self.delete_player_unit(slot, db_table)
 
-            if second_unit is not None:
+            if second_unit is not None \
+                    and second_unit.name not in GUARDS:
                 new_unit = db_table(*second_unit)
                 new_unit.slot = slot
                 self.delete_player_unit(new_slot, new_db_table)
 
-            if source_unit is not None:
+            if source_unit is not None \
+                    and source_unit.name not in GUARDS:
                 self.session.add(source_unit)
                 self.session.commit()
 
-            if new_unit is not None:
+            if new_unit is not None \
+                    and new_unit.name not in GUARDS:
                 self.session.add(new_unit)
                 self.session.commit()
 
@@ -1349,8 +1362,10 @@ class ServerStorage:
                     faction: str) -> None:
         """Метод удаления юнитов в базе игрока за данную фракцию."""
         table = self.campaigns_dict[faction]
+        table_res = self.res_campaigns_dict[faction]
 
         self.session.query(table).delete()
+        self.session.query(table_res).delete()
         self.session.commit()
 
     def clear_buildings(self,
@@ -1576,6 +1591,17 @@ class ServerStorage:
     def delete_unit_by_id(self, id_: int, db_table: any) -> None:
         """Метод удаляющий юнита из выбранной таблицы по слоту."""
         self.session.query(db_table).filter_by(id=id_).delete()
+        self.session.commit()
+
+    def hire_guard(self) -> None:
+        """Метод добавления стража в столицу игрока."""
+        db_table = self.res_campaigns_dict[self.current_faction]
+        unit_row = self.get_unit_by_name(
+            self.guards_dict[self.current_faction])
+
+        player_unit = db_table(*unit_row)
+        player_unit.slot = 3
+        self.session.add(player_unit)
         self.session.commit()
 
     def hire_unit(self, unit: str, slot: int) -> None:
