@@ -9,7 +9,7 @@ from PyQt5.QtWidgets import QMainWindow, QHBoxLayout, QLabel, QWidget, QFrame
 from client_dir.capital_army_form import Ui_CapitalArmyWindow
 from client_dir.hire_menu_window import HireMenuWindow
 from client_dir.question_window import QuestionWindow
-from client_dir.settings import TOWN_ARMY, SCREEN_RECT, BIG, UNIT_FACES
+from client_dir.settings import TOWN_ARMY, SCREEN_RECT, BIG, UNIT_FACES, GUARDS
 from client_dir.ui_functions import get_unit_image, update_unit_health, \
     get_image, set_beige_colour, ui_lock, ui_unlock, get_unit_face
 from client_dir.unit_dialog import UnitDialog
@@ -178,6 +178,14 @@ class CapitalArmyWindow(QMainWindow):
         self.ui.resSlot_2.setMidLineWidth(0)
         self.ui.resSlot_2.setObjectName("resSlot_2")
 
+        self.ui.resSlot_3 = self.Label('', self)
+        self.ui.resSlot_3.setGeometry(QRect(1003, 260, 105, 127))
+        self.ui.resSlot_3.setFrameShape(QFrame.Panel)
+        self.ui.resSlot_3.setFrameShadow(QFrame.Raised)
+        self.ui.resSlot_3.setLineWidth(1)
+        self.ui.resSlot_3.setMidLineWidth(0)
+        self.ui.resSlot_3.setObjectName("resSlot_3")
+
         self.ui.resSlot_4 = self.Label('', self)
         self.ui.resSlot_4.setGeometry(QRect(886, 260, 105, 127))
         self.ui.resSlot_4.setFrameShape(QFrame.Panel)
@@ -239,40 +247,40 @@ class CapitalArmyWindow(QMainWindow):
             .connect(self.slot6_detailed)
 
         self.ui.resSlot_1.installEventFilter(self)
-        # self.ui.resSlot_1.setContextMenuPolicy(
-        #     Qt.CustomContextMenu)
-        # self.ui.resSlot_1.customContextMenuRequested \
-        #     .connect(self.slot1_detailed)
+        self.ui.resSlot_1.setContextMenuPolicy(
+            Qt.CustomContextMenu)
+        self.ui.resSlot_1.customContextMenuRequested \
+            .connect(self.res_slot1_detailed)
 
         self.ui.resSlot_2.installEventFilter(self)
-        # self.ui.resSlot_2.setContextMenuPolicy(
-        #     Qt.CustomContextMenu)
-        # self.ui.resSlot_2.customContextMenuRequested \
-        #     .connect(self.slot2_detailed)
+        self.ui.resSlot_2.setContextMenuPolicy(
+            Qt.CustomContextMenu)
+        self.ui.resSlot_2.customContextMenuRequested \
+            .connect(self.res_slot2_detailed)
 
-        # self.ui.resSlot_3.installEventFilter(self)
-        # self.ui.resSlot_3.setContextMenuPolicy(
-        #     Qt.CustomContextMenu)
-        # self.ui.resSlot_3.customContextMenuRequested \
-        #     .connect(self.slot3_detailed)
+        self.ui.resSlot_3.installEventFilter(self)
+        self.ui.resSlot_3.setContextMenuPolicy(
+            Qt.CustomContextMenu)
+        self.ui.resSlot_3.customContextMenuRequested \
+            .connect(self.res_slot3_detailed)
 
         self.ui.resSlot_4.installEventFilter(self)
-        # self.ui.resSlot_4.setContextMenuPolicy(
-        #     Qt.CustomContextMenu)
-        # self.ui.resSlot_4.customContextMenuRequested \
-        #     .connect(self.slot4_detailed)
+        self.ui.resSlot_4.setContextMenuPolicy(
+            Qt.CustomContextMenu)
+        self.ui.resSlot_4.customContextMenuRequested \
+            .connect(self.res_slot4_detailed)
 
         self.ui.resSlot_5.installEventFilter(self)
-        # self.ui.resSlot_5.setContextMenuPolicy(
-        #     Qt.CustomContextMenu)
-        # self.ui.resSlot_5.customContextMenuRequested \
-        #     .connect(self.slot5_detailed)
+        self.ui.resSlot_5.setContextMenuPolicy(
+            Qt.CustomContextMenu)
+        self.ui.resSlot_5.customContextMenuRequested \
+            .connect(self.res_slot5_detailed)
 
         self.ui.resSlot_6.installEventFilter(self)
-        # self.ui.resSlot_6.setContextMenuPolicy(
-        #     Qt.CustomContextMenu)
-        # self.ui.resSlot_6.customContextMenuRequested \
-        #     .connect(self.slot6_detailed)
+        self.ui.resSlot_6.setContextMenuPolicy(
+            Qt.CustomContextMenu)
+        self.ui.resSlot_6.customContextMenuRequested \
+            .connect(self.res_slot6_detailed)
 
         # подкраска элементов
         set_beige_colour(self.ui.listPlayerUnits)
@@ -356,7 +364,7 @@ class CapitalArmyWindow(QMainWindow):
         self.res_hp_slots_dict = {
             1: self.ui.hpSlot1_2,
             2: self.ui.hpSlot2_2,
-            # 3: self.ui.hpSlot3_2,
+            3: self.ui.hpSlot3_2,
             4: self.ui.hpSlot4_2,
             5: self.ui.hpSlot5_2,
             6: self.ui.hpSlot6_2,
@@ -442,8 +450,8 @@ class CapitalArmyWindow(QMainWindow):
                          self.ui.resSlot_1)
         self.slot_update(self.reserve_unit_by_slot(2),
                          self.ui.resSlot_2)
-        # self.slot_update(self.reserve_unit_by_slot(3),
-        #                  self.ui.resSlot_3)
+        self.slot_update(self.reserve_unit_by_slot(3),
+                         self.ui.resSlot_3)
         self.slot_update(self.reserve_unit_by_slot(4),
                          self.ui.resSlot_4)
         self.slot_update(self.reserve_unit_by_slot(5),
@@ -587,24 +595,33 @@ class CapitalArmyWindow(QMainWindow):
 
         elif unit1 is not None \
                 and unit1.size == BIG:
-            if num2 % 2 != 0:
-                func(num2, num1 - 1, db_table2, db_table1)
-                func(num2 + 1, num1, db_table2, db_table1)
-            elif num2 % 2 == 0:
-                func(num2 - 1, num1 - 1, db_table2, db_table1)
-                func(num2, num1, db_table2, db_table1)
+            self.swap_slots(db_table1, db_table2, num1, num2, func)
 
         elif unit1 is not None and unit2 is not None \
                 and unit2.size == BIG:
-            if num1 % 2 != 0:
-                func(num1, num2 - 1, db_table1, db_table2)
-                func(num1 + 1, num2, db_table1, db_table2)
-            elif num1 % 2 == 0:
-                func(num1 - 1, num2 - 1, db_table1, db_table2)
-                func(num1, num2, db_table1, db_table2)
+            self.swap_slots(db_table2, db_table1, num2, num1, func)
 
-        elif unit1 is not None:
+        elif unit1 is not None and unit2 is not None \
+                and unit2.name in GUARDS:
+            pass
+
+        elif unit1 is not None \
+                and unit1.name not in GUARDS:
             func(num1, num2, db_table1, db_table2)
+
+    @staticmethod
+    def swap_slots(db_table1: any,
+                   db_table2: any,
+                   num1: int,
+                   num2: int,
+                   func: callable) -> None:
+        """Смена слотов с помощью переданной функции"""
+        if num2 % 2 != 0:
+            func(num2, num1 - 1, db_table2, db_table1)
+            func(num2 + 1, num1, db_table2, db_table1)
+        elif num2 % 2 == 0:
+            func(num2 - 1, num1 - 1, db_table2, db_table1)
+            func(num2, num1, db_table2, db_table1)
 
     def swap_unit_action(self, slot1: int, slot2: int, db_table: any) -> None:
         """Меняет слоты двух юнитов игрока"""
@@ -642,6 +659,17 @@ class CapitalArmyWindow(QMainWindow):
         except AttributeError:
             self.show_available_units(slot)
 
+    def res_slot_detailed(self, slot: int) -> None:
+        """Метод создающий окно юнита игрока при нажатии на резервный слот."""
+        try:
+            unit = self.reserve_unit_by_slot(slot)
+            global DETAIL_WINDOW
+            DETAIL_WINDOW = UnitDialog(
+                unit)
+            DETAIL_WINDOW.show()
+        except AttributeError:
+            self.show_available_units(slot)
+
     def slot1_detailed(self) -> None:
         """Метод создающий окно юнита игрока (слот 1)."""
         self.slot_detailed(1)
@@ -665,6 +693,30 @@ class CapitalArmyWindow(QMainWindow):
     def slot6_detailed(self) -> None:
         """Метод создающий окно юнита игрока (слот 6)."""
         self.slot_detailed(6)
+
+    def res_slot1_detailed(self) -> None:
+        """Метод создающий окно юнита игрока (слот 1)."""
+        self.res_slot_detailed(1)
+
+    def res_slot2_detailed(self) -> None:
+        """Метод создающий окно юнита игрока (слот 2)."""
+        self.res_slot_detailed(2)
+
+    def res_slot3_detailed(self) -> None:
+        """Метод создающий окно юнита игрока (слот 3)."""
+        self.res_slot_detailed(3)
+
+    def res_slot4_detailed(self) -> None:
+        """Метод создающий окно юнита игрока (слот 4)."""
+        self.res_slot_detailed(4)
+
+    def res_slot5_detailed(self) -> None:
+        """Метод создающий окно юнита игрока (слот 5)."""
+        self.res_slot_detailed(5)
+
+    def res_slot6_detailed(self) -> None:
+        """Метод создающий окно юнита игрока (слот 6)."""
+        self.res_slot_detailed(6)
 
     def player_unit_by_slot(self, slot: int) -> namedtuple:
         """Метод получающий юнит игрока по слоту."""

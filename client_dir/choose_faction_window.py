@@ -139,6 +139,7 @@ class ChooseRaceWindow(QMainWindow):
         main_db.clear_units(self.faction)
 
         self.choose_hero()
+        self.add_capital_guard()
         self.close()
 
     def continue_game(self) -> None:
@@ -165,7 +166,7 @@ class ChooseRaceWindow(QMainWindow):
             already_built,
             difficulty)
 
-    def choose_hero(self):
+    def choose_hero(self) -> None:
         """Метод создающий окно выбора героя"""
         global HERO_CHOOSE_WINDOW
         HERO_CHOOSE_WINDOW = ChooseHeroWindow(self)
@@ -177,6 +178,11 @@ class ChooseRaceWindow(QMainWindow):
         text = 'Вы действительно хотите начать новую игру?'
         QUESTION_WINDOW = QuestionWindow(self, text)
         QUESTION_WINDOW.show()
+
+    @staticmethod
+    def add_capital_guard() -> None:
+        """Метод добавляющий стража столицы"""
+        main_db.hire_guard()
 
     def back(self) -> None:
         """Кнопка возврата"""

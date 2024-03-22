@@ -872,6 +872,67 @@
      <set>Qt::AlignCenter</set>
     </property>
    </widget>
+   <widget class="QLabel" name="hpSlot3_2">
+    <property name="geometry">
+     <rect>
+      <x>1001</x>
+      <y>393</y>
+      <width>101</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Arial</family>
+      <pointsize>11</pointsize>
+      <weight>75</weight>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="text">
+     <string>hpSlot3</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="resSlot_3">
+    <property name="geometry">
+     <rect>
+      <x>1003</x>
+      <y>260</y>
+      <width>105</width>
+      <height>127</height>
+     </rect>
+    </property>
+    <property name="minimumSize">
+     <size>
+      <width>105</width>
+      <height>127</height>
+     </size>
+    </property>
+    <property name="maximumSize">
+     <size>
+      <width>224</width>
+      <height>127</height>
+     </size>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::Panel</enum>
+    </property>
+    <property name="frameShadow">
+     <enum>QFrame::Raised</enum>
+    </property>
+    <property name="lineWidth">
+     <number>1</number>
+    </property>
+    <property name="midLineWidth">
+     <number>0</number>
+    </property>
+    <property name="text">
+     <string>slot_3</string>
+    </property>
+   </widget>
    <zorder>capitalArmyBG</zorder>
    <zorder>pushButtonBack</zorder>
    <zorder>pushButtonDelete</zorder>
@@ -902,6 +963,8 @@
    <zorder>resSlot_4</zorder>
    <zorder>resSlot_6</zorder>
    <zorder>hpSlot4_2</zorder>
+   <zorder>hpSlot3_2</zorder>
+   <zorder>resSlot_3</zorder>
   </widget>
  </widget>
  <resources/>
