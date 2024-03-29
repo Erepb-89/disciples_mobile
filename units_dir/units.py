@@ -339,13 +339,18 @@ class ServerStorage:
             self.unit6 = unit6
 
     def __init__(self, path):
-        # Создаём движок базы данных
+        # Создаём движок базы данных (SQLite)
         self.database_engine = create_engine(
             f'sqlite:///{path}',
             echo=False,
             pool_recycle=7200,
             connect_args={
                 'check_same_thread': False})
+
+        # Создаём движок базы данных (Postgres)
+        # self.database_engine = create_engine(
+        #     "postgresql://"
+        #     "disciples_bot:123456@localhost:5432/disc2_pg")
 
         # Создаём объект MetaData
         self.metadata = MetaData()
@@ -540,8 +545,11 @@ class ServerStorage:
 
     def update_game_session(self):
         """Обновить игровую сессию"""
-        curr_game_session = self.current_game_session(
-            self.current_player.id)
+        curr_game_session = None
+        if self.current_player is not None:
+            curr_game_session = self.current_game_session(
+                self.current_player.id)
+
         if curr_game_session is not None:
             self.current_faction = curr_game_session.faction
             self.campaign_level = curr_game_session.campaign_level
@@ -2136,7 +2144,8 @@ class ServerStorage:
 
 
 main_db = ServerStorage('../disc2.db')
-main_db.show_all_units()
+# main_db = ServerStorage('../disc2_pg.db')
+# main_db.show_all_units()
 
 # Отладка
 if __name__ == '__main__':
