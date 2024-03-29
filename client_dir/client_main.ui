@@ -1077,6 +1077,22 @@
      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
     </property>
    </widget>
+   <widget class="QPushButton" name="pushButtonCreateServer">
+    <property name="enabled">
+     <bool>true</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>980</x>
+      <y>0</y>
+      <width>121</width>
+      <height>28</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Создать сервер</string>
+    </property>
+   </widget>
    <zorder>capital</zorder>
    <zorder>gifLabel</zorder>
    <zorder>listAllUnits</zorder>
@@ -1131,6 +1147,7 @@
    <zorder>currentPlayer</zorder>
    <zorder>comboDifficulty</zorder>
    <zorder>difficultyText</zorder>
+   <zorder>pushButtonCreateServer</zorder>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
  </widget>

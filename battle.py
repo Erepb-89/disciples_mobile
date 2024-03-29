@@ -514,7 +514,7 @@ class Battle:
             alive_unit = self.get_unit_by_slot(
                 slot, player2.units)
 
-            if alive_unit.exp != 'Максимальный':
+            if alive_unit.exp is not None:
                 exp_value = int((self.en_exp_killed + extra_exp)
                                 / len(player2.slots))
 

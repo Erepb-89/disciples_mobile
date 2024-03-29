@@ -1,5 +1,5 @@
 """Главное окно клиента"""
-
+import asyncio
 import os.path
 import sys
 from collections import namedtuple
@@ -25,6 +25,7 @@ from client_dir.settings import UNIT_ICONS, GIF_ANIMATIONS, \
 from client_dir.ui_functions import get_unit_image, \
     set_beige_colour, set_borders, ui_lock, ui_unlock, get_cursor
 from client_dir.unit_dialog import UnitDialog
+from server.server import server_main
 from units_dir.units import main_db
 
 
@@ -309,6 +310,8 @@ class ClientMainWindow(QMainWindow):
         self.ui.pushButtonChoosePlayer.clicked.connect(
             self.choose_player_action)
 
+        self.ui.pushButtonCreateServer.clicked.connect(self.create_server)
+
         # подкраска элементов
         set_beige_colour(self.ui.pushButtonAddPlayer)
         set_beige_colour(self.ui.pushButtonDelPlayer)
@@ -336,7 +339,12 @@ class ClientMainWindow(QMainWindow):
         set_borders(self.ui.iconLabel)
         set_borders(self.ui.portraitLabel)
 
-        self.ui.currentPlayer.setText(main_db.current_player.name)
+        player_name = None
+        try:
+            player_name = main_db.current_player.name
+        except Exception as err:
+            print(err)
+        self.ui.currentPlayer.setText(player_name)
         self.ui.currentPlayer.setStyleSheet('color: white')
 
         main_db.update_game_session()
@@ -378,10 +386,15 @@ class ClientMainWindow(QMainWindow):
         self.enemy_list_update()
         self.enemy_slots_update()
 
-    def check_campaign_session(self):
+    def create_server(self):
+        asyncio.run(server_main())
 
-        session = main_db.session_by_faction(
-            main_db.current_player.id, self.faction)
+    def check_campaign_session(self):
+        """Проверка сессии"""
+        session = None
+        if main_db.current_player is not None:
+            session = main_db.session_by_faction(
+                main_db.current_player.id, self.faction)
 
         if session is not None:
             self.unlock_campaign()
@@ -418,8 +431,10 @@ class ClientMainWindow(QMainWindow):
 
         self.ui.comboDifficulty.setCurrentIndex(self.difficulty - 1)
 
-        session = main_db.session_by_faction(
-            main_db.current_player.id, self.faction)
+        session = None
+        if main_db.current_player is not None:
+            session = main_db.session_by_faction(
+                main_db.current_player.id, self.faction)
 
         if session is not None:
             self.check_difficulty()

@@ -1485,11 +1485,13 @@ class FightWindow(QMainWindow):
     def show_need_upgrade_effect(icons_dict: dict, player: Player):
         """Показывает ограничение в апгрейде на юните"""
         for unit in player.units:
-            if unit.exp == 'Максимальный':
+            # if unit.exp == 'Максимальный':
+            if unit.exp is None:
                 pass
-            elif unit.curr_exp == unit.exp - 1:
-                show_dot_icon(
-                    icons_dict[unit.slot], 'waiting_next')
+            else:
+                if unit.curr_exp == unit.exp - 1:
+                    show_dot_icon(
+                        icons_dict[unit.slot], 'waiting_next')
 
     def define_priority_effect(self, unit: Unit, icons_dict: dict):
         """Отобразить один приоритетный эффект"""
