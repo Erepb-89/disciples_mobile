@@ -8,6 +8,7 @@ from client_dir.settings import ANY_UNIT, CLOSEST_UNIT, \
     HEAL_LIST, ALCHEMIST_LIST, PARALYZE_LIST, PARALYZE_UNITS, \
     POLYMORPH, INCREASE_DMG, ADDITIONAL_ATTACK
 from battle_logging import logging
+from units_dir.models import CurrentDungeon, Player2Units, AllUnits
 from units_dir.units import main_db
 from units_dir.units_factory import Unit
 
@@ -62,7 +63,7 @@ class Battle:
         self.dotted_units = {}
         self.boosted_units = {}
         self.db_table = db_table
-        self.enemy_db_table = main_db.CurrentDungeon
+        self.enemy_db_table = CurrentDungeon
 
         self.next_unit = None
 
@@ -72,10 +73,10 @@ class Battle:
         self.dungeon_units = main_db.show_dungeon_units(dungeon)
 
         if self.player2.name == "Computer":
-            self.enemy_db_table = main_db.CurrentDungeon
+            self.enemy_db_table = CurrentDungeon
             self.add_dung_units()
         else:
-            self.enemy_db_table = main_db.Player2Units
+            self.enemy_db_table = Player2Units
             self.add_player_units(
                 self.player2,
                 self.enemy_db_table)
@@ -124,30 +125,28 @@ class Battle:
         """
         self.clear_dungeon()
         for unit_slot in range(6):
-            try:
-                unit = main_db.get_unit_by_name(
-                    self.dungeon_units[unit_slot])[:25]
-                unit_cols_after_slot = main_db.get_unit_by_name(
-                    self.dungeon_units[unit_slot])[26:45]
+            new_slot = unit_slot + 1
 
-                main_db.add_dungeon_unit(
-                    *unit,
-                    unit_slot + 1,
-                    *unit_cols_after_slot)
-                unit = self.dungeon_unit_by_slot(unit_slot + 1)
+            source_unit = main_db.get_unit_by_name(
+                self.dungeon_units[unit_slot])
+            if source_unit is not None:
+
+                unit = CurrentDungeon(*source_unit)
+                unit.slot = new_slot
+
+                main_db.add_dungeon_unit(unit)
+                unit = self.dungeon_unit_by_slot(new_slot)
                 if unit is not None:
                     self.player2.units.append(Unit(unit))
                     if not unit.curr_health <= 0:
                         self.player2.slots.append(unit.slot)
-            except (TypeError, AttributeError):
-                pass
 
     @staticmethod
     def dungeon_unit_by_slot(slot) -> Unit:
         """Метод получающий юнита подземелья по слоту."""
         return main_db.get_unit_by_slot(
             slot,
-            main_db.CurrentDungeon)
+            CurrentDungeon)
 
     @staticmethod
     def get_unit_by_slot(slot: int,
@@ -748,7 +747,7 @@ class Battle:
 
             self.change_shape(target,
                               changed_unit_name,
-                              main_db.AllUnits)
+                              AllUnits)
 
             self.dot_calculations(dot_source, self.new_unit)
         return success
@@ -770,6 +769,8 @@ class Battle:
                      curr_unit: Unit,
                      target: Unit) -> bool:
         """Для воинов с атакой, увеличивающей урон (Друидов)"""
+        success = False
+
         if target not in self.boosted_units \
                 and target.attack_type \
                 not in (*HEAL_LIST, *ALCHEMIST_LIST):
@@ -1186,12 +1187,12 @@ class Battle:
     @staticmethod
     def clear_dungeon() -> None:
         """Очистка текущего подземелья от вражеских юнитов"""
-        main_db.delete_player_unit(1, main_db.CurrentDungeon)
-        main_db.delete_player_unit(2, main_db.CurrentDungeon)
-        main_db.delete_player_unit(3, main_db.CurrentDungeon)
-        main_db.delete_player_unit(4, main_db.CurrentDungeon)
-        main_db.delete_player_unit(5, main_db.CurrentDungeon)
-        main_db.delete_player_unit(6, main_db.CurrentDungeon)
+        main_db.delete_player_unit(1, CurrentDungeon)
+        main_db.delete_player_unit(2, CurrentDungeon)
+        main_db.delete_player_unit(3, CurrentDungeon)
+        main_db.delete_player_unit(4, CurrentDungeon)
+        main_db.delete_player_unit(5, CurrentDungeon)
+        main_db.delete_player_unit(6, CurrentDungeon)
 
     def regen(self) -> None:
         """Восстановление здоровья всех юнитов игрока"""
