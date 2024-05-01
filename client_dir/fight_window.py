@@ -25,6 +25,7 @@ from client_dir.ui_functions import show_no_frame, \
     get_unit_image, show_no_circle, ui_lock, ui_unlock, \
     show_dot_icon, show_polymorph
 from client_dir.unit_dialog import UnitDialog
+from units_dir.models import Player2Units
 from units_dir.ranking import GOLD_GRADATION
 from units_dir.units import main_db
 from units_dir.units_factory import Unit
@@ -1076,7 +1077,7 @@ class FightWindow(QMainWindow):
         """Левел ап юнитов Игрока 2"""
         self.add_upgraded_units(
             self.player2,
-            main_db.Player2Units,
+            Player2Units,
             self.enemy_side,
             self.en_slots_eff_dict
         )

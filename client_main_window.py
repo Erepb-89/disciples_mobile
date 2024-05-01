@@ -26,6 +26,7 @@ from client_dir.ui_functions import get_unit_image, \
     set_beige_colour, set_borders, ui_lock, ui_unlock, get_cursor
 from client_dir.unit_dialog import UnitDialog
 from server.server import server_main
+from units_dir.models import PlayerUnits, CurrentDungeon
 from units_dir.units import main_db
 
 
@@ -71,13 +72,13 @@ class ClientMainWindow(QMainWindow):
                 self.parent_window.check_and_swap(
                     first,
                     second,
-                    main_db.PlayerUnits)
+                    PlayerUnits)
 
             else:
                 self.parent_window.check_and_swap(
                     first,
                     second,
-                    main_db.CurrentDungeon)
+                    CurrentDungeon)
 
             # self.parent_window.current_label[-1])
 
@@ -637,7 +638,7 @@ class ClientMainWindow(QMainWindow):
         unit2 = main_db.get_unit_by_slot(num2, db_table)
         func = self.swap_unit_action
 
-        if db_table == main_db.CurrentDungeon:
+        if db_table == CurrentDungeon:
             func = self.swap_enemy_action
 
         if unit1 is not None \
@@ -672,7 +673,7 @@ class ClientMainWindow(QMainWindow):
         main_db.update_slot(
             slot1,
             slot2,
-            main_db.PlayerUnits)
+            PlayerUnits)
         self.player_list_update()
 
     def swap_enemy_action(self, slot1: int, slot2: int) -> None:
@@ -680,7 +681,7 @@ class ClientMainWindow(QMainWindow):
         main_db.update_slot(
             slot1,
             slot2,
-            main_db.CurrentDungeon)
+            CurrentDungeon)
         self.enemy_list_update()
 
     def delete_unit_action(self) -> None:
@@ -688,7 +689,7 @@ class ClientMainWindow(QMainWindow):
         selected_slot = self.ui.listPlayerSlots.currentIndex().data()
         unit = main_db.get_unit_by_slot(
             selected_slot,
-            main_db.PlayerUnits)
+            PlayerUnits)
 
         if unit is not None:
             global QUESTION_WINDOW
@@ -700,14 +701,14 @@ class ClientMainWindow(QMainWindow):
         """Подтверждение 'Увольнения' юнита игрока"""
         if self.question:
             selected_slot = self.ui.listPlayerSlots.currentIndex().data()
-            main_db.delete_player_unit(int(selected_slot), main_db.PlayerUnits)
+            main_db.delete_player_unit(int(selected_slot), PlayerUnits)
             self.player_list_update()
 
     def delete_enemy_unit_action(self) -> None:
         """Метод обработчик нажатия кнопки 'Уволить' у противника"""
         try:
             selected_slot = self.ui.listEnemySlots.currentIndex().data()
-            main_db.delete_player_unit(int(selected_slot), main_db.CurrentDungeon)
+            main_db.delete_player_unit(int(selected_slot), CurrentDungeon)
             self.enemy_list_update()
         except TypeError:
             print('Выберите слот, который хотите освободить')
@@ -729,7 +730,7 @@ class ClientMainWindow(QMainWindow):
             main_db.hire_player_unit(
                 selected,
                 int(selected_slot),
-                main_db.PlayerUnits)
+                PlayerUnits)
             self.player_list_update()
         except TypeError:
             print('Выберите номер слота для найма')
@@ -742,7 +743,7 @@ class ClientMainWindow(QMainWindow):
             main_db.hire_player_unit(
                 selected,
                 int(selected_slot),
-                main_db.CurrentDungeon)
+                CurrentDungeon)
             self.enemy_list_update()
         except TypeError:
             print('Выберите номер слота для найма')
@@ -759,7 +760,7 @@ class ClientMainWindow(QMainWindow):
     def show_fight_window(self) -> None:
         """Метод создающий окно Битвы."""
         global FIGHT_WINDOW
-        FIGHT_WINDOW = FightWindow('darkest', main_db.PlayerUnits, self)
+        FIGHT_WINDOW = FightWindow('darkest', PlayerUnits, self)
         FIGHT_WINDOW.show()
 
     def show_campaign_window(self) -> None:
@@ -774,7 +775,7 @@ class ClientMainWindow(QMainWindow):
         self.reset()
 
         global FIGHT_WINDOW
-        FIGHT_WINDOW = FightWindow('versus', main_db.PlayerUnits, self)
+        FIGHT_WINDOW = FightWindow('versus', PlayerUnits, self)
         FIGHT_WINDOW.show()
 
     def show_capital(self) -> None:
@@ -848,62 +849,62 @@ class ClientMainWindow(QMainWindow):
 
     def slot1_detailed(self) -> None:
         """Метод создающий окно юнита игрока (слот 1)."""
-        unit = main_db.get_unit_by_slot(1, main_db.PlayerUnits)
+        unit = main_db.get_unit_by_slot(1, PlayerUnits)
         self.slot_detailed(unit, UnitDialog)
 
     def slot2_detailed(self) -> None:
         """Метод создающий окно юнита игрока (слот 2)."""
-        unit = main_db.get_unit_by_slot(2, main_db.PlayerUnits)
+        unit = main_db.get_unit_by_slot(2, PlayerUnits)
         self.slot_detailed(unit, UnitDialog)
 
     def slot3_detailed(self) -> None:
         """Метод создающий окно юнита игрока (слот 3)."""
-        unit = main_db.get_unit_by_slot(3, main_db.PlayerUnits)
+        unit = main_db.get_unit_by_slot(3, PlayerUnits)
         self.slot_detailed(unit, UnitDialog)
 
     def slot4_detailed(self) -> None:
         """Метод создающий окно юнита игрока (слот 4)."""
-        unit = main_db.get_unit_by_slot(4, main_db.PlayerUnits)
+        unit = main_db.get_unit_by_slot(4, PlayerUnits)
         self.slot_detailed(unit, UnitDialog)
 
     def slot5_detailed(self) -> None:
         """Метод создающий окно юнита игрока (слот 5)."""
-        unit = main_db.get_unit_by_slot(5, main_db.PlayerUnits)
+        unit = main_db.get_unit_by_slot(5, PlayerUnits)
         self.slot_detailed(unit, UnitDialog)
 
     def slot6_detailed(self) -> None:
         """Метод создающий окно юнита игрока (слот 6)."""
-        unit = main_db.get_unit_by_slot(6, main_db.PlayerUnits)
+        unit = main_db.get_unit_by_slot(6, PlayerUnits)
         self.slot_detailed(unit, UnitDialog)
 
     def en_slot1_detailed(self) -> None:
         """Метод создающий окно вражеского юнита (слот 1)."""
-        unit = main_db.get_unit_by_slot(1, main_db.CurrentDungeon)
+        unit = main_db.get_unit_by_slot(1, CurrentDungeon)
         self.slot_detailed(unit, UnitDialog)
 
     def en_slot2_detailed(self) -> None:
         """Метод создающий окно вражеского юнита (слот 2)."""
-        unit = main_db.get_unit_by_slot(2, main_db.CurrentDungeon)
+        unit = main_db.get_unit_by_slot(2, CurrentDungeon)
         self.slot_detailed(unit, UnitDialog)
 
     def en_slot3_detailed(self) -> None:
         """Метод создающий окно вражеского юнита (слот 3)."""
-        unit = main_db.get_unit_by_slot(3, main_db.CurrentDungeon)
+        unit = main_db.get_unit_by_slot(3, CurrentDungeon)
         self.slot_detailed(unit, UnitDialog)
 
     def en_slot4_detailed(self) -> None:
         """Метод создающий окно вражеского юнита (слот 4)."""
-        unit = main_db.get_unit_by_slot(4, main_db.CurrentDungeon)
+        unit = main_db.get_unit_by_slot(4, CurrentDungeon)
         self.slot_detailed(unit, UnitDialog)
 
     def en_slot5_detailed(self) -> None:
         """Метод создающий окно вражеского юнита (слот 5)."""
-        unit = main_db.get_unit_by_slot(5, main_db.CurrentDungeon)
+        unit = main_db.get_unit_by_slot(5, CurrentDungeon)
         self.slot_detailed(unit, UnitDialog)
 
     def en_slot6_detailed(self) -> None:
         """Метод создающий окно вражеского юнита (слот 6)."""
-        unit = main_db.get_unit_by_slot(6, main_db.CurrentDungeon)
+        unit = main_db.get_unit_by_slot(6, CurrentDungeon)
         self.slot_detailed(unit, UnitDialog)
 
     @staticmethod
@@ -911,14 +912,14 @@ class ClientMainWindow(QMainWindow):
         """Метод получающий юнита игрока по слоту."""
         return main_db.get_unit_by_slot(
             slot,
-            main_db.PlayerUnits)
+            PlayerUnits)
 
     @staticmethod
     def enemy_unit_by_slot(slot: int) -> namedtuple:
         """Метод получающий вражеского юнита по слоту."""
         return main_db.get_unit_by_slot(
             slot,
-            main_db.CurrentDungeon)
+            CurrentDungeon)
 
 
 if __name__ == '__main__':

@@ -18,6 +18,8 @@ from client_dir.unit_dialog import UnitDialog
 from units_dir.mission_generator import unit_selector, \
     setup_6, setup_5, setup_4, setup_3, boss_setup, \
     boss_mc_setup
+from units_dir.models import CurrentDungeon, EmpireUnits, \
+    HordesUnits, LegionsUnits, ClansUnits
 from units_dir.units import main_db
 from units_dir.units_factory import Unit
 
@@ -46,10 +48,10 @@ class CampaignWindow(QMainWindow):
         self.level = main_db.campaign_level
 
         self.campaigns_dict = {
-            EM: main_db.EmpireUnits,
-            UH: main_db.HordesUnits,
-            LD: main_db.LegionsUnits,
-            MC: main_db.ClansUnits,
+            EM: EmpireUnits,
+            UH: HordesUnits,
+            LD: LegionsUnits,
+            MC: ClansUnits,
         }
 
         self.db_table = self.campaigns_dict[self.faction]
@@ -216,7 +218,7 @@ class CampaignWindow(QMainWindow):
         """Метод получающий юнита подземелья по слоту."""
         return main_db.get_unit_by_slot(
             slot,
-            main_db.CurrentDungeon)
+            CurrentDungeon)
 
     def append_campaign_buttons(self) -> None:
         """Кнопки миссий в кампании"""

@@ -1,17 +1,21 @@
 """units gif parser"""
 import os
-from copy import copy
 
 from client_dir.settings import ORIGINAL_GIFS, \
-    TESTING_UNIT_ATTACKED, FRONT, REAR, TESTING_UNIT_SHADOW_ATTACKED, \
-    TESTING_UNIT_ATTACK, TESTING_UNIT_EFFECTS_ATTACK, TESTING_UNIT_SHADOW_ATTACK, \
-    TESTING_UNIT_STAND, TESTING_UNIT_SHADOW_STAND, TESTING_UNIT_EFFECTS_AREA, TESTING_UNIT_EFFECTS_TARGET
+    TESTING_UNIT_ATTACKED, FRONT, REAR, \
+    TESTING_UNIT_SHADOW_ATTACKED, \
+    TESTING_UNIT_ATTACK, \
+    TESTING_UNIT_EFFECTS_ATTACK, \
+    TESTING_UNIT_SHADOW_ATTACK, \
+    TESTING_UNIT_STAND, \
+    TESTING_UNIT_SHADOW_STAND, \
+    TESTING_UNIT_EFFECTS_AREA, \
+    TESTING_UNIT_EFFECTS_TARGET
 
 
 def read_directory():
     folders = os.listdir(ORIGINAL_GIFS)
     for folder in folders:
-        # print(folder)
         if '14' in folder and '_Добавить_' not in folder and 'Hero' not in folder:
             unit_name = folder.split('14')[0]
             print(unit_name)
