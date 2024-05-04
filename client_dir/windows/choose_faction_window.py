@@ -3,9 +3,9 @@
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QMainWindow, QHBoxLayout
 
-from client_dir.choose_faction_form import Ui_FactionWindow
-from client_dir.choose_hero_window import ChooseHeroWindow
-from client_dir.question_window import QuestionWindow
+from client_dir.forms.choose_faction_form import Ui_FactionWindow
+from client_dir.windows.choose_hero_window import ChooseHeroWindow
+from client_dir.windows.question_window import QuestionWindow
 from client_dir.settings import FACTIONS, EM, UH, LD, MC, SCREEN_RECT
 from client_dir.ui_functions import get_image
 from units_dir.units import main_db

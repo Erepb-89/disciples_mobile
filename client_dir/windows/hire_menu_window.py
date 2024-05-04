@@ -6,13 +6,13 @@ from PyQt5 import QtCore, QtWidgets
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QMainWindow, QHBoxLayout
 
-from client_dir.hire_menu_form import Ui_HireMenu
-from client_dir.message_window import MessageWindow
-from client_dir.question_window import QuestionWindow
+from client_dir.forms.hire_menu_form import Ui_HireMenu
+from client_dir.windows.message_window import MessageWindow
+from client_dir.windows.question_window import QuestionWindow
 from client_dir.settings import HIRE_SCREEN, BIG
 from client_dir.ui_functions import show_gif, slot_frame_update, \
     slot_update, button_update, ui_lock, ui_unlock
-from client_dir.unit_dialog import UnitNameDialog
+from client_dir.dialogs.unit_dialog import UnitNameDialog
 from units_dir.units import main_db
 from units_dir.units_factory import AbstractFactory
 
@@ -180,15 +180,9 @@ class HireMenuWindow(QMainWindow):
             if unit.leadership >= 3:
                 leadership = unit.leadership
 
-            if unit.size == BIG:
-                squad_points += 2
-            else:
-                squad_points += 1
+            squad_points += 2 if unit.size == BIG else 1
 
-        if self.highlighted_unit.size == BIG:
-            squad_points += 2
-        else:
-            squad_points += 1
+        squad_points += 2 if self.highlighted_unit.size == BIG else 1
 
         if self.player_gold < int(self.highlighted_unit.cost):
             global MES_GOLD_WINDOW

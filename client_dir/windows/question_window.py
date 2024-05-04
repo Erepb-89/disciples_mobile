@@ -1,56 +1,66 @@
-"""Окно сообщения"""
+"""Окно вопроса"""
 import os
 
 from PyQt5 import QtCore
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QMainWindow, QHBoxLayout
 
-from client_dir.message_form import Ui_Message
+from client_dir.forms.question_form import Ui_Question
 from client_dir.settings import CAPITAL_BUILDING
 
 
-class MessageWindow(QMainWindow):
+class QuestionWindow(QMainWindow):
     """
-    Класс - окно сообщения.
+    Класс - окно вопроса.
     Конфигурация окна создана в QTDesigner и загружается из
-    конвертированного файла message_form.py
+    конвертированного файла question_form.py
     """
 
-    def __init__(self, parent_window: any, text: str):
+    def __init__(self, parent: any, text: str):
         super().__init__()
         # основные переменные
-        self.parent_window = parent_window
+        self.parent = parent
         self.text = text
 
         self.InitUI()
 
     def InitUI(self):
         """Загружаем конфигурацию окна из дизайнера"""
-        self.ui = Ui_Message()
+        self.ui = Ui_Question()
         self.ui.setupUi(self)
 
         self.hbox = QHBoxLayout(self)
         self.update_bg()
 
-        self.ui.messageText.setText(self.text)
+        self.ui.questionText.setText(self.text)
 
+        self.ui.pushButtonYES.clicked.connect(
+            self.yes_action)
         self.ui.pushButtonNO.clicked.connect(
             self.no_action)
 
         self.show()
 
+    def yes_action(self):
+        """Согласиться"""
+        self.parent.question = True
+        self.parent.confirmation()
+        self.close()
+
     def no_action(self):
-        """Закрыть"""
+        """Отказаться"""
+        self.parent.question = False
+        self.parent.confirmation()
         self.close()
 
     def update_bg(self) -> None:
         """Обновление бэкграунда, заполнение картинкой"""
-        message_bg = self.ui.messageBG
-        message_bg.setPixmap(
+        question_bg = self.ui.questionBG
+        question_bg.setPixmap(
             QPixmap(
                 os.path.join(
                     CAPITAL_BUILDING,
                     "question.png")))
-        message_bg.setGeometry(QtCore.QRect(0, 0, 552, 461))
-        self.hbox.addWidget(message_bg)
+        question_bg.setGeometry(QtCore.QRect(0, 0, 552, 461))
+        self.hbox.addWidget(question_bg)
         self.setLayout(self.hbox)

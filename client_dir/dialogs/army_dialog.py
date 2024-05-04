@@ -9,7 +9,7 @@ from PyQt5.QtWidgets import QDialog, QLabel, QWidget
 
 from client_dir.settings import ARMY_BG, BIG, PORTRAITS
 from client_dir.ui_functions import get_unit_image
-from client_dir.unit_dialog import UnitDialog
+from client_dir.dialogs.unit_dialog import UnitDialog
 from units_dir.units import main_db
 
 

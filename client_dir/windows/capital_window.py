@@ -5,9 +5,9 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QPixmap, QMovie
 from PyQt5.QtWidgets import QMainWindow, QHBoxLayout
 
-from client_dir.capital_army_window import CapitalArmyWindow
-from client_dir.capital_building_window import CapitalBuildingWindow
-from client_dir.capital_main_form import Ui_CapitalWindow
+from client_dir.windows.capital_army_window import CapitalArmyWindow
+from client_dir.windows.capital_building_window import CapitalBuildingWindow
+from client_dir.forms.capital_main_form import Ui_CapitalWindow
 from client_dir.settings import TOWNS, SCREEN_RECT, CAPITAL_ANIM, LD
 from client_dir.ui_functions import get_image
 from units_dir.units import main_db

@@ -10,15 +10,15 @@ from PyQt5 import QtWidgets
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QMainWindow, QHBoxLayout
 
-from client_dir.capital_building_form import Ui_CapitalBuildingWindow
-from client_dir.question_window import QuestionWindow
+from client_dir.forms.capital_building_form import Ui_CapitalBuildingWindow
+from client_dir.windows.question_window import QuestionWindow
 from client_dir.settings import CAPITAL_BUILDING, UNIT_ICONS, TOWN_ICONS, \
     SCREEN_RECT, DECLINATIONS, INTERF, ICON, COMMON, OTHERS, ALREADY_BUILT, \
     READY_TO_BUILD, NEED_TO_BUILD_PREV, ANOTHER_BRANCH, NOT_ENOUGH_GOLD, \
     SPECIAL_BUILDINGS
 from client_dir.ui_functions import set_size_by_unit, get_unit_image, \
     slot_frame_update, ui_lock, ui_unlock
-from client_dir.unit_dialog import UnitDialog
+from client_dir.dialogs.unit_dialog import UnitDialog
 from units_dir.buildings import FACTIONS, BRANCHES
 from units_dir.ranking import STARTING_FORMS
 from units_dir.units import main_db
