@@ -12,19 +12,19 @@ from PyQt5.QtGui import QPixmap, QStandardItemModel, \
 from PyQt5.QtWidgets import QMainWindow, QApplication, QWidget, \
     QHBoxLayout, QListView, QLabel, QFrame
 
-from client_dir.capital_window import CapitalWindow
-from client_dir.choose_faction_window import ChooseRaceWindow
-from client_dir.fight_window import FightWindow
-from client_dir.campaign_window import CampaignWindow
-from client_dir.client_main_form import Ui_MainWindow
-from client_dir.hire_menu_window import HireMenuWindow
-from client_dir.question_window import QuestionWindow
+from client_dir.windows.capital_window import CapitalWindow
+from client_dir.windows.choose_faction_window import ChooseRaceWindow
+from client_dir.windows.fight_window import FightWindow
+from client_dir.windows.campaign_window import CampaignWindow
+from client_dir.forms.client_main_form import Ui_MainWindow
+from client_dir.windows.hire_menu_window import HireMenuWindow
+from client_dir.windows.question_window import QuestionWindow
 from client_dir.settings import UNIT_ICONS, GIF_ANIMATIONS, \
     TOWN_IMG, PLUG, ICON, PORTRAITS, BACKGROUND, BIG, \
     ACTIVE_UNITS
 from client_dir.ui_functions import get_unit_image, \
     set_beige_colour, set_borders, ui_lock, ui_unlock, get_cursor
-from client_dir.unit_dialog import UnitDialog
+from client_dir.dialogs.unit_dialog import UnitDialog
 from server.server import server_main
 from units_dir.models import PlayerUnits, CurrentDungeon
 from units_dir.units import main_db

@@ -6,12 +6,12 @@ from PyQt5 import QtCore, QtWidgets
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QMainWindow, QHBoxLayout
 
-from client_dir.choose_hero_form import Ui_ChooseHeroMenu
-from client_dir.question_window import QuestionWindow
+from client_dir.forms.choose_hero_form import Ui_ChooseHeroMenu
+from client_dir.windows.question_window import QuestionWindow
 from client_dir.settings import HIRE_SCREEN
 from client_dir.ui_functions import show_gif, slot_frame_update, \
     slot_update, button_update
-from client_dir.unit_dialog import UnitNameDialog
+from client_dir.dialogs.unit_dialog import UnitNameDialog
 from units_dir.units import main_db
 from units_dir.units_factory import AbstractFactory
 

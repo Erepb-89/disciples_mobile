@@ -11,8 +11,8 @@ from PyQt5.QtWidgets import QMainWindow, QHBoxLayout
 
 from battle import Battle, Player
 from battle_logging import logging
-from client_dir.fight_form import Ui_FightWindow
-from client_dir.message_window import MessageWindow
+from client_dir.forms.fight_form import Ui_FightWindow
+from client_dir.windows.message_window import MessageWindow
 from client_dir.settings import UNIT_STAND, UNIT_ATTACK, \
     UNIT_ATTACKED, UNIT_EFFECTS_ATTACK, BATTLE_GROUND, FRONT, REAR, \
     COMMON, BATTLE_GROUNDS, UNIT_SHADOW_ATTACK, UNIT_SHADOW_STAND, \
@@ -24,11 +24,11 @@ from client_dir.ui_functions import show_no_frame, \
     show_red_frame, show_blue_frame, update_unit_health, \
     get_unit_image, show_no_circle, ui_lock, ui_unlock, \
     show_dot_icon, show_polymorph
-from client_dir.unit_dialog import UnitDialog
+from client_dir.dialogs.unit_dialog import UnitDialog
 from units_dir.models import Player2Units
 from units_dir.ranking import GOLD_GRADATION
 from units_dir.units import main_db
-from units_dir.units_factory import Unit
+from units_dir.battle_unit import Unit
 
 
 class Thread(QThread):

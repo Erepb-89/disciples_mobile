@@ -6,13 +6,13 @@ from PyQt5.QtCore import QMimeData, QVariant, Qt, QEvent, QRect
 from PyQt5.QtGui import QPixmap, QStandardItemModel, QStandardItem, QDrag
 from PyQt5.QtWidgets import QMainWindow, QHBoxLayout, QLabel, QWidget, QFrame
 
-from client_dir.capital_army_form import Ui_CapitalArmyWindow
-from client_dir.hire_menu_window import HireMenuWindow
-from client_dir.question_window import QuestionWindow
+from client_dir.forms.capital_army_form import Ui_CapitalArmyWindow
+from client_dir.windows.hire_menu_window import HireMenuWindow
+from client_dir.windows.question_window import QuestionWindow
 from client_dir.settings import TOWN_ARMY, SCREEN_RECT, BIG, UNIT_FACES, GUARDS
 from client_dir.ui_functions import get_unit_image, update_unit_health, \
-    get_image, set_beige_colour, ui_lock, ui_unlock, get_unit_face
-from client_dir.unit_dialog import UnitDialog
+    get_image, set_beige_colour
+from client_dir.dialogs.unit_dialog import UnitDialog
 from units_dir.units import main_db
 from units_dir.units_factory import AbstractFactory
 
@@ -595,11 +595,15 @@ class CapitalArmyWindow(QMainWindow):
 
         elif unit1 is not None \
                 and unit1.size == BIG:
-            self.swap_slots(db_table1, db_table2, num1, num2, func)
+            allow_swap = self.check_leadership(unit1, db_table2)
+            if allow_swap:
+                self.swap_slots(db_table1, db_table2, num1, num2, func)
 
         elif unit1 is not None and unit2 is not None \
                 and unit2.size == BIG:
-            self.swap_slots(db_table2, db_table1, num2, num1, func)
+            allow_swap = self.check_leadership(unit2, db_table1, unit1)
+            if allow_swap:
+                self.swap_slots(db_table2, db_table1, num2, num1, func)
 
         elif unit1 is not None and unit2 is not None \
                 and unit2.name in GUARDS:
@@ -607,7 +611,37 @@ class CapitalArmyWindow(QMainWindow):
 
         elif unit1 is not None \
                 and unit1.name not in GUARDS:
-            func(num1, num2, db_table1, db_table2)
+            allow_swap = self.check_leadership(unit1, db_table2)
+            if allow_swap:
+                func(num1, num2, db_table1, db_table2)
+
+    def check_leadership(self,
+                         replaced_unit: namedtuple,
+                         db_table,
+                         base_unit: namedtuple = None) -> bool:
+        allow_swap = False
+        squad_points = 0
+        leadership = 3
+        player_units = main_db.show_campaign_units()
+
+        for unit in player_units:
+            if unit.leadership >= 3:
+                leadership = unit.leadership
+
+            squad_points += 2 if unit.size == BIG else 1
+
+        if db_table == self.db_table:
+            squad_points += 2 if replaced_unit.size == BIG else 1
+
+        else:
+            squad_points -= 2 if replaced_unit.size == BIG else 1
+
+        if base_unit:
+            squad_points -= 1
+
+        if squad_points <= leadership + 1:
+            allow_swap = True
+        return allow_swap
 
     @staticmethod
     def swap_slots(db_table1: any,
@@ -729,4 +763,3 @@ class CapitalArmyWindow(QMainWindow):
         return main_db.get_unit_by_slot(
             slot,
             self.res_db_table)
-

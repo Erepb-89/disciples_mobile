@@ -7,21 +7,20 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QMainWindow, QHBoxLayout
 
-from client_dir.campaign_form import Ui_CampaignWindow
-from client_dir.capital_window import CapitalWindow
-from client_dir.fight_window import FightWindow
-from client_dir.army_dialog import ArmyDialog
+from client_dir.forms.campaign_form import Ui_CampaignWindow
+from client_dir.windows.capital_window import CapitalWindow
+from client_dir.windows.fight_window import FightWindow
+from client_dir.dialogs.army_dialog import ArmyDialog
 from client_dir.settings import BACKGROUND, MC, EM, UH, LD, PORTRAITS
 from client_dir.ui_functions import slot_update, button_update, \
     ui_lock, ui_unlock, show_opened, show_closed, show_active
-from client_dir.unit_dialog import UnitDialog
+from client_dir.dialogs.unit_dialog import UnitDialog
 from units_dir.mission_generator import unit_selector, \
-    setup_6, setup_5, setup_4, setup_3, boss_setup, \
-    boss_mc_setup
+    setup_6, setup_5, setup_4, setup_3, boss_mc_setup
 from units_dir.models import CurrentDungeon, EmpireUnits, \
     HordesUnits, LegionsUnits, ClansUnits
 from units_dir.units import main_db
-from units_dir.units_factory import Unit
+from units_dir.battle_unit import Unit
 
 
 class CampaignWindow(QMainWindow):
