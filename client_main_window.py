@@ -4,6 +4,7 @@ import os.path
 import sys
 from collections import namedtuple
 from typing import Callable, Optional
+from threading import Thread as Thread
 
 from PyQt5 import QtCore
 from PyQt5.QtCore import Qt, QMimeData, QVariant, QEvent
@@ -388,7 +389,12 @@ class ClientMainWindow(QMainWindow):
         self.enemy_slots_update()
 
     def create_server(self):
-        asyncio.run(server_main())
+        server_thread = Thread(target=asyncio.run(server_main()),
+                               name="Server Thread")
+        server_thread.start()
+        server_thread.join()
+
+        # asyncio.run(server_main())
 
     def check_campaign_session(self):
         """Проверка сессии"""
