@@ -3,6 +3,7 @@
 import os.path
 import random
 from typing import Callable, Optional
+from threading import Thread as Thr
 
 from PyQt5 import QtCore, QtWidgets
 from PyQt5.QtCore import QThread, pyqtSignal, QTimer, Qt, QEvent
@@ -263,10 +264,19 @@ class FightWindow(QMainWindow):
                     and unit.curr_health != 0:
 
                 if event.type() == QEvent.Enter:
-                    self.event_enter(unit, side, ui_dict, num)
+                    self.enter_thread = Thr(target=self.event_enter(
+                        unit, side, ui_dict, num),
+                        name="Enter Thread")
+                    self.enter_thread.start()
+
+                    # self.event_enter(unit, side, ui_dict, num)
 
                 elif event.type() == QEvent.Leave:
-                    self.event_leave(ui_dict)
+                    self.leave_thread = Thr(target=self.event_leave(ui_dict),
+                                            name="Leave Thread")
+                    self.leave_thread.start()
+
+                    # self.event_leave(ui_dict)
 
                 elif event.type() == QEvent.MouseButtonPress:
                     if event.button() == Qt.LeftButton:
@@ -395,6 +405,7 @@ class FightWindow(QMainWindow):
         self.player_side, self.enemy_side = self.enemy_side, self.player_side
 
         self.unit_gifs_update()
+        # self.gifs_thread.start()
         self.clear_effects()
         self.clear_frames_circles()
         self.define_dotted_units()
@@ -884,6 +895,9 @@ class FightWindow(QMainWindow):
             self.show_no_frames(self.dung_circles_dict, show_no_circle)
 
             self.who_attack()
+            # self.attacker_thread = Thr(target=self.who_attack,
+            #                            name="Attacker Thread")
+            # self.attacker_thread.start()
 
             if 'жизни' in self.curr_unit.attack_type:
                 self.worker = Thread(False)
@@ -945,9 +959,11 @@ class FightWindow(QMainWindow):
             self.parent_window.main.player_list_update()
             self.parent_window.main.player_slots_update()
 
-        self.worker = Thread(False)
-        self.worker.dataThread.connect(self.unit_gifs_update)
-        self.worker.start()
+        # self.worker = Thread(False)
+        # self.worker.dataThread.connect(self.unit_gifs_update)
+        # self.worker.start()
+
+        self.unit_gifs_update()
         if not self.player1.slots:
             self.show_need_upgrade_effect(self.dung_damaged_dict,
                                           self.player2)
@@ -1365,19 +1381,40 @@ class FightWindow(QMainWindow):
         self.clear_effects()
 
         # прорисовка модели атакующего юнита
-        self.show_attacker(self.curr_unit)
+        self.attacker_thread = Thr(target=self.show_attacker(self.curr_unit),
+                                   name="Attacker Thread")
+        self.attacker_thread.start()
+
+        # self.show_attacker(self.curr_unit)
 
         # прорисовка эффектов атакующего юнита
-        self.show_attacker_eff(self.curr_unit)
+        self.attacker_eff_thread = Thr(
+            target=self.show_attacker_eff(self.curr_unit),
+            name="Attacker Effect Thread")
+        self.attacker_eff_thread.start()
+
+        # self.show_attacker_eff(self.curr_unit)
 
         # прорисовка тени атакующего юнита
-        self.show_shadow_attacker(self.curr_unit)
+        self.attacker_shadow_thread = Thr(
+            target=self.show_shadow_attacker(self.curr_unit),
+            name="Attacker Shadow Thread")
+        self.attacker_shadow_thread.start()
+
+        # self.show_shadow_attacker(self.curr_unit)
 
         # прорисовка атаки по области для атакующего юнита
         if self.curr_unit.attack_purpose == 6:
-            self.show_splash_area(
-                self.curr_unit,
-                UNIT_EFFECTS_AREA)
+            self.attacker_splash_thread = Thr(
+                target=self.show_splash_area(
+                    self.curr_unit,
+                    UNIT_EFFECTS_AREA),
+                name="Attacker Splash Thread")
+            self.attacker_splash_thread.start()
+
+            # self.show_splash_area(
+            #     self.curr_unit,
+            #     UNIT_EFFECTS_AREA)
 
     def who_attacked(self, target_slot: int, current_unit: Unit) -> None:
         """Метод обновляющий анимацию атакованного юнита"""
@@ -1600,7 +1637,7 @@ class FightWindow(QMainWindow):
                 unit_action,
                 side)
 
-    def unit_gifs_update(self) -> None:
+    def unit_gifs_in_thread(self):
         """Метод обновляющий анимацию юнитов"""
         # прорисовка модели бездействующего юнита игрока
         self.animate_action(
@@ -1629,6 +1666,12 @@ class FightWindow(QMainWindow):
         self.show_circle_attacker()
         self._update_all_unit_health()
         self.unit_icons_update()
+
+    def unit_gifs_update(self) -> None:
+        """Метод обновляющий анимацию юнитов. Вызов потока"""
+        self.gifs_thread = Thr(target=self.unit_gifs_in_thread,
+                               name="Gifs Thread")
+        self.gifs_thread.start()
 
     def _update_all_unit_health(self) -> None:
         """Метод обновляющий текущее здоровье всех юнитов"""
