@@ -545,10 +545,10 @@
    <widget class="QLabel" name="heroFace">
     <property name="geometry">
      <rect>
-      <x>190</x>
-      <y>20</y>
-      <width>171</width>
-      <height>171</height>
+      <x>180</x>
+      <y>30</y>
+      <width>241</width>
+      <height>241</height>
      </rect>
     </property>
     <property name="frameShape">
@@ -952,7 +952,6 @@
    <zorder>slot4</zorder>
    <zorder>slot2</zorder>
    <zorder>gold</zorder>
-   <zorder>heroFace</zorder>
    <zorder>hpSlot2_2</zorder>
    <zorder>hpSlot5_2</zorder>
    <zorder>resSlot_2</zorder>
@@ -965,6 +964,7 @@
    <zorder>hpSlot4_2</zorder>
    <zorder>hpSlot3_2</zorder>
    <zorder>resSlot_3</zorder>
+   <zorder>heroFace</zorder>
   </widget>
  </widget>
  <resources/>

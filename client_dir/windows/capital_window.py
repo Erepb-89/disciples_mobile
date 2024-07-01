@@ -8,8 +8,10 @@ from PyQt5.QtWidgets import QMainWindow, QHBoxLayout
 from client_dir.windows.capital_army_window import CapitalArmyWindow
 from client_dir.windows.capital_building_window import CapitalBuildingWindow
 from client_dir.forms.capital_main_form import Ui_CapitalWindow
-from client_dir.settings import TOWNS, SCREEN_RECT, CAPITAL_ANIM, LD
+from client_dir.settings import TOWNS, SCREEN_RECT, CAPITAL_ANIM, LD, CAPITAL_CONSTRUCTION, OTHERS
 from client_dir.ui_functions import get_image
+from units_dir.buildings import FACTIONS
+from units_dir.ranking import STARTING_FORMS
 from units_dir.units import main_db
 
 
@@ -47,7 +49,7 @@ class CapitalWindow(QMainWindow):
             self.ui.animation.setScaledContents(True)
         else:
             self.ui.animation.setScaledContents(False)
-        self.animate_capital()
+        # self.animate_capital()
 
         self.ui.pushButtonBack.clicked.connect(self.back)
         self.ui.pushButtonArmy.clicked.connect(self.show_army)
@@ -71,6 +73,61 @@ class CapitalWindow(QMainWindow):
             f"{self.faction}.gif"))
         self.ui.animation.setMovie(gif)
         gif.start()
+        self.show_branch_building('archer')
+
+    def show_branch_building(self, branch: str, building: str):
+        """"""
+        png = QPixmap(os.path.join(
+            CAPITAL_CONSTRUCTION,
+            self.faction,
+            branch,
+            f'{building}.png'))
+        print('png', png)
+        self.ui.buildingMage1.setScaledContents(True)
+        self.ui.buildingMage1.setPixmap(png)
+
+    def branch_settings(self, branch) -> dict:
+        """Получение настроек ветви"""
+        return FACTIONS.get(self.faction)[branch]
+
+    def get_building_graph(self, branch: str, bname: str, graph: list) -> None:
+        """Рекурсивное создание графа зданий/построек"""
+        branch_settings = self.branch_settings(branch)
+
+        for val in branch_settings.values():
+            if val.bname == bname:
+                graph.append(bname)
+                if val.prev not in ('', 0):
+                    self.get_building_graph(branch, val.prev, graph)
+                else:
+                    return
+
+    def show_already_built(self) -> None:
+        """Отметить уже построенные здания"""
+        # self.no_built()
+        temp_graph = []
+
+        branches = [
+            'fighter',
+            'archer',
+            'mage',
+            'support',
+            'others'
+        ]
+
+        # получение всех построенных зданий игрока
+        for branch in branches:
+            buildings = main_db.get_buildings(
+                main_db.current_player.name,
+                self.faction)._asdict()
+
+            # рекурсивное создание графа уже построенных зданий
+            self.get_building_graph(branch, buildings[branch], temp_graph)
+
+            # ставим отметки о постройке зданий
+            for building in temp_graph:
+                if building != '' and building not in STARTING_FORMS:
+                    self.show_branch_building(branch, building)
 
     def show_army(self):
         """Метод создающий окно армии."""

@@ -11,7 +11,7 @@ from client_dir.windows.hire_menu_window import HireMenuWindow
 from client_dir.windows.question_window import QuestionWindow
 from client_dir.settings import TOWN_ARMY, SCREEN_RECT, BIG, UNIT_FACES, GUARDS
 from client_dir.ui_functions import get_unit_image, update_unit_health, \
-    get_image, set_beige_colour
+    get_image, set_beige_colour, get_unit_face
 from client_dir.dialogs.unit_dialog import UnitDialog
 from units_dir.units import main_db
 from units_dir.units_factory import AbstractFactory
@@ -304,6 +304,7 @@ class CapitalArmyWindow(QMainWindow):
 
         self.reset()
 
+        # self.show_hero_face()
         self.show()
 
     def eventFilter(self, source, event):
@@ -387,11 +388,11 @@ class CapitalArmyWindow(QMainWindow):
 
     def face_update(self, unit: namedtuple, slot: QLabel) -> None:
         """Установка PNG в лейбл с лицом Героя"""
-        # slot.setPixmap(QPixmap(
-        #     get_unit_face(unit)).scaled(
-        #     slot.width(), slot.height()))
+        slot.setPixmap(QPixmap(
+            get_unit_face(unit)).scaled(
+            slot.width(), slot.height()))
 
-        slot.setPixmap(QPixmap(os.path.join(UNIT_FACES, "111.gif")))
+        # slot.setPixmap(QPixmap(os.path.join(UNIT_FACES, "Архидьявол.png")))
         self.hbox.addWidget(slot)
         self.setLayout(self.hbox)
 

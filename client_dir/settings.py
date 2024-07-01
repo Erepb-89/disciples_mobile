@@ -19,6 +19,7 @@ TOWNS = '../images/towns/'
 TOWN_ARMY = '../images/towns/army/'
 CAPITAL_BUILDING = '../images/towns/capital_building/'
 CAPITAL_ANIM = '../images/towns/capital_anim/'
+CAPITAL_CONSTRUCTION = '../images/towns/capital_construction/'
 HIRE_SCREEN = '../images/towns/hire_screen/'
 INTERF = '../images/interf/'
 

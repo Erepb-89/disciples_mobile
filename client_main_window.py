@@ -2,9 +2,12 @@
 import asyncio
 import os.path
 import sys
+import multiprocessing
+
 from collections import namedtuple
 from typing import Callable, Optional
 from threading import Thread as Thread
+from multiprocessing import Process, Manager as mgr
 
 from PyQt5 import QtCore
 from PyQt5.QtCore import Qt, QMimeData, QVariant, QEvent
@@ -389,10 +392,19 @@ class ClientMainWindow(QMainWindow):
         self.enemy_slots_update()
 
     def create_server(self):
-        server_thread = Thread(target=asyncio.run(server_main()),
-                               name="Server Thread")
-        server_thread.start()
-        server_thread.join()
+        self.thread1 = QtCore.QThread(self)
+        self.thread1.started.connect(asyncio.run(server_main()))
+        self.thread1.start()
+
+        # server_thread = Thread(target=asyncio.run(server_main()),
+        #                        name="Server Thread",
+        #                        daemon=True)
+        # server_thread.start()
+        # server_thread.join()
+
+        # with mgr():
+        #     p2 = Process(target=asyncio.run(server_main()))
+        #     p2.start()
 
         # asyncio.run(server_main())
 
@@ -932,3 +944,11 @@ if __name__ == '__main__':
     app = QApplication(sys.argv)
     ex = ClientMainWindow()
     sys.exit(app.exec_())
+
+    # with mgr():
+    #     app = QApplication(sys.argv)
+    #     ex = ClientMainWindow()
+    #     p1 = Process(target=ex)
+    #
+    #     p1.start()
+    #     sys.exit(app.exec_())

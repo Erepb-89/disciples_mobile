@@ -41,11 +41,6 @@ class CapitalBuildingWindow(QMainWindow):
         self.building_cost = 0
         self.unit = self.get_unit_by_b_slot(1)
         self.graph = []
-        self.fighter_graph = []
-        self.mage_graph = []
-        self.archer_graph = []
-        self.support_graph = []
-        self.others_graph = []
         # self.morph = pymorphy2.MorphAnalyzer()
         self.icons = True
 
