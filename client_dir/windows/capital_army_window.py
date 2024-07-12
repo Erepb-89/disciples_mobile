@@ -293,7 +293,7 @@ class CapitalArmyWindow(QMainWindow):
         self.player_slots_update()
 
         self.update_capital()
-        # self.show_hero_face()
+        self.show_hero_face()
         self.ui.pushButtonBack.clicked.connect(self.back)
 
         self._update_all_unit_health()
