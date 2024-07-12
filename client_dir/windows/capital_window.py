@@ -49,12 +49,13 @@ class CapitalWindow(QMainWindow):
             self.ui.animation.setScaledContents(True)
         else:
             self.ui.animation.setScaledContents(False)
-        # self.animate_capital()
+        self.animate_capital()
 
         self.ui.pushButtonBack.clicked.connect(self.back)
         self.ui.pushButtonArmy.clicked.connect(self.show_army)
         self.ui.pushButtonBuild.clicked.connect(self.show_building)
 
+        self.show_already_built()
         self.show()
 
     def update_capital(self):
@@ -73,18 +74,15 @@ class CapitalWindow(QMainWindow):
             f"{self.faction}.gif"))
         self.ui.animation.setMovie(gif)
         gif.start()
-        self.show_branch_building('archer')
 
-    def show_branch_building(self, branch: str, building: str):
+    def show_branch_building(self, building: str, ui_item):
         """"""
         png = QPixmap(os.path.join(
             CAPITAL_CONSTRUCTION,
             self.faction,
-            branch,
             f'{building}.png'))
-        print('png', png)
-        self.ui.buildingMage1.setScaledContents(True)
-        self.ui.buildingMage1.setPixmap(png)
+        ui_item.setScaledContents(True)
+        ui_item.setPixmap(png)
 
     def branch_settings(self, branch) -> dict:
         """Получение настроек ветви"""
@@ -104,16 +102,43 @@ class CapitalWindow(QMainWindow):
 
     def show_already_built(self) -> None:
         """Отметить уже построенные здания"""
-        # self.no_built()
-        temp_graph = []
-
         branches = [
             'fighter',
             'archer',
             'mage',
             'support',
-            'others'
+            # 'others'
         ]
+
+        slot_dict = {'mage':
+                         {0: self.ui.buildingMage_1,
+                          1: self.ui.buildingMage_2,
+                          2: self.ui.buildingMage_3,
+                          3: self.ui.buildingMage_4,
+                          4: self.ui.buildingMage_5},
+                     'fighter':
+                         {0: self.ui.buildingFighter_1,
+                          1: self.ui.buildingFighter_2,
+                          2: self.ui.buildingFighter_3,
+                          3: self.ui.buildingFighter_4,
+                          4: self.ui.buildingFighter_5},
+                     'archer':
+                         {0: self.ui.buildingArcher_1,
+                          1: self.ui.buildingArcher_2,
+                          2: self.ui.buildingArcher_3,
+                          3: self.ui.buildingArcher_4,
+                          4: self.ui.buildingArcher_5},
+                     'support':
+                         {0: self.ui.buildingSupport_1,
+                          1: self.ui.buildingSupport_2,
+                          2: self.ui.buildingSupport_3,
+                          3: self.ui.buildingSupport_4,
+                          4: self.ui.buildingSupport_5},
+                     'others':
+                         {0: self.ui.buildingOthers_1,
+                          1: self.ui.buildingOthers_2,
+                          2: self.ui.buildingOthers_3},
+                     }
 
         # получение всех построенных зданий игрока
         for branch in branches:
@@ -121,13 +146,16 @@ class CapitalWindow(QMainWindow):
                 main_db.current_player.name,
                 self.faction)._asdict()
 
+            temp_graph = []
             # рекурсивное создание графа уже построенных зданий
             self.get_building_graph(branch, buildings[branch], temp_graph)
+            reversed_graph = reversed(temp_graph)
 
             # ставим отметки о постройке зданий
-            for building in temp_graph:
+            for num, building in enumerate(reversed_graph):
                 if building != '' and building not in STARTING_FORMS:
-                    self.show_branch_building(branch, building)
+                    ui_item = slot_dict[branch][num]
+                    self.show_branch_building(building, ui_item)
 
     def show_army(self):
         """Метод создающий окно армии."""
@@ -138,7 +166,7 @@ class CapitalWindow(QMainWindow):
     def show_building(self):
         """Метод создающий окно строительства."""
         global CAPITAL_BUILDING_WINDOW
-        CAPITAL_BUILDING_WINDOW = CapitalBuildingWindow()
+        CAPITAL_BUILDING_WINDOW = CapitalBuildingWindow(self)
         CAPITAL_BUILDING_WINDOW.show()
 
     def back(self):

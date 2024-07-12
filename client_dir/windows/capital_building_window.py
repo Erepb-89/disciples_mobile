@@ -31,9 +31,10 @@ class CapitalBuildingWindow(QMainWindow):
     конвертированного файла capital_building_form.py
     """
 
-    def __init__(self):
+    def __init__(self, parent_window: any):
         super().__init__()
         # основные переменные
+        self.capital = parent_window
         self.question = False  # Постройка зданий
         self.faction = main_db.current_faction
         self.branch = 'archer'
@@ -724,6 +725,7 @@ class CapitalBuildingWindow(QMainWindow):
 
             self.set_building_possibility()
             self.show_already_built()
+            self.capital.show_already_built()
 
     def slot_detailed(self) -> None:
         """Метод создающий окно юнита (слот)."""
