@@ -76,3 +76,6 @@ Disciples Mobile - пошаговая игра в жанре Turn Base RPG, с �
 ![](screenshots/Represent_14.png)
 ![](screenshots/Represent_15.png)
 ![](screenshots/Represent_09.png)
+
+## Реализованные фичи
+О реализованных и нереализованных фичах читаем backlog.txt
