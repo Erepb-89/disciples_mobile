@@ -9,7 +9,7 @@ from PyQt5.QtWidgets import QMainWindow, QHBoxLayout, QLabel, QWidget, QFrame
 from client_dir.forms.capital_army_form import Ui_CapitalArmyWindow
 from client_dir.windows.hire_menu_window import HireMenuWindow
 from client_dir.windows.question_window import QuestionWindow
-from client_dir.settings import TOWN_ARMY, SCREEN_RECT, BIG, UNIT_FACES, GUARDS
+from client_dir.settings import TOWN_ARMY, SCREEN_RECT, BIG, GUARDS
 from client_dir.ui_functions import get_unit_image, update_unit_health, \
     get_image, set_beige_colour, get_unit_face
 from client_dir.dialogs.unit_dialog import UnitDialog
@@ -333,13 +333,26 @@ class CapitalArmyWindow(QMainWindow):
         # определяем лидера отряда
         player_units = main_db.show_campaign_units()
 
-        leader = player_units[0]
+        self.leader = player_units[0]
         for unit in player_units:
             if unit.leadership >= 3:
-                leader = unit
+                self.leader = unit
+
+            # отобразить лидерство
+            self.set_text_leadership(self.leader)
 
         # обновляем портрет
-        self.face_update(leader, icon)
+        self.face_update(self.leader, icon)
+
+    def set_text_leadership(self, unit: any):
+        """Отображает лидерство героя"""
+        player_units = main_db.show_campaign_units()
+        squad_points = 0
+
+        for unit_ in player_units:
+            squad_points += 2 if unit_.size == BIG else 1
+
+        self.ui.leadership.setText(f'{squad_points - 1} / {unit.leadership}')
 
     def update_capital(self) -> None:
         """Обновление лейбла, заполнение картинкой замка"""
@@ -392,7 +405,6 @@ class CapitalArmyWindow(QMainWindow):
             get_unit_face(unit)).scaled(
             slot.width(), slot.height()))
 
-        # slot.setPixmap(QPixmap(os.path.join(UNIT_FACES, "Архидьявол.png")))
         self.hbox.addWidget(slot)
         self.setLayout(self.hbox)
 
@@ -464,6 +476,8 @@ class CapitalArmyWindow(QMainWindow):
         """Обновить"""
         self._update_all_unit_health()
         self.player_list_update()
+        # отобразить лидерство
+        self.set_text_leadership(self.leader)
 
     def delete_unit_action(self) -> None:
         """Метод обработчик нажатия кнопки 'Уволить'"""
@@ -618,29 +632,28 @@ class CapitalArmyWindow(QMainWindow):
 
     def check_leadership(self,
                          replaced_unit: namedtuple,
-                         db_table,
+                         db_table: any,
                          base_unit: namedtuple = None) -> bool:
+        """
+        Проверяет достаточно ли лидерства у героя
+        для пополнения отряда
+        """
         allow_swap = False
         squad_points = 0
-        leadership = 3
         player_units = main_db.show_campaign_units()
 
         for unit in player_units:
-            if unit.leadership >= 3:
-                leadership = unit.leadership
-
             squad_points += 2 if unit.size == BIG else 1
 
         if db_table == self.db_table:
             squad_points += 2 if replaced_unit.size == BIG else 1
-
         else:
             squad_points -= 2 if replaced_unit.size == BIG else 1
 
         if base_unit:
             squad_points -= 1
 
-        if squad_points <= leadership + 1:
+        if squad_points <= self.leader.leadership + 1:
             allow_swap = True
         return allow_swap
 

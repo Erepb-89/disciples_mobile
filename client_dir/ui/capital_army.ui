@@ -545,10 +545,10 @@
    <widget class="QLabel" name="heroFace">
     <property name="geometry">
      <rect>
-      <x>180</x>
-      <y>30</y>
-      <width>241</width>
-      <height>241</height>
+      <x>199</x>
+      <y>23</y>
+      <width>202</width>
+      <height>218</height>
      </rect>
     </property>
     <property name="frameShape">
@@ -933,6 +933,27 @@
      <string>slot_3</string>
     </property>
    </widget>
+   <widget class="QLabel" name="leadership">
+    <property name="geometry">
+     <rect>
+      <x>302</x>
+      <y>362</y>
+      <width>71</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Arial</family>
+      <pointsize>11</pointsize>
+      <weight>50</weight>
+      <bold>false</bold>
+     </font>
+    </property>
+    <property name="text">
+     <string>lead</string>
+    </property>
+   </widget>
    <zorder>capitalArmyBG</zorder>
    <zorder>pushButtonBack</zorder>
    <zorder>pushButtonDelete</zorder>
@@ -965,6 +986,7 @@
    <zorder>hpSlot3_2</zorder>
    <zorder>resSlot_3</zorder>
    <zorder>heroFace</zorder>
+   <zorder>leadership</zorder>
   </widget>
  </widget>
  <resources/>
