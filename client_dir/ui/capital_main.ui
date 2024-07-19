@@ -901,6 +901,37 @@
      <set>Qt::AlignCenter</set>
     </property>
    </widget>
+   <widget class="QLabel" name="foreground">
+    <property name="geometry">
+     <rect>
+      <x>200</x>
+      <y>0</y>
+      <width>960</width>
+      <height>900</height>
+     </rect>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::Panel</enum>
+    </property>
+    <property name="frameShadow">
+     <enum>QFrame::Raised</enum>
+    </property>
+    <property name="lineWidth">
+     <number>0</number>
+    </property>
+    <property name="midLineWidth">
+     <number>0</number>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="scaledContents">
+     <bool>true</bool>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
+    </property>
+   </widget>
    <zorder>capitalBG</zorder>
    <zorder>pushButtonBack</zorder>
    <zorder>pushButtonArmy</zorder>
@@ -930,6 +961,7 @@
    <zorder>buildingFighter_3</zorder>
    <zorder>buildingFighter_4</zorder>
    <zorder>buildingFighter_5</zorder>
+   <zorder>foreground</zorder>
   </widget>
  </widget>
  <resources/>

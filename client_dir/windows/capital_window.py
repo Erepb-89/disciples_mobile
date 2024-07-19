@@ -8,7 +8,8 @@ from PyQt5.QtWidgets import QMainWindow, QHBoxLayout
 from client_dir.windows.capital_army_window import CapitalArmyWindow
 from client_dir.windows.capital_building_window import CapitalBuildingWindow
 from client_dir.forms.capital_main_form import Ui_CapitalWindow
-from client_dir.settings import TOWNS, SCREEN_RECT, CAPITAL_ANIM, LD, CAPITAL_CONSTRUCTION, OTHERS
+from client_dir.settings import TOWNS, SCREEN_RECT, CAPITAL_ANIM, \
+    LD, EM, CAPITAL_CONSTRUCTION
 from client_dir.ui_functions import get_image
 from units_dir.buildings import FACTIONS
 from units_dir.ranking import STARTING_FORMS
@@ -160,6 +161,13 @@ class CapitalWindow(QMainWindow):
                 if building != '' and building not in STARTING_FORMS:
                     ui_item = slot_dict[branch][num]
                     self.show_branch_building(building, ui_item)
+
+        if self.faction == EM:
+            self.ui.foreground.setPixmap(QPixmap(os.path.join(
+                CAPITAL_CONSTRUCTION,
+                self.faction,
+                'foreground.png'))
+            )
 
     def show_army(self):
         """Метод создающий окно армии."""
