@@ -45,7 +45,7 @@ class Thread(QThread):
         if self.attacker is True:
             i = 10_000_000
         else:
-            i = 15_000_000
+            i = 30_000_000
 
         while i > 1:
             i -= 1
@@ -939,7 +939,9 @@ class FightWindow(QMainWindow):
         if not self.new_battle.battle_is_over:
             self.battle_not_over()
         else:
-            self.battle_over_animations()
+            self.worker = Thread(False)
+            self.worker.dataThread.connect(self.battle_over_animations)
+            self.worker.start()
 
         self.update_log()
         self.new_battle.autofight = False
@@ -958,10 +960,6 @@ class FightWindow(QMainWindow):
         if self.parent_window.name == 'CampaignWindow':
             self.parent_window.main.player_list_update()
             self.parent_window.main.player_slots_update()
-
-        # self.worker = Thread(False)
-        # self.worker.dataThread.connect(self.unit_gifs_update)
-        # self.worker.start()
 
         self.unit_gifs_update()
         if not self.player1.slots:
@@ -1272,7 +1270,6 @@ class FightWindow(QMainWindow):
 
     def show_frame_attacker(self) -> None:
         """Прорисовка рамки вокруг иконки атакующего юнита"""
-        # QtCore.QTimer.singleShot(3000, lambda: print(1))
         self.show_frames_by_side(self.curr_unit,
                                  self.unit_icons_dict,
                                  self.dung_icons_dict,

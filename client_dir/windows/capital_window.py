@@ -76,7 +76,7 @@ class CapitalWindow(QMainWindow):
         gif.start()
 
     def show_branch_building(self, building: str, ui_item):
-        """"""
+        """Отображение построенных зданий в главном окне Столицы"""
         png = QPixmap(os.path.join(
             CAPITAL_CONSTRUCTION,
             self.faction,
@@ -101,13 +101,13 @@ class CapitalWindow(QMainWindow):
                     return
 
     def show_already_built(self) -> None:
-        """Отметить уже построенные здания"""
+        """Отобразить уже построенные здания"""
         branches = [
             'fighter',
             'archer',
             'mage',
             'support',
-            # 'others'
+            'special'
         ]
 
         slot_dict = {'mage':
@@ -138,9 +138,14 @@ class CapitalWindow(QMainWindow):
                          {0: self.ui.buildingOthers_1,
                           1: self.ui.buildingOthers_2,
                           2: self.ui.buildingOthers_3},
+                     'special':
+                         {0: self.ui.buildingSpecial}
                      }
 
-        # получение всех построенных зданий игрока
+        self.get_already_built(branches, slot_dict)
+
+    def get_already_built(self, branches, slot_dict):
+        """Получение всех построенных зданий игрока"""
         for branch in branches:
             buildings = main_db.get_buildings(
                 main_db.current_player.name,
@@ -149,10 +154,9 @@ class CapitalWindow(QMainWindow):
             temp_graph = []
             # рекурсивное создание графа уже построенных зданий
             self.get_building_graph(branch, buildings[branch], temp_graph)
-            reversed_graph = reversed(temp_graph)
 
-            # ставим отметки о постройке зданий
-            for num, building in enumerate(reversed_graph):
+            # отображаем построенные здания
+            for num, building in enumerate(temp_graph):
                 if building != '' and building not in STARTING_FORMS:
                     ui_item = slot_dict[branch][num]
                     self.show_branch_building(building, ui_item)

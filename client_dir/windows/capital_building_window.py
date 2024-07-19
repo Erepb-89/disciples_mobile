@@ -437,7 +437,8 @@ class CapitalBuildingWindow(QMainWindow):
                 self.set_text_and_buy_slot(ALREADY_BUILT,
                                            False)
 
-            # если здание входит специальные постройки и не построено
+            # если здание входит специальные постройки и
+            # условия для постройки не выполнены
             elif self.building_name in SPECIAL_BUILDINGS \
                     and not buildings['special'] \
                     and FACTIONS.get(self.faction)['special'][1].prev \
@@ -453,11 +454,20 @@ class CapitalBuildingWindow(QMainWindow):
                 self.set_text_and_buy_slot(NEED_TO_BUILD_PREV,
                                            False)
 
+            # если здание входит специальные постройки и не построено,
+            # но условия выполнены
+            elif self.building_name in SPECIAL_BUILDINGS \
+                    and not buildings['special'] \
+                    and FACTIONS.get(self.faction)['special'][1].prev \
+                    in temp_graph:
+                self.set_text_and_buy_slot(READY_TO_BUILD,
+                                           True)
+
             elif '' in temp_graph \
                     and len(self.graph) < 2 \
                     and main_db.get_gold(
-                main_db.current_player.name, self.faction
-            ) >= self.building_cost:
+                        main_db.current_player.name,
+                        self.faction) >= self.building_cost:
                 self.set_text_and_buy_slot(READY_TO_BUILD,
                                            True)
 
