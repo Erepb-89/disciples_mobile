@@ -29,7 +29,7 @@ from client_dir.settings import UNIT_ICONS, GIF_ANIMATIONS, \
 from client_dir.ui_functions import get_unit_image, \
     set_beige_colour, set_borders, ui_lock, ui_unlock, get_cursor
 from client_dir.dialogs.unit_dialog import UnitDialog
-from server.server import server_main
+# from server.server import server_main
 from units_dir.models import PlayerUnits, CurrentDungeon
 from units_dir.units import main_db
 
@@ -315,7 +315,7 @@ class ClientMainWindow(QMainWindow):
         self.ui.pushButtonChoosePlayer.clicked.connect(
             self.choose_player_action)
 
-        self.ui.pushButtonCreateServer.clicked.connect(self.create_server)
+        # self.ui.pushButtonCreateServer.clicked.connect(self.create_server)
 
         # подкраска элементов
         set_beige_colour(self.ui.pushButtonAddPlayer)
@@ -392,9 +392,10 @@ class ClientMainWindow(QMainWindow):
         self.enemy_slots_update()
 
     def create_server(self):
-        self.thread1 = QtCore.QThread(self)
-        self.thread1.started.connect(asyncio.run(server_main()))
-        self.thread1.start()
+        pass
+        # self.thread1 = QtCore.QThread(self)
+        # self.thread1.started.connect(asyncio.run(server_main()))
+        # self.thread1.start()
 
         # server_thread = Thread(target=asyncio.run(server_main()),
         #                        name="Server Thread",

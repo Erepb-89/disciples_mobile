@@ -1,4 +1,4 @@
-"""База. Классы юнитов"""
+"""База данных"""
 
 from collections import namedtuple
 from typing import Callable, List
