@@ -1056,7 +1056,7 @@ class FightWindow(QMainWindow):
         """Босс кампании повержен"""
         return '15' in self.dungeon \
                and (self.campaign_level != 5
-                    and
+                    or
                     (self.difficulty == 3
                      and self.campaign_level != 4))
 
