@@ -909,25 +909,25 @@
      <rect>
       <x>150</x>
       <y>760</y>
-      <width>90</width>
+      <width>95</width>
       <height>28</height>
      </rect>
     </property>
     <property name="text">
-     <string>Очистить</string>
+     <string>Очистить (C)</string>
     </property>
    </widget>
    <widget class="QPushButton" name="pushButtonAutoFight">
     <property name="geometry">
      <rect>
-      <x>50</x>
+      <x>40</x>
       <y>760</y>
-      <width>90</width>
+      <width>95</width>
       <height>28</height>
      </rect>
     </property>
     <property name="text">
-     <string>Автобой</string>
+     <string>Автобой (A)</string>
     </property>
    </widget>
    <widget class="QLabel" name="rightIcons">
@@ -3000,14 +3000,14 @@
    <widget class="QPushButton" name="pushButtonDefence">
     <property name="geometry">
      <rect>
-      <x>50</x>
+      <x>40</x>
       <y>800</y>
-      <width>90</width>
+      <width>95</width>
       <height>28</height>
      </rect>
     </property>
     <property name="text">
-     <string>Защита</string>
+     <string>Защита (D)</string>
     </property>
    </widget>
    <widget class="QPushButton" name="pushButtonWaiting">
@@ -3015,12 +3015,12 @@
      <rect>
       <x>150</x>
       <y>800</y>
-      <width>90</width>
+      <width>95</width>
       <height>28</height>
      </rect>
     </property>
     <property name="text">
-     <string>Ожидание</string>
+     <string>Ожидание (W)</string>
     </property>
    </widget>
    <widget class="QLabel" name="gifCircleSlot_6">
