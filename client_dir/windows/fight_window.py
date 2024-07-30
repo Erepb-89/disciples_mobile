@@ -45,7 +45,7 @@ class Thread(QThread):
         if self.attacker is True:
             i = 10_000_000
         else:
-            i = 30_000_000
+            i = 20_000_000
 
         while i > 1:
             i -= 1
@@ -327,6 +327,17 @@ class FightWindow(QMainWindow):
         if unit in self.new_battle.current_player.units:
             self.show_circle_y(unit, ui_dict.get(num))
 
+    def keyPressEvent(self, event):
+        """Метод обработки нажатия клавиш A, D, W"""
+        if event.key() == Qt.Key_A:
+            self.autofight()
+        if event.key() == Qt.Key_D:
+            self.unit_defence()
+        if event.key() == Qt.Key_W:
+            self.unit_waiting()
+        # if event.key() == Qt.Key_C:
+        #     self.new_battle.regen()
+
     def update_bg(self) -> None:
         """Обновление бэкграунда, заполнение картинкой поля сражения"""
         fight_bg = self.ui.FightBG
@@ -357,8 +368,8 @@ class FightWindow(QMainWindow):
         """
         self.ui.speedText.setStyleSheet('color: white')
 
-        speed_slots = [0.5, 1, 1.5, 2, 2.5,
-                       3, 3.5, 4, 4.5, 5]
+        speed_slots = [1, 2, 3, 4, 5,
+                       6, 7, 8, 9, 10]
         self.speed_model = QStandardItemModel()
         for slot in speed_slots:
             item = QStandardItem(str(slot))
@@ -366,7 +377,7 @@ class FightWindow(QMainWindow):
             self.speed_model.appendRow(item)
         self.ui.comboSpeed.setModel(self.speed_model)
 
-        self.ui.comboSpeed.setCurrentIndex(5)
+        self.ui.comboSpeed.setCurrentIndex(4)
         self.check_speed()
         self.ui.comboSpeed.currentIndexChanged.connect(self.check_speed)
 
