@@ -1,7 +1,7 @@
 """Генератор миссий"""
 import random
 
-from client_dir.settings import BIG, SMALL, ACTIVE_UNITS, SUPPORT, ADDITIONAL_ATTACK, INCREASE_DMG, HEAL
+from client_dir.settings import BIG, SMALL, ACTIVE_UNITS, SUPPORT
 from units_dir.units import main_db
 
 setup_6 = [

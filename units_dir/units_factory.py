@@ -120,7 +120,7 @@ class EmpireSpecial:
     @property
     def cost(self):
         """Стоимость"""
-        return '300'
+        return '200'
 
     @property
     def upgrade_b(self):
@@ -343,7 +343,7 @@ class HordesSpecial:
     @property
     def cost(self):
         """Стоимость"""
-        return '1000'
+        return '200'
 
     @property
     def upgrade_b(self):
@@ -566,7 +566,7 @@ class LegionsSpecial:
     @property
     def cost(self):
         """Стоимость"""
-        return '300'
+        return '200'
 
     @property
     def upgrade_b(self):
@@ -799,7 +799,7 @@ class ClansSpecial:
     @property
     def cost(self):
         """Стоимость"""
-        return '400'
+        return '250'
 
     @property
     def upgrade_b(self):

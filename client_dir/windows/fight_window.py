@@ -329,11 +329,14 @@ class FightWindow(QMainWindow):
 
     def keyPressEvent(self, event):
         """Метод обработки нажатия клавиш A, D, W"""
-        if event.key() == Qt.Key_A:
+        if event.key() == Qt.Key_A and \
+                self.new_battle.current_player.name != 'Computer':
             self.autofight()
-        if event.key() == Qt.Key_D:
+        if event.key() == Qt.Key_D and \
+                self.new_battle.current_player.name != 'Computer':
             self.unit_defence()
-        if event.key() == Qt.Key_W:
+        if event.key() == Qt.Key_W and \
+                self.new_battle.current_player.name != 'Computer':
             self.unit_waiting()
         # if event.key() == Qt.Key_C:
         #     self.new_battle.regen()
