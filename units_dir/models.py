@@ -46,7 +46,8 @@ class AllUnits:
                  air_resist: int,
                  fire_resist: int,
                  earth_resist: int,
-                 dotted: int
+                 dotted: int,
+                 locked: int,
                  ):
         self.id = None
         self.name = name
@@ -93,6 +94,7 @@ class AllUnits:
         self.fire_resist = fire_resist
         self.earth_resist = earth_resist
         self.dotted = dotted
+        self.locked = locked
 
 
 class PlayerUnits(AllUnits):
@@ -323,7 +325,13 @@ class Dungeons:
                  unit3: str,
                  unit4: str,
                  unit5: str,
-                 unit6: str):
+                 unit6: str,
+                 level_unit1: int,
+                 level_unit2: int,
+                 level_unit3: int,
+                 level_unit4: int,
+                 level_unit5: int,
+                 level_unit6: int):
         self.id = None
         self.name = name
         self.unit1 = unit1
@@ -332,3 +340,9 @@ class Dungeons:
         self.unit4 = unit4
         self.unit5 = unit5
         self.unit6 = unit6
+        self.level_unit1 = level_unit1
+        self.level_unit2 = level_unit2
+        self.level_unit3 = level_unit3
+        self.level_unit4 = level_unit4
+        self.level_unit5 = level_unit5
+        self.level_unit6 = level_unit6

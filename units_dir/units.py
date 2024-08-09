@@ -2,6 +2,7 @@
 
 from collections import namedtuple
 from typing import Callable, List
+import sqlite3
 
 from sqlalchemy import create_engine, Table, update, Column, Integer, \
     String, MetaData
@@ -99,7 +100,13 @@ class ServerStorage:
                                Column('unit3', String),
                                Column('unit4', String),
                                Column('unit5', String),
-                               Column('unit6', String)
+                               Column('unit6', String),
+                               Column('level_unit1', Integer),
+                               Column('level_unit2', Integer),
+                               Column('level_unit3', Integer),
+                               Column('level_unit4', Integer),
+                               Column('level_unit5', Integer),
+                               Column('level_unit6', Integer)
                                )
 
         # Создаём таблицы
@@ -197,6 +204,7 @@ class ServerStorage:
                      Column('fire_resist', Integer),
                      Column('earth_resist', Integer),
                      Column('dotted', Integer),
+                     Column('locked', Integer),
                      )
 
     def increase_campaign_level(self):
@@ -303,7 +311,8 @@ class ServerStorage:
             unit.air_resist,
             unit.fire_resist,
             unit.earth_resist,
-            unit.dotted
+            unit.dotted,
+            unit.locked
         )
         self.session.add(unit_row)
         self.session.commit()
@@ -355,7 +364,8 @@ class ServerStorage:
             AllUnits.air_resist,
             AllUnits.fire_resist,
             AllUnits.earth_resist,
-            AllUnits.dotted
+            AllUnits.dotted,
+            AllUnits.locked
         ).filter_by(name=name)
         # Возвращаем кортеж
         return query.first()
@@ -468,7 +478,8 @@ class ServerStorage:
             db_table.air_resist,
             db_table.fire_resist,
             db_table.earth_resist,
-            db_table.dotted
+            db_table.dotted,
+            db_table.locked
         ).filter_by(name=name)
         # Возвращаем кортеж
         return query.first()
@@ -553,7 +564,8 @@ class ServerStorage:
             db_table.air_resist,
             db_table.fire_resist,
             db_table.earth_resist,
-            db_table.dotted
+            db_table.dotted,
+            db_table.locked
         ).filter_by(id=_id)
         # Возвращаем кортеж
         return query.first()
@@ -605,7 +617,8 @@ class ServerStorage:
             db_table.air_resist,
             db_table.fire_resist,
             db_table.earth_resist,
-            db_table.dotted
+            db_table.dotted,
+            db_table.locked
         ).filter_by(slot=slot)
         # Возвращаем кортеж
         return query.first()
@@ -657,7 +670,8 @@ class ServerStorage:
             AllUnits.air_resist,
             AllUnits.fire_resist,
             AllUnits.earth_resist,
-            AllUnits.dotted
+            AllUnits.dotted,
+            AllUnits.locked
         ).filter(AllUnits.level == level,
                  AllUnits.branch != 'hero')
         # Возвращаем список кортежей
@@ -710,7 +724,8 @@ class ServerStorage:
             db_table.air_resist,
             db_table.fire_resist,
             db_table.earth_resist,
-            db_table.dotted
+            db_table.dotted,
+            db_table.locked
         ).order_by(db_table.slot)
         # Возвращаем список кортежей
         return query.all()
@@ -760,7 +775,8 @@ class ServerStorage:
             PlayerUnits.air_resist,
             PlayerUnits.fire_resist,
             PlayerUnits.earth_resist,
-            PlayerUnits.dotted
+            PlayerUnits.dotted,
+            PlayerUnits.locked
         ).order_by(PlayerUnits.slot)
         # Возвращаем список кортежей
         return query.all()
@@ -810,7 +826,8 @@ class ServerStorage:
             CurrentDungeon.air_resist,
             CurrentDungeon.fire_resist,
             CurrentDungeon.earth_resist,
-            CurrentDungeon.dotted
+            CurrentDungeon.dotted,
+            CurrentDungeon.locked
         ).order_by(CurrentDungeon.slot)
         # Возвращаем список кортежей
         return query.all()
@@ -1182,6 +1199,9 @@ class ServerStorage:
             else:
                 names_list.append('<null>')
 
+        for _ in range(6):
+            names_list.append('1')
+
         # удаляем запись 'versus' из таблицы Dungeons
         self.session.query(Dungeons).filter_by(name='versus').delete()
 
@@ -1195,15 +1215,24 @@ class ServerStorage:
         """Добавление подземелий в таблицу Dungeons"""
         mission_num = 1
         for dungeon in dungeons.values():
+            unit_list = dungeon[0]
+            unit_level = dungeon[1]
+
             dungeon_row = Dungeons(
                 f'{self.current_faction}_'
                 f'{campaign_level}_{mission_num}',
-                dungeon[1],
-                dungeon[2],
-                dungeon[3],
-                dungeon[4],
-                dungeon[5],
-                dungeon[6],
+                unit_list[1],
+                unit_list[2],
+                unit_list[3],
+                unit_list[4],
+                unit_list[5],
+                unit_list[6],
+                unit_level,
+                unit_level,
+                unit_level,
+                unit_level,
+                unit_level,
+                unit_level
             )
             self.session.add(dungeon_row)
             mission_num += 1
@@ -1568,16 +1597,25 @@ class ServerStorage:
         else:
             self.hire_unit(new_name, slot)
 
-    def show_dungeon_units(self, name: str) -> namedtuple:
-        """Метод возвращающий список имен юнитов подземелья по названию."""
+    def show_dungeon_units(self, dung_name: str) -> namedtuple:
+        """
+        Метод возвращающий список имен и уровней юнитов
+        по названию подземелья.
+        """
         query = self.session.query(
             Dungeons.unit1,
             Dungeons.unit2,
             Dungeons.unit3,
             Dungeons.unit4,
             Dungeons.unit5,
-            Dungeons.unit6
-        ).filter_by(name=name)
+            Dungeons.unit6,
+            Dungeons.level_unit1,
+            Dungeons.level_unit2,
+            Dungeons.level_unit3,
+            Dungeons.level_unit4,
+            Dungeons.level_unit5,
+            Dungeons.level_unit6
+        ).filter_by(name=dung_name)
         # Возвращаем кортеж
         return query.first()
 
@@ -1629,7 +1667,8 @@ class ServerStorage:
             db_table.air_resist,
             db_table.fire_resist,
             db_table.earth_resist,
-            db_table.dotted
+            db_table.dotted,
+            db_table.locked
         ).order_by(db_table.slot)
         # Возвращаем список кортежей
         return query.all()
@@ -1681,7 +1720,8 @@ class ServerStorage:
             AllUnits.air_resist,
             AllUnits.fire_resist,
             AllUnits.earth_resist,
-            AllUnits.dotted
+            AllUnits.dotted,
+            AllUnits.locked
         )
         # Возвращаем список кортежей
         return query.all()
@@ -1786,6 +1826,14 @@ main_db = ServerStorage('../disc2.db')
 # main_db = ServerStorage('../disc2_pg.db')
 # main_db.show_all_units()
 
+# conn = sqlite3.connect("../disc2.db")
+# curr = conn.cursor()
+#
+# def add_columns():
+#     curr.execute(f"ALTER TABLE legions_units ADD COLUMN locked INTEGER")
+#     conn.commit()
+
+
 # Отладка
 if __name__ == '__main__':
     # for item in main_db.show_all_units():
@@ -1814,4 +1862,5 @@ if __name__ == '__main__':
     # print(all_buildings._asdict())
 
     # print(main_db.get_unit_by_name('Антипаладин'))
+    # add_columns()
     print(1)

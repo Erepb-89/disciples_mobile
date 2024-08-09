@@ -1,5 +1,6 @@
 """Окно кампании"""
 import os
+from collections import namedtuple
 from typing import Callable, Dict
 
 from PyQt5 import QtWidgets, QtCore
@@ -21,6 +22,8 @@ from units_dir.models import CurrentDungeon, EmpireUnits, \
     HordesUnits, LegionsUnits, ClansUnits
 from units_dir.units import main_db
 from units_dir.battle_unit import Unit
+
+Units = namedtuple('Units', ['name', 'level'])
 
 
 class CampaignWindow(QMainWindow):
@@ -44,7 +47,7 @@ class CampaignWindow(QMainWindow):
         self.campaign_buttons_dict = {}
         self.campaign_icons_dict = {}
         self.all_missions = {}
-        self.level = main_db.campaign_level
+        self.campaign_level = main_db.campaign_level
 
         self.campaigns_dict = {
             EM: EmpireUnits,
@@ -111,13 +114,13 @@ class CampaignWindow(QMainWindow):
 
         # если в базе нет готовых миссий
         if not main_db.show_dungeon_units(
-                f'{self.faction}_{self.level}_1'):
+                f'{self.faction}_{self.campaign_level}_1'):
             # генерируем их
-            self.update_all_missions(self.level, self.difficulty)
+            self.update_all_missions(self.campaign_level, self.difficulty)
         else:
             # иначе берем из базы готовые
             for mission_num in range(1, 16):
-                dung_name = f'{self.faction}_{self.level}_' \
+                dung_name = f'{self.faction}_{self.campaign_level}_' \
                             f'{mission_num}'
                 units = main_db.show_dungeon_units(dung_name)
                 self.all_missions[dung_name] = {
@@ -154,7 +157,9 @@ class CampaignWindow(QMainWindow):
         self.ui.campaignBG.setPixmap(QPixmap(BACKGROUND))
         self.ui.campaignBG.setGeometry(QtCore.QRect(0, 0, 1500, 827))
 
-    def update_all_missions(self, level, diff) -> None:
+    def update_all_missions(self,
+                            level: int,
+                            diff: int) -> None:
         """Обновляет состав армии для каждой миссии"""
         squad_dict = {
             1: (setup_4, setup_4, setup_5),
@@ -174,28 +179,51 @@ class CampaignWindow(QMainWindow):
 
         # миссии с 1 по 15 (сгенерированные рандомно)
         name = f'{self.faction}_{level}'
+
+        nominal_level = 1
+        if diff == 1:
+            nominal_level = 1
+        elif diff == 2:
+            nominal_level = 3
+
         if diff == 3:
             level += 1
+            nominal_level = 4
 
         self.all_missions = {
-            f'{name}_1': unit_selector(level, setup_3),
-            f'{name}_2': unit_selector(level, setup_3),
-            f'{name}_3': unit_selector(level, setup_4),
-            f'{name}_4': unit_selector(level, setup_4),
-            f'{name}_5': unit_selector(level, setup_4),
-            f'{name}_6': unit_selector(level, squad[diff][0]),
-            f'{name}_7': unit_selector(level, squad[diff][0]),
-            f'{name}_8': unit_selector(level, squad[diff][0]),
-            f'{name}_9': unit_selector(level, squad[diff][0]),
-            f'{name}_10': unit_selector(level, squad[diff][1]),
-            f'{name}_11': unit_selector(level, squad[diff][1]),
-            f'{name}_12': unit_selector(level, squad[diff][1]),
-            f'{name}_13': unit_selector(level, squad[diff][2]),
-            f'{name}_14': unit_selector(level, squad[diff][2]),
-            f'{name}_15': unit_selector(level, boss_mc_setup)
+            f'{name}_1': Units(unit_selector(level, setup_3),
+                               nominal_level),
+            f'{name}_2': Units(unit_selector(level, setup_3),
+                               nominal_level),
+            f'{name}_3': Units(unit_selector(level, setup_4),
+                               nominal_level),
+            f'{name}_4': Units(unit_selector(level, setup_4),
+                               nominal_level),
+            f'{name}_5': Units(unit_selector(level, setup_4),
+                               nominal_level),
+            f'{name}_6': Units(unit_selector(level, squad[diff][0]),
+                               nominal_level),
+            f'{name}_7': Units(unit_selector(level, squad[diff][0]),
+                               nominal_level),
+            f'{name}_8': Units(unit_selector(level, squad[diff][0]),
+                               nominal_level),
+            f'{name}_9': Units(unit_selector(level, squad[diff][0]),
+                               nominal_level),
+            f'{name}_10': Units(unit_selector(level, squad[diff][1]),
+                                nominal_level),
+            f'{name}_11': Units(unit_selector(level, squad[diff][1]),
+                                nominal_level),
+            f'{name}_12': Units(unit_selector(level, squad[diff][1]),
+                                nominal_level),
+            f'{name}_13': Units(unit_selector(level, squad[diff][2]),
+                                nominal_level),
+            f'{name}_14': Units(unit_selector(level, squad[diff][2]),
+                                nominal_level),
+            f'{name}_15': Units(unit_selector(level, boss_mc_setup),
+                                nominal_level)
         }
 
-        main_db.add_dungeons(self.all_missions, self.level)
+        main_db.add_dungeons(self.all_missions, self.campaign_level)
 
     def show_fight_window(self) -> None:
         """Метод создающий окно Битвы."""
@@ -331,7 +359,7 @@ class CampaignWindow(QMainWindow):
 
         for num, button in self.campaign_buttons_dict.items():
             if num == number:
-                mission_name = f'{self.faction}_{self.level}_{num}'
+                mission_name = f'{self.faction}_{self.campaign_level}_{num}'
                 self.dungeon = mission_name
 
                 self.show_red_frame(button)
@@ -474,7 +502,7 @@ class CampaignWindow(QMainWindow):
     def show_boss(self):
         """Отображение босса в окне кампании"""
         icon = self.ui.bossSlot
-        mission_name = f'{self.faction}_{self.level}_{15}'
+        mission_name = f'{self.faction}_{self.campaign_level}_{15}'
         mission = self.all_missions[mission_name]
 
         units = [main_db.get_unit_by_name(unit)

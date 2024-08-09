@@ -65,6 +65,7 @@ class Unit:
         self.fire_resist = unit[42]
         self.earth_resist = unit[43]
         self.dotted = unit[44]
+        self.locked = unit[45]
 
     @property
     def is_dead(self) -> bool:

@@ -611,20 +611,22 @@ class CapitalArmyWindow(QMainWindow):
         elif unit1 is not None \
                 and unit1.size == BIG:
             allow_swap = self.check_leadership(unit1, db_table2)
-            if allow_swap:
+            if allow_swap and unit2 is not None and unit2.branch != 'hero':
                 self.swap_slots(db_table1, db_table2, num1, num2, func)
 
-        elif unit1 is not None and unit2 is not None \
+        elif unit1 is not None and unit1.branch != 'hero' \
+                and unit2 is not None \
                 and unit2.size == BIG:
             allow_swap = self.check_leadership(unit2, db_table1, unit1)
             if allow_swap:
                 self.swap_slots(db_table2, db_table1, num2, num1, func)
 
-        elif unit1 is not None and unit2 is not None \
-                and unit2.name in GUARDS:
+        elif unit1 is not None and unit1.branch != 'hero' \
+                and unit2 is not None and \
+                (unit2.branch == 'hero' or unit2.name in GUARDS):
             pass
 
-        elif unit1 is not None \
+        elif unit1 is not None and unit1.branch != 'hero' \
                 and unit1.name not in GUARDS:
             allow_swap = self.check_leadership(unit1, db_table2)
             if allow_swap:
