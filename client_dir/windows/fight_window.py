@@ -63,7 +63,7 @@ class FightWindow(QMainWindow):
 
     def __init__(self,
                  dungeon: str,
-                 db_table: str,
+                 db_table: any,
                  parent_window: any):
         super().__init__()
         # основные переменные

@@ -175,7 +175,9 @@ class ChooseRaceWindow(QMainWindow):
     def show_question_window(self) -> None:
         """Метод создающий окно вопроса"""
         global QUESTION_WINDOW
-        text = 'Вы действительно хотите начать новую игру?'
+        text = 'Вы действительно хотите начать новую игру? ' \
+               'Да - начать новую. ' \
+               'Нет - продолжить сохраненную.'
         QUESTION_WINDOW = QuestionWindow(self, text)
         QUESTION_WINDOW.show()
 

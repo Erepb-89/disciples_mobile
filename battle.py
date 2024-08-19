@@ -130,14 +130,22 @@ class Battle:
             source_unit = main_db.get_unit_by_name(
                 self.dungeon_units[unit_slot])
             if source_unit is not None:
+                unit_level = self.dungeon_units[unit_slot + 6]
 
                 unit = CurrentDungeon(*source_unit)
                 unit.slot = new_slot
 
                 main_db.add_dungeon_unit(unit)
                 unit = self.dungeon_unit_by_slot(new_slot)
+
                 if unit is not None:
+                    if unit_level > 1:
+                        for _ in range(unit_level):
+                            unit = self.dungeon_unit_by_slot(new_slot)
+                            Unit(unit).upgrade_stats(CurrentDungeon)
+
                     self.player2.units.append(Unit(unit))
+
                     if not unit.curr_health <= 0:
                         self.player2.slots.append(unit.slot)
 

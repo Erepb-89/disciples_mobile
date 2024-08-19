@@ -199,7 +199,6 @@ class ArmyDialog(QDialog):
         else:
             self.list_update()
         self.portrait_update()
-
         QtCore.QMetaObject.connectSlotsByName(self)
 
     def eventFilter(self, source, event):
