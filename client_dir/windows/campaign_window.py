@@ -1,6 +1,7 @@
 """Окно кампании"""
 import os
 from collections import namedtuple
+from random import randint
 from typing import Callable, Dict
 
 from PyQt5 import QtWidgets, QtCore
@@ -112,25 +113,24 @@ class CampaignWindow(QMainWindow):
         self.append_campaign_icons()
         self.append_campaign_arrows()
 
-        # если в базе нет готовых миссий
+        # если в базе нет готовых миссий, создаем их
         if not main_db.show_dungeon_units(
                 f'{self.faction}_{self.campaign_level}_1'):
             # генерируем их
             self.update_all_missions(self.campaign_level, self.difficulty)
-        else:
-            # иначе берем из базы готовые
-            for mission_num in range(1, 16):
-                dung_name = f'{self.faction}_{self.campaign_level}_' \
-                            f'{mission_num}'
-                units = main_db.show_dungeon_units(dung_name)
-                self.all_missions[dung_name] = {
-                    1: units[0],
-                    2: units[1],
-                    3: units[2],
-                    4: units[3],
-                    5: units[4],
-                    6: units[5]
-                }
+
+        for mission_num in range(1, 16):
+            dung_name = f'{self.faction}_{self.campaign_level}_' \
+                        f'{mission_num}'
+            units = main_db.show_dungeon_units(dung_name)
+            self.all_missions[dung_name] = {
+                1: units[0],
+                2: units[1],
+                3: units[2],
+                4: units[3],
+                5: units[4],
+                6: units[5]
+            }
 
         # обновляем иконки миссий кампании
         self.mission_list_update()
@@ -162,14 +162,14 @@ class CampaignWindow(QMainWindow):
                             diff: int) -> None:
         """Обновляет состав армии для каждой миссии"""
         squad_dict = {
-            1: (setup_4, setup_4, setup_5),
-            2: (setup_4, setup_5, setup_5),
-            3: (setup_4, setup_5, setup_6),
-        }
-        squad_mc_dict = {
             1: (setup_4, setup_5, setup_5),
             2: (setup_5, setup_5, setup_6),
             3: (setup_5, setup_6, setup_6),
+        }
+        squad_mc_dict = {
+            1: (setup_4, setup_5, setup_6),
+            2: (setup_5, setup_6, setup_6),
+            3: (setup_6, setup_6, setup_6),
         }
 
         if self.faction == MC:
@@ -180,47 +180,43 @@ class CampaignWindow(QMainWindow):
         # миссии с 1 по 15 (сгенерированные рандомно)
         name = f'{self.faction}_{level}'
 
-        nominal_level = 1
-        if diff == 1:
-            nominal_level = 1
-        elif diff == 2:
-            nominal_level = 3
-
-        if diff == 3:
-            level += 1
-            nominal_level = 4
+        nominal_levels_dict = {
+            1: 2,
+            2: 3,
+            3: 4,
+        }
 
         self.all_missions = {
             f'{name}_1': Units(unit_selector(level, setup_3),
-                               nominal_level),
+                               nominal_levels_dict[diff]),
             f'{name}_2': Units(unit_selector(level, setup_3),
-                               nominal_level),
+                               nominal_levels_dict[diff]),
             f'{name}_3': Units(unit_selector(level, setup_4),
-                               nominal_level),
+                               nominal_levels_dict[diff]),
             f'{name}_4': Units(unit_selector(level, setup_4),
-                               nominal_level),
+                               nominal_levels_dict[diff]),
             f'{name}_5': Units(unit_selector(level, setup_4),
-                               nominal_level),
+                               nominal_levels_dict[diff]),
             f'{name}_6': Units(unit_selector(level, squad[diff][0]),
-                               nominal_level),
+                               nominal_levels_dict[diff]),
             f'{name}_7': Units(unit_selector(level, squad[diff][0]),
-                               nominal_level),
+                               nominal_levels_dict[diff]),
             f'{name}_8': Units(unit_selector(level, squad[diff][0]),
-                               nominal_level),
+                               nominal_levels_dict[diff]),
             f'{name}_9': Units(unit_selector(level, squad[diff][0]),
-                               nominal_level),
+                               nominal_levels_dict[diff]),
             f'{name}_10': Units(unit_selector(level, squad[diff][1]),
-                                nominal_level),
+                                randint(2, nominal_levels_dict[diff])),
             f'{name}_11': Units(unit_selector(level, squad[diff][1]),
-                                nominal_level),
+                                randint(2, nominal_levels_dict[diff])),
             f'{name}_12': Units(unit_selector(level, squad[diff][1]),
-                                nominal_level),
+                                randint(2, nominal_levels_dict[diff])),
             f'{name}_13': Units(unit_selector(level, squad[diff][2]),
-                                nominal_level),
+                                randint(2, nominal_levels_dict[diff])),
             f'{name}_14': Units(unit_selector(level, squad[diff][2]),
-                                nominal_level),
+                                randint(2, nominal_levels_dict[diff])),
             f'{name}_15': Units(unit_selector(level, boss_mc_setup),
-                                nominal_level)
+                                randint(2, nominal_levels_dict[diff]))
         }
 
         main_db.add_dungeons(self.all_missions, self.campaign_level)
