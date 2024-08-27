@@ -1,6 +1,7 @@
 """База данных"""
 
 from collections import namedtuple
+from random import randint
 from typing import Callable, List
 import sqlite3
 
@@ -1227,12 +1228,12 @@ class ServerStorage:
                 unit_list[4],
                 unit_list[5],
                 unit_list[6],
-                unit_level,
-                unit_level,
-                unit_level,
-                unit_level,
-                unit_level,
-                unit_level
+                randint(1, unit_level),
+                randint(1, unit_level),
+                randint(1, unit_level),
+                randint(1, unit_level),
+                randint(1, unit_level),
+                randint(1, unit_level)
             )
             self.session.add(dungeon_row)
             mission_num += 1
