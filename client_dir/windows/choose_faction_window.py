@@ -77,14 +77,11 @@ class ChooseRaceWindow(QMainWindow):
     @property
     def in_progress(self) -> bool:
         """Определение новой игры"""
-        session = main_db.session_by_faction(
-            main_db.current_player.id, self.faction)
+        self.faction = self.factions.get(self.faction_number)
+        session = main_db.get_session_by_faction(self.faction)
 
         if session is not None:
-            level = session.campaign_level
-            result = main_db.show_dungeon_units(
-                f'{self.faction}_{level}_1')
-            return result
+            return True
         return
 
     def choose_race(self) -> None:
@@ -95,7 +92,7 @@ class ChooseRaceWindow(QMainWindow):
         else:
             # Новая игра
             self.question = True
-            main_db.already_built = 0
+            main_db.set_built_to_0()
             self.confirmation()
 
     def confirmation(self) -> None:
@@ -113,28 +110,22 @@ class ChooseRaceWindow(QMainWindow):
 
     def new_game(self) -> None:
         """Новая игра"""
+        main_db.set_current_faction(self.faction)
+
         # удаление старых построек за данную фракцию
-        main_db.clear_buildings(
-            main_db.current_player.name,
-            self.faction)
+        main_db.clear_buildings(main_db.get_current_player_name())
 
         # удаление старых кампаний за данную фракцию
-        main_db.delete_dungeons(self.faction)
+        main_db.delete_dungeons()
+        main_db.clear_session()
 
-        main_db.set_faction(
-            main_db.current_player.id,
-            self.faction,
-            1,
-            0,
-            0,
-            1,
-            0,
-            2)
-        main_db.already_built = 0
+        main_db.set_session_for_faction_to_0(self.faction)
+        main_db.set_built_to_0()
+
         main_db.update_game_session()
 
         main_db.build_default(self.faction)
-        main_db.campaign_level = 1
+        main_db.set_campaign_level_to_1()
 
         main_db.clear_units(self.faction)
 
@@ -144,27 +135,7 @@ class ChooseRaceWindow(QMainWindow):
 
     def continue_game(self) -> None:
         """Продолжение игры"""
-        main_db.current_faction = self.faction
-        session = main_db.session_by_faction(
-            main_db.current_player.id,
-            self.faction)
-
-        level = session.campaign_level
-        number = session.campaign_mission
-        prev_mission = session.prev_mission
-        day = session.day
-        already_built = session.built
-        difficulty = session.difficulty
-
-        main_db.set_faction(
-            main_db.current_player.id,
-            self.faction,
-            level,
-            number,
-            prev_mission,
-            day,
-            already_built,
-            difficulty)
+        main_db.set_current_faction(self.faction)
 
     def choose_hero(self) -> None:
         """Метод создающий окно выбора героя"""
