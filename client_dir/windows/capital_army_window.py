@@ -1,5 +1,4 @@
 """Окно армии в столице"""
-import os
 from collections import namedtuple
 
 from PyQt5.QtCore import QMimeData, QVariant, Qt, QEvent, QRect
@@ -91,7 +90,7 @@ class CapitalArmyWindow(QMainWindow):
         # основные переменные
         self.capital = parent_window
         self.question = False
-        self.faction = main_db.current_faction
+        self.faction = main_db.get_current_faction()
         self.db_table = main_db.campaigns_dict[self.faction]
         self.res_db_table = main_db.res_campaigns_dict[self.faction]
         self.factory = AbstractFactory.create_factory(
@@ -298,13 +297,11 @@ class CapitalArmyWindow(QMainWindow):
 
         self._update_all_unit_health()
 
-        self.player_gold = main_db.get_gold(
-            main_db.current_player.name, self.faction)
+        self.player_gold = main_db.get_gold()
         self.ui.gold.setText(str(self.player_gold))
 
         self.reset()
 
-        # self.show_hero_face()
         self.show()
 
     def eventFilter(self, source, event):
