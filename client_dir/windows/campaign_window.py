@@ -38,17 +38,18 @@ class CampaignWindow(QMainWindow):
     def __init__(self, parent_window: any):
         super().__init__()
         # основные переменные
+        self.boss = None
         self.name = 'CampaignWindow'
         self.main = parent_window
         self.difficulty = parent_window.difficulty
-        self.faction = main_db.current_faction
+        self.faction = main_db.get_current_faction()
         self.dungeon = ''
         self.curr_mission = 0
         self.prev_mission = 0
         self.campaign_buttons_dict = {}
         self.campaign_icons_dict = {}
         self.all_missions = {}
-        self.campaign_level = main_db.campaign_level
+        self.campaign_level = main_db.get_campaign_level()
 
         self.campaigns_dict = {
             EM: EmpireUnits,
@@ -206,17 +207,19 @@ class CampaignWindow(QMainWindow):
             f'{name}_9': Units(unit_selector(level, squad[diff][0]),
                                nominal_levels_dict[diff]),
             f'{name}_10': Units(unit_selector(level, squad[diff][1]),
-                                randint(2, nominal_levels_dict[diff])),
+                                nominal_levels_dict[diff]),
             f'{name}_11': Units(unit_selector(level, squad[diff][1]),
-                                randint(2, nominal_levels_dict[diff])),
+                                nominal_levels_dict[diff]),
             f'{name}_12': Units(unit_selector(level, squad[diff][1]),
-                                randint(2, nominal_levels_dict[diff])),
+                                nominal_levels_dict[diff]),
             f'{name}_13': Units(unit_selector(level, squad[diff][2]),
-                                randint(2, nominal_levels_dict[diff])),
+                                nominal_levels_dict[diff]),
             f'{name}_14': Units(unit_selector(level, squad[diff][2]),
-                                randint(2, nominal_levels_dict[diff])),
+                                nominal_levels_dict[diff]),
             f'{name}_15': Units(unit_selector(level, boss_mc_setup),
-                                randint(2, nominal_levels_dict[diff]))
+                                nominal_levels_dict[diff]),
+            # f'{name}_15': Units(unit_selector(level, boss_mc_setup),
+            #                     randint(2, nominal_levels_dict[diff]))
         }
 
         main_db.add_dungeons(self.all_missions, self.campaign_level)
@@ -451,9 +454,7 @@ class CampaignWindow(QMainWindow):
         Определение активности миссий согласно текущему
         положению на карте приключений. Используется граф.
         """
-        session = main_db.session_by_faction(
-            main_db.current_player.id,
-            self.faction)
+        session = main_db.get_session_by_faction(self.faction)
         self.curr_mission = session.campaign_mission
         self.prev_mission = session.prev_mission
 
