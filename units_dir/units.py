@@ -26,6 +26,15 @@ class ServerStorage:
 
     def __init__(self, path):
         # Создаём движок базы данных (SQLite)
+        self.__already_built = None
+        self.__campaign_day = None
+        self.__campaign_level = None
+        self.__campaign_mission = None
+        self.__current_faction = None
+        self.__difficulty = None
+        self.__game_session_id = None
+        self.__prev_mission = None
+
         self.database_engine = create_engine(
             f'sqlite:///{path}',
             echo=False,
@@ -135,7 +144,7 @@ class ServerStorage:
         session = sessionmaker(bind=self.database_engine)
         self.session = session()
 
-        self.current_player = self.get_player('Erepb-89')
+        self.__current_player = self.get_player('Erepb-89')
 
         self.campaigns_dict = {
             EM: EmpireUnits,
@@ -208,59 +217,55 @@ class ServerStorage:
                      Column('locked', Integer),
                      )
 
+    def get_difficulty(self):
+        return self.__difficulty
+
+    def get_campaign_level(self):
+        return self.__campaign_level
+
     def increase_campaign_level(self):
         """Увеличивает уровень кампании"""
-        self.campaign_level += 1
-        self.campaign_day += 1
-        self.already_built = 0
+        self.__campaign_level += 1
+        self.increase_campaign_day()
+        self.set_built_to_0()
 
-        self.update_session(
-            self.game_session_id,
-            self.campaign_level,
-            0,
-            0,
-            self.campaign_day,
-            self.already_built)
+        self.update_session(0, 0)
 
     def increase_campaign_mission(self,
                                   mission_number: int,
                                   curr_mission: int):
         """Переходит на следующую миссию кампании"""
-        self.campaign_day += 1
-        self.already_built = 0
+        self.increase_campaign_day()
+        self.set_built_to_0()
 
-        self.update_session(
-            self.game_session_id,
-            self.campaign_level,
-            mission_number,
-            curr_mission,
-            self.campaign_day,
-            self.already_built)
+        self.update_session(mission_number,
+                            curr_mission)
 
     def update_game_session(self):
         """Обновить игровую сессию"""
         curr_game_session = None
-        if self.current_player is not None:
+
+        if self.__current_player is not None:
             curr_game_session = self.current_game_session(
-                self.current_player.id)
+                self.get_current_player_id())
 
         if curr_game_session is not None:
-            self.current_faction = curr_game_session.faction
-            self.campaign_level = curr_game_session.campaign_level
-            self.campaign_mission = curr_game_session.campaign_mission
-            self.prev_mission = curr_game_session.prev_mission
-            self.campaign_day = curr_game_session.day
-            self.already_built = curr_game_session.built
-            self.game_session_id = curr_game_session.session_id
-            self.difficulty = curr_game_session.difficulty
+            self.__current_faction = curr_game_session.faction
+            self.__campaign_level = curr_game_session.campaign_level
+            self.__campaign_mission = curr_game_session.campaign_mission
+            self.__prev_mission = curr_game_session.prev_mission
+            self.__campaign_day = curr_game_session.day
+            self.__already_built = curr_game_session.built
+            self.__game_session_id = curr_game_session.session_id
+            self.__difficulty = curr_game_session.difficulty
         else:
-            self.current_faction = 'Empire'
-            self.campaign_level = 1
-            self.campaign_mission = 0
-            self.prev_mission = 0
-            self.campaign_day = 1
-            self.already_built = 0
-            self.difficulty = 2
+            self.__current_faction = 'Empire'
+            self.__campaign_level = 1
+            self.__campaign_mission = 0
+            self.__prev_mission = 0
+            self.__campaign_day = 1
+            self.__already_built = 0
+            self.__difficulty = 2
 
     def add_dungeon_unit(self, unit: namedtuple):
         """
@@ -485,7 +490,8 @@ class ServerStorage:
         # Возвращаем кортеж
         return query.first()
 
-    def session_by_faction(self, player_id: int, faction: str) -> any:
+    def get_session_by_faction(self,
+                               faction: str) -> any:
         """Метод получающий игровую сессию по игроку и фракции."""
         query = self.session.query(
             GameSessions.session_id,
@@ -497,7 +503,8 @@ class ServerStorage:
             GameSessions.day,
             GameSessions.built,
             GameSessions.difficulty
-        ).filter_by(player_id=player_id, faction=faction)
+        ).filter_by(player_id=self.get_current_player_id(),
+                    faction=faction)
         # Возвращаем кортеж
         return query.order_by(GameSessions.session_id.desc()).first()
 
@@ -514,7 +521,7 @@ class ServerStorage:
             GameSessions.day,
             GameSessions.built,
             GameSessions.difficulty
-        ).filter_by(player_id=player_id)
+        ).filter_by(player_id=player_id, faction=self.__current_faction)
         # Возвращаем кортеж
         return query.order_by(GameSessions.session_id.desc()).first()
 
@@ -680,7 +687,7 @@ class ServerStorage:
 
     def show_campaign_units(self) -> List[namedtuple]:
         """Метод возвращающий список юнитов игрока в текущей кампании."""
-        db_table = self.campaigns_dict[self.current_faction]
+        db_table = self.campaigns_dict[self.__current_faction]
 
         query = self.session.query(
             db_table.id,
@@ -835,7 +842,16 @@ class ServerStorage:
 
     def choose_player(self, player_name: str) -> None:
         """Метод выбора текущего игрока."""
-        self.current_player = self.get_player(player_name)
+        self.__current_player = self.get_player(player_name)
+
+    def get_current_player(self) -> str:
+        return self.__current_player
+
+    def get_current_player_name(self) -> str:
+        return self.__current_player.name
+
+    def get_current_player_id(self) -> int:
+        return self.__current_player.id
 
     def get_player(self, player_name: str) -> namedtuple:
         """Метод получения записи конкретного игрока."""
@@ -992,20 +1008,16 @@ class ServerStorage:
                 self.session.add(new_unit)
                 self.session.commit()
 
-    def get_gold(self,
-                 player_name: str,
-                 faction: str) -> int:
+    def get_gold(self) -> int:
         """Метод получения количества золота у игрока."""
 
         query = self.session.query(
             PlayerBuildings.gold
-        ).filter_by(name=player_name, faction=faction)
+        ).filter_by(name=self.__current_player.name, faction=self.__current_faction)
         # Возвращаем кортеж
         return query.order_by(PlayerBuildings.id.desc()).first()[0]
 
-    def get_buildings(self,
-                      player_name: str,
-                      faction: str) -> namedtuple:
+    def get_buildings(self) -> namedtuple:
         """
         Метод получения построек в столице игрока.
         """
@@ -1019,7 +1031,8 @@ class ServerStorage:
             PlayerBuildings.thieves_guild,
             PlayerBuildings.temple,
             PlayerBuildings.magic_guild
-        ).filter_by(name=player_name, faction=faction)
+        ).filter_by(name=self.__current_player.name,
+                    faction=self.__current_faction)
         # Возвращаем кортеж
         return query.order_by(PlayerBuildings.id.desc()).first()
 
@@ -1033,15 +1046,22 @@ class ServerStorage:
         self.session.query(table_res).delete()
         self.session.commit()
 
-    def clear_buildings(self,
-                        player_name: str,
-                        faction: str) -> None:
+    def clear_buildings(self, player_name: str) -> None:
         """Метод удаления построек в столице игрока."""
 
         self.session.query(
             PlayerBuildings).filter_by(
             name=player_name,
-            faction=faction).delete()
+            faction=self.__current_faction).delete()
+        self.session.commit()
+
+    def clear_session(self) -> None:
+        """Метод удаления предыдущей сессии игрока за данную фракцию."""
+
+        self.session.query(
+            GameSessions).filter_by(
+            player_id=self.get_current_player_id(),
+            faction=self.__current_faction).delete()
         self.session.commit()
 
     def get_unit_by_b_name(self, b_name: str) -> str:
@@ -1058,7 +1078,7 @@ class ServerStorage:
         """
         query = self.session.query(
             PlayerBuildings.fighter
-        ).where(PlayerBuildings.faction == self.current_faction)
+        ).where(PlayerBuildings.faction == self.__current_faction)
         building = query[-1][0]
         temp_graph = []
         self.get_building_graph(building, temp_graph, 'fighter')
@@ -1071,7 +1091,7 @@ class ServerStorage:
         """
         query = self.session.query(
             PlayerBuildings.mage
-        ).where(PlayerBuildings.faction == self.current_faction)
+        ).where(PlayerBuildings.faction == self.__current_faction)
         building = query[-1][0]
         temp_graph = []
         self.get_building_graph(building, temp_graph, 'mage')
@@ -1084,7 +1104,7 @@ class ServerStorage:
         """
         query = self.session.query(
             PlayerBuildings.archer
-        ).where(PlayerBuildings.faction == self.current_faction)
+        ).where(PlayerBuildings.faction == self.__current_faction)
         building = query[-1][0]
         temp_graph = []
         self.get_building_graph(building, temp_graph, 'archer')
@@ -1097,7 +1117,7 @@ class ServerStorage:
         """
         query = self.session.query(
             PlayerBuildings.support
-        ).where(PlayerBuildings.faction == self.current_faction)
+        ).where(PlayerBuildings.faction == self.__current_faction)
         building = query[-1][0]
         temp_graph = []
         self.get_building_graph(building, temp_graph, 'support')
@@ -1109,7 +1129,7 @@ class ServerStorage:
                            graph: list,
                            branch: str) -> None:
         """Рекурсивное создание графа зданий/построек"""
-        for val in FACTIONS.get(self.current_faction)[branch].values():
+        for val in FACTIONS.get(self.__current_faction)[branch].values():
             if val.bname == bname:
                 graph.append(bname)
                 if val.prev not in ('', 0):
@@ -1166,10 +1186,7 @@ class ServerStorage:
         self.session.execute(changes)
         self.session.commit()
 
-    def update_gold(self,
-                    player_name: str,
-                    faction: str,
-                    gold: int) -> None:
+    def update_gold(self, gold: int) -> None:
         """
         Изменяет запись Gold в таблице PlayerBuildings.
         """
@@ -1177,7 +1194,8 @@ class ServerStorage:
             PlayerBuildings).values(
             gold=gold).execution_options(
             synchronize_session="fetch") \
-            .filter_by(name=player_name, faction=faction)
+            .filter_by(name=self.__current_player.name,
+                       faction=self.__current_faction)
 
         self.session.execute(changes)
         self.session.commit()
@@ -1220,7 +1238,7 @@ class ServerStorage:
             unit_level = dungeon[1]
 
             dungeon_row = Dungeons(
-                f'{self.current_faction}_'
+                f'{self.__current_faction}_'
                 f'{campaign_level}_{mission_num}',
                 unit_list[1],
                 unit_list[2],
@@ -1239,23 +1257,23 @@ class ServerStorage:
             mission_num += 1
         self.session.commit()
 
-    def delete_dungeons(self, faction: str) -> None:
+    def delete_dungeons(self) -> None:
         """Удаление подземелий из таблицы Dungeons для данной фракции"""
         for i in range(1, 16):
             self.session.query(Dungeons).filter(
-                Dungeons.name == f'{faction}_1_{i}'
+                Dungeons.name == f'{self.__current_faction}_1_{i}'
             ).delete()
             self.session.query(Dungeons).filter(
-                Dungeons.name == f'{faction}_2_{i}'
+                Dungeons.name == f'{self.__current_faction}_2_{i}'
             ).delete()
             self.session.query(Dungeons).filter(
-                Dungeons.name == f'{faction}_3_{i}'
+                Dungeons.name == f'{self.__current_faction}_3_{i}'
             ).delete()
             self.session.query(Dungeons).filter(
-                Dungeons.name == f'{faction}_4_{i}'
+                Dungeons.name == f'{self.__current_faction}_4_{i}'
             ).delete()
             self.session.query(Dungeons).filter(
-                Dungeons.name == f'{faction}_5_{i}'
+                Dungeons.name == f'{self.__current_faction}_5_{i}'
             ).delete()
 
         self.session.commit()
@@ -1272,9 +1290,9 @@ class ServerStorage:
 
     def hire_guard(self) -> None:
         """Метод добавления стража в столицу игрока."""
-        db_table = self.res_campaigns_dict[self.current_faction]
+        db_table = self.res_campaigns_dict[self.__current_faction]
         unit_row = self.get_unit_by_name(
-            self.guards_dict[self.current_faction])
+            self.guards_dict[self.__current_faction])
 
         player_unit = db_table(*unit_row)
         player_unit.slot = 3
@@ -1283,7 +1301,7 @@ class ServerStorage:
 
     def hire_unit(self, unit: str, slot: int) -> None:
         """Метод добавления юнита в базу игрока."""
-        db_table = self.campaigns_dict[self.current_faction]
+        db_table = self.campaigns_dict[self.__current_faction]
 
         if self.check_slot(
                 unit,
@@ -1727,79 +1745,82 @@ class ServerStorage:
         # Возвращаем список кортежей
         return query.all()
 
-    def set_faction(self,
-                    player_id: int,
-                    faction: str,
-                    campaign_level: int,
-                    campaign_mission: int,
-                    prev_mission: int,
-                    day: int,
-                    built: int,
-                    difficulty: int) -> None:
-        """Метод сохранения выбранной фракции для текущей игровой сессии"""
-        game_session_row = GameSessions(
-            player_id,
-            faction,
-            campaign_level,
-            campaign_mission,
-            prev_mission,
-            day,
-            built,
-            difficulty)
-        self.current_faction = faction
-        self.session.add(game_session_row)
-        self.session.commit()
-
     def update_session(self,
-                       session_id: int,
-                       campaign_level: int,
                        campaign_mission: int,
-                       prev_mission: int,
-                       day: int,
-                       built: int) -> None:
+                       prev_mission: int) -> None:
         """Метод изменения текущей игровой сессии"""
         changes = update(
             GameSessions).where(
-            GameSessions.session_id == session_id
+            GameSessions.session_id == self.__game_session_id
         ).values(
-            campaign_level=campaign_level,
+            campaign_level=self.__campaign_level,
             campaign_mission=campaign_mission,
             prev_mission=prev_mission,
-            day=day,
-            built=built
+            day=self.__campaign_day,
+            built=self.__already_built
         ).execution_options(
             synchronize_session="fetch")
 
         self.session.execute(changes)
         self.session.commit()
 
-    def update_session_built(self,
-                             session_id: int,
-                             built: int) -> None:
+    def set_session_for_faction_to_0(self, faction: str) -> None:
+        """Метод обнуления текущей игровой сессии"""
+        game_session_row = GameSessions(
+            self.get_current_player_id(),
+            faction,
+            1,
+            0,
+            0,
+            1,
+            0,
+            2)
+        self.session.add(game_session_row)
+        self.session.commit()
+
+    def get_current_faction(self):
+        return self.__current_faction
+
+    def set_current_faction(self, faction_name: str):
+        self.__current_faction = faction_name
+
+    def get_built(self):
+        return self.__already_built
+
+    def set_built_to_0(self):
+        self.__already_built = 0
+
+    def set_built_to_1(self):
+        self.__already_built = 1
+
+    def update_session_built(self) -> None:
         """Метод изменения флага постройки в текущей игровой сессии"""
         changes = update(
             GameSessions).where(
-            GameSessions.session_id == session_id
+            GameSessions.session_id == self.__game_session_id
         ).values(
-            built=built
+            built=self.get_built()
         ).execution_options(
             synchronize_session="fetch")
 
         self.session.execute(changes)
         self.session.commit()
 
-    def update_session_difficulty(self,
-                                  session_id: int,
-                                  difficulty: int) -> None:
+    def increase_campaign_day(self):
+        self.__campaign_day += 1
+
+    def set_campaign_level_to_1(self):
+        self.__campaign_level = 1
+
+    def update_session_difficulty(self, difficulty: int) -> None:
         """Метод изменения сложности кампании в текущей игровой сессии"""
         changes = update(
             GameSessions).where(
-            GameSessions.session_id == session_id
+            GameSessions.session_id == self.__game_session_id
         ).values(
             difficulty=difficulty
         ).execution_options(
             synchronize_session="fetch")
-
         self.session.execute(changes)
         self.session.commit()
 
@@ -1817,7 +1838,7 @@ class ServerStorage:
         ]
 
         self.create_buildings(
-            self.current_player.name,
+            self.__current_player.name,
             faction,
             1000,
             building_levels)
