@@ -57,7 +57,7 @@ class ArmyDialog(QDialog):
         self.player = player
         self.current_label = ''
         self.source = ''
-        self.faction = main_db.current_faction
+        self.faction = main_db.get_current_faction()
         self.db_table = main_db.campaigns_dict[self.faction]
         self.res_db_table = main_db.res_campaigns_dict[self.faction]
 
@@ -140,8 +140,6 @@ class ArmyDialog(QDialog):
         self.slot6.raise_()
 
         self.armyBG.setPixmap(QPixmap(ARMY_BG))
-
-        self.faction = main_db.current_faction
 
         self.slot1.installEventFilter(self)
         self.slot1.setContextMenuPolicy(

@@ -28,7 +28,7 @@ class ChooseHeroWindow(QMainWindow):
         # основные переменные
         self.choose_faction = parent_window
         self.question = False  # Выбор героя
-        self.faction = main_db.current_faction
+        self.faction = main_db.get_current_faction()
         self.factory = AbstractFactory.create_factory(
             self.faction)
         self.fighter = self.factory.create_hero_fighter()
@@ -85,8 +85,7 @@ class ChooseHeroWindow(QMainWindow):
         show_gif(self.mage, self.ui.gifLabel3)
         show_gif(self.rog, self.ui.gifLabel4)
 
-        self.player_gold = main_db.get_gold(
-            main_db.current_player.name, self.faction)
+        self.player_gold = main_db.get_gold()
         self.ui.gold.setText(str(self.player_gold))
 
         self.show()
@@ -178,10 +177,7 @@ class ChooseHeroWindow(QMainWindow):
         changed_gold = self.player_gold - int(self.highlighted_hero.cost)
 
         # обновление золота в базе
-        main_db.update_gold(
-            main_db.current_player.name,
-            self.faction,
-            changed_gold)
+        main_db.update_gold(changed_gold)
 
         self.highlighted_hero.add_to_band(int(slot))
 

@@ -10,7 +10,7 @@ from threading import Thread as Thread
 from multiprocessing import Process, Manager as mgr
 
 from PyQt5 import QtCore
-from PyQt5.QtCore import Qt, QMimeData, QVariant, QEvent
+from PyQt5.QtCore import Qt, QMimeData, QVariant, QEvent, QTranslator
 from PyQt5.QtGui import QPixmap, QStandardItemModel, \
     QStandardItem, QMovie, QDrag, QCursor
 from PyQt5.QtWidgets import QMainWindow, QApplication, QWidget, \
@@ -29,7 +29,7 @@ from client_dir.settings import UNIT_ICONS, GIF_ANIMATIONS, \
 from client_dir.ui_functions import get_unit_image, \
     set_beige_colour, set_borders, ui_lock, ui_unlock, get_cursor
 from client_dir.dialogs.unit_dialog import UnitDialog
-# from server.server import server_main
+from server.server import MyThread
 from units_dir.models import PlayerUnits, CurrentDungeon
 from units_dir.units import main_db
 
@@ -102,7 +102,7 @@ class ClientMainWindow(QMainWindow):
 
         self.InitUI()
 
-        self.difficulty = main_db.difficulty
+        self.difficulty = main_db.get_difficulty()
         self.update_diff_checkbox()
 
     def InitUI(self):
@@ -315,7 +315,11 @@ class ClientMainWindow(QMainWindow):
         self.ui.pushButtonChoosePlayer.clicked.connect(
             self.choose_player_action)
 
-        # self.ui.pushButtonCreateServer.clicked.connect(self.create_server)
+        self.ui.pushButtonCreateServer.clicked.connect(self.create_server)
+        self.server_thread = QtCore.QThread(self)  # +++
+        self.server = MyThread()
+        self.server.moveToThread(self.server_thread)
+        self.server_thread.started.connect(self.server.run)  # !!!
 
         # подкраска элементов
         set_beige_colour(self.ui.pushButtonAddPlayer)
@@ -339,6 +343,7 @@ class ClientMainWindow(QMainWindow):
         set_beige_colour(self.ui.PlayerName)
         set_beige_colour(self.ui.Email)
         set_beige_colour(self.ui.PlayersList)
+        set_beige_colour(self.ui.ServerList)
 
         set_borders(self.ui.gifLabel)
         set_borders(self.ui.iconLabel)
@@ -346,7 +351,7 @@ class ClientMainWindow(QMainWindow):
 
         player_name = None
         try:
-            player_name = main_db.current_player.name
+            player_name = main_db.get_current_player_name()
         except Exception as err:
             print(err)
         self.ui.currentPlayer.setText(player_name)
@@ -365,6 +370,18 @@ class ClientMainWindow(QMainWindow):
         self.current_label = ''
         self.source = ''
 
+        self.trans = QTranslator(self)
+
+        self.ui.comboLanguage.currentIndexChanged.connect(self.lang_choice)
+
+        options = ([('Russian', ''),
+                    ('English', 'main_en')])
+
+        for i, (text, lang) in enumerate(options):
+            self.ui.comboLanguage.addItem(text)
+            self.ui.comboLanguage.setItemData(i, lang)
+        # self.ui.retranslateUi(ClientMainWindow)
+
         cursor_standard = QCursor(QPixmap(get_cursor('standard')))
         QApplication.setOverrideCursor(cursor_standard)
 
@@ -376,9 +393,25 @@ class ClientMainWindow(QMainWindow):
             self.current_label = source.objectName()
         return super().eventFilter(source, event)
 
-    @staticmethod
-    def closeEvent(event) -> None:
+    def lang_choice(self, index):
+        data = self.ui.comboLanguage.itemData(index)
+        if data:
+            self.trans.load(data)
+            app.installTranslator(self.trans)
+            self.ui.retranslateUi(self)
+        else:
+            app.removeTranslator(self.trans)
+
+    def changeEvent(self, event):
+        if event.type() == QEvent.LanguageChange:
+            self.ui.retranslateUi(ClientMainWindow)
+        super(ClientMainWindow, self).changeEvent(event)
+
+    def closeEvent(self, event) -> None:
         """Закрытие всех окон по выходу из главного"""
+        self.server.stop()
+        self.server.deleteLater()
+        self.server_thread.quit()
         os.sys.exit(0)
 
     def reset(self) -> None:
@@ -392,7 +425,16 @@ class ClientMainWindow(QMainWindow):
         self.enemy_slots_update()
 
     def create_server(self):
-        pass
+        """Создание сервера в отдельном потоке"""
+        if self.server_thread.isRunning():
+            self.server.stop()
+            self.ui.pushButtonCreateServer.setText('Создать сервер')
+            self.server_thread.quit()
+        else:
+            self.ui.pushButtonCreateServer.setText('Остановить сервер')
+            self.server_thread.start()
+
+        # pass
         # self.thread1 = QtCore.QThread(self)
         # self.thread1.started.connect(asyncio.run(server_main()))
         # self.thread1.start()
@@ -412,9 +454,8 @@ class ClientMainWindow(QMainWindow):
     def check_campaign_session(self):
         """Проверка сессии"""
         session = None
-        if main_db.current_player is not None:
-            session = main_db.session_by_faction(
-                main_db.current_player.id, self.faction)
+        if main_db.get_current_player() is not None:
+            session = main_db.get_session_by_faction(self.faction)
 
         if session is not None:
             self.unlock_campaign()
@@ -452,9 +493,8 @@ class ClientMainWindow(QMainWindow):
         self.ui.comboDifficulty.setCurrentIndex(self.difficulty - 1)
 
         session = None
-        if main_db.current_player is not None:
-            session = main_db.session_by_faction(
-                main_db.current_player.id, self.faction)
+        if main_db.get_current_player() is not None:
+            session = main_db.get_session_by_faction(self.faction)
 
         if session is not None:
             self.check_difficulty()
@@ -464,9 +504,7 @@ class ClientMainWindow(QMainWindow):
     def check_difficulty(self) -> None:
         """Устанавливает выбранную сложность"""
         self.difficulty = int(self.ui.comboDifficulty.currentText())
-        main_db.update_session_difficulty(
-            main_db.game_session_id,
-            self.difficulty)
+        main_db.update_session_difficulty(self.difficulty)
 
     @staticmethod
     def button_enabled(button, database, num2):
@@ -549,7 +587,7 @@ class ClientMainWindow(QMainWindow):
 
     def get_current_faction(self) -> None:
         """Получение текущей фракции"""
-        self.faction = main_db.current_faction
+        self.faction = main_db.get_current_faction()
         self.ui.currentFaction.setText(self.faction)
         self.ui.currentFaction.setStyleSheet('color: white')
 
@@ -799,7 +837,7 @@ class ClientMainWindow(QMainWindow):
 
     def show_capital(self) -> None:
         """Метод создающий окно Столицы игрока."""
-        if main_db.current_player is not None:
+        if main_db.get_current_player() is not None:
             global CAPITAL_WINDOW
             CAPITAL_WINDOW = CapitalWindow(self)
             CAPITAL_WINDOW.show()
@@ -808,7 +846,7 @@ class ClientMainWindow(QMainWindow):
 
     def show_choose_race(self) -> None:
         """Метод создающий окно выбора фракции игрока."""
-        if main_db.current_player is not None:
+        if main_db.get_current_player() is not None:
             global CHOOSE_WINDOW
             CHOOSE_WINDOW = ChooseRaceWindow(self)
             CHOOSE_WINDOW.show()

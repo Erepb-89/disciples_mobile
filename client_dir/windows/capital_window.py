@@ -1,7 +1,6 @@
 """Главное окно столицы"""
 import os
 
-from PyQt5 import QtCore
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QPixmap, QMovie
 from PyQt5.QtWidgets import QMainWindow, QHBoxLayout
@@ -28,7 +27,7 @@ class CapitalWindow(QMainWindow):
         super().__init__()
         # основные переменные
         self.main = main
-        self.faction = main_db.current_faction
+        self.faction = main_db.get_current_faction()
 
         self.InitUI()
 
@@ -112,46 +111,51 @@ class CapitalWindow(QMainWindow):
             'special'
         ]
 
-        slot_dict = {'mage':
-                         {0: self.ui.buildingMage_1,
-                          1: self.ui.buildingMage_2,
-                          2: self.ui.buildingMage_3,
-                          3: self.ui.buildingMage_4,
-                          4: self.ui.buildingMage_5},
-                     'fighter':
-                         {0: self.ui.buildingFighter_1,
-                          1: self.ui.buildingFighter_2,
-                          2: self.ui.buildingFighter_3,
-                          3: self.ui.buildingFighter_4,
-                          4: self.ui.buildingFighter_5},
-                     'archer':
-                         {0: self.ui.buildingArcher_1,
-                          1: self.ui.buildingArcher_2,
-                          2: self.ui.buildingArcher_3,
-                          3: self.ui.buildingArcher_4,
-                          4: self.ui.buildingArcher_5},
-                     'support':
-                         {0: self.ui.buildingSupport_1,
-                          1: self.ui.buildingSupport_2,
-                          2: self.ui.buildingSupport_3,
-                          3: self.ui.buildingSupport_4,
-                          4: self.ui.buildingSupport_5},
-                     'others':
-                         {0: self.ui.buildingOthers_1,
-                          1: self.ui.buildingOthers_2,
-                          2: self.ui.buildingOthers_3},
-                     'special':
-                         {0: self.ui.buildingSpecial}
-                     }
+        slot_dict = {
+            'mage': {
+                0: self.ui.buildingMage_1,
+                1: self.ui.buildingMage_2,
+                2: self.ui.buildingMage_3,
+                3: self.ui.buildingMage_4,
+                4: self.ui.buildingMage_5
+            },
+            'fighter': {
+                0: self.ui.buildingFighter_1,
+                1: self.ui.buildingFighter_2,
+                2: self.ui.buildingFighter_3,
+                3: self.ui.buildingFighter_4,
+                4: self.ui.buildingFighter_5
+            },
+            'archer': {
+                0: self.ui.buildingArcher_1,
+                1: self.ui.buildingArcher_2,
+                2: self.ui.buildingArcher_3,
+                3: self.ui.buildingArcher_4,
+                4: self.ui.buildingArcher_5
+            },
+            'support': {
+                0: self.ui.buildingSupport_1,
+                1: self.ui.buildingSupport_2,
+                2: self.ui.buildingSupport_3,
+                3: self.ui.buildingSupport_4,
+                4: self.ui.buildingSupport_5
+            },
+            'others': {
+                0: self.ui.buildingOthers_1,
+                1: self.ui.buildingOthers_2,
+                2: self.ui.buildingOthers_3
+            },
+            'special': {
+                0: self.ui.buildingSpecial
+            }
+        }
 
         self.get_already_built(branches, slot_dict)
 
     def get_already_built(self, branches, slot_dict):
         """Получение всех построенных зданий игрока"""
         for branch in branches:
-            buildings = main_db.get_buildings(
-                main_db.current_player.name,
-                self.faction)._asdict()
+            buildings = main_db.get_buildings()._asdict()
 
             temp_graph = []
             # рекурсивное создание графа уже построенных зданий

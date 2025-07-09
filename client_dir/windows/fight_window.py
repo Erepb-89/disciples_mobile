@@ -74,7 +74,6 @@ class FightWindow(QMainWindow):
         self.computer_name = 'Computer'
         self.player_side = FRONT
         self.enemy_side = REAR
-        self.speed = 300
 
         # словари иконок
         self.unit_icons_dict = {}
@@ -216,11 +215,10 @@ class FightWindow(QMainWindow):
         self.ui.EnemyUnit_6.raise_()
         self.ui.EnemyUnit_5.raise_()
 
-        self.unit_gifs_update()
-
         self.setWindowFlag(QtCore.Qt.WindowCloseButtonHint, False)
         self.setWindowFlag(QtCore.Qt.MSWindowsFixedSizeDialogHint)
         self.show()
+        self.unit_gifs_update()
 
     def eventFilter(self, source, event):
         """Обработчик событий"""
@@ -249,6 +247,8 @@ class FightWindow(QMainWindow):
                             source: any,
                             event: any):
         """Определение события при наведении/нажатии мыши на юнит"""
+        ui_dict = self.unit_circles_dict
+
         if player == PLAYER:
             ui_dict = self.unit_circles_dict
             side = self.player_side
@@ -329,17 +329,15 @@ class FightWindow(QMainWindow):
 
     def keyPressEvent(self, event):
         """Метод обработки нажатия клавиш A, D, W"""
-        if event.key() == Qt.Key_A and \
-                self.new_battle.current_player.name != 'Computer':
-            self.autofight()
-        if event.key() == Qt.Key_D and \
-                self.new_battle.current_player.name != 'Computer':
-            self.unit_defence()
-        if event.key() == Qt.Key_W and \
-                self.new_battle.current_player.name != 'Computer':
-            self.unit_waiting()
-        # if event.key() == Qt.Key_C:
-        #     self.new_battle.regen()
+        if self.new_battle.current_player.name != 'Computer':
+            if event.key() == Qt.Key_A:
+                self.autofight()
+            if event.key() == Qt.Key_D:
+                self.unit_defence()
+            if event.key() == Qt.Key_W:
+                self.unit_waiting()
+            # if event.key() == Qt.Key_C:
+            #    self.new_battle.regen()
 
     def update_bg(self) -> None:
         """Обновление бэкграунда, заполнение картинкой поля сражения"""
@@ -380,7 +378,7 @@ class FightWindow(QMainWindow):
             self.speed_model.appendRow(item)
         self.ui.comboSpeed.setModel(self.speed_model)
 
-        self.ui.comboSpeed.setCurrentIndex(4)
+        self.ui.comboSpeed.setCurrentIndex(2)
         self.check_speed()
         self.ui.comboSpeed.currentIndexChanged.connect(self.check_speed)
 
@@ -388,7 +386,7 @@ class FightWindow(QMainWindow):
         """Устанавливает выбранную скорость анимации"""
         multiplier = self.ui.comboSpeed.currentText()
         self.speed = 100 * float(multiplier)
-        # self.unit_gifs_update()
+        self.unit_gifs_update()
 
     def update_log(self) -> None:
         """Обновление лога"""
@@ -761,12 +759,12 @@ class FightWindow(QMainWindow):
     @property
     def campaign_level(self):
         """Уровень кампании"""
-        return main_db.campaign_level
+        return main_db.get_campaign_level()
 
     @property
     def difficulty(self):
         """Уровень сложности"""
-        return main_db.difficulty
+        return main_db.get_difficulty()
 
     def show_poisoned_unit(self):
         """Если ходящий юнит отравлен и т.д."""
@@ -991,19 +989,14 @@ class FightWindow(QMainWindow):
     @staticmethod
     def add_gold(mission_number: any) -> None:
         """Добавление золота за победу"""
-        player_gold = main_db.get_gold(
-            main_db.current_player.name,
-            main_db.current_faction)
+        player_gold = main_db.get_gold()
 
-        mission_gold = GOLD_GRADATION[main_db.campaign_level][mission_number]
+        mission_gold = GOLD_GRADATION[main_db.get_campaign_level()][mission_number]
 
         changed_gold = player_gold + mission_gold
 
         # обновление золота в базе
-        main_db.update_gold(
-            main_db.current_player.name,
-            main_db.current_faction,
-            changed_gold)
+        main_db.update_gold(changed_gold)
 
     def add_upgraded_units(self,
                            player: Player,
@@ -1050,18 +1043,18 @@ class FightWindow(QMainWindow):
                 self.add_gold(mission_number)
 
                 if self.boss_killed():
-                    self.next_campaign_level()
+                    self.__next_campaign_level()
                 elif self.last_boss_killed():
                     self.finish_campaign()
                 else:
-                    self.next_mission(mission_number)
+                    self.__next_mission(mission_number)
 
         self.unlock_buttons_for_player()
 
     def last_boss_killed(self):
         """Последний Босс кампании повержен"""
         return '15' in self.dungeon \
-               and (main_db.campaign_level == 5
+               and (self.campaign_level == 5
                     or
                     (self.difficulty == 3
                      and self.campaign_level == 4))
@@ -1074,19 +1067,21 @@ class FightWindow(QMainWindow):
                     (self.difficulty == 3
                      and self.campaign_level != 4))
 
-    def next_campaign_level(self):
+    @staticmethod
+    def __next_campaign_level():
         """Повышение уровня кампании, день + 1"""
         main_db.increase_campaign_level()
 
     def finish_campaign(self):
         """Кампания пройдена"""
-        line = f"Поздравляем! Вы прошли кампанию за {main_db.current_faction}.\n"
+        line = f"Поздравляем! Вы прошли кампанию за " \
+               f"{main_db.get_current_faction()}.\n"
         logging(line)
         global MES_END_CAMPAIGN
         MES_END_CAMPAIGN = MessageWindow(self, line)
         MES_END_CAMPAIGN.show()
 
-    def next_mission(self, mission_number):
+    def __next_mission(self, mission_number):
         """Переходит на следующую миссию кампании"""
         main_db.increase_campaign_mission(
             mission_number,
@@ -1475,6 +1470,9 @@ class FightWindow(QMainWindow):
                      target: Unit,
                      current_unit: Unit):
         """Показывает эффекты от атаки на юните"""
+        icons_dict = self.pl_slots_attacked_eff_dict
+        side = self.player_side
+
         if self.target_player == self.player1:
             icons_dict = self.pl_slots_attacked_eff_dict
             side = self.player_side
@@ -1497,6 +1495,7 @@ class FightWindow(QMainWindow):
         (до Полиморфа). Обновляет иконки юнитов. Замена юнита в битве."""
         if self.dotted_units.get(unit):
             if self.dotted_units[unit].get(POLYMORPH):
+                ui_label = self.pl_slots_dict[unit.slot]
 
                 if unit in self.player1.units:
                     ui_label = self.pl_slots_dict[unit.slot]
@@ -1574,6 +1573,10 @@ class FightWindow(QMainWindow):
 
     def update_icons(self, player: str) -> None:
         """Обновление иконок и кнопок юнитов"""
+        icons_dict = self.unit_icons_dict
+        damage_dict = self.unit_damaged_dict
+        side = self.player_side
+
         if player == PLAYER:
             icons_dict = self.unit_icons_dict
             damage_dict = self.unit_damaged_dict
@@ -1650,7 +1653,12 @@ class FightWindow(QMainWindow):
 
     def unit_gifs_in_thread(self):
         """Метод обновляющий анимацию юнитов"""
-        # прорисовка модели бездействующего юнита игрока
+        self.show_circle_attacker()
+        self._update_all_unit_health()
+        self.unit_icons_update()
+
+    def unit_gifs_update(self) -> None:
+        """Метод обновляющий анимацию юнитов. Вызов потока"""
         self.animate_action(
             self.pl_slots_dict,
             UNIT_STAND,
@@ -1674,12 +1682,6 @@ class FightWindow(QMainWindow):
             UNIT_SHADOW_STAND,
             self.enemy_side)
 
-        self.show_circle_attacker()
-        self._update_all_unit_health()
-        self.unit_icons_update()
-
-    def unit_gifs_update(self) -> None:
-        """Метод обновляющий анимацию юнитов. Вызов потока"""
         self.gifs_thread = Thr(target=self.unit_gifs_in_thread,
                                name="Gifs Thread")
         self.gifs_thread.start()
