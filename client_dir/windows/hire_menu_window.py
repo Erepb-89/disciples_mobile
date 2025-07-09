@@ -29,7 +29,7 @@ class HireMenuWindow(QMainWindow):
         # основные переменные
         self.capital_army = parent_window
         self.question = False  # Найм юнитов
-        self.faction = main_db.current_faction
+        self.faction = main_db.get_current_faction()
         self.factory = AbstractFactory.create_factory(
             self.faction)
         self.fighter = self.factory.create_fighter()
@@ -89,8 +89,7 @@ class HireMenuWindow(QMainWindow):
         show_gif(self.support, self.ui.gifLabel4)
         show_gif(self.special, self.ui.gifLabel5)
 
-        self.player_gold = main_db.get_gold(
-            main_db.current_player.name, self.faction)
+        self.player_gold = main_db.get_gold()
         self.ui.gold.setText(str(self.player_gold))
         ui_lock(self.ui.pushButtonBuy)
 
@@ -139,9 +138,7 @@ class HireMenuWindow(QMainWindow):
         """Подсветка выбранного юнита"""
         self.highlight_selected_unit(self.ui.labelSelected5,
                                      self.special)
-        buildings = main_db.get_buildings(
-            main_db.current_player.name,
-            self.faction)._asdict()
+        buildings = main_db.get_buildings()._asdict()
         if self.highlighted_unit.upgrade_b \
                 not in buildings['special']:
             ui_lock(self.ui.pushButtonBuy)
@@ -240,10 +237,8 @@ class HireMenuWindow(QMainWindow):
         changed_gold = self.player_gold - int(self.highlighted_unit.cost)
 
         # обновление золота в базе
-        main_db.update_gold(
-            main_db.current_player.name,
-            self.faction,
-            changed_gold)
+        main_db.update_gold(changed_gold)
+
         self.highlighted_unit.add_to_band(int(slot))
 
         self.capital_army.ui.gold.setText(str(changed_gold))
