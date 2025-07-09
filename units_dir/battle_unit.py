@@ -156,7 +156,7 @@ class Unit:
         # Для юнитов
         else:
             if self.attack_type not in ALCHEMIST_LIST:
-                next_damage = int(damage * 1.10)
+                next_damage = math.ceil(damage * 1.10)
             else:
                 next_damage = damage
 
@@ -313,7 +313,7 @@ class Unit:
     @property
     def race_settings(self) -> Dict[str, dict]:
         """Получение настроек фракции"""
-        return FACTIONS.get(main_db.current_faction)
+        return FACTIONS.get(main_db.get_current_faction())
 
     def get_building_graph(self,
                            bname: str,
@@ -329,13 +329,10 @@ class Unit:
                     return
 
     def get_faction_units(self,
-                          faction: str,
                           graph_dict: Dict[str, list]) -> List[str]:
         """Получние всех фракционных юнитов"""
         # Постройки
-        buildings = main_db.get_buildings(
-            main_db.current_player.name,
-            faction)._asdict()
+        buildings = main_db.get_buildings()._asdict()
 
         for bld in buildings.values():
             for branch in graph_dict:
@@ -347,7 +344,7 @@ class Unit:
         # фракционные юниты
         faction_units = []
         for branch, b_value in FACTIONS.get(
-                main_db.current_faction).items():
+                main_db.get_current_faction()).items():
             if branch != 'others':
                 for building in b_value.values():
                     faction_units.append(building.unit_name)
@@ -395,7 +392,7 @@ class Unit:
             # находим следующую стадию юнита, если здание для апгрейда
             # построено
             for building \
-                    in FACTIONS[main_db.current_faction][self.branch].values():
+                    in FACTIONS[main_db.get_current_faction()][self.branch].values():
                 if building.prev == self.upgrade_b \
                         and building.bname in branch_buildings:
                     # Следующая стадия
