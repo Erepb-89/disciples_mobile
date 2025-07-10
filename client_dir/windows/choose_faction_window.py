@@ -129,6 +129,9 @@ class ChooseRaceWindow(QMainWindow):
 
         main_db.clear_units(self.faction)
 
+        self.main.faction = self.faction
+        self.main.check_campaign_session()
+
         self.choose_hero()
         self.add_capital_guard()
         self.close()
@@ -136,6 +139,11 @@ class ChooseRaceWindow(QMainWindow):
     def continue_game(self) -> None:
         """Продолжение игры"""
         main_db.set_current_faction(self.faction)
+        main_db.update_game_session()
+
+        self.main.faction = self.faction
+        self.main.check_campaign_session()
+        self.main.update_diff_checkbox()
 
     def choose_hero(self) -> None:
         """Метод создающий окно выбора героя"""

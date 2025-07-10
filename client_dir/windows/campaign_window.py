@@ -182,9 +182,9 @@ class CampaignWindow(QMainWindow):
         name = f'{self.faction}_{level}'
 
         nominal_levels_dict = {
-            1: 2,
-            2: 3,
-            3: 4,
+            1: 1,
+            2: 2,
+            3: 3,
         }
 
         self.all_missions = {
@@ -222,7 +222,7 @@ class CampaignWindow(QMainWindow):
             #                     randint(2, nominal_levels_dict[diff]))
         }
 
-        main_db.add_dungeons(self.all_missions, self.campaign_level)
+        main_db.add_dungeons(self.all_missions, level)
 
     def show_fight_window(self) -> None:
         """Метод создающий окно Битвы."""

@@ -103,7 +103,6 @@ class ClientMainWindow(QMainWindow):
         self.InitUI()
 
         self.difficulty = main_db.get_difficulty()
-        self.update_diff_checkbox()
 
     def InitUI(self):
         """Загружаем конфигурацию окна из дизайнера"""
@@ -358,7 +357,6 @@ class ClientMainWindow(QMainWindow):
         self.ui.currentPlayer.setStyleSheet('color: white')
 
         main_db.update_game_session()
-        self.update_diff_checkbox()
 
         self.all_players_list_update()
         self.units_list_update()
@@ -366,6 +364,8 @@ class ClientMainWindow(QMainWindow):
         self.reset()
 
         self.check_campaign_session()
+        self.ui.difficultyText.setStyleSheet('color: white')
+        self.ui.languageText.setStyleSheet('color: white')
 
         self.current_label = ''
         self.source = ''
@@ -480,8 +480,6 @@ class ClientMainWindow(QMainWindow):
 
     def update_diff_checkbox(self) -> None:
         """Метод заполнения выпадающего списка доступных сложностей."""
-        self.ui.difficultyText.setStyleSheet('color: white')
-
         diff_slots = [1, 2, 3]
         self.diff_model = QStandardItemModel()
         for slot in diff_slots:
