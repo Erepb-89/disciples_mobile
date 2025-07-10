@@ -259,7 +259,7 @@ class ServerStorage:
             self.__game_session_id = curr_game_session.session_id
             self.__difficulty = curr_game_session.difficulty
         else:
-            self.__current_faction = 'Empire'
+            self.__current_faction = ''
             self.__campaign_level = 1
             self.__campaign_mission = 0
             self.__prev_mission = 0
@@ -428,6 +428,59 @@ class ServerStorage:
             AllUnits.dotted
         ).filter_by(branch=branch, level=level)
         # return query.order_by(AllUnits.level.desc()).first()
+        # Возвращаем кортеж
+        return query.all()
+
+    def get_small_summons(self,
+                          level: int) -> namedtuple:
+        """Метод получающий юнита из таблицы AllUnits по ветви."""
+        query = self.session.query(
+            AllUnits.id,
+            AllUnits.name,
+            AllUnits.level,
+            AllUnits.size,
+            AllUnits.price,
+            AllUnits.exp,
+            AllUnits.curr_exp,
+            AllUnits.exp_per_kill,
+            AllUnits.health,
+            AllUnits.curr_health,
+            AllUnits.armor,
+            AllUnits.immune,
+            AllUnits.ward,
+            AllUnits.attack_type,
+            AllUnits.attack_chance,
+            AllUnits.attack_dmg,
+            AllUnits.dot_dmg,
+            AllUnits.attack_source,
+            AllUnits.attack_ini,
+            AllUnits.attack_radius,
+            AllUnits.attack_purpose,
+            AllUnits.prev_level,
+            AllUnits.desc,
+            AllUnits.photo,
+            AllUnits.gif,
+            AllUnits.slot,
+            AllUnits.subrace,
+            AllUnits.branch,
+            AllUnits.attack_twice,
+            AllUnits.regen,
+            AllUnits.dyn_upd_level,
+            AllUnits.upgrade_b,
+            AllUnits.leadership,
+            AllUnits.leader_cat,
+            AllUnits.nat_armor,
+            AllUnits.might,
+            AllUnits.weapon_master,
+            AllUnits.endurance,
+            AllUnits.first_strike,
+            AllUnits.accuracy,
+            AllUnits.water_resist,
+            AllUnits.air_resist,
+            AllUnits.fire_resist,
+            AllUnits.earth_resist,
+            AllUnits.dotted
+        ).filter_by(branch='summon', level=level, size='Обычный')
         # Возвращаем кортеж
         return query.all()
 
@@ -1761,6 +1814,7 @@ class ServerStorage:
         ).execution_options(
             synchronize_session="fetch")
 
+        print(self.__game_session_id)
         self.session.execute(changes)
         self.session.commit()
 

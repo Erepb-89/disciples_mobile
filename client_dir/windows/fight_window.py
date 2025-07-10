@@ -1067,10 +1067,12 @@ class FightWindow(QMainWindow):
                     (self.difficulty == 3
                      and self.campaign_level != 4))
 
-    @staticmethod
-    def __next_campaign_level():
-        """Повышение уровня кампании, день + 1"""
+    def __next_campaign_level(self):
+        """Повышение уровня кампании, день + 1, генерация миссий"""
         main_db.increase_campaign_level()
+        # генерируем миссии
+        self.parent_window.update_all_missions(
+            self.campaign_level, self.difficulty)
 
     def finish_campaign(self):
         """Кампания пройдена"""

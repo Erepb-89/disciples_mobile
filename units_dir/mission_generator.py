@@ -398,6 +398,8 @@ def get_big(units: list) -> list:
 def get_fighters(branch: str, level: int) -> list:
     """Получить бойцов из списка юнитов"""
     fighters = main_db.get_units_by_branch_and_level(branch, level)
+    summons = main_db.get_small_summons(level)
+    fighters.extend(summons)
     fighters = [unit.name for unit in fighters if unit_is_active(unit)]
 
     return fighters
