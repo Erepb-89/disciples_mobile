@@ -1814,7 +1814,6 @@ class ServerStorage:
         ).execution_options(
             synchronize_session="fetch")
 
-        print(self.__game_session_id)
         self.session.execute(changes)
         self.session.commit()
 

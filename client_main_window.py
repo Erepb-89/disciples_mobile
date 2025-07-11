@@ -32,6 +32,7 @@ from client_dir.dialogs.unit_dialog import UnitDialog
 from server.server import MyThread
 from units_dir.models import PlayerUnits, CurrentDungeon
 from units_dir.units import main_db
+from units_dir.battle_unit import Unit
 
 
 class ClientMainWindow(QMainWindow):
@@ -237,6 +238,66 @@ class ClientMainWindow(QMainWindow):
         self.ui.pushButtonDeleteEn.setStatusTip(
             'Выберите слот, который хотите освободить')
 
+        self.ui.pushButtonUpSlot1.clicked.connect(
+            self.upgrade_slot1_unit)
+        self.ui.pushButtonDownSlot1.clicked.connect(
+            self.downgrade_slot1_unit)
+
+        self.ui.pushButtonUpSlot2.clicked.connect(
+            self.upgrade_slot2_unit)
+        self.ui.pushButtonDownSlot2.clicked.connect(
+            self.downgrade_slot2_unit)
+
+        self.ui.pushButtonUpSlot3.clicked.connect(
+            self.upgrade_slot3_unit)
+        self.ui.pushButtonDownSlot3.clicked.connect(
+            self.downgrade_slot3_unit)
+
+        self.ui.pushButtonUpSlot4.clicked.connect(
+            self.upgrade_slot4_unit)
+        self.ui.pushButtonDownSlot4.clicked.connect(
+            self.downgrade_slot4_unit)
+
+        self.ui.pushButtonUpSlot5.clicked.connect(
+            self.upgrade_slot5_unit)
+        self.ui.pushButtonDownSlot5.clicked.connect(
+            self.downgrade_slot5_unit)
+
+        self.ui.pushButtonUpSlot6.clicked.connect(
+            self.upgrade_slot6_unit)
+        self.ui.pushButtonDownSlot6.clicked.connect(
+            self.downgrade_slot6_unit)
+
+        self.ui.pushButtonUpEnemySlot1.clicked.connect(
+            self.upgrade_enemy_slot1_unit)
+        self.ui.pushButtonDownEnemySlot1.clicked.connect(
+            self.downgrade_enemy_slot1_unit)
+
+        self.ui.pushButtonUpEnemySlot2.clicked.connect(
+            self.upgrade_enemy_slot2_unit)
+        self.ui.pushButtonDownEnemySlot2.clicked.connect(
+            self.downgrade_enemy_slot2_unit)
+
+        self.ui.pushButtonUpEnemySlot3.clicked.connect(
+            self.upgrade_enemy_slot3_unit)
+        self.ui.pushButtonDownEnemySlot3.clicked.connect(
+            self.downgrade_enemy_slot3_unit)
+
+        self.ui.pushButtonUpEnemySlot4.clicked.connect(
+            self.upgrade_enemy_slot4_unit)
+        self.ui.pushButtonDownEnemySlot4.clicked.connect(
+            self.downgrade_enemy_slot4_unit)
+
+        self.ui.pushButtonUpEnemySlot5.clicked.connect(
+            self.upgrade_enemy_slot5_unit)
+        self.ui.pushButtonDownEnemySlot5.clicked.connect(
+            self.downgrade_enemy_slot5_unit)
+
+        self.ui.pushButtonUpEnemySlot6.clicked.connect(
+            self.upgrade_enemy_slot6_unit)
+        self.ui.pushButtonDownEnemySlot6.clicked.connect(
+            self.downgrade_enemy_slot6_unit)
+
         self.ui.slot1.installEventFilter(self)
         self.ui.slot1.setContextMenuPolicy(
             QtCore.Qt.CustomContextMenu)
@@ -333,6 +394,32 @@ class ClientMainWindow(QMainWindow):
         set_beige_colour(self.ui.pushButtonFight)
         set_beige_colour(self.ui.pushButtonCampaign)
         set_beige_colour(self.ui.pushButtonVersus)
+
+        set_beige_colour(self.ui.pushButtonUpSlot1)
+        set_beige_colour(self.ui.pushButtonUpSlot2)
+        set_beige_colour(self.ui.pushButtonUpSlot3)
+        set_beige_colour(self.ui.pushButtonUpSlot4)
+        set_beige_colour(self.ui.pushButtonUpSlot5)
+        set_beige_colour(self.ui.pushButtonUpSlot6)
+        set_beige_colour(self.ui.pushButtonDownSlot1)
+        set_beige_colour(self.ui.pushButtonDownSlot2)
+        set_beige_colour(self.ui.pushButtonDownSlot3)
+        set_beige_colour(self.ui.pushButtonDownSlot4)
+        set_beige_colour(self.ui.pushButtonDownSlot5)
+        set_beige_colour(self.ui.pushButtonDownSlot6)
+
+        set_beige_colour(self.ui.pushButtonUpEnemySlot1)
+        set_beige_colour(self.ui.pushButtonUpEnemySlot2)
+        set_beige_colour(self.ui.pushButtonUpEnemySlot3)
+        set_beige_colour(self.ui.pushButtonUpEnemySlot4)
+        set_beige_colour(self.ui.pushButtonUpEnemySlot5)
+        set_beige_colour(self.ui.pushButtonUpEnemySlot6)
+        set_beige_colour(self.ui.pushButtonDownEnemySlot1)
+        set_beige_colour(self.ui.pushButtonDownEnemySlot2)
+        set_beige_colour(self.ui.pushButtonDownEnemySlot3)
+        set_beige_colour(self.ui.pushButtonDownEnemySlot4)
+        set_beige_colour(self.ui.pushButtonDownEnemySlot5)
+        set_beige_colour(self.ui.pushButtonDownEnemySlot6)
 
         set_beige_colour(self.ui.listAllUnits)
         set_beige_colour(self.ui.listPlayerUnits)
@@ -975,6 +1062,150 @@ class ClientMainWindow(QMainWindow):
         return main_db.get_unit_by_slot(
             slot,
             CurrentDungeon)
+
+    @staticmethod
+    def upgrade_slot1_unit():
+        unit = main_db.get_unit_by_slot(1, PlayerUnits)
+        if unit is not None:
+            Unit(unit).upgrade_stats(PlayerUnits)
+
+    @staticmethod
+    def downgrade_slot1_unit():
+        unit = main_db.get_unit_by_slot(1, PlayerUnits)
+        if unit is not None:
+            Unit(unit).downgrade_stats(PlayerUnits)
+
+    @staticmethod
+    def upgrade_slot2_unit():
+        unit = main_db.get_unit_by_slot(2, PlayerUnits)
+        if unit is not None:
+            Unit(unit).upgrade_stats(PlayerUnits)
+
+    @staticmethod
+    def downgrade_slot2_unit():
+        unit = main_db.get_unit_by_slot(2, PlayerUnits)
+        if unit is not None:
+            Unit(unit).downgrade_stats(PlayerUnits)
+
+    @staticmethod
+    def upgrade_slot3_unit():
+        unit = main_db.get_unit_by_slot(3, PlayerUnits)
+        if unit is not None:
+            Unit(unit).upgrade_stats(PlayerUnits)
+
+    @staticmethod
+    def downgrade_slot3_unit():
+        unit = main_db.get_unit_by_slot(3, PlayerUnits)
+        if unit is not None:
+            Unit(unit).downgrade_stats(PlayerUnits)
+
+    @staticmethod
+    def upgrade_slot4_unit():
+        unit = main_db.get_unit_by_slot(4, PlayerUnits)
+        if unit is not None:
+            Unit(unit).upgrade_stats(PlayerUnits)
+
+    @staticmethod
+    def downgrade_slot4_unit():
+        unit = main_db.get_unit_by_slot(4, PlayerUnits)
+        if unit is not None:
+            Unit(unit).downgrade_stats(PlayerUnits)
+
+    @staticmethod
+    def upgrade_slot5_unit():
+        unit = main_db.get_unit_by_slot(5, PlayerUnits)
+        if unit is not None:
+            Unit(unit).upgrade_stats(PlayerUnits)
+
+    @staticmethod
+    def downgrade_slot5_unit():
+        unit = main_db.get_unit_by_slot(5, PlayerUnits)
+        if unit is not None:
+            Unit(unit).downgrade_stats(PlayerUnits)
+
+    @staticmethod
+    def upgrade_slot6_unit():
+        unit = main_db.get_unit_by_slot(6, PlayerUnits)
+        if unit is not None:
+            Unit(unit).upgrade_stats(PlayerUnits)
+
+    @staticmethod
+    def downgrade_slot6_unit():
+        unit = main_db.get_unit_by_slot(6, PlayerUnits)
+        if unit is not None:
+            Unit(unit).downgrade_stats(PlayerUnits)
+
+    @staticmethod
+    def upgrade_enemy_slot1_unit():
+        unit = main_db.get_unit_by_slot(1, CurrentDungeon)
+        if unit is not None:
+            Unit(unit).upgrade_stats(CurrentDungeon)
+
+    @staticmethod
+    def downgrade_enemy_slot1_unit():
+        unit = main_db.get_unit_by_slot(1, CurrentDungeon)
+        if unit is not None:
+            Unit(unit).downgrade_stats(CurrentDungeon)
+
+    @staticmethod
+    def upgrade_enemy_slot2_unit():
+        unit = main_db.get_unit_by_slot(2, CurrentDungeon)
+        if unit is not None:
+            Unit(unit).upgrade_stats(CurrentDungeon)
+
+    @staticmethod
+    def downgrade_enemy_slot2_unit():
+        unit = main_db.get_unit_by_slot(2, CurrentDungeon)
+        if unit is not None:
+            Unit(unit).downgrade_stats(CurrentDungeon)
+
+    @staticmethod
+    def upgrade_enemy_slot3_unit():
+        unit = main_db.get_unit_by_slot(3, CurrentDungeon)
+        if unit is not None:
+            Unit(unit).upgrade_stats(CurrentDungeon)
+
+    @staticmethod
+    def downgrade_enemy_slot3_unit():
+        unit = main_db.get_unit_by_slot(3, CurrentDungeon)
+        if unit is not None:
+            Unit(unit).downgrade_stats(CurrentDungeon)
+
+    @staticmethod
+    def upgrade_enemy_slot4_unit():
+        unit = main_db.get_unit_by_slot(4, CurrentDungeon)
+        if unit is not None:
+            Unit(unit).upgrade_stats(CurrentDungeon)
+
+    @staticmethod
+    def downgrade_enemy_slot4_unit():
+        unit = main_db.get_unit_by_slot(4, CurrentDungeon)
+        if unit is not None:
+            Unit(unit).downgrade_stats(CurrentDungeon)
+
+    @staticmethod
+    def upgrade_enemy_slot5_unit():
+        unit = main_db.get_unit_by_slot(5, CurrentDungeon)
+        if unit is not None:
+            Unit(unit).upgrade_stats(CurrentDungeon)
+
+    @staticmethod
+    def downgrade_enemy_slot5_unit():
+        unit = main_db.get_unit_by_slot(5, CurrentDungeon)
+        if unit is not None:
+            Unit(unit).downgrade_stats(CurrentDungeon)
+
+    @staticmethod
+    def upgrade_enemy_slot6_unit():
+        unit = main_db.get_unit_by_slot(6, CurrentDungeon)
+        if unit is not None:
+            Unit(unit).upgrade_stats(CurrentDungeon)
+
+    @staticmethod
+    def downgrade_enemy_slot6_unit():
+        unit = main_db.get_unit_by_slot(6, CurrentDungeon)
+        if unit is not None:
+            Unit(unit).downgrade_stats(CurrentDungeon)
 
 
 if __name__ == '__main__':

@@ -378,7 +378,7 @@ class FightWindow(QMainWindow):
             self.speed_model.appendRow(item)
         self.ui.comboSpeed.setModel(self.speed_model)
 
-        self.ui.comboSpeed.setCurrentIndex(2)
+        self.ui.comboSpeed.setCurrentIndex(4)
         self.check_speed()
         self.ui.comboSpeed.currentIndexChanged.connect(self.check_speed)
 
