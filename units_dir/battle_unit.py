@@ -196,8 +196,85 @@ class Unit:
             characteristics,
             db_table)
 
-    def get_next_exp(self):
-        """Увеличение требуемого опыта для повышения (для героев)"""
+    def downgrade_stats(self, db_table) -> None:
+        """Снижение характеристик юнита"""
+        # Уровень
+        if main_db.get_unit_by_name(self.name).level >= self.level:
+            pass
+        else:
+            prev_level = self.level - 1
+
+            # Опыт
+            prev_exp = self.get_prev_exp()
+
+            # Здоровье
+            prev_hp = self.get_prev_hp(10)
+            self.health = prev_hp
+
+            # Шанс на попадание
+            try:
+                spitted_chance = self.attack_chance.split('/')
+                chance = int(spitted_chance[0])
+                # яды и т.д.
+                dot_chance = int(spitted_chance[1])
+                prev_chance = f'{chance - 1}/{dot_chance - 1}'
+            except IndexError:
+                prev_chance = int(self.attack_chance) - 1
+
+            # Урон
+            damage = self.attack_dmg
+
+            # Урон для героев
+            if self.branch == 'hero':
+                if self.leader_cat == 'fighter':
+                    prev_damage = int(damage) - 10
+                else:
+                    prev_damage = int(damage) - 5
+            # Для юнитов
+            else:
+                if self.attack_type not in ALCHEMIST_LIST:
+                    prev_damage = math.floor(damage / 1.10)
+                else:
+                    prev_damage = damage
+
+            prev_damage = min(prev_damage, 300)
+
+            # Увеличение доп. урона
+            if self.dot_dmg:
+                prev_additional = self.dot_dmg - 6
+            else:
+                prev_additional = None
+
+            # Опыт за убийство
+            if self.level <= 10:
+                prev_killed_exp = math.floor(self.exp_per_kill / 1.10)
+            else:
+                prev_killed_exp = math.floor(self.exp_per_kill / 1.05)
+
+            # Осталось возможных повышений уровня
+            updates_left = self.dyn_upd_level + 1
+
+            characteristics = {
+                'level': prev_level,
+                'exp': prev_exp,
+                'health': prev_hp,
+                'curr_health': prev_hp,
+                'armor': self.armor,
+                'curr_exp': 0,
+                'exp_per_kill': prev_killed_exp,
+                'attack_chance': prev_chance,
+                'attack_dmg': prev_damage,
+                'dot_dmg': prev_additional,
+                'dyn_upd_level': updates_left
+            }
+
+            main_db.update_unit(
+                self.id,
+                characteristics,
+                db_table)
+
+    def get_next_exp(self) -> int:
+        """Вычисление требуемого опыта при повышении (для героев)"""
         next_exp = self.exp
         if self.branch == 'hero' and self.level < 10:
             if self.leader_cat in ('fighter', 'mage'):
@@ -208,18 +285,47 @@ class Unit:
                 next_exp = self.exp + HERO_ROD_EXP
         return next_exp
 
-    def get_next_hp(self, multiplier: int):
+    def get_prev_exp(self) -> int:
+        """Вычисление требуемого опыта при понижении (для героев)"""
+        prev_exp = self.exp
+        if self.branch == 'hero' and self.level < 10:
+            if self.leader_cat in ('fighter', 'mage'):
+                prev_exp = self.exp - HERO_FIGHTER_EXP
+            elif self.leader_cat == 'archer':
+                prev_exp = self.exp - HERO_ARCHER_EXP
+            elif self.leader_cat == 'rod':
+                prev_exp = self.exp - HERO_ROD_EXP
+        return prev_exp
+
+    def get_next_hp(self, multiplier: int) -> int:
         """Увеличение здоровья"""
-        next_hp = self.health + int(self.health * multiplier * 0.01)
+        next_hp = self.health
+        plus_hp = int(self.health * multiplier * 0.01)
 
         # Здоровье для героев
         if self.branch == 'hero':
-            next_hp = max(next_hp, 10)
+            plus_hp = max(plus_hp, 10)
+
+        next_hp += plus_hp
 
         while next_hp % 5 != 0:
             next_hp += 1
 
         return next_hp
+
+    def get_prev_hp(self, multiplier: int) -> int:
+        """Уменьшение здоровья"""
+        prev_hp = math.floor(self.health / (1 + multiplier * 0.01))
+
+        # Здоровье для героев
+        if self.branch == 'hero':
+            while prev_hp % 10 != 0:
+                prev_hp -= 1
+        else:
+            while prev_hp % 5 != 0:
+                prev_hp -= 1
+
+        return prev_hp
 
     def get_perks(self, db_table):
         """Получение перков героем"""
