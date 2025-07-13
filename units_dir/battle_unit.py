@@ -127,7 +127,10 @@ class Unit:
         next_exp = self.get_next_exp()
 
         # Здоровье
-        next_hp = self.get_next_hp(10)
+        if next_level - 10 < main_db.get_unit_by_name(self.name).level:
+            next_hp = self.get_next_hp(10)
+        else:
+            next_hp = self.get_next_hp(5)
         self.health = next_hp
 
         # Шанс на попадание
@@ -199,7 +202,8 @@ class Unit:
     def downgrade_stats(self, db_table) -> None:
         """Снижение характеристик юнита"""
         # Уровень
-        if main_db.get_unit_by_name(self.name).level >= self.level:
+        basic_level = main_db.get_unit_by_name(self.name).level
+        if basic_level >= self.level:
             pass
         else:
             prev_level = self.level - 1
@@ -208,7 +212,10 @@ class Unit:
             prev_exp = self.get_prev_exp()
 
             # Здоровье
-            prev_hp = self.get_prev_hp(10)
+            if self.level - basic_level < 10:
+                prev_hp = self.get_prev_hp(10)
+            else:
+                prev_hp = self.get_prev_hp(5)
             self.health = prev_hp
 
             # Шанс на попадание
@@ -300,7 +307,7 @@ class Unit:
     def get_next_hp(self, multiplier: int) -> int:
         """Увеличение здоровья"""
         next_hp = self.health
-        plus_hp = int(self.health * multiplier * 0.01)
+        plus_hp = math.floor(self.health * multiplier * 0.01)
 
         # Здоровье для героев
         if self.branch == 'hero':
@@ -315,7 +322,7 @@ class Unit:
 
     def get_prev_hp(self, multiplier: int) -> int:
         """Уменьшение здоровья"""
-        prev_hp = math.floor(self.health / (1 + multiplier * 0.01))
+        prev_hp = math.ceil(self.health / (1 + multiplier * 0.01))
 
         # Здоровье для героев
         if self.branch == 'hero':
