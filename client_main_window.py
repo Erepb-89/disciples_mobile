@@ -581,14 +581,14 @@ class ClientMainWindow(QMainWindow):
             session = v_model.get_session_by_faction(self.faction)
 
         if session is not None:
-            self.check_difficulty()
+            self.change_difficulty()
             self.ui.comboDifficulty.currentIndexChanged.connect(
-                self.check_difficulty)
+                self.change_difficulty)
 
-    def check_difficulty(self) -> None:
+    def change_difficulty(self) -> None:
         """Устанавливает выбранную сложность"""
         self.difficulty = int(self.ui.comboDifficulty.currentText())
-        v_model.update_session_difficulty(self.difficulty)
+        v_model.set_session_difficulty(self.difficulty)
 
     @staticmethod
     def button_enabled(button, database, num2):

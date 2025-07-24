@@ -27,12 +27,12 @@ class ServerStorage:
     def __init__(self, path):
         # Создаём движок базы данных (SQLite)
         self.already_built: bool = False
-        self.__campaign_day: int = 0
+        self.campaign_day: int = 0
         self.campaign_level: int = 0
         self.__campaign_mission = None
         self.current_faction: str = None
         self.difficulty: int = 2
-        self.__game_session_id = None
+        self.game_session_id = None
         self.__prev_mission = None
 
         self.database_engine = create_engine(
@@ -216,32 +216,6 @@ class ServerStorage:
                      Column('dotted', Integer),
                      Column('locked', Integer),
                      )
-
-    def update_game_session(self) -> None:
-        """Обновить игровую сессию"""
-        curr_game_session = None
-
-        if self.current_player is not None:
-            curr_game_session = self.current_game_session(
-                self.current_player.id)
-
-        if curr_game_session is not None:
-            self.current_faction = curr_game_session.faction
-            self.campaign_level = curr_game_session.campaign_level
-            self.__campaign_mission = curr_game_session.campaign_mission
-            self.__prev_mission = curr_game_session.prev_mission
-            self.__campaign_day = curr_game_session.day
-            self.already_built = curr_game_session.built
-            self.__game_session_id = curr_game_session.session_id
-            self.difficulty = curr_game_session.difficulty
-        else:
-            self.current_faction = ''
-            self.campaign_level = 1
-            self.__campaign_mission = 0
-            self.__prev_mission = 0
-            self.__campaign_day = 1
-            self.already_built = 0
-            self.difficulty = 2
 
     def add_dungeon_unit(self, unit: namedtuple) -> None:
         """
@@ -537,7 +511,7 @@ class ServerStorage:
         # Возвращаем кортеж
         return query.order_by(GameSessions.session_id.desc()).first()
 
-    def current_game_session(self, player_id: int) -> any:
+    def get_current_game_session(self, player_id: int) -> any:
         """Метод получающий текущую игровую сессию
         (последнюю запись из таблицы GameSessions)."""
         query = self.session.query(
@@ -1448,12 +1422,12 @@ class ServerStorage:
         """Метод изменения текущей игровой сессии"""
         changes = update(
             GameSessions).where(
-            GameSessions.session_id == self.__game_session_id
+            GameSessions.session_id == self.game_session_id
         ).values(
             campaign_level=self.campaign_level,
             campaign_mission=campaign_mission,
             prev_mission=prev_mission,
-            day=self.__campaign_day,
+            day=self.campaign_day,
             built=self.already_built
         ).execution_options(
             synchronize_session="fetch")
@@ -1470,7 +1444,7 @@ class ServerStorage:
         """Метод изменения флага постройки в текущей игровой сессии"""
         changes = update(
             GameSessions).where(
-            GameSessions.session_id == self.__game_session_id
+            GameSessions.session_id == self.game_session_id
         ).values(
             built=self.already_built
         ).execution_options(
@@ -1480,13 +1454,13 @@ class ServerStorage:
         self.session.commit()
 
     def increase_campaign_day(self):
-        self.__campaign_day += 1
+        self.campaign_day += 1
 
     def update_session_difficulty(self, difficulty: int) -> None:
         """Метод изменения сложности кампании в текущей игровой сессии"""
         changes = update(
             GameSessions).where(
-            GameSessions.session_id == self.__game_session_id
+            GameSessions.session_id == self.game_session_id
         ).values(
             difficulty=difficulty
         ).execution_options(

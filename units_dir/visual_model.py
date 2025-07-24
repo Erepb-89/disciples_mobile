@@ -14,6 +14,11 @@ class VisualModel:
         """Уровень сложности"""
         return main_db.difficulty
 
+    @staticmethod
+    def set_session_difficulty(difficulty):
+        """Устанавливает выбранную сложность в БД"""
+        main_db.update_session_difficulty(difficulty)
+
     @property
     def gold(self) -> int:
         """Метод получения количества золота у игрока."""
@@ -28,6 +33,11 @@ class VisualModel:
     def campaign_level(self) -> int:
         """Уровень кампании"""
         return main_db.campaign_level
+
+    @staticmethod
+    def set_campaign_level(campaign_level) -> None:
+        """Установить уровень кампании в 1"""
+        main_db.campaign_level = campaign_level
 
     @staticmethod
     def set_campaign_level_to_1() -> None:
@@ -47,6 +57,11 @@ class VisualModel:
     def get_built() -> bool:
         """Получить флаг, строилось ли сегодня здание"""
         return main_db.already_built
+
+    @staticmethod
+    def set_built(built: bool) -> None:
+        """Получить флаг, строилось ли сегодня здание"""
+        main_db.already_built = built
 
     @staticmethod
     def set_built_to_0():
@@ -105,6 +120,7 @@ class VisualModel:
     def update_session_built() -> None:
         """Метод изменения флага постройки в текущей игровой сессии"""
         main_db.update_session_built()
+
 
     @staticmethod
     def get_unit_by_name(name: str) -> namedtuple:
@@ -432,6 +448,11 @@ class VisualModel:
         """Метод получения построек в столице игрока."""
         return main_db.get_buildings()
 
+    @staticmethod
+    def set_campaign_day(campaign_day: int) -> None:
+        """Устанавливает день кампании"""
+        main_db.campaign_day = campaign_day
+
     def increase_campaign_level(self):
         """Увеличивает уровень кампании"""
         main_db.campaign_level += 1
@@ -449,11 +470,6 @@ class VisualModel:
 
         main_db.update_session(mission_number,
                                curr_mission)
-
-    @staticmethod
-    def update_session_difficulty(difficulty):
-        """Устанавливает выбранную сложность в БД"""
-        main_db.update_session_difficulty(difficulty)
 
     @property
     def campaign_units(self) -> List[namedtuple]:
@@ -546,9 +562,32 @@ class VisualModel:
         main_db.clear_session()
 
     @staticmethod
-    def update_game_session() -> None:
-        """Обновить игровую сессию в БД"""
-        main_db.update_game_session()
+    def set_game_session_id(_id):
+        """Устанавливает ID данной игровой сессии"""
+        main_db.game_session_id = _id
+
+    def update_game_session(self) -> None:
+        """Обновить игровую сессию"""
+        curr_game_session = None
+
+        if self.current_player is not None:
+            curr_game_session = main_db.get_current_game_session(
+                self.current_player.id)
+
+        if curr_game_session is not None:
+            self.set_current_faction(curr_game_session.faction)
+            self.set_campaign_level(curr_game_session.campaign_level)
+            self.set_campaign_day(curr_game_session.day)
+            self.set_built(curr_game_session.built)
+            self.set_game_session_id(curr_game_session.session_id)
+            self.set_session_difficulty(curr_game_session.difficulty)
+        else:
+            self.set_current_faction('')
+            self.set_campaign_level_to_1()
+            self.set_campaign_day(1)
+            self.set_built_to_0()
+            self.set_session_difficulty(2)
+
 
     @staticmethod
     def get_unit_by_id(_id: int, db_table: AllUnits) -> namedtuple:
