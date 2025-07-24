@@ -8,7 +8,7 @@ from client_dir.windows.choose_hero_window import ChooseHeroWindow
 from client_dir.windows.question_window import QuestionWindow
 from client_dir.settings import FACTIONS, EM, UH, LD, MC, SCREEN_RECT
 from client_dir.ui_functions import get_image
-from units_dir.units import main_db
+from units_dir.visual_model import v_model
 
 
 class ChooseRaceWindow(QMainWindow):
@@ -78,7 +78,7 @@ class ChooseRaceWindow(QMainWindow):
     def in_progress(self) -> bool:
         """Определение новой игры"""
         self.faction = self.factions.get(self.faction_number)
-        session = main_db.get_session_by_faction(self.faction)
+        session = v_model.get_session_by_faction(self.faction)
 
         if session is not None:
             return True
@@ -92,7 +92,7 @@ class ChooseRaceWindow(QMainWindow):
         else:
             # Новая игра
             self.question = True
-            main_db.set_built_to_0()
+            v_model.set_built_to_0()
             self.confirmation()
 
     def confirmation(self) -> None:
@@ -110,24 +110,24 @@ class ChooseRaceWindow(QMainWindow):
 
     def new_game(self) -> None:
         """Новая игра"""
-        main_db.set_current_faction(self.faction)
+        v_model.set_current_faction(self.faction)
 
         # удаление старых построек за данную фракцию
-        main_db.clear_buildings(main_db.get_current_player_name())
+        v_model.clear_buildings(v_model.current_player_name)
 
         # удаление старых кампаний за данную фракцию
-        main_db.delete_dungeons()
-        main_db.clear_session()
+        v_model.delete_dungeons()
+        v_model.clear_session()
 
-        main_db.set_session_for_faction_to_0(self.faction)
-        main_db.set_built_to_0()
+        v_model.set_session_for_faction_to_0(self.faction)
+        v_model.set_built_to_0()
 
-        main_db.update_game_session()
+        v_model.update_game_session()
 
-        main_db.build_default(self.faction)
-        main_db.set_campaign_level_to_1()
+        v_model.build_default(self.faction)
+        v_model.set_campaign_level_to_1()
 
-        main_db.clear_units(self.faction)
+        v_model.clear_units(self.faction)
 
         self.main.faction = self.faction
         self.main.check_campaign_session()
@@ -138,8 +138,8 @@ class ChooseRaceWindow(QMainWindow):
 
     def continue_game(self) -> None:
         """Продолжение игры"""
-        main_db.set_current_faction(self.faction)
-        main_db.update_game_session()
+        v_model.set_current_faction(self.faction)
+        v_model.update_game_session()
 
         self.main.faction = self.faction
         self.main.check_campaign_session()
@@ -163,7 +163,7 @@ class ChooseRaceWindow(QMainWindow):
     @staticmethod
     def add_capital_guard() -> None:
         """Метод добавляющий стража столицы"""
-        main_db.hire_guard()
+        v_model.hire_guard()
 
     def back(self) -> None:
         """Кнопка возврата"""
