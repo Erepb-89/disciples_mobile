@@ -6,11 +6,11 @@ from typing import List, Optional, Callable
 
 from client_dir.settings import ANY_UNIT, CLOSEST_UNIT, \
     HEAL_LIST, ALCHEMIST_LIST, PARALYZE_LIST, PARALYZE_UNITS, \
-    POLYMORPH, INCREASE_DMG, ADDITIONAL_ATTACK
+    POLYMORPH, INCREASE_DMG, ADDITIONAL_ATTACK, BATTLE_LOG
 from battle_logging import logging
 from units_dir.models import CurrentDungeon, Player2Units, AllUnits
-from units_dir.units import main_db
 from units_dir.battle_unit import Unit
+from units_dir.visual_model import v_model
 
 PLAYER1_NAME = 'Erepb-89'
 PLAYER2_NAME = 'Computer'
@@ -70,7 +70,7 @@ class Battle:
         self.player1 = Player(PLAYER1_NAME)
         self.player2 = Player(PLAYER2_NAME)
 
-        self.dungeon_units = main_db.show_dungeon_units(dungeon)
+        self.dungeon_units = v_model.show_dungeon_units(dungeon)
 
         if self.player2.name == "Computer":
             self.enemy_db_table = CurrentDungeon
@@ -94,7 +94,7 @@ class Battle:
         """
         Добавление одного юнита игрока по слоту в текущую битву.
         """
-        unit = main_db.get_unit_by_slot(
+        unit = v_model.get_unit_by_slot(
             slot,
             database)
 
@@ -110,7 +110,7 @@ class Battle:
         """
         player.units = []
         for pl_slot in range(1, 7):
-            unit = main_db.get_unit_by_slot(
+            unit = v_model.get_unit_by_slot(
                 pl_slot,
                 database)
             if unit is not None:
@@ -127,7 +127,7 @@ class Battle:
         for unit_slot in range(6):
             new_slot = unit_slot + 1
 
-            source_unit = main_db.get_unit_by_name(
+            source_unit = v_model.get_unit_by_name(
                 self.dungeon_units[unit_slot])
             if source_unit is not None:
                 unit_level = self.dungeon_units[unit_slot + 6]
@@ -135,7 +135,7 @@ class Battle:
                 unit = CurrentDungeon(*source_unit)
                 unit.slot = new_slot
 
-                main_db.add_dungeon_unit(unit)
+                v_model.add_dungeon_unit(unit)
                 unit = self.dungeon_unit_by_slot(new_slot)
 
                 if unit is not None:
@@ -152,7 +152,7 @@ class Battle:
     @staticmethod
     def dungeon_unit_by_slot(slot) -> Unit:
         """Метод получающий юнита подземелья по слоту."""
-        return main_db.get_unit_by_slot(
+        return v_model.get_unit_by_slot(
             slot,
             CurrentDungeon)
 
@@ -383,7 +383,7 @@ class Battle:
             db_table = self.db_table
         elif self.current_unit in self.player2.units:
             db_table = self.enemy_db_table
-        changed_unit_name = main_db.get_unit_by_slot(
+        changed_unit_name = v_model.get_unit_by_slot(
             self.current_unit.slot, db_table).name
         self.change_shape(self.current_unit,
                           changed_unit_name,
@@ -472,36 +472,33 @@ class Battle:
     def append_alive_unit(self,
                           alive_unit: Unit,
                           exp_value: int,
-                          player: Player,
-                          db_table: any) -> None:
+                          player: Player) -> None:
         """
         Получение опыта, либо уровня выжившим юнитом.
         Добавление юнита в alive_units для отображения на fight_window
         """
-        if player.name != 'Computer':
+        if player.name != 'Computer' and v_model.current_faction != '':
             # полученный опыт < макс. опыт выжившего юнита
             if exp_value < alive_unit.exp:
                 # полученного опыта достаточно для повышения уровня
                 if alive_unit.curr_exp + exp_value >= alive_unit.exp:
-                    alive_unit.lvl_up(db_table)
+                    alive_unit.lvl_up(self.db_table)
                     self.alive_units.append(alive_unit.slot)
                 else:
                     alive_unit.curr_exp += exp_value
 
-                    main_db.update_unit_exp(
+                    v_model.update_unit_exp(
                         alive_unit.slot,
-                        alive_unit.curr_exp,
-                        db_table)
+                        alive_unit.curr_exp)
 
                 # полученный опыт > макс. опыт выжившего юнита
             else:
-                alive_unit.lvl_up(db_table)
+                alive_unit.lvl_up(self.db_table)
                 self.alive_units.append(alive_unit.slot)
 
     def _getting_experience(self,
                             player1: Player,
-                            player2: Player,
-                            db_table: any) -> None:
+                            player2: Player) -> None:
         """Получение опыта юнитами"""
         self.alive_units = []
         killed_units = player1.units
@@ -527,19 +524,21 @@ class Battle:
 
                 self.append_alive_unit(alive_unit,
                                        exp_value,
-                                       player2,
-                                       db_table)
+                                       player2)
 
     def alive_getting_experience(self):
         """Повышение опыта или уровня выжившим юнитам"""
-        if not self.player1.slots:
-            self._getting_experience(self.player1,
-                                     self.player2,
-                                     self.enemy_db_table)
         if not self.player2.slots:
             self._getting_experience(self.player2,
-                                     self.player1,
-                                     self.db_table)
+                                     self.player1)
+
+    @staticmethod
+    def check_log(text):
+        with open(BATTLE_LOG, 'r', encoding='utf-8') as file:
+            log_data = file.read()
+
+        if text not in log_data:
+            logging(f'{text}\n')
 
     def check_player_is_alive(self) -> None:
         """
@@ -549,11 +548,11 @@ class Battle:
         self.update_player_slots(self.player1)
         self.update_player_slots(self.player2)
         if not self.player1.slots:
-            logging('Вы проиграли!\n')
+            self.check_log('Вы проиграли!')
             self.battle_is_over = True
 
         if not self.player2.slots:
-            logging('Вы победили!\n')
+            self.check_log('Вы победили!')
             self.battle_is_over = True
 
     def dot_calculations(self,
@@ -660,7 +659,7 @@ class Battle:
             elif target in self.player2.units:
                 db_table = self.enemy_db_table
 
-            changed_unit_name = main_db.get_unit_by_slot(
+            changed_unit_name = v_model.get_unit_by_slot(
                 target.slot, db_table).name
 
             self.change_shape(
@@ -846,7 +845,7 @@ class Battle:
         self.remove_unit(unit)
 
         # Получаем юнит с заданными параметрами
-        changed_unit = Unit(main_db.unit_by_name_set_params(
+        changed_unit = Unit(v_model.unit_by_name_set_params(
             unit,
             changed_unit_name,
             db_table))
@@ -1195,22 +1194,22 @@ class Battle:
     @staticmethod
     def clear_dungeon() -> None:
         """Очистка текущего подземелья от вражеских юнитов"""
-        main_db.delete_player_unit(1, CurrentDungeon)
-        main_db.delete_player_unit(2, CurrentDungeon)
-        main_db.delete_player_unit(3, CurrentDungeon)
-        main_db.delete_player_unit(4, CurrentDungeon)
-        main_db.delete_player_unit(5, CurrentDungeon)
-        main_db.delete_player_unit(6, CurrentDungeon)
+        v_model.delete_dungeon_unit(1)
+        v_model.delete_dungeon_unit(2)
+        v_model.delete_dungeon_unit(3)
+        v_model.delete_dungeon_unit(4)
+        v_model.delete_dungeon_unit(5)
+        v_model.delete_dungeon_unit(6)
 
     def regen(self) -> None:
         """Восстановление здоровья всех юнитов игрока"""
         # self.clear_dungeon()
-        main_db.autoregen(1, self.db_table)
-        main_db.autoregen(2, self.db_table)
-        main_db.autoregen(3, self.db_table)
-        main_db.autoregen(4, self.db_table)
-        main_db.autoregen(5, self.db_table)
-        main_db.autoregen(6, self.db_table)
+        v_model.autoregen(1)
+        v_model.autoregen(2)
+        v_model.autoregen(3)
+        v_model.autoregen(4)
+        v_model.autoregen(5)
+        v_model.autoregen(6)
 
     @staticmethod
     def _closest_side_slot(tg_slots: List[int],
