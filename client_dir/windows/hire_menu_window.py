@@ -13,8 +13,8 @@ from client_dir.settings import HIRE_SCREEN, BIG
 from client_dir.ui_functions import show_gif, slot_frame_update, \
     slot_update, button_update, ui_lock, ui_unlock
 from client_dir.dialogs.unit_dialog import UnitNameDialog
-from units_dir.units import main_db
 from units_dir.units_factory import AbstractFactory
+from units_dir.visual_model import v_model
 
 
 class HireMenuWindow(QMainWindow):
@@ -29,7 +29,7 @@ class HireMenuWindow(QMainWindow):
         # основные переменные
         self.capital_army = parent_window
         self.question = False  # Найм юнитов
-        self.faction = main_db.get_current_faction()
+        self.faction = v_model.current_faction
         self.factory = AbstractFactory.create_factory(
             self.faction)
         self.fighter = self.factory.create_fighter()
@@ -89,7 +89,7 @@ class HireMenuWindow(QMainWindow):
         show_gif(self.support, self.ui.gifLabel4)
         show_gif(self.special, self.ui.gifLabel5)
 
-        self.player_gold = main_db.get_gold()
+        self.player_gold = v_model.gold
         self.ui.gold.setText(str(self.player_gold))
         ui_lock(self.ui.pushButtonBuy)
 
@@ -138,7 +138,7 @@ class HireMenuWindow(QMainWindow):
         """Подсветка выбранного юнита"""
         self.highlight_selected_unit(self.ui.labelSelected5,
                                      self.special)
-        buildings = main_db.get_buildings()._asdict()
+        buildings = v_model.buildings._asdict()
         if self.highlighted_unit.upgrade_b \
                 not in buildings['special']:
             ui_lock(self.ui.pushButtonBuy)
@@ -171,9 +171,8 @@ class HireMenuWindow(QMainWindow):
         """Кнопка найма"""
         squad_points = 0
         leadership = 3
-        player_units = main_db.show_campaign_units()
 
-        for unit in player_units:
+        for unit in v_model.campaign_units:
             if unit.leadership >= 3:
                 leadership = unit.leadership
 
@@ -237,7 +236,7 @@ class HireMenuWindow(QMainWindow):
         changed_gold = self.player_gold - int(self.highlighted_unit.cost)
 
         # обновление золота в базе
-        main_db.update_gold(changed_gold)
+        v_model.set_gold(changed_gold)
 
         self.highlighted_unit.add_to_band(int(slot))
 
