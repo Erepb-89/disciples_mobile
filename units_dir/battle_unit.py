@@ -11,8 +11,10 @@ from client_dir.settings import BIG, \
     HERO_FIGHTER_EXP, HERO_ARCHER_EXP, HERO_ROD_EXP, \
     VAMPIRE_LIST, ALCHEMIST_LIST
 from units_dir.buildings import FACTIONS
+from units_dir.models import PlayerUnits, CurrentDungeon
 from units_dir.ranking import PERKS, ELDER_FORMS
-from units_dir.units import main_db
+from units_dir.visual_model import v_model
+
 
 class Unit:
     """Юнит"""
@@ -79,12 +81,12 @@ class Unit:
 
     def off_defence(self) -> None:
         """Сброс защиты в битве"""
-        self.armor = main_db.get_unit_by_name(self.name).armor + \
+        self.armor = v_model.get_unit_by_name(self.name).armor + \
                      self.nat_armor * 20
 
     def off_initiative(self, pl_database) -> None:
         """Сброс инициативы в битве"""
-        unit = main_db.get_unit_by_id(self.id,
+        unit = v_model.get_unit_by_id(self.id,
                                       pl_database)
         if unit is not None:
             self.attack_ini = int(
@@ -92,7 +94,7 @@ class Unit:
 
     def off_boosts(self, pl_database) -> None:
         """Сброс усиления атаки в битве"""
-        unit = main_db.get_unit_by_id(self.id,
+        unit = v_model.get_unit_by_id(self.id,
                                       pl_database)
         if unit is not None:
             self.attack_dmg = unit.attack_dmg
@@ -116,7 +118,7 @@ class Unit:
 
     def add_to_band(self, slot) -> None:
         """Найм в отряд игрока"""
-        main_db.hire_unit(self.name, slot)
+        v_model.hire_unit(self.name, slot)
 
     def upgrade_stats(self, db_table) -> None:
         """Увеличение характеристик юнита"""
@@ -127,7 +129,7 @@ class Unit:
         next_exp = self.get_next_exp()
 
         # Здоровье
-        if next_level - 10 < main_db.get_unit_by_name(self.name).level:
+        if next_level - 10 < v_model.get_unit_by_name(self.name).level:
             next_hp = self.get_next_hp(10)
         else:
             next_hp = self.get_next_hp(5)
@@ -194,15 +196,23 @@ class Unit:
             'dyn_upd_level': updates_left
         }
 
-        main_db.update_unit(
+        v_model.update_unit(
             self.id,
             characteristics,
             db_table)
 
+    def downgrade_player_stats(self) -> None:
+        """Снижение характеристик юнита"""
+        self.downgrade_stats(PlayerUnits)
+
+    def downgrade_enemy_stats(self) -> None:
+        """Снижение характеристик юнита"""
+        self.downgrade_stats(CurrentDungeon)
+
     def downgrade_stats(self, db_table) -> None:
         """Снижение характеристик юнита"""
         # Уровень
-        basic_level = main_db.get_unit_by_name(self.name).level
+        basic_level = v_model.get_unit_by_name(self.name).level
         if basic_level >= self.level:
             pass
         else:
@@ -275,7 +285,7 @@ class Unit:
                 'dyn_upd_level': updates_left
             }
 
-            main_db.update_unit(
+            v_model.update_unit(
                 self.id,
                 characteristics,
                 db_table)
@@ -381,21 +391,21 @@ class Unit:
 
             perks[perk] = 1
 
-            main_db.update_perks(
+            v_model.update_perks(
                 self.id,
                 perks,
                 db_table)
 
             # Природная броня
             if perk == 'nat_armor':
-                main_db.update_unit_armor(
+                v_model.update_unit_armor(
                     self.id,
                     20,
                     db_table)
 
             # Мощь
             if perk == 'might':
-                main_db.update_unit_dmg(
+                v_model.update_unit_dmg(
                     self.id,
                     0.25,
                     db_table)
@@ -404,21 +414,21 @@ class Unit:
             if perk == 'endurance':
                 next_hp = self.get_next_hp(20)
 
-                main_db.update_unit_health(
+                v_model.update_unit_health(
                     self.id,
                     next_hp,
                     db_table)
 
             # Первый удар
             if perk == 'first_strike':
-                main_db.update_unit_ini(
+                v_model.update_unit_ini(
                     self.id,
                     self.attack_ini * 1.5,
                     db_table)
 
             # Стихийный перк
             if 'resist' in perk:
-                main_db.update_ward(
+                v_model.update_ward(
                     self.id,
                     element_dict[perk],
                     db_table)
@@ -426,7 +436,7 @@ class Unit:
     @property
     def race_settings(self) -> Dict[str, dict]:
         """Получение настроек фракции"""
-        return FACTIONS.get(main_db.get_current_faction())
+        return FACTIONS.get(v_model.current_faction)
 
     def get_building_graph(self,
                            bname: str,
@@ -445,7 +455,7 @@ class Unit:
                           graph_dict: Dict[str, list]) -> List[str]:
         """Получние всех фракционных юнитов"""
         # Постройки
-        buildings = main_db.get_buildings()._asdict()
+        buildings = v_model.buildings._asdict()
 
         for bld in buildings.values():
             for branch in graph_dict:
@@ -457,7 +467,7 @@ class Unit:
         # фракционные юниты
         faction_units = []
         for branch, b_value in FACTIONS.get(
-                main_db.get_current_faction()).items():
+                v_model.current_faction).items():
             if branch != 'others':
                 for building in b_value.values():
                     faction_units.append(building.unit_name)
@@ -469,10 +479,10 @@ class Unit:
         next_unit = ''
 
         branch_dict = {
-            'fighter': main_db.get_fighter_branch,
-            'mage': main_db.get_mage_branch,
-            'archer': main_db.get_archer_branch,
-            'support': main_db.get_support_branch,
+            'fighter': v_model.get_fighter_branch,
+            'mage': v_model.get_mage_branch,
+            'archer': v_model.get_archer_branch,
+            'support': v_model.get_support_branch,
         }
 
         # снимаем защиту
@@ -505,7 +515,7 @@ class Unit:
             # находим следующую стадию юнита, если здание для апгрейда
             # построено
             for building \
-                    in FACTIONS[main_db.get_current_faction()][self.branch].values():
+                    in FACTIONS[v_model.current_faction][self.branch].values():
                 if building.prev == self.upgrade_b \
                         and building.bname in branch_buildings:
                     # Следующая стадия
@@ -524,8 +534,8 @@ class Unit:
                 and self.upgrade_b in branch_buildings \
                 and self.name not in ELDER_FORMS:
             # ожидает апгрейда, поднять опыт до (exp - 1)
-            main_db.update_unit_exp(
-                self.slot, self.exp - 1, db_table)
+            v_model.update_unit_exp(
+                self.slot, self.exp - 1)
             line = f"{self.name} ожидает повышения в столице\n"
             logging(line)
 
@@ -533,7 +543,7 @@ class Unit:
         elif next_unit != '':
             # Меняем юнит на следующую стадию согласно постройкам
             # в столице
-            main_db.replace_unit(self.slot, next_unit, db_table)
+            v_model.replace_unit(self.slot, next_unit)
 
             line = f"{self.name} повысил уровень до {next_unit}\n"
             logging(line)
@@ -793,8 +803,8 @@ if __name__ == '__main__':
     # fighter = empire_factory.create_fighter()
     # fighter.add_to_band(3)
 
-    new_unit1 = Unit(main_db.get_unit_by_name('Антипаладин'))
-    new_unit2 = Unit(main_db.get_unit_by_name('Мраморная гаргулья'))
+    new_unit1 = Unit(v_model.get_unit_by_name('Антипаладин'))
+    new_unit2 = Unit(v_model.get_unit_by_name('Мраморная гаргулья'))
 
     # new_unit1.lvl_up()
 
