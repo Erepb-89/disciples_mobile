@@ -13,7 +13,7 @@ from client_dir.settings import TOWNS, SCREEN_RECT, CAPITAL_ANIM, \
 from client_dir.ui_functions import get_image
 from units_dir.buildings import FACTIONS
 from units_dir.ranking import STARTING_FORMS
-from units_dir.units import main_db
+from units_dir.visual_model import v_model
 
 
 class CapitalWindow(QMainWindow):
@@ -27,7 +27,7 @@ class CapitalWindow(QMainWindow):
         super().__init__()
         # основные переменные
         self.main = main
-        self.faction = main_db.get_current_faction()
+        self.faction = v_model.current_faction
 
         self.InitUI()
 
@@ -155,7 +155,7 @@ class CapitalWindow(QMainWindow):
     def get_already_built(self, branches, slot_dict):
         """Получение всех построенных зданий игрока"""
         for branch in branches:
-            buildings = main_db.get_buildings()._asdict()
+            buildings = v_model.buildings._asdict()
 
             temp_graph = []
             # рекурсивное создание графа уже построенных зданий
