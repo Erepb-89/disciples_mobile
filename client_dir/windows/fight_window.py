@@ -28,8 +28,8 @@ from client_dir.ui_functions import show_no_frame, \
 from client_dir.dialogs.unit_dialog import UnitDialog
 from units_dir.models import Player2Units
 from units_dir.ranking import GOLD_GRADATION
-from units_dir.units import main_db
 from units_dir.battle_unit import Unit
+from units_dir.visual_model import v_model
 
 
 class Thread(QThread):
@@ -756,16 +756,6 @@ class FightWindow(QMainWindow):
         """Юниты под воздействием доп эффектов"""
         return self.new_battle.dotted_units
 
-    @property
-    def campaign_level(self):
-        """Уровень кампании"""
-        return main_db.get_campaign_level()
-
-    @property
-    def difficulty(self):
-        """Уровень сложности"""
-        return main_db.get_difficulty()
-
     def show_poisoned_unit(self):
         """Если ходящий юнит отравлен и т.д."""
         unit = self.curr_unit
@@ -907,9 +897,6 @@ class FightWindow(QMainWindow):
             self.show_no_frames(self.dung_circles_dict, show_no_circle)
 
             self.who_attack()
-            # self.attacker_thread = Thr(target=self.who_attack,
-            #                            name="Attacker Thread")
-            # self.attacker_thread.start()
 
             if 'жизни' in self.curr_unit.attack_type:
                 self.worker = Thread(False)
@@ -918,6 +905,10 @@ class FightWindow(QMainWindow):
 
             self.worker.dataThread.connect(self.show_all_attacked)
             self.worker.start()
+
+            timer = QTimer(self)
+            timer.singleShot(2000, self.unit_gifs_update)
+            del timer
 
     def autofight(self) -> None:
         """Автобой"""
@@ -951,9 +942,11 @@ class FightWindow(QMainWindow):
         if not self.new_battle.battle_is_over:
             self.battle_not_over()
         else:
-            self.worker = Thread(False)
-            self.worker.dataThread.connect(self.battle_over_animations)
-            self.worker.start()
+            timer = QTimer(self)
+            timer.singleShot(1000, self.battle_over_animations)
+            del timer
+
+            self.new_battle.alive_getting_experience()
 
         self.update_log()
         self.new_battle.autofight = False
@@ -973,13 +966,14 @@ class FightWindow(QMainWindow):
             self.parent_window.main.player_list_update()
             self.parent_window.main.player_slots_update()
 
-        self.unit_gifs_update()
         if not self.player1.slots:
             self.show_need_upgrade_effect(self.dung_damaged_dict,
                                           self.player2)
         if not self.player2.slots:
             self.show_need_upgrade_effect(self.unit_damaged_dict,
                                           self.player1)
+
+        self.unit_gifs_update()
 
     def battle_not_over(self):
         """Битва не закончена"""
@@ -989,14 +983,14 @@ class FightWindow(QMainWindow):
     @staticmethod
     def add_gold(mission_number: any) -> None:
         """Добавление золота за победу"""
-        player_gold = main_db.get_gold()
+        player_gold = v_model.gold
 
-        mission_gold = GOLD_GRADATION[main_db.get_campaign_level()][mission_number]
+        mission_gold = GOLD_GRADATION[v_model.campaign_level][mission_number]
 
         changed_gold = player_gold + mission_gold
 
         # обновление золота в базе
-        main_db.update_gold(changed_gold)
+        v_model.set_gold(changed_gold)
 
     def add_upgraded_units(self,
                            player: Player,
@@ -1054,30 +1048,30 @@ class FightWindow(QMainWindow):
     def last_boss_killed(self):
         """Последний Босс кампании повержен"""
         return '15' in self.dungeon \
-               and (self.campaign_level == 5
+               and (v_model.campaign_level == 5
                     or
-                    (self.difficulty == 3
-                     and self.campaign_level == 4))
+                    (v_model.difficulty == 3
+                     and v_model.campaign_level == 4))
 
     def boss_killed(self):
         """Босс кампании повержен"""
         return '15' in self.dungeon \
-               and (self.campaign_level != 5
+               and (v_model.campaign_level != 5
                     or
-                    (self.difficulty == 3
-                     and self.campaign_level != 4))
+                    (v_model.difficulty == 3
+                     and v_model.campaign_level != 4))
 
     def __next_campaign_level(self):
         """Повышение уровня кампании, день + 1, генерация миссий"""
-        main_db.increase_campaign_level()
+        v_model.increase_campaign_level()
         # генерируем миссии
         self.parent_window.update_all_missions(
-            self.campaign_level, self.difficulty)
+            v_model.campaign_level, v_model.difficulty)
 
     def finish_campaign(self):
         """Кампания пройдена"""
         line = f"Поздравляем! Вы прошли кампанию за " \
-               f"{main_db.get_current_faction()}.\n"
+               f"{v_model.current_faction}.\n"
         logging(line)
         global MES_END_CAMPAIGN
         MES_END_CAMPAIGN = MessageWindow(self, line)
@@ -1085,7 +1079,7 @@ class FightWindow(QMainWindow):
 
     def __next_mission(self, mission_number):
         """Переходит на следующую миссию кампании"""
-        main_db.increase_campaign_mission(
+        v_model.increase_campaign_mission(
             mission_number,
             self.parent_window.curr_mission)
 
@@ -1463,8 +1457,6 @@ class FightWindow(QMainWindow):
                              *self.player2.units):
                     self.show_polymorph_animation(unit)
 
-                self.new_battle.alive_getting_experience()
-
             # удаляем цель
             self.new_battle.remove_unit(target)
 
@@ -1769,7 +1761,6 @@ class FightWindow(QMainWindow):
 
     def attack_enemy_by_slot(self, slot: int, side: str) -> None:
         """Атака и анимация по выбранному слоту противника"""
-        # self.unit_gifs_update()
         target = self._unit_by_slot_and_side(slot, side)
 
         # невозможность атаковать своих
