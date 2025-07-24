@@ -12,8 +12,8 @@ from client_dir.settings import HIRE_SCREEN
 from client_dir.ui_functions import show_gif, slot_frame_update, \
     slot_update, button_update
 from client_dir.dialogs.unit_dialog import UnitNameDialog
-from units_dir.units import main_db
 from units_dir.units_factory import AbstractFactory
+from units_dir.visual_model import v_model
 
 
 class ChooseHeroWindow(QMainWindow):
@@ -28,7 +28,7 @@ class ChooseHeroWindow(QMainWindow):
         # основные переменные
         self.choose_faction = parent_window
         self.question = False  # Выбор героя
-        self.faction = main_db.get_current_faction()
+        self.faction = v_model.current_faction
         self.factory = AbstractFactory.create_factory(
             self.faction)
         self.fighter = self.factory.create_hero_fighter()
@@ -85,7 +85,7 @@ class ChooseHeroWindow(QMainWindow):
         show_gif(self.mage, self.ui.gifLabel3)
         show_gif(self.rog, self.ui.gifLabel4)
 
-        self.player_gold = main_db.get_gold()
+        self.player_gold = v_model.gold
         self.ui.gold.setText(str(self.player_gold))
 
         self.show()
@@ -177,7 +177,7 @@ class ChooseHeroWindow(QMainWindow):
         changed_gold = self.player_gold - int(self.highlighted_hero.cost)
 
         # обновление золота в базе
-        main_db.update_gold(changed_gold)
+        v_model.set_gold(changed_gold)
 
         self.highlighted_hero.add_to_band(int(slot))
 
