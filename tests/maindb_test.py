@@ -2,25 +2,26 @@ from unittest import TestCase, main
 
 from units_dir.models import PlayerUnits, CurrentDungeon, AllUnits
 from units_dir.units import main_db
+from units_dir.visual_model import v_model
 
 
 class MainDBTest(TestCase):
 
     def test_get_unit_by_name(self):
         self.assertEqual(
-            main_db.get_unit_by_name('Антипаладин').desc,
+            v_model.get_unit_by_name('Антипаладин').desc,
             'Демоны овладели душой этого некогда святого воина, '
             'их добродетельное прошлое было забыто.')
 
-        self.assertIsNone(main_db.get_unit_by_name('Кадабра'), None)
+        self.assertIsNone(v_model.get_unit_by_name('Кадабра'), None)
 
     def test_get_unit_by_id(self):
         self.assertEqual(
-            main_db.get_unit_by_id(
+            v_model.get_unit_by_id(
                 1, AllUnits).name, 'Адепт')
 
     def test_get_unit_by_slot(self):
-        unit = main_db.get_unit_by_slot(2, PlayerUnits)
+        unit = v_model.get_unit_by_slot(2, PlayerUnits)
         self.assertIsNone(unit)
 
     def test_is_double(self):
@@ -31,54 +32,54 @@ class MainDBTest(TestCase):
     def test_check_slot(self):
         self.assertEqual(main_db.check_slot('Лучник',
                                             2,
-                                            main_db.get_unit_by_slot,
+                                            v_model.get_unit_by_slot,
                                             PlayerUnits),
                          True)
 
         self.assertEqual(main_db.check_slot('Горный гигант',
                                             1,
-                                            main_db.get_unit_by_slot,
+                                            v_model.get_unit_by_slot,
                                             PlayerUnits),
                          True)
 
         self.assertEqual(main_db.check_slot('Стрелок',
                                             2,
-                                            main_db.get_unit_by_slot,
+                                            v_model.get_unit_by_slot,
                                             CurrentDungeon),
                          True)
 
     def test_hire_unit(self):
-        main_db.hire_player_unit('Антипаладин', 2)
-        self.assertEqual(main_db.get_unit_by_slot(2, PlayerUnits).name,
+        v_model.hire_unit_common('Антипаладин', 2)
+        self.assertEqual(v_model.get_unit_by_slot(2, PlayerUnits).name,
                          'Антипаладин')
 
-        main_db.hire_enemy_unit('Сквайр', 2)
+        v_model.hire_enemy_unit('Сквайр', 2)
         self.assertEqual(
-            main_db.get_unit_by_slot(
+            v_model.get_unit_by_slot(
                 2,
                 CurrentDungeon).name,
             'Сквайр')
 
     def test_show_enemy_units(self):
-        units = main_db.show_enemy_units()
+        units = v_model.show_enemy_units()
         self.assertEqual(units[0].name, 'Сквайр')
 
     def test_replace_unit(self):
-        main_db.replace_unit(2, 'Адский рыцарь', PlayerUnits)
-        self.assertEqual(main_db.get_unit_by_slot(2, PlayerUnits).name,
+        v_model.replace_unit(2, 'Адский рыцарь')
+        self.assertEqual(v_model.get_unit_by_slot(2, PlayerUnits).name,
                          'Адский рыцарь')
 
     def test_show_player_units(self):
-        units = main_db.show_player_units()
+        units = v_model.show_player_units()
         self.assertEqual(units[0].name, 'Адский рыцарь')
 
     def test_delete_player_unit(self):
         main_db.delete_player_unit(2)
-        self.assertIsNone(main_db.get_unit_by_slot(2, PlayerUnits))
+        self.assertIsNone(v_model.get_unit_by_slot(2, PlayerUnits))
 
     def test_delete_dungeon_unit(self):
         main_db.delete_dungeon_unit(2)
-        self.assertIsNone(main_db.get_unit_by_slot(2, CurrentDungeon))
+        self.assertIsNone(v_model.get_unit_by_slot(2, CurrentDungeon))
 
 
 if __name__ == '__main__':
