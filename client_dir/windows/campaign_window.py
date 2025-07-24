@@ -1,7 +1,6 @@
 """Окно кампании"""
 import os
 from collections import namedtuple
-from random import randint
 from typing import Callable, Dict
 
 from PyQt5 import QtWidgets, QtCore
@@ -21,8 +20,8 @@ from units_dir.mission_generator import unit_selector, \
     setup_6, setup_5, setup_4, setup_3, boss_mc_setup
 from units_dir.models import CurrentDungeon, EmpireUnits, \
     HordesUnits, LegionsUnits, ClansUnits
-from units_dir.units import main_db
 from units_dir.battle_unit import Unit
+from units_dir.visual_model import v_model
 
 Units = namedtuple('Units', ['name', 'level'])
 
@@ -42,14 +41,14 @@ class CampaignWindow(QMainWindow):
         self.name = 'CampaignWindow'
         self.main = parent_window
         self.difficulty = parent_window.difficulty
-        self.faction = main_db.get_current_faction()
+        self.faction = v_model.current_faction
         self.dungeon = ''
         self.curr_mission = 0
         self.prev_mission = 0
         self.campaign_buttons_dict = {}
         self.campaign_icons_dict = {}
         self.all_missions = {}
-        self.campaign_level = main_db.get_campaign_level()
+        self.campaign_level = v_model.campaign_level
 
         self.campaigns_dict = {
             EM: EmpireUnits,
@@ -58,7 +57,7 @@ class CampaignWindow(QMainWindow):
             MC: ClansUnits,
         }
 
-        self.db_table = self.campaigns_dict[self.faction]
+        self.db_table = v_model.get_db_table(self.faction)
 
         self.InitUI()
 
@@ -115,7 +114,7 @@ class CampaignWindow(QMainWindow):
         self.append_campaign_arrows()
 
         # если в базе нет готовых миссий, создаем их
-        if not main_db.show_dungeon_units(
+        if not v_model.show_dungeon_units(
                 f'{self.faction}_{self.campaign_level}_1'):
             # генерируем их
             self.update_all_missions(self.campaign_level, self.difficulty)
@@ -123,7 +122,7 @@ class CampaignWindow(QMainWindow):
         for mission_num in range(1, 16):
             dung_name = f'{self.faction}_{self.campaign_level}_' \
                         f'{mission_num}'
-            units = main_db.show_dungeon_units(dung_name)
+            units = v_model.show_dungeon_units(dung_name)
             self.all_missions[dung_name] = {
                 1: units[0],
                 2: units[1],
@@ -222,7 +221,7 @@ class CampaignWindow(QMainWindow):
             #                     randint(2, nominal_levels_dict[diff]))
         }
 
-        main_db.add_dungeons(self.all_missions, level)
+        v_model.add_dungeons(self.all_missions, level)
 
     def show_fight_window(self) -> None:
         """Метод создающий окно Битвы."""
@@ -242,7 +241,7 @@ class CampaignWindow(QMainWindow):
     @staticmethod
     def dungeon_unit_by_slot(slot: int) -> Unit:
         """Метод получающий юнита подземелья по слоту."""
-        return main_db.get_unit_by_slot(
+        return v_model.get_unit_by_slot(
             slot,
             CurrentDungeon)
 
@@ -310,7 +309,7 @@ class CampaignWindow(QMainWindow):
         """Обновление иконок миссий кампании"""
         for number, mission in self.all_missions.items():
             num = int(number.split('_')[-1])
-            units = [main_db.get_unit_by_name(unit)
+            units = [v_model.get_unit_by_name(unit)
                      for unit in mission.values() if unit is not None]
 
             # определяем сильнейшее существо в отряде по опыту
@@ -431,7 +430,7 @@ class CampaignWindow(QMainWindow):
     def press_player_army(self) -> None:
         """Нажатие по портрету лидера игрока"""
         players_dict = {}
-        player_units = main_db.show_campaign_units()
+        player_units = v_model.campaign_units
         for unit in player_units:
             players_dict[unit.slot] = unit.name
 
@@ -454,7 +453,7 @@ class CampaignWindow(QMainWindow):
         Определение активности миссий согласно текущему
         положению на карте приключений. Используется граф.
         """
-        session = main_db.get_session_by_faction(self.faction)
+        session = v_model.get_session_by_faction(self.faction)
         self.curr_mission = session.campaign_mission
         self.prev_mission = session.prev_mission
 
@@ -502,7 +501,7 @@ class CampaignWindow(QMainWindow):
         mission_name = f'{self.faction}_{self.campaign_level}_{15}'
         mission = self.all_missions[mission_name]
 
-        units = [main_db.get_unit_by_name(unit)
+        units = [v_model.get_unit_by_name(unit)
                  for unit in mission.values() if unit is not None]
 
         units.sort(key=lambda x: x['exp_per_kill'], reverse=True)
@@ -516,7 +515,7 @@ class CampaignWindow(QMainWindow):
         icon = self.ui.armySlot
 
         # определяем лидера отряда
-        player_units = main_db.show_campaign_units()
+        player_units = v_model.campaign_units
 
         # определяем сильнейшее существо в отряде по опыту
         player_units.sort(key=lambda x: x['exp_per_kill'], reverse=True)
@@ -552,7 +551,7 @@ class CampaignWindow(QMainWindow):
             icon = self.campaign_icons_dict[self.curr_mission]
 
             # определяем лидера отряда
-            player_units = main_db.show_campaign_units()
+            player_units = v_model.campaign_units
             leader = player_units[0]
 
             for unit in player_units:

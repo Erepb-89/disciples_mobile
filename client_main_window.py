@@ -31,8 +31,8 @@ from client_dir.ui_functions import get_unit_image, \
 from client_dir.dialogs.unit_dialog import UnitDialog
 from server.server import MyThread
 from units_dir.models import PlayerUnits, CurrentDungeon
-from units_dir.units import main_db
 from units_dir.battle_unit import Unit
+from units_dir.visual_model import v_model
 
 
 class ClientMainWindow(QMainWindow):
@@ -93,7 +93,6 @@ class ClientMainWindow(QMainWindow):
         self.name = 'ClientMainWindow'
         self.question = False  # увольнение
         self.difficulty = 2
-
         self.player_units_model = None
         self.player_slots_model = None
         self.enemy_units_model = None
@@ -103,7 +102,7 @@ class ClientMainWindow(QMainWindow):
 
         self.InitUI()
 
-        self.difficulty = main_db.get_difficulty()
+        self.difficulty = v_model.difficulty
 
     def InitUI(self):
         """Загружаем конфигурацию окна из дизайнера"""
@@ -437,13 +436,13 @@ class ClientMainWindow(QMainWindow):
 
         player_name = None
         try:
-            player_name = main_db.get_current_player_name()
+            player_name = v_model.current_player_name
         except Exception as err:
             print(err)
         self.ui.currentPlayer.setText(player_name)
         self.ui.currentPlayer.setStyleSheet('color: white')
 
-        main_db.update_game_session()
+        v_model.update_game_session()
 
         self.all_players_list_update()
         self.units_list_update()
@@ -541,8 +540,8 @@ class ClientMainWindow(QMainWindow):
     def check_campaign_session(self):
         """Проверка сессии"""
         session = None
-        if main_db.get_current_player() is not None:
-            session = main_db.get_session_by_faction(self.faction)
+        if v_model.current_player is not None:
+            session = v_model.get_session_by_faction(self.faction)
 
         if session is not None:
             self.unlock_campaign()
@@ -578,8 +577,8 @@ class ClientMainWindow(QMainWindow):
         self.ui.comboDifficulty.setCurrentIndex(self.difficulty - 1)
 
         session = None
-        if main_db.get_current_player() is not None:
-            session = main_db.get_session_by_faction(self.faction)
+        if v_model.current_player is not None:
+            session = v_model.get_session_by_faction(self.faction)
 
         if session is not None:
             self.check_difficulty()
@@ -589,13 +588,13 @@ class ClientMainWindow(QMainWindow):
     def check_difficulty(self) -> None:
         """Устанавливает выбранную сложность"""
         self.difficulty = int(self.ui.comboDifficulty.currentText())
-        main_db.update_session_difficulty(self.difficulty)
+        v_model.update_session_difficulty(self.difficulty)
 
     @staticmethod
     def button_enabled(button, database, num2):
         """Определяет доступность кнопки по юнитам в слотах"""
         try:
-            if main_db.get_unit_by_slot(
+            if v_model.get_unit_by_slot(
                     num2,
                     database).size == BIG:
                 ui_lock(button)
@@ -672,7 +671,7 @@ class ClientMainWindow(QMainWindow):
 
     def get_current_faction(self) -> None:
         """Получение текущей фракции"""
-        self.faction = main_db.get_current_faction()
+        self.faction = v_model.current_faction
         self.ui.currentFaction.setText(self.faction)
         self.ui.currentFaction.setStyleSheet('color: white')
 
@@ -723,7 +722,7 @@ class ClientMainWindow(QMainWindow):
     def player_list_update(self) -> None:
         """Метод обновляющий список юнитов игрока."""
         self.universal_list_update(
-            main_db.show_player_units,
+            v_model.show_player_units,
             self.ui.listPlayerUnits)
 
         self.player_slots_dict = {
@@ -743,7 +742,7 @@ class ClientMainWindow(QMainWindow):
     def enemy_list_update(self) -> None:
         """Метод обновляющий список юнитов противника."""
         self.universal_list_update(
-            main_db.show_enemy_units,
+            v_model.show_enemy_units,
             self.ui.listEnemyUnits)
 
         self.enemy_slots_dict = {
@@ -765,7 +764,7 @@ class ClientMainWindow(QMainWindow):
     def units_list_update(self) -> None:
         """Метод обновляющий список юнитов."""
         self.universal_list_update(
-            main_db.show_all_units,
+            v_model.show_all_units,
             self.ui.listAllUnits)
 
     def check_and_swap(self,
@@ -776,8 +775,8 @@ class ClientMainWindow(QMainWindow):
         Проверить юниты в слотах на наличие и размер.
         Поменять местами вместе с парным юнитом (соседний слот).
         """
-        unit1 = main_db.get_unit_by_slot(num1, db_table)
-        unit2 = main_db.get_unit_by_slot(num2, db_table)
+        unit1 = v_model.get_unit_by_slot(num1, db_table)
+        unit2 = v_model.get_unit_by_slot(num2, db_table)
         func = self.swap_unit_action
 
         if db_table == CurrentDungeon:
@@ -812,7 +811,7 @@ class ClientMainWindow(QMainWindow):
 
     def swap_unit_action(self, slot1: int, slot2: int) -> None:
         """Меняет слоты двух юнитов игрока"""
-        main_db.update_slot(
+        v_model.update_slot(
             slot1,
             slot2,
             PlayerUnits)
@@ -820,7 +819,7 @@ class ClientMainWindow(QMainWindow):
 
     def swap_enemy_action(self, slot1: int, slot2: int) -> None:
         """Меняет слоты двух юнитов подземелья"""
-        main_db.update_slot(
+        v_model.update_slot(
             slot1,
             slot2,
             CurrentDungeon)
@@ -829,7 +828,7 @@ class ClientMainWindow(QMainWindow):
     def delete_unit_action(self) -> None:
         """Метод обработчик нажатия кнопки 'Уволить' у игрока"""
         selected_slot = self.ui.listPlayerSlots.currentIndex().data()
-        unit = main_db.get_unit_by_slot(
+        unit = v_model.get_unit_by_slot(
             selected_slot,
             PlayerUnits)
 
@@ -843,14 +842,14 @@ class ClientMainWindow(QMainWindow):
         """Подтверждение 'Увольнения' юнита игрока"""
         if self.question:
             selected_slot = self.ui.listPlayerSlots.currentIndex().data()
-            main_db.delete_player_unit(int(selected_slot), PlayerUnits)
+            v_model.delete_player_unit(int(selected_slot), PlayerUnits)
             self.player_list_update()
 
     def delete_enemy_unit_action(self) -> None:
         """Метод обработчик нажатия кнопки 'Уволить' у противника"""
         try:
             selected_slot = self.ui.listEnemySlots.currentIndex().data()
-            main_db.delete_player_unit(int(selected_slot), CurrentDungeon)
+            v_model.delete_dungeon_unit(int(selected_slot))
             self.enemy_list_update()
         except TypeError:
             print('Выберите слот, который хотите освободить')
@@ -869,7 +868,7 @@ class ClientMainWindow(QMainWindow):
         try:
             selected_slot = self.ui.listPlayerSlots.currentIndex().data()
             selected = self.ui.listAllUnits.currentIndex().data()
-            main_db.hire_player_unit(
+            v_model.hire_unit_common(
                 selected,
                 int(selected_slot),
                 PlayerUnits)
@@ -882,7 +881,7 @@ class ClientMainWindow(QMainWindow):
         try:
             selected_slot = self.ui.listEnemySlots.currentIndex().data()
             selected = self.ui.listAllUnits.currentIndex().data()
-            main_db.hire_player_unit(
+            v_model.hire_unit_common(
                 selected,
                 int(selected_slot),
                 CurrentDungeon)
@@ -913,7 +912,7 @@ class ClientMainWindow(QMainWindow):
 
     def show_versus_window(self) -> None:
         """Метод создающий окно Битвы."""
-        main_db.transfer_units()
+        v_model.transfer_units()
         self.reset()
 
         global FIGHT_WINDOW
@@ -922,7 +921,7 @@ class ClientMainWindow(QMainWindow):
 
     def show_capital(self) -> None:
         """Метод создающий окно Столицы игрока."""
-        if main_db.get_current_player() is not None:
+        if v_model.current_player is not None:
             global CAPITAL_WINDOW
             CAPITAL_WINDOW = CapitalWindow(self)
             CAPITAL_WINDOW.show()
@@ -931,7 +930,7 @@ class ClientMainWindow(QMainWindow):
 
     def show_choose_race(self) -> None:
         """Метод создающий окно выбора фракции игрока."""
-        if main_db.get_current_player() is not None:
+        if v_model.current_player is not None:
             global CHOOSE_WINDOW
             CHOOSE_WINDOW = ChooseRaceWindow(self)
             CHOOSE_WINDOW.show()
@@ -941,7 +940,7 @@ class ClientMainWindow(QMainWindow):
     def all_players_list_update(self) -> None:
         """Обновление списка всех игроков"""
         self.universal_list_update(
-            main_db.show_all_players,
+            v_model.show_all_players,
             self.ui.PlayersList)
 
     def universal_list_update(self,
@@ -959,7 +958,7 @@ class ClientMainWindow(QMainWindow):
 
     def add_player_action(self) -> None:
         """Метод обработчик нажатия кнопки 'Добавить игрока'"""
-        main_db.create_player(
+        v_model.create_player(
             self.ui.PlayerName.toPlainText(),
             self.ui.Email.toPlainText())
         self.all_players_list_update()
@@ -967,13 +966,13 @@ class ClientMainWindow(QMainWindow):
     def delete_player_action(self) -> None:
         """Метод обработчик нажатия кнопки 'Удалить игрока'"""
         selected = self.ui.PlayersList.currentIndex().data()
-        main_db.delete_player(selected)
+        v_model.delete_player(selected)
         self.all_players_list_update()
 
     def choose_player_action(self) -> None:
         """Метод обработчик нажатия кнопки 'Выбрать игрока'"""
         selected = self.ui.PlayersList.currentIndex().data()
-        main_db.choose_player(selected)
+        v_model.choose_player(selected)
 
         self.ui.currentPlayer.setText(selected)
         self.ui.currentPlayer.setStyleSheet('color: white')
@@ -991,221 +990,221 @@ class ClientMainWindow(QMainWindow):
 
     def slot1_detailed(self) -> None:
         """Метод создающий окно юнита игрока (слот 1)."""
-        unit = main_db.get_unit_by_slot(1, PlayerUnits)
+        unit = v_model.get_unit_by_slot(1, PlayerUnits)
         self.slot_detailed(unit, UnitDialog)
 
     def slot2_detailed(self) -> None:
         """Метод создающий окно юнита игрока (слот 2)."""
-        unit = main_db.get_unit_by_slot(2, PlayerUnits)
+        unit = v_model.get_unit_by_slot(2, PlayerUnits)
         self.slot_detailed(unit, UnitDialog)
 
     def slot3_detailed(self) -> None:
         """Метод создающий окно юнита игрока (слот 3)."""
-        unit = main_db.get_unit_by_slot(3, PlayerUnits)
+        unit = v_model.get_unit_by_slot(3, PlayerUnits)
         self.slot_detailed(unit, UnitDialog)
 
     def slot4_detailed(self) -> None:
         """Метод создающий окно юнита игрока (слот 4)."""
-        unit = main_db.get_unit_by_slot(4, PlayerUnits)
+        unit = v_model.get_unit_by_slot(4, PlayerUnits)
         self.slot_detailed(unit, UnitDialog)
 
     def slot5_detailed(self) -> None:
         """Метод создающий окно юнита игрока (слот 5)."""
-        unit = main_db.get_unit_by_slot(5, PlayerUnits)
+        unit = v_model.get_unit_by_slot(5, PlayerUnits)
         self.slot_detailed(unit, UnitDialog)
 
     def slot6_detailed(self) -> None:
         """Метод создающий окно юнита игрока (слот 6)."""
-        unit = main_db.get_unit_by_slot(6, PlayerUnits)
+        unit = v_model.get_unit_by_slot(6, PlayerUnits)
         self.slot_detailed(unit, UnitDialog)
 
     def en_slot1_detailed(self) -> None:
         """Метод создающий окно вражеского юнита (слот 1)."""
-        unit = main_db.get_unit_by_slot(1, CurrentDungeon)
+        unit = v_model.get_unit_by_slot(1, CurrentDungeon)
         self.slot_detailed(unit, UnitDialog)
 
     def en_slot2_detailed(self) -> None:
         """Метод создающий окно вражеского юнита (слот 2)."""
-        unit = main_db.get_unit_by_slot(2, CurrentDungeon)
+        unit = v_model.get_unit_by_slot(2, CurrentDungeon)
         self.slot_detailed(unit, UnitDialog)
 
     def en_slot3_detailed(self) -> None:
         """Метод создающий окно вражеского юнита (слот 3)."""
-        unit = main_db.get_unit_by_slot(3, CurrentDungeon)
+        unit = v_model.get_unit_by_slot(3, CurrentDungeon)
         self.slot_detailed(unit, UnitDialog)
 
     def en_slot4_detailed(self) -> None:
         """Метод создающий окно вражеского юнита (слот 4)."""
-        unit = main_db.get_unit_by_slot(4, CurrentDungeon)
+        unit = v_model.get_unit_by_slot(4, CurrentDungeon)
         self.slot_detailed(unit, UnitDialog)
 
     def en_slot5_detailed(self) -> None:
         """Метод создающий окно вражеского юнита (слот 5)."""
-        unit = main_db.get_unit_by_slot(5, CurrentDungeon)
+        unit = v_model.get_unit_by_slot(5, CurrentDungeon)
         self.slot_detailed(unit, UnitDialog)
 
     def en_slot6_detailed(self) -> None:
         """Метод создающий окно вражеского юнита (слот 6)."""
-        unit = main_db.get_unit_by_slot(6, CurrentDungeon)
+        unit = v_model.get_unit_by_slot(6, CurrentDungeon)
         self.slot_detailed(unit, UnitDialog)
 
     @staticmethod
     def player_unit_by_slot(slot: int) -> namedtuple:
         """Метод получающий юнита игрока по слоту."""
-        return main_db.get_unit_by_slot(
+        return v_model.get_unit_by_slot(
             slot,
             PlayerUnits)
 
     @staticmethod
     def enemy_unit_by_slot(slot: int) -> namedtuple:
         """Метод получающий вражеского юнита по слоту."""
-        return main_db.get_unit_by_slot(
+        return v_model.get_unit_by_slot(
             slot,
             CurrentDungeon)
 
     @staticmethod
     def upgrade_slot1_unit():
-        unit = main_db.get_unit_by_slot(1, PlayerUnits)
+        unit = v_model.get_unit_by_slot(1, PlayerUnits)
         if unit is not None:
             Unit(unit).upgrade_stats(PlayerUnits)
 
     @staticmethod
     def downgrade_slot1_unit():
-        unit = main_db.get_unit_by_slot(1, PlayerUnits)
+        unit = v_model.get_unit_by_slot(1, PlayerUnits)
         if unit is not None:
-            Unit(unit).downgrade_stats(PlayerUnits)
+            Unit(unit).downgrade_player_stats()
 
     @staticmethod
     def upgrade_slot2_unit():
-        unit = main_db.get_unit_by_slot(2, PlayerUnits)
+        unit = v_model.get_unit_by_slot(2, PlayerUnits)
         if unit is not None:
             Unit(unit).upgrade_stats(PlayerUnits)
 
     @staticmethod
     def downgrade_slot2_unit():
-        unit = main_db.get_unit_by_slot(2, PlayerUnits)
+        unit = v_model.get_unit_by_slot(2, PlayerUnits)
         if unit is not None:
-            Unit(unit).downgrade_stats(PlayerUnits)
+            Unit(unit).downgrade_player_stats()
 
     @staticmethod
     def upgrade_slot3_unit():
-        unit = main_db.get_unit_by_slot(3, PlayerUnits)
+        unit = v_model.get_unit_by_slot(3, PlayerUnits)
         if unit is not None:
             Unit(unit).upgrade_stats(PlayerUnits)
 
     @staticmethod
     def downgrade_slot3_unit():
-        unit = main_db.get_unit_by_slot(3, PlayerUnits)
+        unit = v_model.get_unit_by_slot(3, PlayerUnits)
         if unit is not None:
-            Unit(unit).downgrade_stats(PlayerUnits)
+            Unit(unit).downgrade_player_stats()
 
     @staticmethod
     def upgrade_slot4_unit():
-        unit = main_db.get_unit_by_slot(4, PlayerUnits)
+        unit = v_model.get_unit_by_slot(4, PlayerUnits)
         if unit is not None:
             Unit(unit).upgrade_stats(PlayerUnits)
 
     @staticmethod
     def downgrade_slot4_unit():
-        unit = main_db.get_unit_by_slot(4, PlayerUnits)
+        unit = v_model.get_unit_by_slot(4, PlayerUnits)
         if unit is not None:
-            Unit(unit).downgrade_stats(PlayerUnits)
+            Unit(unit).downgrade_player_stats()
 
     @staticmethod
     def upgrade_slot5_unit():
-        unit = main_db.get_unit_by_slot(5, PlayerUnits)
+        unit = v_model.get_unit_by_slot(5, PlayerUnits)
         if unit is not None:
             Unit(unit).upgrade_stats(PlayerUnits)
 
     @staticmethod
     def downgrade_slot5_unit():
-        unit = main_db.get_unit_by_slot(5, PlayerUnits)
+        unit = v_model.get_unit_by_slot(5, PlayerUnits)
         if unit is not None:
-            Unit(unit).downgrade_stats(PlayerUnits)
+            Unit(unit).downgrade_player_stats()
 
     @staticmethod
     def upgrade_slot6_unit():
-        unit = main_db.get_unit_by_slot(6, PlayerUnits)
+        unit = v_model.get_unit_by_slot(6, PlayerUnits)
         if unit is not None:
             Unit(unit).upgrade_stats(PlayerUnits)
 
     @staticmethod
     def downgrade_slot6_unit():
-        unit = main_db.get_unit_by_slot(6, PlayerUnits)
+        unit = v_model.get_unit_by_slot(6, PlayerUnits)
         if unit is not None:
-            Unit(unit).downgrade_stats(PlayerUnits)
+            Unit(unit).downgrade_player_stats()
 
     @staticmethod
     def upgrade_enemy_slot1_unit():
-        unit = main_db.get_unit_by_slot(1, CurrentDungeon)
+        unit = v_model.get_unit_by_slot(1, CurrentDungeon)
         if unit is not None:
             Unit(unit).upgrade_stats(CurrentDungeon)
 
     @staticmethod
     def downgrade_enemy_slot1_unit():
-        unit = main_db.get_unit_by_slot(1, CurrentDungeon)
+        unit = v_model.get_unit_by_slot(1, CurrentDungeon)
         if unit is not None:
-            Unit(unit).downgrade_stats(CurrentDungeon)
+            Unit(unit).downgrade_enemy_stats()
 
     @staticmethod
     def upgrade_enemy_slot2_unit():
-        unit = main_db.get_unit_by_slot(2, CurrentDungeon)
+        unit = v_model.get_unit_by_slot(2, CurrentDungeon)
         if unit is not None:
             Unit(unit).upgrade_stats(CurrentDungeon)
 
     @staticmethod
     def downgrade_enemy_slot2_unit():
-        unit = main_db.get_unit_by_slot(2, CurrentDungeon)
+        unit = v_model.get_unit_by_slot(2, CurrentDungeon)
         if unit is not None:
-            Unit(unit).downgrade_stats(CurrentDungeon)
+            Unit(unit).downgrade_enemy_stats()
 
     @staticmethod
     def upgrade_enemy_slot3_unit():
-        unit = main_db.get_unit_by_slot(3, CurrentDungeon)
+        unit = v_model.get_unit_by_slot(3, CurrentDungeon)
         if unit is not None:
             Unit(unit).upgrade_stats(CurrentDungeon)
 
     @staticmethod
     def downgrade_enemy_slot3_unit():
-        unit = main_db.get_unit_by_slot(3, CurrentDungeon)
+        unit = v_model.get_unit_by_slot(3, CurrentDungeon)
         if unit is not None:
-            Unit(unit).downgrade_stats(CurrentDungeon)
+            Unit(unit).downgrade_enemy_stats()
 
     @staticmethod
     def upgrade_enemy_slot4_unit():
-        unit = main_db.get_unit_by_slot(4, CurrentDungeon)
+        unit = v_model.get_unit_by_slot(4, CurrentDungeon)
         if unit is not None:
             Unit(unit).upgrade_stats(CurrentDungeon)
 
     @staticmethod
     def downgrade_enemy_slot4_unit():
-        unit = main_db.get_unit_by_slot(4, CurrentDungeon)
+        unit = v_model.get_unit_by_slot(4, CurrentDungeon)
         if unit is not None:
-            Unit(unit).downgrade_stats(CurrentDungeon)
+            Unit(unit).downgrade_enemy_stats()
 
     @staticmethod
     def upgrade_enemy_slot5_unit():
-        unit = main_db.get_unit_by_slot(5, CurrentDungeon)
+        unit = v_model.get_unit_by_slot(5, CurrentDungeon)
         if unit is not None:
             Unit(unit).upgrade_stats(CurrentDungeon)
 
     @staticmethod
     def downgrade_enemy_slot5_unit():
-        unit = main_db.get_unit_by_slot(5, CurrentDungeon)
+        unit = v_model.get_unit_by_slot(5, CurrentDungeon)
         if unit is not None:
-            Unit(unit).downgrade_stats(CurrentDungeon)
+            Unit(unit).downgrade_enemy_stats()
 
     @staticmethod
     def upgrade_enemy_slot6_unit():
-        unit = main_db.get_unit_by_slot(6, CurrentDungeon)
+        unit = v_model.get_unit_by_slot(6, CurrentDungeon)
         if unit is not None:
             Unit(unit).upgrade_stats(CurrentDungeon)
 
     @staticmethod
     def downgrade_enemy_slot6_unit():
-        unit = main_db.get_unit_by_slot(6, CurrentDungeon)
+        unit = v_model.get_unit_by_slot(6, CurrentDungeon)
         if unit is not None:
-            Unit(unit).downgrade_stats(CurrentDungeon)
+            Unit(unit).downgrade_enemy_stats()
 
 
 if __name__ == '__main__':

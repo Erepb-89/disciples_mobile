@@ -12,8 +12,8 @@ from client_dir.settings import TOWN_ARMY, SCREEN_RECT, BIG, GUARDS
 from client_dir.ui_functions import get_unit_image, update_unit_health, \
     get_image, set_beige_colour, get_unit_face
 from client_dir.dialogs.unit_dialog import UnitDialog
-from units_dir.units import main_db
 from units_dir.units_factory import AbstractFactory
+from units_dir.visual_model import v_model
 
 
 class CapitalArmyWindow(QMainWindow):
@@ -90,15 +90,16 @@ class CapitalArmyWindow(QMainWindow):
         # основные переменные
         self.capital = parent_window
         self.question = False
-        self.faction = main_db.get_current_faction()
-        self.db_table = main_db.campaigns_dict[self.faction]
-        self.res_db_table = main_db.res_campaigns_dict[self.faction]
+        self.faction = v_model.current_faction
+        self.db_table = v_model.get_db_table(self.faction)
+        self.res_db_table = v_model.get_res_db_table(self.faction)
         self.factory = AbstractFactory.create_factory(
             self.faction)
         self.support = self.factory.create_support()
         self.special = self.factory.create_special()
         self.setAttribute(Qt.WA_DeleteOnClose)
         self.player_gold = 0
+        self.player_units = []
 
         self.current_label = ''
         self.current_unit = None
@@ -297,7 +298,7 @@ class CapitalArmyWindow(QMainWindow):
 
         self._update_all_unit_health()
 
-        self.player_gold = main_db.get_gold()
+        self.player_gold = v_model.gold
         self.ui.gold.setText(str(self.player_gold))
 
         self.reset()
@@ -328,7 +329,7 @@ class CapitalArmyWindow(QMainWindow):
         icon = self.ui.heroFace
 
         # определяем лидера отряда
-        player_units = main_db.show_campaign_units()
+        player_units = v_model.campaign_units
 
         self.leader = player_units[0]
         for unit in player_units:
@@ -343,10 +344,10 @@ class CapitalArmyWindow(QMainWindow):
 
     def set_text_leadership(self, unit: any):
         """Отображает лидерство героя"""
-        player_units = main_db.show_campaign_units()
+        # player_units = v_model.campaign_units
         squad_points = 0
 
-        for unit_ in player_units:
+        for unit_ in self.player_units:
             squad_points += 2 if unit_.size == BIG else 1
 
         self.ui.leadership.setText(f'{squad_points - 1} / {unit.leadership}')
@@ -427,9 +428,8 @@ class CapitalArmyWindow(QMainWindow):
 
     def player_list_update(self) -> None:
         """Метод обновляющий список юнитов игрока."""
-        player_units = main_db.show_db_units(self.db_table)
         self.player_units_model = QStandardItemModel()
-        for i in player_units:
+        for i in self.player_units:
             item = QStandardItem(i.name)
             item.setEditable(False)
             self.player_units_model.appendRow(item)
@@ -471,6 +471,8 @@ class CapitalArmyWindow(QMainWindow):
 
     def reset(self) -> None:
         """Обновить"""
+        self.player_units = v_model.campaign_units
+
         self._update_all_unit_health()
         self.player_list_update()
         # отобразить лидерство
@@ -479,7 +481,7 @@ class CapitalArmyWindow(QMainWindow):
     def delete_unit_action(self) -> None:
         """Метод обработчик нажатия кнопки 'Уволить'"""
         selected_slot = self.ui.listPlayerSlots.currentIndex().data()
-        unit = main_db.get_unit_by_slot(selected_slot, self.db_table)
+        unit = v_model.get_unit_by_slot(selected_slot, self.db_table)
 
         if unit is not None:
             global QUESTION_WINDOW
@@ -491,7 +493,7 @@ class CapitalArmyWindow(QMainWindow):
         """Подтверждение 'Увольнения' юнита"""
         if self.question:
             selected_slot = self.ui.listPlayerSlots.currentIndex().data()
-            main_db.delete_player_unit(int(selected_slot), self.db_table)
+            v_model.delete_campaign_unit(int(selected_slot))
             self.reset()
             self.capital.main.reset()
 
@@ -555,8 +557,8 @@ class CapitalArmyWindow(QMainWindow):
         Проверить юниты в слотах на наличие и размер.
         Поменять местами вместе с парным юнитом (соседний слот).
         """
-        unit1 = main_db.get_unit_by_slot(num1, db_table)
-        unit2 = main_db.get_unit_by_slot(num2, db_table)
+        unit1 = v_model.get_unit_by_slot(num1, db_table)
+        unit2 = v_model.get_unit_by_slot(num2, db_table)
         func = self.swap_unit_action
 
         if unit1 is not None \
@@ -595,8 +597,8 @@ class CapitalArmyWindow(QMainWindow):
         Проверить юниты в слотах на наличие и размер.
         Поменять местами вместе с парным юнитом (соседний слот).
         """
-        unit1 = main_db.get_unit_by_slot(num1, db_table1)
-        unit2 = main_db.get_unit_by_slot(num2, db_table2)
+        unit1 = v_model.get_unit_by_slot(num1, db_table1)
+        unit2 = v_model.get_unit_by_slot(num2, db_table2)
         func = self.swap_unit_tables_action
 
         if unit1 is not None \
@@ -639,9 +641,8 @@ class CapitalArmyWindow(QMainWindow):
         """
         allow_swap = False
         squad_points = 0
-        player_units = main_db.show_campaign_units()
 
-        for unit in player_units:
+        for unit in self.player_units:
             squad_points += 2 if unit.size == BIG else 1
 
         if db_table == self.db_table:
@@ -672,7 +673,7 @@ class CapitalArmyWindow(QMainWindow):
 
     def swap_unit_action(self, slot1: int, slot2: int, db_table: any) -> None:
         """Меняет слоты двух юнитов игрока"""
-        main_db.update_slot(
+        v_model.update_slot(
             slot1,
             slot2,
             db_table)
@@ -686,7 +687,7 @@ class CapitalArmyWindow(QMainWindow):
                                 db_table1: any,
                                 db_table2: any) -> None:
         """Меняет слоты двух юнитов игрока между таблицами"""
-        main_db.update_slots_between_tables(
+        v_model.update_slots_between_tables(
             slot1,
             slot2,
             db_table1,
@@ -767,12 +768,12 @@ class CapitalArmyWindow(QMainWindow):
 
     def player_unit_by_slot(self, slot: int) -> namedtuple:
         """Метод получающий юнит игрока по слоту."""
-        return main_db.get_unit_by_slot(
+        return v_model.get_unit_by_slot(
             slot,
             self.db_table)
 
     def reserve_unit_by_slot(self, slot: int) -> namedtuple:
         """Метод получающий резервный юнит по слоту в столице."""
-        return main_db.get_unit_by_slot(
+        return v_model.get_unit_by_slot(
             slot,
             self.res_db_table)

@@ -10,7 +10,7 @@ from PyQt5.QtWidgets import QDialog, QLabel, QWidget
 from client_dir.settings import ARMY_BG, BIG, PORTRAITS
 from client_dir.ui_functions import get_unit_image
 from client_dir.dialogs.unit_dialog import UnitDialog
-from units_dir.units import main_db
+from units_dir.visual_model import v_model
 
 
 class ArmyDialog(QDialog):
@@ -57,9 +57,9 @@ class ArmyDialog(QDialog):
         self.player = player
         self.current_label = ''
         self.source = ''
-        self.faction = main_db.get_current_faction()
-        self.db_table = main_db.campaigns_dict[self.faction]
-        self.res_db_table = main_db.res_campaigns_dict[self.faction]
+        self.faction = v_model.current_faction
+        self.db_table = v_model.get_db_table(self.faction)
+        self.res_db_table = v_model.get_res_db_table(self.faction)
 
         self.setFixedSize(607, 554)
         self.setWindowTitle('Окно армии')
@@ -208,7 +208,7 @@ class ArmyDialog(QDialog):
     def portrait_update(self) -> None:
         """Метод обновляющий портрет лидера"""
         # определяем сильнейшее существо в отряде по опыту
-        units = [main_db.get_unit_by_name(unit)
+        units = [v_model.get_unit_by_name(unit)
                  for unit in self.units.values() if unit is not None]
 
         units.sort(key=lambda x: x['exp_per_kill'], reverse=True)
@@ -260,7 +260,7 @@ class ArmyDialog(QDialog):
 
     def player_unit_by_slot(self, slot: int) -> namedtuple:
         """Метод получающий юнита игрока по слоту."""
-        return main_db.get_unit_by_slot(
+        return v_model.get_unit_by_slot(
             slot,
             self.db_table)
 
@@ -268,9 +268,9 @@ class ArmyDialog(QDialog):
         """Получние юнита игрока либо компьютера"""
         unit = None
         if self.player == 'Computer':
-            unit = main_db.get_unit_by_name(self.units[slot])
+            unit = v_model.get_unit_by_name(self.units[slot])
         else:
-            unit = main_db.get_unit_by_slot(slot, self.db_table)
+            unit = v_model.get_unit_by_slot(slot, self.db_table)
         return unit
 
     def check_and_swap(self, num1: int, num2: int, db_table: any):
@@ -278,8 +278,8 @@ class ArmyDialog(QDialog):
         Проверить юниты в слотах на наличие и размер.
         Поменять местами вместе с парным юнитом (соседний слот).
         """
-        unit1 = main_db.get_unit_by_slot(num1, db_table)
-        unit2 = main_db.get_unit_by_slot(num2, db_table)
+        unit1 = v_model.get_unit_by_slot(num1, db_table)
+        unit2 = v_model.get_unit_by_slot(num2, db_table)
         func = self.swap_unit_action
 
         if unit1 is not None \
@@ -311,7 +311,7 @@ class ArmyDialog(QDialog):
 
     def swap_unit_action(self, slot1: int, slot2: int) -> None:
         """Меняет слоты двух юнитов игрока"""
-        main_db.update_slot(
+        v_model.update_slot(
             slot1,
             slot2,
             self.db_table)
@@ -321,7 +321,7 @@ class ArmyDialog(QDialog):
         """Метод обновляющий список юнитов подземелья"""
         for num, icon_slot in self.slots_dict.items():
             if num in self.units.keys():
-                unit = main_db.get_unit_by_name(self.units[num])
+                unit = v_model.get_unit_by_name(self.units[num])
                 self.slot_update(unit, icon_slot)
 
     def list_update(self) -> None:

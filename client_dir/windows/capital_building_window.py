@@ -21,7 +21,7 @@ from client_dir.ui_functions import set_size_by_unit, get_unit_image, \
 from client_dir.dialogs.unit_dialog import UnitDialog
 from units_dir.buildings import FACTIONS, BRANCHES
 from units_dir.ranking import STARTING_FORMS
-from units_dir.units import main_db
+from units_dir.visual_model import v_model
 
 
 class CapitalBuildingWindow(QMainWindow):
@@ -36,7 +36,7 @@ class CapitalBuildingWindow(QMainWindow):
         # основные переменные
         self.capital = parent_window
         self.question = False  # Постройка зданий
-        self.faction = main_db.get_current_faction()
+        self.faction = v_model.current_faction
         self.branch = 'archer'
         self.building_name = ''
         self.building_cost = 0
@@ -50,7 +50,7 @@ class CapitalBuildingWindow(QMainWindow):
         self.show_all_branch_icons()
         self.slot_update(self.unit, self.ui.slot)
         self.button_update(self.unit, self.ui.pushButtonSlot)
-        self.player_gold = main_db.get_gold()
+        self.player_gold = v_model.gold
         self.ui.gold.setText(str(self.player_gold))
 
     def InitUI(self):
@@ -297,7 +297,7 @@ class CapitalBuildingWindow(QMainWindow):
             self.ui.prevLevelText.setText('Пред. уровень:')
 
             if b_slot < 10:
-                prev_unit_name = main_db.get_unit_by_b_name(
+                prev_unit_name = v_model.get_unit_by_b_name(
                     self.branch_settings[b_slot].prev)
 
                 self.ui.prevLevel.setText(prev_unit_name)
@@ -376,7 +376,7 @@ class CapitalBuildingWindow(QMainWindow):
         temp_graph = []
 
         # получение всех построенных зданий игрока
-        buildings = main_db.get_buildings()._asdict()
+        buildings = v_model.buildings._asdict()
 
         if self.branch != OTHERS:
             # рекурсивное создание графа уже построенных зданий
@@ -413,7 +413,7 @@ class CapitalBuildingWindow(QMainWindow):
         temp_graph = []
 
         # получение всех построенных зданий игрока
-        buildings = main_db.get_buildings()._asdict()
+        buildings = v_model.buildings._asdict()
 
         if self.branch != OTHERS:
             # рекурсивное создание графа уже построенных зданий
@@ -460,7 +460,7 @@ class CapitalBuildingWindow(QMainWindow):
 
             elif '' in temp_graph \
                     and len(self.graph) < 2 \
-                    and main_db.get_gold() >= self.building_cost:
+                    and v_model.gold >= self.building_cost:
                 self.set_text_and_buy_slot(READY_TO_BUILD,
                                            True)
 
@@ -474,7 +474,7 @@ class CapitalBuildingWindow(QMainWindow):
                 self.set_text_and_buy_slot(ANOTHER_BRANCH,
                                            False)
 
-            elif main_db.get_gold() >= self.building_cost:
+            elif v_model.gold >= self.building_cost:
                 self.set_text_and_buy_slot(READY_TO_BUILD,
                                            True)
 
@@ -488,7 +488,7 @@ class CapitalBuildingWindow(QMainWindow):
                 self.set_text_and_buy_slot(ALREADY_BUILT,
                                            False)
 
-            elif main_db.get_gold() >= self.building_cost:
+            elif v_model.gold >= self.building_cost:
                 self.set_text_and_buy_slot(READY_TO_BUILD,
                                            True)
 
@@ -496,7 +496,7 @@ class CapitalBuildingWindow(QMainWindow):
                 self.set_text_and_buy_slot(NOT_ENOUGH_GOLD,
                                            False)
 
-        if main_db.get_built():
+        if v_model.get_built():
             self.set_text_and_buy_slot(
                 'Сегодня уже была совершена постройка', False)
 
@@ -553,7 +553,7 @@ class CapitalBuildingWindow(QMainWindow):
     def get_unit_by_b_slot(self, b_slot: int) -> Optional[namedtuple]:
         """Получение юнита по слоту постройки"""
         try:
-            unit = main_db.get_unit_by_name(
+            unit = v_model.get_unit_by_name(
                 self.branch_settings[b_slot].unit_name)
             return unit
         except KeyError:
@@ -680,7 +680,7 @@ class CapitalBuildingWindow(QMainWindow):
         if self.question:
             # берем из базы уже построенные здания
             changed_buildings = list(
-                main_db.get_buildings())
+                v_model.buildings)
 
             # определяем текущую постройку
             if self.building_name == 'Гильдия':
@@ -696,23 +696,23 @@ class CapitalBuildingWindow(QMainWindow):
                     self.building_name
 
             # обновление построек в текущей сессии
-            main_db.update_buildings(
-                main_db.get_current_player_name(),
+            v_model.update_buildings(
+                v_model.current_player_name,
                 self.faction,
                 changed_buildings)
 
             # получение текущего количества золота
-            self.player_gold = main_db.get_gold()
+            self.player_gold = v_model.gold
             changed_gold = self.player_gold - self.building_cost
 
             # обновление золота в базе
-            main_db.update_gold(changed_gold)
+            v_model.set_gold(changed_gold)
             self.ui.gold.setText(str(changed_gold))
 
             # уже строили сегодня
-            main_db.set_built_to_1()
+            v_model.set_built_to_1()
 
-            main_db.update_session_built()
+            v_model.update_session_built()
 
             self.set_building_possibility()
             self.show_already_built()

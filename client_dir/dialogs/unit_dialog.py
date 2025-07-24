@@ -5,7 +5,7 @@ from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QDialog
 
 from client_dir.settings import UNIT_FRAME, PORTRAITS
-from units_dir.units import main_db
+from units_dir.visual_model import v_model
 
 
 class UnitDialog(QDialog):
@@ -721,7 +721,7 @@ class UnitNameDialog(QDialog):
         self.earthResist.setFont(font)
         self.earthResist.setObjectName("earthResist")
 
-        unit = main_db.get_unit_by_name(unit)
+        unit = v_model.get_unit_by_name(unit)
         unit_frame = QPixmap(UNIT_FRAME)
         portrait_img = QPixmap(f"{PORTRAITS}{unit.name}.gif")
         self.background.setPixmap(unit_frame)

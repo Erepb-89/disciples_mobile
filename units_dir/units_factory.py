@@ -3,7 +3,7 @@
 import abc
 
 from client_dir.settings import EM, UH, LD, MC
-from units_dir.units import main_db
+from units_dir.visual_model import v_model
 
 
 # Empire classes
@@ -29,7 +29,7 @@ class EmpireFighter:
     @staticmethod
     def add_to_band(slot):
         """Сквайр. Найм в отряд игрока"""
-        main_db.hire_unit('Сквайр', slot)
+        v_model.hire_unit('Сквайр', slot)
 
 
 class EmpireMage:
@@ -53,7 +53,7 @@ class EmpireMage:
     @staticmethod
     def add_to_band(slot):
         """Ученик. Найм в отряд игрока"""
-        main_db.hire_unit('Ученик', slot)
+        v_model.hire_unit('Ученик', slot)
 
 
 class EmpireArcher:
@@ -77,7 +77,7 @@ class EmpireArcher:
     @staticmethod
     def add_to_band(slot):
         """Лучник. Найм в отряд игрока"""
-        main_db.hire_unit('Лучник', slot)
+        v_model.hire_unit('Лучник', slot)
 
 
 class EmpireSupport:
@@ -101,7 +101,7 @@ class EmpireSupport:
     @staticmethod
     def add_to_band(slot):
         """Послушник. Найм в отряд игрока"""
-        main_db.hire_unit('Послушник', slot)
+        v_model.hire_unit('Послушник', slot)
 
 
 class EmpireSpecial:
@@ -129,7 +129,7 @@ class EmpireSpecial:
     @staticmethod
     def add_to_band(slot):
         """Титан. Найм в отряд игрока"""
-        main_db.hire_unit('Титан', slot)
+        v_model.hire_unit('Титан', slot)
 
 
 # герои Империи
@@ -154,7 +154,7 @@ class EmpireHeroFighter:
     @staticmethod
     def add_to_band(slot):
         """Рыцарь на пегасе. Найм в отряд игрока"""
-        main_db.hire_unit('Рыцарь на пегасе', slot)
+        v_model.hire_unit('Рыцарь на пегасе', slot)
 
 
 class EmpireHeroMage:
@@ -178,7 +178,7 @@ class EmpireHeroMage:
     @staticmethod
     def add_to_band(slot):
         """Архимаг. Найм в отряд игрока"""
-        main_db.hire_unit('Архимаг', slot)
+        v_model.hire_unit('Архимаг', slot)
 
 
 class EmpireHeroArcher:
@@ -202,7 +202,7 @@ class EmpireHeroArcher:
     @staticmethod
     def add_to_band(slot):
         """Рейнджер. Найм в отряд игрока"""
-        main_db.hire_unit('Рейнджер', slot)
+        v_model.hire_unit('Рейнджер', slot)
 
 
 class EmpireHeroRog:
@@ -226,7 +226,7 @@ class EmpireHeroRog:
     @staticmethod
     def add_to_band(slot):
         """Архангел. Найм в отряд игрока"""
-        main_db.hire_unit('Архангел', slot)
+        v_model.hire_unit('Архангел', slot)
 
 
 # Hordes classes
@@ -252,7 +252,7 @@ class HordesFighter:
     @staticmethod
     def add_to_band(slot):
         """Боец. Найм в отряд игрока"""
-        main_db.hire_unit('Боец', slot)
+        v_model.hire_unit('Боец', slot)
 
 
 class HordesMage:
@@ -276,7 +276,7 @@ class HordesMage:
     @staticmethod
     def add_to_band(slot):
         """Посвящённый. Найм в отряд игрока"""
-        main_db.hire_unit('Посвящённый', slot)
+        v_model.hire_unit('Посвящённый', slot)
 
 
 class HordesArcher:
@@ -300,7 +300,7 @@ class HordesArcher:
     @staticmethod
     def add_to_band(slot):
         """Привидение. Найм в отряд игрока"""
-        main_db.hire_unit('Привидение', slot)
+        v_model.hire_unit('Привидение', slot)
 
 
 class HordesSupport:
@@ -324,7 +324,7 @@ class HordesSupport:
     @staticmethod
     def add_to_band(slot):
         """Виверна. Найм в отряд игрока"""
-        main_db.hire_unit('Виверна', slot)
+        v_model.hire_unit('Виверна', slot)
 
 
 class HordesSpecial:
@@ -352,7 +352,7 @@ class HordesSpecial:
     @staticmethod
     def add_to_band(slot):
         """Оборотень. Найм в отряд игрока"""
-        main_db.hire_unit('Оборотень', slot)
+        v_model.hire_unit('Оборотень', slot)
 
 
 # герои Орд нежити
@@ -377,7 +377,7 @@ class HordesHeroFighter:
     @staticmethod
     def add_to_band(slot):
         """Рыцарь смерти. Найм в отряд игрока"""
-        main_db.hire_unit('Рыцарь смерти', slot)
+        v_model.hire_unit('Рыцарь смерти', slot)
 
 
 class HordesHeroMage:
@@ -401,7 +401,7 @@ class HordesHeroMage:
     @staticmethod
     def add_to_band(slot):
         """Королева личей. Найм в отряд игрока"""
-        main_db.hire_unit('Королева личей', slot)
+        v_model.hire_unit('Королева личей', slot)
 
 
 class HordesHeroArcher:
@@ -425,7 +425,7 @@ class HordesHeroArcher:
     @staticmethod
     def add_to_band(slot):
         """Носферату. Найм в отряд игрока"""
-        main_db.hire_unit('Носферату', slot)
+        v_model.hire_unit('Носферату', slot)
 
 
 class HordesHeroRog:
@@ -449,7 +449,7 @@ class HordesHeroRog:
     @staticmethod
     def add_to_band(slot):
         """Баньши. Найм в отряд игрока"""
-        main_db.hire_unit('Баньши', slot)
+        v_model.hire_unit('Баньши', slot)
 
 
 # Legions classes
@@ -475,7 +475,7 @@ class LegionsFighter:
     @staticmethod
     def add_to_band(slot):
         """Одержимый. Найм в отряд игрока"""
-        main_db.hire_unit('Одержимый', slot)
+        v_model.hire_unit('Одержимый', slot)
 
 
 class LegionsMage:
@@ -499,7 +499,7 @@ class LegionsMage:
     @staticmethod
     def add_to_band(slot):
         """Сектант. Найм в отряд игрока"""
-        main_db.hire_unit('Сектант', slot)
+        v_model.hire_unit('Сектант', slot)
 
 
 class LegionsArcher:
@@ -523,7 +523,7 @@ class LegionsArcher:
     @staticmethod
     def add_to_band(slot):
         """Гаргулья. Найм в отряд игрока"""
-        main_db.hire_unit('Гаргулья', slot)
+        v_model.hire_unit('Гаргулья', slot)
 
 
 class LegionsSupport:
@@ -547,7 +547,7 @@ class LegionsSupport:
     @staticmethod
     def add_to_band(slot):
         """Чёрт. Найм в отряд игрока"""
-        main_db.hire_unit('Чёрт', slot)
+        v_model.hire_unit('Чёрт', slot)
 
 
 class LegionsSpecial:
@@ -575,7 +575,7 @@ class LegionsSpecial:
     @staticmethod
     def add_to_band(slot):
         """Изверг. Найм в отряд игрока"""
-        main_db.hire_unit('Изверг', slot)
+        v_model.hire_unit('Изверг', slot)
 
 
 # герои Легионов проклятых
@@ -600,7 +600,7 @@ class LegionsHeroFighter:
     @staticmethod
     def add_to_band(slot):
         """Герцог. Найм в отряд игрока"""
-        main_db.hire_unit('Герцог', slot)
+        v_model.hire_unit('Герцог', slot)
 
 
 class LegionsHeroMage:
@@ -624,7 +624,7 @@ class LegionsHeroMage:
     @staticmethod
     def add_to_band(slot):
         """Архидьявол. Найм в отряд игрока"""
-        main_db.hire_unit('Архидьявол', slot)
+        v_model.hire_unit('Архидьявол', slot)
 
 
 class LegionsHeroArcher:
@@ -648,7 +648,7 @@ class LegionsHeroArcher:
     @staticmethod
     def add_to_band(slot):
         """Советник. Найм в отряд игрока"""
-        main_db.hire_unit('Советник', slot)
+        v_model.hire_unit('Советник', slot)
 
 
 class LegionsHeroRog:
@@ -672,7 +672,7 @@ class LegionsHeroRog:
     @staticmethod
     def add_to_band(slot):
         """Баронесса. Найм в отряд игрока"""
-        main_db.hire_unit('Баронесса', slot)
+        v_model.hire_unit('Баронесса', slot)
 
 
 # Clans classes
@@ -698,7 +698,7 @@ class ClansFighter:
     @staticmethod
     def add_to_band(slot):
         """Гном. Найм в отряд игрока"""
-        main_db.hire_unit('Гном', slot)
+        v_model.hire_unit('Гном', slot)
 
 
 class ClansMage:
@@ -722,7 +722,7 @@ class ClansMage:
     @staticmethod
     def add_to_band(slot):
         """Желторотик. Найм в отряд игрока"""
-        main_db.hire_unit('Желторотик', slot)
+        v_model.hire_unit('Желторотик', slot)
 
 
 class ClansArcher:
@@ -746,7 +746,7 @@ class ClansArcher:
     @staticmethod
     def add_to_band(slot):
         """Метатель топоров. Найм в отряд игрока"""
-        main_db.hire_unit('Метатель топоров', slot)
+        v_model.hire_unit('Метатель топоров', slot)
 
 
 class ClansSupport:
@@ -770,7 +770,7 @@ class ClansSupport:
     @staticmethod
     def add_to_band(slot):
         """Холмовой гигант. Найм в отряд игрока"""
-        main_db.hire_unit('Холмовой гигант', slot)
+        v_model.hire_unit('Холмовой гигант', slot)
 
     @staticmethod
     def lvl_up(slot):
@@ -808,7 +808,7 @@ class ClansSpecial:
     @staticmethod
     def add_to_band(slot):
         """Йети. Найм в отряд игрока"""
-        main_db.hire_unit('Йети', slot)
+        v_model.hire_unit('Йети', slot)
 
     @staticmethod
     def lvl_up(slot):
@@ -837,7 +837,7 @@ class ClansHeroFighter:
     @staticmethod
     def add_to_band(slot):
         """Королевский страж. Найм в отряд игрока"""
-        main_db.hire_unit('Королевский страж', slot)
+        v_model.hire_unit('Королевский страж', slot)
 
 
 class ClansHeroMage:
@@ -861,7 +861,7 @@ class ClansHeroMage:
     @staticmethod
     def add_to_band(slot):
         """Хранитель знаний. Найм в отряд игрока"""
-        main_db.hire_unit('Хранитель знаний', slot)
+        v_model.hire_unit('Хранитель знаний', slot)
 
 
 class ClansHeroArcher:
@@ -885,7 +885,7 @@ class ClansHeroArcher:
     @staticmethod
     def add_to_band(slot):
         """Инженер. Найм в отряд игрока"""
-        main_db.hire_unit('Инженер', slot)
+        v_model.hire_unit('Инженер', slot)
 
 
 class ClansHeroRog:
@@ -909,7 +909,7 @@ class ClansHeroRog:
     @staticmethod
     def add_to_band(slot):
         """Гном-чемпион. Найм в отряд игрока"""
-        main_db.hire_unit('Гном-чемпион', slot)
+        v_model.hire_unit('Гном-чемпион', slot)
 
 
 class AbstractFactory(abc.ABC):
