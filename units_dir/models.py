@@ -1,100 +1,53 @@
 class AllUnits:
     """Класс - отображение таблицы всех юнитов."""
 
-    def __init__(self,
-                 id: int,
-                 name: str,
-                 level: int,
-                 size: str,
-                 price: int,
-                 exp: int,
-                 curr_exp: int,
-                 exp_per_kill: int,
-                 health: int,
-                 curr_health: int,
-                 armor: int,
-                 immune: str,
-                 ward: str,
-                 attack_type: str,
-                 attack_chance: str,
-                 attack_dmg: int,
-                 dot_dmg: int,
-                 attack_source: str,
-                 attack_ini: int,
-                 attack_radius: str,
-                 attack_purpose: int,
-                 prev_level: str,
-                 desc: str,
-                 photo: str,
-                 gif: str,
-                 slot: int,
-                 subrace: str,
-                 branch: str,
-                 attack_twice: int,
-                 regen: int,
-                 dyn_upd_level: int,
-                 upgrade_b: str,
-                 leadership: int,
-                 leader_cat: str,
-                 nat_armor: int,
-                 might: int,
-                 weapon_master: int,
-                 endurance: int,
-                 first_strike: int,
-                 accuracy: int,
-                 water_resist: int,
-                 air_resist: int,
-                 fire_resist: int,
-                 earth_resist: int,
-                 dotted: int,
-                 locked: int,
-                 ):
+    def __init__(self, unit):
         self.id = None
-        self.name = name
-        self.level = level
-        self.size = size
-        self.price = price
-        self.exp = exp
-        self.curr_exp = curr_exp
-        self.exp_per_kill = exp_per_kill
-        self.health = health
-        self.curr_health = curr_health
-        self.armor = armor
-        self.immune = immune
-        self.ward = ward
-        self.attack_type = attack_type
-        self.attack_chance = attack_chance
-        self.attack_dmg = attack_dmg
-        self.dot_dmg = dot_dmg
-        self.attack_source = attack_source
-        self.attack_ini = attack_ini
-        self.attack_radius = attack_radius
-        self.attack_purpose = attack_purpose
-        self.prev_level = prev_level
-        self.desc = desc
-        self.photo = photo
-        self.gif = gif
-        self.slot = slot
-        self.subrace = subrace
-        self.branch = branch
-        self.attack_twice = attack_twice
-        self.regen = regen
-        self.dyn_upd_level = dyn_upd_level
-        self.upgrade_b = upgrade_b
-        self.leadership = leadership
-        self.leader_cat = leader_cat
-        self.nat_armor = nat_armor
-        self.might = might
-        self.weapon_master = weapon_master
-        self.endurance = endurance
-        self.first_strike = first_strike
-        self.accuracy = accuracy
-        self.water_resist = water_resist
-        self.air_resist = air_resist
-        self.fire_resist = fire_resist
-        self.earth_resist = earth_resist
-        self.dotted = dotted
-        self.locked = locked
+        self.name = unit.name
+        self.level = unit.level
+        self.size = unit.size
+        self.price = unit.price
+        self.exp = unit.exp
+        self.curr_exp = unit.curr_exp
+        self.exp_per_kill = unit.exp_per_kill
+        self.health = unit.health
+        self.curr_health = unit.curr_health
+        self.armor = unit.armor
+        self.immune = unit.immune
+        self.ward = unit.ward
+        self.attack_type = unit.attack_type
+        self.attack_chance = unit.attack_chance
+        self.attack_dmg = unit.attack_dmg
+        self.dot_dmg = unit.dot_dmg
+        self.attack_source = unit.attack_source
+        self.attack_ini = unit.attack_ini
+        self.attack_radius = unit.attack_radius
+        self.attack_purpose = unit.attack_purpose
+        self.prev_level = unit.prev_level
+        self.desc = unit.desc
+        self.photo = unit.photo
+        self.gif = unit.gif
+        self.slot = unit.slot
+        self.subrace = unit.subrace
+        self.branch = unit.branch
+        self.attack_twice = unit.attack_twice
+        self.regen = unit.regen
+        self.dyn_upd_level = unit.dyn_upd_level
+        self.upgrade_b = unit.upgrade_b
+        self.leadership = unit.leadership
+        self.leader_cat = unit.leader_cat
+        self.nat_armor = unit.nat_armor
+        self.might = unit.might
+        self.weapon_master = unit.weapon_master
+        self.endurance = unit.endurance
+        self.first_strike = unit.first_strike
+        self.accuracy = unit.accuracy
+        self.water_resist = unit.water_resist
+        self.air_resist = unit.air_resist
+        self.fire_resist = unit.fire_resist
+        self.earth_resist = unit.earth_resist
+        self.dotted = unit.dotted
+        self.locked = unit.locked
 
 
 class PlayerUnits(AllUnits):
@@ -294,6 +247,8 @@ class PlayerBuildings:
 
 class GameSessions:
     """Класс - игровые сессии."""
+
+    session_id = None
 
     def __init__(self,
                  player_id: int,

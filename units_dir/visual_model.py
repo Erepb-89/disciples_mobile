@@ -239,13 +239,13 @@ class VisualModel:
 
             if changed_unit is not None \
                     and changed_unit.name not in GUARDS:
-                source_unit = new_db_table(*changed_unit)
+                source_unit = new_db_table(changed_unit)
                 source_unit.slot = new_slot
                 self.delete_player_unit(slot, db_table)
 
             if second_unit is not None \
                     and second_unit.name not in GUARDS:
-                new_unit = db_table(*second_unit)
+                new_unit = db_table(second_unit)
                 new_unit.slot = slot
                 self.delete_player_unit(new_slot, new_db_table)
 
@@ -299,7 +299,7 @@ class VisualModel:
         unit_row = self.get_unit_by_name(
             self.get_guards(self.current_faction))
 
-        guard_unit = db_table(*unit_row)
+        guard_unit = db_table(unit_row)
         guard_unit.slot = 3
 
         main_db.hire_unit(guard_unit)
@@ -330,7 +330,7 @@ class VisualModel:
             if self.is_double(unit_row.name) and slot % 2 == 1:
                 slot += 1
 
-            unit = db_table(*unit_row)
+            unit = db_table(unit_row)
             unit.slot = slot
 
             main_db.hire_unit(unit)
