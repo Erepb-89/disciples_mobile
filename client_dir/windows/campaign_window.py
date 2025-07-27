@@ -309,12 +309,7 @@ class CampaignWindow(QMainWindow):
         """Обновление иконок миссий кампании"""
         for number, mission in self.all_missions.items():
             num = int(number.split('_')[-1])
-            units = [v_model.get_unit_by_name(unit)
-                     for unit in mission.values() if unit is not None]
-
-            # определяем сильнейшее существо в отряде по опыту
-            units.sort(key=lambda x: x['exp_per_kill'], reverse=True)
-            strongest_unit = units[0]
+            strongest_unit = self.get_strongest_unit(mission)
 
             slot_update(
                 strongest_unit,
@@ -323,6 +318,16 @@ class CampaignWindow(QMainWindow):
             button_update(
                 strongest_unit,
                 self.campaign_buttons_dict[num])
+
+    @staticmethod
+    def get_strongest_unit(units_dict: dict):
+        """Определяем сильнейшее существо в отряде по опыту"""
+        units = [v_model.get_unit_by_name(unit)
+                 for unit in units_dict.values() if unit is not None]
+        # определяем сильнейшее существо в отряде по опыту
+        units.sort(key=lambda x: x.exp_per_kill, reverse=True)
+        strongest_unit = units[0]
+        return strongest_unit
 
     @staticmethod
     def show_red_frame(gif_slot: QtWidgets.QPushButton) -> None:
@@ -504,7 +509,7 @@ class CampaignWindow(QMainWindow):
         units = [v_model.get_unit_by_name(unit)
                  for unit in mission.values() if unit is not None]
 
-        units.sort(key=lambda x: x['exp_per_kill'], reverse=True)
+        units.sort(key=lambda x: x.exp_per_kill, reverse=True)
         self.boss = units[0]
 
         # обновляем портрет
@@ -518,7 +523,7 @@ class CampaignWindow(QMainWindow):
         player_units = v_model.campaign_units
 
         # определяем сильнейшее существо в отряде по опыту
-        player_units.sort(key=lambda x: x['exp_per_kill'], reverse=True)
+        player_units.sort(key=lambda x: x.exp_per_kill, reverse=True)
         leader = player_units[0]
 
         for unit in player_units:
