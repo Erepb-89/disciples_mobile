@@ -132,7 +132,7 @@ class Battle:
             if source_unit is not None:
                 unit_level = self.dungeon_units[unit_slot + 6]
 
-                unit = CurrentDungeon(*source_unit)
+                unit = CurrentDungeon(source_unit)
                 unit.slot = new_slot
 
                 v_model.add_dungeon_unit(unit)

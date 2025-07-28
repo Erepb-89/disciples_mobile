@@ -1,6 +1,7 @@
 """Диалог показывает окно вражеской армии"""
 import os
 from collections import namedtuple
+from typing import List
 
 from PyQt5 import QtCore, QtWidgets, QtGui
 from PyQt5.QtCore import QMimeData, QVariant, QEvent, Qt
@@ -10,6 +11,7 @@ from PyQt5.QtWidgets import QDialog, QLabel, QWidget
 from client_dir.settings import ARMY_BG, BIG, PORTRAITS
 from client_dir.ui_functions import get_unit_image
 from client_dir.dialogs.unit_dialog import UnitDialog
+from units_dir.battle_unit import Unit
 from units_dir.visual_model import v_model
 
 
@@ -53,7 +55,7 @@ class ArmyDialog(QDialog):
 
     def __init__(self, units: dict, player: str):
         super().__init__()
-        self.units = units
+        self.units_dict = units
         self.player = player
         self.current_label = ''
         self.source = ''
@@ -208,11 +210,7 @@ class ArmyDialog(QDialog):
     def portrait_update(self) -> None:
         """Метод обновляющий портрет лидера"""
         # определяем сильнейшее существо в отряде по опыту
-        units = [v_model.get_unit_by_name(unit)
-                 for unit in self.units.values() if unit is not None]
-
-        units.sort(key=lambda x: x['exp_per_kill'], reverse=True)
-        strongest_unit = units[0]
+        strongest_unit, units = self.get_strongest_unit(self.units_dict)
 
         # если есть лидер, ставим его сильнейшим
         for unit in units:
@@ -222,6 +220,15 @@ class ArmyDialog(QDialog):
         self.portrait.setPixmap(QPixmap(
             os.path.join(PORTRAITS, f"{strongest_unit.name}.gif")))
         self.unitName.setText(strongest_unit.name)
+
+    @staticmethod
+    def get_strongest_unit(units: dict) -> (Unit, List):
+        """Получение сильнейшего юнита из отряда"""
+        units = [v_model.get_unit_by_name(unit)
+                 for unit in units.values() if unit is not None]
+        units.sort(key=lambda x: x.exp_per_kill, reverse=True)
+        strongest_unit = units[0]
+        return strongest_unit, units
 
     def set_coords_double_slots(self, ui_obj: any) -> None:
         """Задание координат для 'двойных' слотов"""
@@ -265,10 +272,9 @@ class ArmyDialog(QDialog):
             self.db_table)
 
     def get_unit_by_player(self, slot) -> namedtuple:
-        """Получние юнита игрока либо компьютера"""
-        unit = None
+        """Получение юнита игрока либо компьютера"""
         if self.player == 'Computer':
-            unit = v_model.get_unit_by_name(self.units[slot])
+            unit = v_model.get_unit_by_name(self.units_dict.get(slot))
         else:
             unit = v_model.get_unit_by_slot(slot, self.db_table)
         return unit
@@ -320,8 +326,8 @@ class ArmyDialog(QDialog):
     def dungeon_list_update(self) -> None:
         """Метод обновляющий список юнитов подземелья"""
         for num, icon_slot in self.slots_dict.items():
-            if num in self.units.keys():
-                unit = v_model.get_unit_by_name(self.units[num])
+            if num in self.units_dict.keys():
+                unit = v_model.get_unit_by_name(self.units_dict.get(num))
                 self.slot_update(unit, icon_slot)
 
     def list_update(self) -> None:

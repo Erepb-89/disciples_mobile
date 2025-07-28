@@ -223,52 +223,7 @@ class ServerStorage:
         Создаёт запись в таблице CurrentDungeon.
         """
         unit_row = CurrentDungeon(
-            unit.id,
-            unit.name,
-            unit.level,
-            unit.size,
-            unit.price,
-            unit.exp,
-            unit.curr_exp,
-            unit.exp_per_kill,
-            unit.health,
-            unit.curr_health,
-            unit.armor,
-            unit.immune,
-            unit.ward,
-            unit.attack_type,
-            unit.attack_chance,
-            unit.attack_dmg,
-            unit.dot_dmg,
-            unit.attack_source,
-            unit.attack_ini,
-            unit.attack_radius,
-            unit.attack_purpose,
-            unit.prev_level,
-            unit.desc,
-            unit.photo,
-            unit.gif,
-            unit.slot,
-            unit.subrace,
-            unit.branch,
-            unit.attack_twice,
-            unit.regen,
-            unit.dyn_upd_level,
-            unit.upgrade_b,
-            unit.leadership,
-            unit.leader_cat,
-            unit.nat_armor,
-            unit.might,
-            unit.weapon_master,
-            unit.endurance,
-            unit.first_strike,
-            unit.accuracy,
-            unit.water_resist,
-            unit.air_resist,
-            unit.fire_resist,
-            unit.earth_resist,
-            unit.dotted,
-            unit.locked
+            unit
         )
         self.session.add(unit_row)
         self.session.commit()
@@ -276,52 +231,7 @@ class ServerStorage:
     def get_unit_by_name(self, name: str) -> namedtuple:
         """Метод получающий юнита из таблицы AllUnits по имени."""
         query = self.session.query(
-            AllUnits.id,
-            AllUnits.name,
-            AllUnits.level,
-            AllUnits.size,
-            AllUnits.price,
-            AllUnits.exp,
-            AllUnits.curr_exp,
-            AllUnits.exp_per_kill,
-            AllUnits.health,
-            AllUnits.curr_health,
-            AllUnits.armor,
-            AllUnits.immune,
-            AllUnits.ward,
-            AllUnits.attack_type,
-            AllUnits.attack_chance,
-            AllUnits.attack_dmg,
-            AllUnits.dot_dmg,
-            AllUnits.attack_source,
-            AllUnits.attack_ini,
-            AllUnits.attack_radius,
-            AllUnits.attack_purpose,
-            AllUnits.prev_level,
-            AllUnits.desc,
-            AllUnits.photo,
-            AllUnits.gif,
-            AllUnits.slot,
-            AllUnits.subrace,
-            AllUnits.branch,
-            AllUnits.attack_twice,
-            AllUnits.regen,
-            AllUnits.dyn_upd_level,
-            AllUnits.upgrade_b,
-            AllUnits.leadership,
-            AllUnits.leader_cat,
-            AllUnits.nat_armor,
-            AllUnits.might,
-            AllUnits.weapon_master,
-            AllUnits.endurance,
-            AllUnits.first_strike,
-            AllUnits.accuracy,
-            AllUnits.water_resist,
-            AllUnits.air_resist,
-            AllUnits.fire_resist,
-            AllUnits.earth_resist,
-            AllUnits.dotted,
-            AllUnits.locked
+            AllUnits
         ).filter_by(name=name)
         # Возвращаем кортеж
         return query.first()
@@ -331,51 +241,7 @@ class ServerStorage:
                                       level: int) -> namedtuple:
         """Метод получающий юнита из таблицы AllUnits по ветви."""
         query = self.session.query(
-            AllUnits.id,
-            AllUnits.name,
-            AllUnits.level,
-            AllUnits.size,
-            AllUnits.price,
-            AllUnits.exp,
-            AllUnits.curr_exp,
-            AllUnits.exp_per_kill,
-            AllUnits.health,
-            AllUnits.curr_health,
-            AllUnits.armor,
-            AllUnits.immune,
-            AllUnits.ward,
-            AllUnits.attack_type,
-            AllUnits.attack_chance,
-            AllUnits.attack_dmg,
-            AllUnits.dot_dmg,
-            AllUnits.attack_source,
-            AllUnits.attack_ini,
-            AllUnits.attack_radius,
-            AllUnits.attack_purpose,
-            AllUnits.prev_level,
-            AllUnits.desc,
-            AllUnits.photo,
-            AllUnits.gif,
-            AllUnits.slot,
-            AllUnits.subrace,
-            AllUnits.branch,
-            AllUnits.attack_twice,
-            AllUnits.regen,
-            AllUnits.dyn_upd_level,
-            AllUnits.upgrade_b,
-            AllUnits.leadership,
-            AllUnits.leader_cat,
-            AllUnits.nat_armor,
-            AllUnits.might,
-            AllUnits.weapon_master,
-            AllUnits.endurance,
-            AllUnits.first_strike,
-            AllUnits.accuracy,
-            AllUnits.water_resist,
-            AllUnits.air_resist,
-            AllUnits.fire_resist,
-            AllUnits.earth_resist,
-            AllUnits.dotted
+            AllUnits
         ).filter_by(branch=branch, level=level)
         # return query.order_by(AllUnits.level.desc()).first()
         # Возвращаем кортеж
@@ -385,51 +251,7 @@ class ServerStorage:
                           level: int) -> namedtuple:
         """Метод получающий юнита из таблицы AllUnits по ветви."""
         query = self.session.query(
-            AllUnits.id,
-            AllUnits.name,
-            AllUnits.level,
-            AllUnits.size,
-            AllUnits.price,
-            AllUnits.exp,
-            AllUnits.curr_exp,
-            AllUnits.exp_per_kill,
-            AllUnits.health,
-            AllUnits.curr_health,
-            AllUnits.armor,
-            AllUnits.immune,
-            AllUnits.ward,
-            AllUnits.attack_type,
-            AllUnits.attack_chance,
-            AllUnits.attack_dmg,
-            AllUnits.dot_dmg,
-            AllUnits.attack_source,
-            AllUnits.attack_ini,
-            AllUnits.attack_radius,
-            AllUnits.attack_purpose,
-            AllUnits.prev_level,
-            AllUnits.desc,
-            AllUnits.photo,
-            AllUnits.gif,
-            AllUnits.slot,
-            AllUnits.subrace,
-            AllUnits.branch,
-            AllUnits.attack_twice,
-            AllUnits.regen,
-            AllUnits.dyn_upd_level,
-            AllUnits.upgrade_b,
-            AllUnits.leadership,
-            AllUnits.leader_cat,
-            AllUnits.nat_armor,
-            AllUnits.might,
-            AllUnits.weapon_master,
-            AllUnits.endurance,
-            AllUnits.first_strike,
-            AllUnits.accuracy,
-            AllUnits.water_resist,
-            AllUnits.air_resist,
-            AllUnits.fire_resist,
-            AllUnits.earth_resist,
-            AllUnits.dotted
+            AllUnits
         ).filter_by(branch='summon', level=level, size='Обычный')
         # Возвращаем кортеж
         return query.all()
@@ -497,15 +319,7 @@ class ServerStorage:
                                faction: str) -> any:
         """Метод получающий игровую сессию по игроку и фракции."""
         query = self.session.query(
-            GameSessions.session_id,
-            GameSessions.player_id,
-            GameSessions.faction,
-            GameSessions.campaign_level,
-            GameSessions.campaign_mission,
-            GameSessions.prev_mission,
-            GameSessions.day,
-            GameSessions.built,
-            GameSessions.difficulty
+            GameSessions
         ).filter_by(player_id=self.current_player.id,
                     faction=faction)
         # Возвращаем кортеж
@@ -515,15 +329,7 @@ class ServerStorage:
         """Метод получающий текущую игровую сессию
         (последнюю запись из таблицы GameSessions)."""
         query = self.session.query(
-            GameSessions.session_id,
-            GameSessions.player_id,
-            GameSessions.faction,
-            GameSessions.campaign_level,
-            GameSessions.campaign_mission,
-            GameSessions.prev_mission,
-            GameSessions.day,
-            GameSessions.built,
-            GameSessions.difficulty
+            GameSessions
         ).filter_by(player_id=player_id, faction=self.current_faction)
         # Возвращаем кортеж
         return query.order_by(GameSessions.session_id.desc()).first()
@@ -531,52 +337,7 @@ class ServerStorage:
     def get_unit_by_id(self, _id: int, db_table: AllUnits) -> namedtuple:
         """Метод получающий юнита из общей таблица юнитов по id."""
         query = self.session.query(
-            db_table.id,
-            db_table.name,
-            db_table.level,
-            db_table.size,
-            db_table.price,
-            db_table.exp,
-            db_table.curr_exp,
-            db_table.exp_per_kill,
-            db_table.health,
-            db_table.curr_health,
-            db_table.armor,
-            db_table.immune,
-            db_table.ward,
-            db_table.attack_type,
-            db_table.attack_chance,
-            db_table.attack_dmg,
-            db_table.dot_dmg,
-            db_table.attack_source,
-            db_table.attack_ini,
-            db_table.attack_radius,
-            db_table.attack_purpose,
-            db_table.prev_level,
-            db_table.desc,
-            db_table.photo,
-            db_table.gif,
-            db_table.slot,
-            db_table.subrace,
-            db_table.branch,
-            db_table.attack_twice,
-            db_table.regen,
-            db_table.dyn_upd_level,
-            db_table.upgrade_b,
-            db_table.leadership,
-            db_table.leader_cat,
-            db_table.nat_armor,
-            db_table.might,
-            db_table.weapon_master,
-            db_table.endurance,
-            db_table.first_strike,
-            db_table.accuracy,
-            db_table.water_resist,
-            db_table.air_resist,
-            db_table.fire_resist,
-            db_table.earth_resist,
-            db_table.dotted,
-            db_table.locked
+            db_table
         ).filter_by(id=_id)
         # Возвращаем кортеж
         return query.first()
@@ -584,52 +345,7 @@ class ServerStorage:
     def get_unit_by_slot(self, slot: int, db_table: AllUnits) -> namedtuple:
         """Метод получающий юнита из переданной таблицы по слоту."""
         query = self.session.query(
-            db_table.id,
-            db_table.name,
-            db_table.level,
-            db_table.size,
-            db_table.price,
-            db_table.exp,
-            db_table.curr_exp,
-            db_table.exp_per_kill,
-            db_table.health,
-            db_table.curr_health,
-            db_table.armor,
-            db_table.immune,
-            db_table.ward,
-            db_table.attack_type,
-            db_table.attack_chance,
-            db_table.attack_dmg,
-            db_table.dot_dmg,
-            db_table.attack_source,
-            db_table.attack_ini,
-            db_table.attack_radius,
-            db_table.attack_purpose,
-            db_table.prev_level,
-            db_table.desc,
-            db_table.photo,
-            db_table.gif,
-            db_table.slot,
-            db_table.subrace,
-            db_table.branch,
-            db_table.attack_twice,
-            db_table.regen,
-            db_table.dyn_upd_level,
-            db_table.upgrade_b,
-            db_table.leadership,
-            db_table.leader_cat,
-            db_table.nat_armor,
-            db_table.might,
-            db_table.weapon_master,
-            db_table.endurance,
-            db_table.first_strike,
-            db_table.accuracy,
-            db_table.water_resist,
-            db_table.air_resist,
-            db_table.fire_resist,
-            db_table.earth_resist,
-            db_table.dotted,
-            db_table.locked
+            db_table
         ).filter_by(slot=slot)
         # Возвращаем кортеж
         return query.first()
@@ -637,52 +353,7 @@ class ServerStorage:
     def get_units_by_level(self, level: int) -> namedtuple:
         """Метод получения всех юнитов заданного уровня."""
         query = self.session.query(
-            AllUnits.id,
-            AllUnits.name,
-            AllUnits.level,
-            AllUnits.size,
-            AllUnits.price,
-            AllUnits.exp,
-            AllUnits.curr_exp,
-            AllUnits.exp_per_kill,
-            AllUnits.health,
-            AllUnits.curr_health,
-            AllUnits.armor,
-            AllUnits.immune,
-            AllUnits.ward,
-            AllUnits.attack_type,
-            AllUnits.attack_chance,
-            AllUnits.attack_dmg,
-            AllUnits.dot_dmg,
-            AllUnits.attack_source,
-            AllUnits.attack_ini,
-            AllUnits.attack_radius,
-            AllUnits.attack_purpose,
-            AllUnits.prev_level,
-            AllUnits.desc,
-            AllUnits.photo,
-            AllUnits.gif,
-            AllUnits.slot,
-            AllUnits.subrace,
-            AllUnits.branch,
-            AllUnits.attack_twice,
-            AllUnits.regen,
-            AllUnits.dyn_upd_level,
-            AllUnits.upgrade_b,
-            AllUnits.leadership,
-            AllUnits.leader_cat,
-            AllUnits.nat_armor,
-            AllUnits.might,
-            AllUnits.weapon_master,
-            AllUnits.endurance,
-            AllUnits.first_strike,
-            AllUnits.accuracy,
-            AllUnits.water_resist,
-            AllUnits.air_resist,
-            AllUnits.fire_resist,
-            AllUnits.earth_resist,
-            AllUnits.dotted,
-            AllUnits.locked
+            AllUnits
         ).filter(AllUnits.level == level,
                  AllUnits.branch != 'hero')
         # Возвращаем список кортежей
@@ -693,50 +364,7 @@ class ServerStorage:
         db_table = self.campaigns_dict[self.current_faction]
 
         query = self.session.query(
-            db_table.id,
-            db_table.name,
-            db_table.level,
-            db_table.size,
-            db_table.price,
-            db_table.exp,
-            db_table.curr_exp,
-            db_table.exp_per_kill,
-            db_table.health,
-            db_table.curr_health,
-            db_table.armor,
-            db_table.immune,
-            db_table.ward,
-            db_table.attack_type,
-            db_table.attack_chance,
-            db_table.attack_dmg,
-            db_table.dot_dmg,
-            db_table.attack_source,
-            db_table.attack_ini,
-            db_table.attack_radius,
-            db_table.attack_purpose,
-            db_table.prev_level,
-            db_table.desc,
-            db_table.slot,
-            db_table.subrace,
-            db_table.branch,
-            db_table.attack_twice,
-            db_table.regen,
-            db_table.dyn_upd_level,
-            db_table.upgrade_b,
-            db_table.leadership,
-            db_table.leader_cat,
-            db_table.nat_armor,
-            db_table.might,
-            db_table.weapon_master,
-            db_table.endurance,
-            db_table.first_strike,
-            db_table.accuracy,
-            db_table.water_resist,
-            db_table.air_resist,
-            db_table.fire_resist,
-            db_table.earth_resist,
-            db_table.dotted,
-            db_table.locked
+            db_table
         ).order_by(db_table.slot)
         # Возвращаем список кортежей
         return query.all()
@@ -744,50 +372,7 @@ class ServerStorage:
     def show_player_units(self) -> List[namedtuple]:
         """Метод возвращающий список юнитов игрока."""
         query = self.session.query(
-            PlayerUnits.id,
-            PlayerUnits.name,
-            PlayerUnits.level,
-            PlayerUnits.size,
-            PlayerUnits.price,
-            PlayerUnits.exp,
-            PlayerUnits.curr_exp,
-            PlayerUnits.exp_per_kill,
-            PlayerUnits.health,
-            PlayerUnits.curr_health,
-            PlayerUnits.armor,
-            PlayerUnits.immune,
-            PlayerUnits.ward,
-            PlayerUnits.attack_type,
-            PlayerUnits.attack_chance,
-            PlayerUnits.attack_dmg,
-            PlayerUnits.dot_dmg,
-            PlayerUnits.attack_source,
-            PlayerUnits.attack_ini,
-            PlayerUnits.attack_radius,
-            PlayerUnits.attack_purpose,
-            PlayerUnits.prev_level,
-            PlayerUnits.desc,
-            PlayerUnits.slot,
-            PlayerUnits.subrace,
-            PlayerUnits.branch,
-            PlayerUnits.attack_twice,
-            PlayerUnits.regen,
-            PlayerUnits.dyn_upd_level,
-            PlayerUnits.upgrade_b,
-            PlayerUnits.leadership,
-            PlayerUnits.leader_cat,
-            PlayerUnits.nat_armor,
-            PlayerUnits.might,
-            PlayerUnits.weapon_master,
-            PlayerUnits.endurance,
-            PlayerUnits.first_strike,
-            PlayerUnits.accuracy,
-            PlayerUnits.water_resist,
-            PlayerUnits.air_resist,
-            PlayerUnits.fire_resist,
-            PlayerUnits.earth_resist,
-            PlayerUnits.dotted,
-            PlayerUnits.locked
+            PlayerUnits
         ).order_by(PlayerUnits.slot)
         # Возвращаем список кортежей
         return query.all()
@@ -795,50 +380,7 @@ class ServerStorage:
     def show_enemy_units(self) -> List[namedtuple]:
         """Метод возвращающий список юнитов противника."""
         query = self.session.query(
-            CurrentDungeon.id,
-            CurrentDungeon.name,
-            CurrentDungeon.level,
-            CurrentDungeon.size,
-            CurrentDungeon.price,
-            CurrentDungeon.exp,
-            CurrentDungeon.curr_exp,
-            CurrentDungeon.exp_per_kill,
-            CurrentDungeon.health,
-            CurrentDungeon.curr_health,
-            CurrentDungeon.armor,
-            CurrentDungeon.immune,
-            CurrentDungeon.ward,
-            CurrentDungeon.attack_type,
-            CurrentDungeon.attack_chance,
-            CurrentDungeon.attack_dmg,
-            CurrentDungeon.dot_dmg,
-            CurrentDungeon.attack_source,
-            CurrentDungeon.attack_ini,
-            CurrentDungeon.attack_radius,
-            CurrentDungeon.attack_purpose,
-            CurrentDungeon.prev_level,
-            CurrentDungeon.desc,
-            CurrentDungeon.slot,
-            CurrentDungeon.subrace,
-            CurrentDungeon.branch,
-            CurrentDungeon.attack_twice,
-            CurrentDungeon.regen,
-            CurrentDungeon.dyn_upd_level,
-            CurrentDungeon.upgrade_b,
-            CurrentDungeon.leadership,
-            CurrentDungeon.leader_cat,
-            CurrentDungeon.nat_armor,
-            CurrentDungeon.might,
-            CurrentDungeon.weapon_master,
-            CurrentDungeon.endurance,
-            CurrentDungeon.first_strike,
-            CurrentDungeon.accuracy,
-            CurrentDungeon.water_resist,
-            CurrentDungeon.air_resist,
-            CurrentDungeon.fire_resist,
-            CurrentDungeon.earth_resist,
-            CurrentDungeon.dotted,
-            CurrentDungeon.locked
+            CurrentDungeon
         ).order_by(CurrentDungeon.slot)
         # Возвращаем список кортежей
         return query.all()
@@ -1366,52 +908,7 @@ class ServerStorage:
     def show_all_units(self) -> List[namedtuple]:
         """Метод возвращающий список всех известных юнитов."""
         query = self.session.query(
-            AllUnits.id,
-            AllUnits.name,
-            AllUnits.level,
-            AllUnits.size,
-            AllUnits.price,
-            AllUnits.exp,
-            AllUnits.curr_exp,
-            AllUnits.exp_per_kill,
-            AllUnits.health,
-            AllUnits.curr_health,
-            AllUnits.armor,
-            AllUnits.immune,
-            AllUnits.ward,
-            AllUnits.attack_type,
-            AllUnits.attack_chance,
-            AllUnits.attack_dmg,
-            AllUnits.dot_dmg,
-            AllUnits.attack_source,
-            AllUnits.attack_ini,
-            AllUnits.attack_radius,
-            AllUnits.attack_purpose,
-            AllUnits.prev_level,
-            AllUnits.desc,
-            AllUnits.photo,
-            AllUnits.gif,
-            AllUnits.slot,
-            AllUnits.subrace,
-            AllUnits.branch,
-            AllUnits.attack_twice,
-            AllUnits.regen,
-            AllUnits.dyn_upd_level,
-            AllUnits.upgrade_b,
-            AllUnits.leadership,
-            AllUnits.leader_cat,
-            AllUnits.nat_armor,
-            AllUnits.might,
-            AllUnits.weapon_master,
-            AllUnits.endurance,
-            AllUnits.first_strike,
-            AllUnits.accuracy,
-            AllUnits.water_resist,
-            AllUnits.air_resist,
-            AllUnits.fire_resist,
-            AllUnits.earth_resist,
-            AllUnits.dotted,
-            AllUnits.locked
+            AllUnits
         )
         # Возвращаем список кортежей
         return query.all()
@@ -1485,10 +982,5 @@ main_db = ServerStorage('../disc2.db')
 if __name__ == '__main__':
     # for item in main_db.show_all_units():
     #     print(item)
-
-    # заполнение игроков
-    # main_db.create_player('Erepb', 'erepbXXX@yandex.ru')
-    # main_db.update_player(1, 'Erepb-89', 'erepbXXX@yandex.ru')
-    # print(main_db.get_player('Erepb-89'))
 
     print(1)
