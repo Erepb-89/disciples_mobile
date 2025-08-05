@@ -3,7 +3,6 @@
 from collections import namedtuple
 from random import randint
 from typing import List
-import sqlite3
 
 from sqlalchemy import create_engine, Table, update, Column, Integer, \
     String, MetaData
@@ -970,7 +969,6 @@ main_db = ServerStorage('../disc2.db')
 # main_db = ServerStorage('../disc2_pg.db')
 # main_db.show_all_units()
 
-# conn = sqlite3.connect("../disc2.db")
 # curr = conn.cursor()
 #
 # def add_columns():
