@@ -140,7 +140,7 @@ class Battle:
 
                 if unit is not None:
                     if unit_level > 1:
-                        for _ in range(unit_level):
+                        for _ in range(1, unit_level):
                             unit = self.dungeon_unit_by_slot(new_slot)
                             Unit(unit).upgrade_stats(CurrentDungeon)
 

@@ -201,8 +201,17 @@ class VisualModel:
             else:
                 names_list.append('<null>')
 
-        for _ in range(6):
-            names_list.append('1')
+        for slot in range(1, 7):
+            try:
+                unit = self.get_unit_by_slot(
+                    slot, CurrentDungeon)
+            except AttributeError:
+                unit = None
+
+            if unit is not None:
+                names_list.append(unit.level)
+            else:
+                names_list.append('1')
 
         main_db.transfer_units(names_list)
 

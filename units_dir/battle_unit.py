@@ -452,7 +452,7 @@ class Unit:
 
     def get_faction_units(self,
                           graph_dict: Dict[str, list]) -> List[str]:
-        """Получние всех фракционных юнитов"""
+        """Получение всех фракционных юнитов"""
         # Постройки
         buildings = v_model.buildings._asdict()
 

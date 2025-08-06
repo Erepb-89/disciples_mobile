@@ -264,17 +264,17 @@ class FightWindow(QMainWindow):
                     and unit.curr_health != 0:
 
                 if event.type() == QEvent.Enter:
-                    self.enter_thread = Thr(target=self.event_enter(
+                    enter_thread = Thr(target=self.event_enter(
                         unit, side, ui_dict, num),
                         name="Enter Thread")
-                    self.enter_thread.start()
+                    enter_thread.start()
 
                     # self.event_enter(unit, side, ui_dict, num)
 
                 elif event.type() == QEvent.Leave:
-                    self.leave_thread = Thr(target=self.event_leave(ui_dict),
-                                            name="Leave Thread")
-                    self.leave_thread.start()
+                    leave_thread = Thr(target=self.event_leave(ui_dict),
+                                       name="Leave Thread")
+                    leave_thread.start()
 
                     # self.event_leave(ui_dict)
 
@@ -311,7 +311,7 @@ class FightWindow(QMainWindow):
                     num: int):
         """
         Проверка юнита на свой/чужой при наведении курсора.
-        Установка gif'ки круга определенног цвета под юнитом
+        Установка gif'ки круга определенного цвета под юнитом
         """
         if unit not in self.new_battle.current_player.units:
             if self.curr_unit.attack_purpose == 6:
@@ -325,7 +325,19 @@ class FightWindow(QMainWindow):
                 self.show_circle_r(unit, ui_dict.get(num))
 
         if unit in self.new_battle.current_player.units:
-            self.show_circle_y(unit, ui_dict.get(num))
+            if self.curr_unit.attack_purpose == 6 \
+                    and self.curr_unit.attack_type in HEAL_LIST:
+                for key in ui_dict.keys():
+                    unit = self._unit_by_slot_and_side(key, side)
+                    if unit is not None \
+                            and unit.curr_health != 0 \
+                            and unit.slot in self.new_battle.targets:
+                        self.show_circle_g(unit, ui_dict.get(key))
+            else:
+                if self.curr_unit.attack_type in HEAL_LIST:
+                    self.show_circle_g(unit, ui_dict.get(num))
+                else:
+                    self.show_circle_y(unit, ui_dict.get(num))
 
     def keyPressEvent(self, event):
         """Метод обработки нажатия клавиш A, D, W"""
@@ -943,7 +955,7 @@ class FightWindow(QMainWindow):
             self.battle_not_over()
         else:
             timer = QTimer(self)
-            timer.singleShot(1000, self.battle_over_animations)
+            timer.singleShot(2000, self.battle_over_animations)
             del timer
 
             self.new_battle.alive_getting_experience()
@@ -1383,36 +1395,36 @@ class FightWindow(QMainWindow):
         self.clear_effects()
 
         # прорисовка модели атакующего юнита
-        self.attacker_thread = Thr(target=self.show_attacker(self.curr_unit),
-                                   name="Attacker Thread")
-        self.attacker_thread.start()
+        attacker_thread = Thr(target=self.show_attacker(self.curr_unit),
+                              name="Attacker Thread")
+        attacker_thread.start()
 
         # self.show_attacker(self.curr_unit)
 
         # прорисовка эффектов атакующего юнита
-        self.attacker_eff_thread = Thr(
+        attacker_eff_thread = Thr(
             target=self.show_attacker_eff(self.curr_unit),
             name="Attacker Effect Thread")
-        self.attacker_eff_thread.start()
+        attacker_eff_thread.start()
 
         # self.show_attacker_eff(self.curr_unit)
 
         # прорисовка тени атакующего юнита
-        self.attacker_shadow_thread = Thr(
+        attacker_shadow_thread = Thr(
             target=self.show_shadow_attacker(self.curr_unit),
             name="Attacker Shadow Thread")
-        self.attacker_shadow_thread.start()
+        attacker_shadow_thread.start()
 
         # self.show_shadow_attacker(self.curr_unit)
 
         # прорисовка атаки по области для атакующего юнита
         if self.curr_unit.attack_purpose == 6:
-            self.attacker_splash_thread = Thr(
+            attacker_splash_thread = Thr(
                 target=self.show_splash_area(
                     self.curr_unit,
                     UNIT_EFFECTS_AREA),
                 name="Attacker Splash Thread")
-            self.attacker_splash_thread.start()
+            attacker_splash_thread.start()
 
             # self.show_splash_area(
             #     self.curr_unit,
