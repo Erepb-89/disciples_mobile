@@ -1,13 +1,9 @@
 """Главное окно клиента"""
-import asyncio
 import os.path
 import sys
-import multiprocessing
 
 from collections import namedtuple
 from typing import Callable, Optional
-from threading import Thread as Thread
-from multiprocessing import Process, Manager as mgr
 
 from PyQt5 import QtCore
 from PyQt5.QtCore import Qt, QMimeData, QVariant, QEvent, QTranslator
@@ -16,23 +12,28 @@ from PyQt5.QtGui import QPixmap, QStandardItemModel, \
 from PyQt5.QtWidgets import QMainWindow, QApplication, QWidget, \
     QHBoxLayout, QListView, QLabel, QFrame
 
-from client_dir.windows.capital_window import CapitalWindow
-from client_dir.windows.choose_faction_window import ChooseRaceWindow
-from client_dir.windows.fight_window import FightWindow
-from client_dir.windows.campaign_window import CampaignWindow
-from client_dir.forms.client_main_form import Ui_MainWindow
-from client_dir.windows.hire_menu_window import HireMenuWindow
-from client_dir.windows.question_window import QuestionWindow
-from client_dir.settings import UNIT_ICONS, GIF_ANIMATIONS, \
-    TOWN_IMG, PLUG, ICON, PORTRAITS, BACKGROUND, BIG, \
-    ACTIVE_UNITS
-from client_dir.ui_functions import get_unit_image, \
-    set_beige_colour, set_borders, ui_lock, ui_unlock, get_cursor
-from client_dir.dialogs.unit_dialog import UnitDialog
-from server.server import MyThread
-from units_dir.models import PlayerUnits, CurrentDungeon
-from units_dir.battle_unit import Unit
-from units_dir.visual_model import v_model
+try:
+    from client_dir.windows.capital_window import CapitalWindow
+    from client_dir.windows.choose_faction_window import ChooseRaceWindow
+    from client_dir.windows.fight_window import FightWindow
+    from client_dir.windows.campaign_window import CampaignWindow
+    from client_dir.forms.client_main_form import Ui_MainWindow
+    from client_dir.windows.hire_menu_window import HireMenuWindow
+    from client_dir.windows.question_window import QuestionWindow
+    from client_dir.settings import UNIT_ICONS, GIF_ANIMATIONS, \
+        TOWN_IMG, PLUG, ICON, PORTRAITS, BACKGROUND, BIG, \
+        ACTIVE_UNITS
+    from client_dir.ui_functions import get_unit_image, \
+        set_beige_colour, set_borders, ui_lock, ui_unlock, get_cursor
+    from client_dir.dialogs.unit_dialog import UnitDialog
+    from server.server import MyThread
+    from units_dir.models import PlayerUnits, CurrentDungeon
+    from units_dir.battle_unit import Unit
+    from units_dir.visual_model import v_model
+except Exception as err:
+    with open("error_log.txt", "w", encoding='utf-8') as file:
+        file.write(str(err))
+        print(err)
 
 
 class ClientMainWindow(QMainWindow):
@@ -978,7 +979,8 @@ class ClientMainWindow(QMainWindow):
         self.ui.currentPlayer.setStyleSheet('color: white')
         self.all_players_list_update()
 
-    def slot_detailed(self, unit: namedtuple, slot_dialog: any) -> None:
+    @staticmethod
+    def slot_detailed(unit: namedtuple, slot_dialog: any) -> None:
         """Метод создающий окно юнита игрока при нажатии на слот."""
         try:
             global DETAIL_WINDOW

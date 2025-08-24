@@ -1688,9 +1688,15 @@ class FightWindow(QMainWindow):
             UNIT_SHADOW_STAND,
             self.enemy_side)
 
-        self.gifs_thread = Thr(target=self.unit_gifs_in_thread,
-                               name="Gifs Thread")
-        self.gifs_thread.start()
+        # self.gifs_thread = Thr(target=self.unit_gifs_in_thread,
+        #                        name="Gifs Thread")
+        # self.gifs_thread.start()
+
+        self.show_circle_attacker()
+        self._update_all_unit_health()
+        self.unit_icons_update()
+
+        self.define_dotted_units()
 
     def _update_all_unit_health(self) -> None:
         """Метод обновляющий текущее здоровье всех юнитов"""
@@ -1708,7 +1714,7 @@ class FightWindow(QMainWindow):
                 hp_slot)
 
         # показать иконки эффектов
-        self.define_dotted_units()
+        # self.define_dotted_units()
 
     def set_coords_double_slots(self, ui_obj) -> None:
         """Задание координат для 'двойных' слотов либо кнопок"""
