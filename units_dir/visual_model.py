@@ -209,7 +209,8 @@ class VisualModel:
                 unit = None
 
             if unit is not None:
-                names_list.append(unit.level)
+                basic_level = v_model.get_unit_by_name(unit.name).level - 1
+                names_list.append(unit.level - basic_level)
             else:
                 names_list.append('1')
 
